@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Android NDK Tombstone/Crash 分析</title>
+  <meta name="description" content="前言作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。通常我们调试程序 Bug 的方法主要有下面 3 种：  打印日志信息 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。  ...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="前言作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。通常我们调试程序 Bug 的方法主要有下面 3 种：  打印日志信息 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。  ..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Android NDK Tombstone/Crash 分析" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Android NDK Tombstone/Crash 分析">
+  <meta name="twitter:description" content="前言作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。通常我们调试程序 Bug 的方法主要有下面 3 种：  打印日志信息 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。  ...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/androidBg.jpg);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Android NDK Tombstone/Crash 分析</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">June 14, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/android">Android</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/android_bug.png" alt="" /></p>
+
+<h1 id="前言">前言</h1>
+<p>作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。</p>
+
+<p>通常我们调试程序 Bug 的方法主要有下面 3 种：</p>
+
+<ol>
+  <li>打印日志信息
+ 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。</li>
+  <li>单步调试
+ 这个方法则主要使用到了调试工具，例如 gdb 和 Visual Studio 中内置的调试器。这些高级的工具使得我们可以在程序中任何位置设置断点，或者查看相关变量的值，或者更进一步直接查看 CPU 中寄存器的值。</li>
+  <li>分析崩溃后的错误信息
+ 这种方法则主要是分析程序崩溃之后产生的错误信息相关文件来确定产生 Bug 的原因和位置。</li>
+</ol>
+
+<h1 id="android-开发中常见-crash-的情况">Android 开发中常见 Crash 的情况</h1>
+<p>在 Android 开发中，程序 Crash 分三种情况：</p>
+
+<ul>
+  <li>未捕获的异常</li>
+  <li>ANR（Application Not Responding）</li>
+  <li>闪退（NDK 程序引发错误）</li>
+</ul>
+
+<p>其中未捕获的异常根据 logcat 打印的堆栈信息很容易定位错误。</p>
+
+<p>ANR错误也好查，Android规定，应用与用户进行交互时，如果5秒内没有响应用户的操作，则会引发ANR错误，并弹出一个系统提示框，让用户选择继续等待或立即关闭程序。并会在/data/anr目录下生成一个traces.txt文件，记录系统产生anr异常的堆栈和线程信息。</p>
+
+<p>如果是闪退，这问题比较难查，通常是项目中用到了 NDK 引发某类致命的错误导致闪退。因为 NDK 是使用 C/C++ 来进行开发，熟悉 C/C++ 的程序员都知道，指针和内存管理是最重要也是最容易出问题的地方，稍有不慎就会遇到诸如内存地址访问错误、使用野指针、内存泄露、堆栈溢出、初始化错误、类型转换错误、数字除0等常见的问题，导致最后都是同一个结果：程序崩溃。它不会像在 Java 层产生的异常时弹出“xxx程序无响应，是否立即关闭”之类的提示框。当发生 NDK 错误后，logcat 打印出来的那堆日志根据看不懂，更别想从日志当中定位错误的根源。</p>
+
+<p><strong>那么我们该怎么调试引发 Crash 的 NDK 程序呢？</strong></p>
+
+<p>哈哈，好在 Google 早就料到了我们写的 NDK 代码肯定会漏洞百出。首先，当 NDK 程序在发生 Crash 时，它会在路径 <em>/data/tombstones/</em> 下产生导致程序 Crash 的文件 tombstone_xx。并且 Google 还在 NDK 包中为我们提供了一系列的调试工具，例如 <strong>addr2line</strong>、<strong>objdump</strong>、<strong>ndk-stack</strong>。</p>
+
+<!--more-->
+
+<h1 id="tombstone">Tombstone</h1>
+
+<h2 id="linux-信号机制">Linux 信号机制</h2>
+<p>在介绍 Tombstone 之前，我们首先补充一个 Linux 信号机制的知识。</p>
+
+<p>信号机制是 Linux 进程间通信的一种重要方式，Linux 信号一方面用于正常的进程间通信和同步，如任务控制(SIGINT, SIGTSTP,SIGKILL, SIGCONT，……)；另一方面，它还负责监控系统异常及中断。 当应用程序运行异常时， Linux 内核将产生错误信号并通知当前进程。 当前进程在接收到该错误信号后，可以有三种不同的处理方式。</p>
+
+<ul>
+  <li>忽略该信号。</li>
+  <li>捕捉该信号并执行对应的信号处理函数(signal handler)。</li>
+  <li>执行该信号的缺省操作(如 SIGSEGV， 其缺省操作是终止进程)。</li>
+</ul>
+
+<p>当 Linux 应用程序在执行时发生严重错误，一般会导致程序 crash。其中，Linux 专门提供了一类 crash 信号，在程序接收到此类信号时，缺省操作是将 crash 的现场信息记录到 core 文件，然后终止进程。</p>
+
+<p>Crash 信号列表：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Signal</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SIGSEGV</td>
+      <td>Invalid memory reference.</td>
+    </tr>
+    <tr>
+      <td>SIGBUS</td>
+      <td>Access to an undefined portion of a memory object.</td>
+    </tr>
+    <tr>
+      <td>SIGFPE</td>
+      <td>Arithmetic operation error, like divide by zero.</td>
+    </tr>
+    <tr>
+      <td>SIGILL</td>
+      <td>Illegal instruction, like execute garbage or a privileged instruction</td>
+    </tr>
+    <tr>
+      <td>SIGSYS</td>
+      <td>Bad system call.</td>
+    </tr>
+    <tr>
+      <td>SIGXCPU</td>
+      <td>CPU time limit exceeded.</td>
+    </tr>
+    <tr>
+      <td>SIGXFSZ</td>
+      <td>File size limit exceeded.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="什么-tombstone">什么 Tombstone？</h2>
+<p>Android Native 程序本质上就是一个 Linux 程序，因此当它在执行时发生严重错误，也会导致程序 crash，然后产生一个记录 crash 的现场信息的文件，而这个文件在 Android 系统中就是 tombstone 文件。</p>
+
+<p>Tombstone 英文的本意是墓碑，我觉得用这个单词来表示程序 Crash 之后产生的现场死亡信息真的再恰当不过了，tombstone 文件的确就像墓碑一样记录了死亡了的进程的基本信息（例如进程的进程号，线程号），死亡的地址（在哪个地址上发生了 Crash），死亡时的现场是什么样的（记录了一系列的堆栈调用信息）等等。</p>
+
+<p>因此，分析出现 Crash 的原因和代码位置最重要的就是分析这个 tombstone 文件。</p>
+
+<p>tombstone 文件位于路径 <em>/data/tombstones/</em> 下，</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>root@x86:/data/tombstones <span class="c"># ls</span>
+tombstone_00
+tombstone_01
+</code></pre>
+</div>
+
+<p>它的主要内容如下所示：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+Build fingerprint: 'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'
+Revision: '0'
+ABI: 'x86'
+pid: 1019, tid: 1019, name: surfaceflinger  &gt;&gt;&gt; /system/bin/surfaceflinger &lt;&lt;&lt;
+signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x4
+    eax a6265c06  ebx b7467d88  ecx b7631a22  edx a6265c06
+    esi 00000000  edi b6867140
+    xcs 00000073  xds 0000007b  xes 0000007b  xfs 00000000  xss 0000007b
+    eip b745a639  ebp bfcfc1e8  esp bfcfc150  flags 00010282
+
+backtrace:
+    #00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
+    #01 pc 00034b86  /system/lib/libsurfaceflinger.so
+    #02 pc 0003229e  /system/lib/libsurfaceflinger.so
+    #03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;)+652)
+    #04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
+    #05 pc 0004eafb  /system/lib/libgui.so (android::Surface::queueBuffer(ANativeWindowBuffer*, int)+411)
+    #06 pc 0004ce06  /system/lib/libgui.so (android::Surface::hook_queueBuffer(ANativeWindow*, ANativeWindowBuffer*, int)+38)
+    #07 pc 00014bc6  /system/lib/egl/libGLES_android.so
+    #08 pc 00017f73  /system/lib/egl/libGLES_android.so (eglSwapBuffers+163)
+    #09 pc 00015fdb  /system/lib/libEGL.so (eglSwapBuffers+203)
+    #10 pc 000013ea  /system/lib/hw/hwcomposer.x86.so
+    #11 pc 00034730  /system/lib/libsurfaceflinger.so
+    #12 pc 000256d4  /system/lib/libsurfaceflinger.so
+    #13 pc 00024bf4  /system/lib/libsurfaceflinger.so
+    #14 pc 000236fb  /system/lib/libsurfaceflinger.so
+    #15 pc 0002338a  /system/lib/libsurfaceflinger.so
+    #16 pc 0001e0ff  /system/lib/libsurfaceflinger.so
+    #17 pc 0001d9ce  /system/lib/libutils.so (android::Looper::pollInner(int)+926)
+    #18 pc 0001db73  /system/lib/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+67)
+    #19 pc 0001e561  /system/lib/libsurfaceflinger.so
+    #20 pc 00022ce7  /system/lib/libsurfaceflinger.so (android::SurfaceFlinger::run()+39)
+    #21 pc 00000ca3  /system/bin/surfaceflinger
+    #22 pc 0001365a  /system/lib/libc.so (__libc_init+106)
+    #23 pc 00000da8  /system/bin/surfaceflinger
+
+stack:
+         bfcfc110  00000000  
+         bfcfc114  b6839270  
+         bfcfc118  00000000  
+         bfcfc11c  00000000  
+         bfcfc120  b68394e0  
+         bfcfc124  00000002  
+         bfcfc128  00000002  
+         bfcfc12c  b75d8185  /system/lib/libutils.so (android::RefBase::incStrong(void const*) const+53)
+         bfcfc130  b6839270  
+         bfcfc134  bfcfc1e8  [stack]
+         bfcfc138  00000002  
+         bfcfc13c  a6265c06  
+         bfcfc140  b7467d88  /system/lib/libui.so
+         bfcfc144  00000000  
+         bfcfc148  b6867140  
+         bfcfc14c  b745a639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
+    #00  bfcfc150  b683af18  
+         bfcfc154  bfcfc1e8  [stack]
+         bfcfc158  00000000  
+         bfcfc15c  00000000  
+         bfcfc160  00000000  
+         bfcfc164  b683af18  
+         bfcfc168  b75ec9c4  /system/lib/libutils.so
+         bfcfc16c  b75d8285  /system/lib/libutils.so (android::RefBase::weakref_type::decWeak(void const*)+37)
+         bfcfc170  00000000  
+         bfcfc174  00000000  
+         bfcfc178  00000000  
+         bfcfc17c  00000000  
+         bfcfc180  b7642968  /system/lib/libsurfaceflinger.so
+         bfcfc184  bfcfc1e8  [stack]
+         bfcfc188  b6867140  
+         bfcfc18c  b7622b87  /system/lib/libsurfaceflinger.so
+</code></pre>
+</div>
+
+<h2 id="tombstone-文件解析">tombstone 文件解析</h2>
+<p>第一次看到 tombstone 文件时，我也是一头雾水，一脸懵逼，加上调 Bug 时本来就烦躁的心情，简直不想多看它一眼。但是没办法，导致 Crash 的原因只有在这里才能找到，所以我们硬着头皮也要去分析啊（最好还是在心情比较平静时去调 Bug 吧，这样效率可能会更好一点）。</p>
+
+<p>tombstone 文件它主要由下面几部分组成：</p>
+
+<ul>
+  <li>Build fingerprint</li>
+  <li>Crashed process and PIDs</li>
+  <li>Terminated signal and fault address</li>
+  <li>CPU registers</li>
+  <li>Call stack</li>
+  <li>Stack content of each call</li>
+</ul>
+
+<p>但是也不是 tombstone 中的信息我们都需要分析，我们最主要的就是分析 <strong>Crashed process and PIDs</strong>、<strong>Terminated signal and fault address</strong>和<strong>Call stack</strong> 部分。</p>
+
+<h3 id="crashed-process-and-pids-信息">Crashed process and PIDs 信息</h3>
+<p>从上面 tombstone 文件中的第 5 行中我们可以看到 Crash 掉进程的基本信息，如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="nl">pid:</span> <span class="mi">1019</span><span class="p">,</span> <span class="n">tid</span><span class="o">:</span> <span class="mi">1019</span><span class="p">,</span> <span class="n">name</span><span class="o">:</span> <span class="n">surfaceflinger</span>  <span class="o">&gt;&gt;&gt;</span> <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">surfaceflinger</span> <span class="o">&lt;&lt;&lt;</span>
+</code></pre>
+</div>
+
+<p>如果 pid 等于 tid ，那么就说明这个程序是在主线程中 Crash 掉的，name 的属性则表示 Crash 进程的名称以及在文件系统中位置。</p>
+
+<h3 id="terminated-signal-and-fault-address-信息">Terminated signal and fault address 信息</h3>
+<p>在上面 tombstone 文件中的第 6 行中我们可以看到程序是因为什么信号导致了 Crash 以及出现错误的地址，如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="n">signal</span> <span class="mi">11</span> <span class="p">(</span><span class="n">SIGSEGV</span><span class="p">),</span> <span class="n">code</span> <span class="mi">1</span> <span class="p">(</span><span class="n">SEGV_MAPERR</span><span class="p">),</span> <span class="n">fault</span> <span class="n">addr</span> <span class="mh">0x4</span>
+</code></pre>
+</div>
+<p>这里的信息说明出现进程 Crash 的原因是因为程序产生了段错误的信号，访问了非法的内存空间，而访问的非法地址是 0x4。</p>
+
+<h3 id="call-stack-信息">Call Stack 信息</h3>
+<p>调用栈信息是分析程序崩溃的非常重要的一个信息，它主要记录了程序在 Crash 前的函数调用关系以及当前正在执行函数的信息，它对应的是我们 tombstone 文件中 backtrace 符号开始的信息，上面例子中的 backtrace 的信息如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="nl">backtrace:</span>
+    <span class="cp">#00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
+</span>    <span class="cp">#01 pc 00034b86  /system/lib/libsurfaceflinger.so
+</span>    <span class="cp">#02 pc 0003229e  /system/lib/libsurfaceflinger.so
+</span>    <span class="cp">#03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;)+652)
+</span>    <span class="cp">#04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
+</span></code></pre>
+</div>
+
+<p>在上面的输出信息中， ##00，#01，#02……等表示的都是函数调用栈中栈帧的编号，其中编号越小的栈帧表示着当前最近调用的函数信息，所以栈帧标号 #00 表示的就是当前正在执行并导致程序 <strong>Crash</strong> 函数的信息。</p>
+
+<p>在栈帧的每一行中，pc 后面的 16 进制数值表示的是当前函数正在执行语句的在共享链接库或者可执行文件中的位置，然后 /system/lib/libui.so 则表示的是当前执行指令是在哪个文件当中，后面的小括号则是注明对应的是哪个函数。</p>
+
+<p>例如，在上面的例子中，我们就可以定位到是程序是在 Fence::waitForever(char const* )中出现了错误，但是具体在那一行呢，我们还不是特别清楚，所以就需要我们进一步地使用更加高级的工具来帮助我们解析 tombstone 中有关调用栈的信息。</p>
+
+<h2 id="定位-crash-源码位置的工具">定位 Crash 源码位置的工具</h2>
+<p>前面我们简要地介绍了 tombstone 文件的结构以及每个部分的相关含义，我们可以得到导致程序 Crash 掉的主要原因是什么（根据 Signal 的类型），也知道了是在主线程还是在子线程中挂掉了，但是我们对程序具体在代码中的哪个位置挂掉了，还不是特别清楚，最多还只是通过 <strong>backtrace</strong> 中的栈帧的信息大概定位到位于哪个函数中，但具体是哪个文件哪个函数那一行还是不清楚的。所以，我们接下来就需要借助一些更加高级的工具来定位 Bug 在代码中的具体位置。</p>
+
+<h3 id="说明">说明</h3>
+<p>Google 提供的 Android NDK 开发包中已经为我们提供了非常便利好用的解析工具了，我们主要使用了下面两种工具来解析 tombstone：</p>
+
+<ul>
+  <li>addr2line</li>
+  <li>ndk-stack</li>
+</ul>
+
+<p>所以，在使用这两种工具之前，你首先得把 Android NDK 工具包在你的电脑上安装好。</p>
+
+<h3 id="addr2line">addr2line</h3>
+<p>addr2line 是 NDK 中用来获得指定动态链接库文件或者可执行文件中指定地址对应的源代码信息，它位于 NDK 包中的如下位置中：</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nv">$NDK_HOME</span>/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line
+</code></pre>
+</div>
+<p><strong>其中 NDK_HOME 表示你 NDK 的安装路径。</strong>
+虽然在 Linux 中同样有 addr2line 命令了，但是它与 NDK 中提供的 addr2line 指令还是略有差别的，所以我们可以使用 <strong>alias</strong> 来将 shell 中默认的 addr2line 指令链接的 NDK 的上述路径中，命令如下所示：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">alias </span><span class="nv">addr2line</span><span class="o">=</span><span class="s1">'$NDK_HOME/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line'</span>
+</code></pre>
+</div>
+
+<p>这样之后，我们就可以在 Linux 中的 shell 环境中来直接使用 <strong>addr2line</strong> 命令了。
+addr2line 命令的各个参数的含义如下所示：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ </span>addr2line -h
+Usage: addr2line <span class="o">[</span>option<span class="o">(</span>s<span class="o">)]</span> <span class="o">[</span>addr<span class="o">(</span>s<span class="o">)]</span>
+ Convert addresses into line number/file name pairs.
+ If no addresses are specified on the <span class="nb">command </span>line, they will be <span class="nb">read </span>from stdin
+ The options are:
+  @&lt;file&gt;                Read options from &lt;file&gt;
+  -a --addresses         Show addresses
+  -b --target<span class="o">=</span>&lt;bfdname&gt;  Set the binary file format
+  -e --exe<span class="o">=</span>&lt;executable&gt;  Set the input file name <span class="o">(</span>default is a.out<span class="o">)</span>
+  -i --inlines           Unwind inlined functions
+  -j --section<span class="o">=</span>&lt;name&gt;    Read section-relative offsets instead of addresses
+  -p --pretty-print      Make the output easier to <span class="nb">read </span><span class="k">for </span>humans
+  -s --basenames         Strip directory names
+  -f --functions         Show <span class="k">function </span>names
+  -C --demangle[<span class="o">=</span>style]  Demangle <span class="k">function </span>names
+  -h --help              Display this information
+  -v --version           Display the program<span class="s1">'s version
+
+addr2line: supported targets: elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big elf32-little elf32-big pe-x86-64 pe-i386 plugin srec symbolsrec verilog tekhex binary ihex
+Report bugs to &lt;http://www.sourceware.org/bugzilla/&gt;
+</span></code></pre>
+</div>
+
+<p>addr2line 的基本用法如下所示：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ </span>addr2line -f -e libui.so 00006639
+_ZN7android5Fence11waitForeverEPKc
+/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59
+</code></pre>
+</div>
+
+<p>哈哈，使用了 addr2line 工具之后，我们终于看到 libui.so 文件中地址 00006639 对应的源码是什么了，它对应的是 Android 系统源码中 <em>/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59</em> 处代码（因为上面的 tombstone 文件是由于 Android 系统中的 surfaceFlinger 进程崩溃而产生的，所以它对应的源码也是 Android 系统中有关 SurfaceFlinger 部分的源码）。</p>
+
+<h3 id="ndk-stack">ndk-stack</h3>
+<p>Android NDK 自从版本 r6开始, 提供了一个工具 ndk-stack。这个工具能自动分析 tombstone 文件, 能将崩溃时的调用内存地址和 c++ 代码一行一行对应起来.</p>
+
+<p>ndk-stack 工具同样也位于 NDK 包中，它的路径如下所示：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nv">$NDK_HOME</span>/ndk-stack
+</code></pre>
+</div>
+
+<p>ndk-stack 的使用说明如下所示：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code>Usage:
+   ndk-stack -sym &lt;path&gt; <span class="o">[</span>-dump &lt;path&gt;]
+
+      -sym  Contains full path to the root directory <span class="k">for </span>symbols.
+      -dump Contains full path to the file containing the crash dump.
+            This is an optional parameter. If ommited, ndk-stack will
+            <span class="nb">read </span>input data from stdin
+</code></pre>
+</div>
+
+<p>其中，</p>
+
+<ul>
+  <li>dump 参数很容易理解, 即 dump 下来的 log 文本文件. ndk-stack会分析此文件，这里我们就是指定我们从 Android 系统中获取到的 tombstone（这个需要通过 adb pull 的方式拉取到本地的宿主机中） 文件存放的位置。</li>
+  <li>sym 参数就是你android项目下，编译成功之后，obj目录下的文件。</li>
+</ul>
+
+<p>由于 <strong>ndk-stack</strong> 主要是用来分析用 C++ 编写的单独的 NDK 程序，所以下面就以解析一个 NDK 程序运行时 Crash 后产生的 tombstone 为例，tombstone 文件的内容如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="c1">// tombstone_01 文件内容
+</span><span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span>
+<span class="n">Build</span> <span class="n">fingerprint</span><span class="o">:</span> <span class="err">'</span><span class="n">Android</span><span class="o">-</span><span class="n">x86</span><span class="o">/</span><span class="n">android_x86</span><span class="o">/</span><span class="n">x86</span><span class="o">:</span><span class="mi">5</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">1</span><span class="o">/</span><span class="n">LMY48W</span><span class="o">/</span><span class="n">woshijpf04211939</span><span class="o">:</span><span class="n">eng</span><span class="o">/</span><span class="n">test</span><span class="o">-</span><span class="n">keys</span><span class="err">'</span>
+<span class="n">Revision</span><span class="o">:</span> <span class="sc">'0'</span>
+<span class="n">ABI</span><span class="o">:</span> <span class="err">'</span><span class="n">x86</span><span class="err">'</span>
+<span class="n">pid</span><span class="o">:</span> <span class="mi">2125</span><span class="p">,</span> <span class="n">tid</span><span class="o">:</span> <span class="mi">2125</span><span class="p">,</span> <span class="n">name</span><span class="o">:</span> <span class="n">androidvncserve</span>  <span class="o">&gt;&gt;&gt;</span> <span class="n">androidvncserver</span> <span class="o">&lt;&lt;&lt;</span>
+<span class="n">signal</span> <span class="mi">11</span> <span class="p">(</span><span class="n">SIGSEGV</span><span class="p">),</span> <span class="n">code</span> <span class="mi">1</span> <span class="p">(</span><span class="n">SEGV_MAPERR</span><span class="p">),</span> <span class="n">fault</span> <span class="n">addr</span> <span class="mh">0x0</span>
+    <span class="n">eax</span> <span class="mo">00000000</span>  <span class="n">ebx</span> <span class="n">b76ffff4</span>  <span class="n">ecx</span> <span class="n">b6a37000</span>  <span class="n">edx</span> <span class="mo">00000000</span>
+    <span class="n">esi</span> <span class="mo">00000000</span>  <span class="n">edi</span> <span class="mo">00000000</span>
+    <span class="n">xcs</span> <span class="mo">00000073</span>  <span class="n">xds</span> <span class="mo">0000007</span><span class="n">b</span>  <span class="n">xes</span> <span class="mo">0000007</span><span class="n">b</span>  <span class="n">xfs</span> <span class="mo">00000000</span>  <span class="n">xss</span> <span class="mo">0000007</span><span class="n">b</span>
+    <span class="n">eip</span> <span class="n">b75a4ec5</span>  <span class="n">ebp</span> <span class="n">bfa9bd08</span>  <span class="n">esp</span> <span class="n">bfa9bbf0</span>  <span class="n">flags</span> <span class="mo">00010246</span>
+
+<span class="n">backtrace</span><span class="o">:</span>
+    <span class="cp">#00 pc 0004bec5  /system/bin/androidvncserver
+</span>    <span class="cp">#01 pc 0004e3e4  /system/bin/androidvncserver
+</span>    <span class="cp">#02 pc 0001365a  /system/lib/libc.so (__libc_init+106)
+</span>    <span class="cp">#03 pc 0001060c  /system/bin/androidvncserver
+</span>
+<span class="n">stack</span><span class="o">:</span>
+         <span class="n">bfa9bbb0</span>  <span class="n">bfa9bbc8</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bbb4</span>  <span class="n">b72c6fb0</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libdvnc_flinger_sdk22</span><span class="p">.</span><span class="n">so</span>
+         <span class="n">bfa9bbb8</span>  <span class="n">b72c7004</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libdvnc_flinger_sdk22</span><span class="p">.</span><span class="n">so</span>
+         <span class="n">bfa9bbbc</span>  <span class="n">b72c5b26</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libdvnc_flinger_sdk22</span><span class="p">.</span><span class="n">so</span> <span class="p">(</span><span class="n">readfb_flinger</span><span class="o">+</span><span class="mi">38</span><span class="p">)</span>
+         <span class="n">bfa9bbc0</span>  <span class="n">b68ae080</span>  
+         <span class="n">bfa9bbc4</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bbc8</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bbcc</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bbd0</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bbd4</span>  <span class="n">b76ffff4</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bbd8</span>  <span class="n">b76a5e20</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bbdc</span>  <span class="n">b75ac181</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bbe0</span>  <span class="n">b75ac16b</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bbe4</span>  <span class="n">b76ffff4</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bbe8</span>  <span class="n">bfa9bd08</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bbec</span>  <span class="n">b75a579b</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+    <span class="cp">#00  bfa9bbf0  00000012  
+</span>         <span class="n">bfa9bbf4</span>  <span class="n">bfa9bc1c</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bbf8</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bbfc</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bc00</span>  <span class="n">bfa9bc14</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bc04</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bc08</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bc0c</span>  <span class="n">b7498825</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libc</span><span class="p">.</span><span class="n">so</span> <span class="p">(</span><span class="n">je_free</span><span class="o">+</span><span class="mi">453</span><span class="p">)</span>
+         <span class="n">bfa9bc10</span>  <span class="mo">0000000</span><span class="n">e</span>  
+         <span class="n">bfa9bc14</span>  <span class="mo">00000400</span>  
+         <span class="n">bfa9bc18</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bc1c</span>  <span class="n">b749538a</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libc</span><span class="p">.</span><span class="n">so</span> <span class="p">(</span><span class="n">je_malloc</span><span class="o">+</span><span class="mi">778</span><span class="p">)</span>
+         <span class="n">bfa9bc20</span>  <span class="mo">0000000</span><span class="n">c</span>  
+         <span class="n">bfa9bc24</span>  <span class="mo">00000065</span>  
+         <span class="n">bfa9bc28</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bc2c</span>  <span class="n">b6a37000</span>  
+         <span class="p">........</span>  <span class="p">........</span>
+    <span class="cp">#01  bfa9bd10  b6bb7300  
+</span>         <span class="n">bfa9bd14</span>  <span class="mo">00001</span><span class="n">b58</span>  
+         <span class="n">bfa9bd18</span>  <span class="n">b76aa954</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bd1c</span>  <span class="mo">0000000</span><span class="n">b</span>  
+         <span class="n">bfa9bd20</span>  <span class="mo">00000005</span>  
+         <span class="n">bfa9bd24</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bd28</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bd2c</span>  <span class="mo">00000005</span>  
+         <span class="n">bfa9bd30</span>  <span class="mo">00000006</span>  
+         <span class="n">bfa9bd34</span>  <span class="mo">00000005</span>  
+         <span class="n">bfa9bd38</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bd3c</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bd40</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bd44</span>  <span class="n">bfa9bd24</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bd48</span>  <span class="n">b754f9c8</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">linker</span>
+         <span class="n">bfa9bd4c</span>  <span class="n">b7557bd8</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">linker</span>
+         <span class="p">........</span>  <span class="p">........</span>
+    <span class="cp">#02  bfa9bed0  00000001  
+</span>         <span class="n">bfa9bed4</span>  <span class="n">bfa9bf14</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bed8</span>  <span class="n">bfa9bf1c</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bedc</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bee0</span>  <span class="n">b7556fec</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">linker</span>
+         <span class="n">bfa9bee4</span>  <span class="n">bfa9bf10</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bee8</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9beec</span>  <span class="n">b7556fec</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">linker</span>
+         <span class="n">bfa9bef0</span>  <span class="n">bfa9bf10</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bef4</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bef8</span>  <span class="n">bfa9bf0c</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9befc</span>  <span class="n">b756960d</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+    <span class="cp">#03  bfa9bf00  bfa9bf10  [stack]
+</span>         <span class="n">bfa9bf04</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bf08</span>  <span class="n">b756960d</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bf0c</span>  <span class="n">b7569612</span>  <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">androidvncserver</span>
+         <span class="n">bfa9bf10</span>  <span class="mo">00000001</span>  
+         <span class="n">bfa9bf14</span>  <span class="n">bfa9cb05</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf18</span>  <span class="mo">00000000</span>  
+         <span class="n">bfa9bf1c</span>  <span class="n">bfa9cb16</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf20</span>  <span class="n">bfa9cb35</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf24</span>  <span class="n">bfa9cb48</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf28</span>  <span class="n">bfa9cba3</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf2c</span>  <span class="n">bfa9cbae</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf30</span>  <span class="n">bfa9cbc1</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf34</span>  <span class="n">bfa9cbdc</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf38</span>  <span class="n">bfa9cbe7</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+         <span class="n">bfa9bf3c</span>  <span class="n">bfa9cbfd</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
+</code></pre>
+</div>
+
+<p>使用 <strong>ndk-stack</strong> 处理之后的结果：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/android_workspace/droidVNCserver-real$ </span>ndk-stack -sym obj/local/x86/ -dump ~/android-x86-debug-log/tombstone_01
+<span class="k">**********</span> Crash dump: <span class="k">**********</span>
+Build fingerprint: <span class="s1">'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'</span>
+pid: 2125, tid: 2125, name: androidvncserve  &gt;&gt;&gt; androidvncserver <span class="o">&lt;&lt;&lt;</span>
+signal 11 <span class="o">(</span>SIGSEGV<span class="o">)</span>, code 1 <span class="o">(</span>SEGV_MAPERR<span class="o">)</span>, fault addr 0x0
+Stack frame <span class="c">#00 pc 0004bec5  /system/bin/androidvncserver: Routine update_screen_16 in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/updateScreen.c:68</span>
+Stack frame <span class="c">#01 pc 0004e3e4  /system/bin/androidvncserver: Routine main in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:805</span>
+Stack frame <span class="c">#02 pc 0001365a  /system/lib/libc.so (__libc_init+106)</span>
+Stack frame <span class="c">#03 pc 0001060c  /system/bin/androidvncserver: Unable to locate routine information for address 1060c in module obj/local/x86//androidvncserver</span>
+Stack frame <span class="c">#00 pc 0007bf71  /system/lib/libc.so (nanosleep+17)</span>
+Stack frame <span class="c">#01 pc 00047ed6  /system/lib/libc.so (usleep+70)</span>
+Stack frame <span class="c">#02 pc 0004fa6b  /system/bin/androidvncserver: Routine camera_io in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/camera_io.c:557</span>
+Stack frame <span class="c">#03 pc 0004af6a  /system/bin/androidvncserver: Routine receive_camera in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:273</span>
+Stack frame <span class="c">#04 pc 00022168  /system/lib/libc.so (__pthread_start(void*)+56)</span>
+Stack frame <span class="c">#05 pc 0001cc69  /system/lib/libc.so (__start_thread+25)</span>
+Stack frame <span class="c">#06 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)</span>
+Stack frame <span class="c">#00 pc 0007cc33  /system/lib/libc.so (recvfrom+19)</span>
+Stack frame <span class="c">#01 pc 00050cdb  /system/bin/androidvncserver: Routine handle_connections in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/gui.c:105</span>
+Stack frame <span class="c">#02 pc 00022168  /system/lib/libc.so (__pthread_start(void*)+56)</span>
+Stack frame <span class="c">#03 pc 0001cc69  /system/lib/libc.so (__start_thread+25)</span>
+Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)</span>
+
+</code></pre>
+</div>
+
+<p>经过 <strong>ndk-stack</strong>地这么处理之后，我们就非常直接明了地看到了每个栈帧中调用函数的内存地址和程序源码的关系。是不是感觉很爽啊！</p>
+
+<h1 id="总结">总结</h1>
+<p>Android NDK 程序的系统调试其实也没那么复杂，虽然它长着一副恐怖的外表，但是只要掌握了正确的方法，了解 Tombstone 文件中关键信息的含义，学会使用 addr2line 和 ndk_stack 这两个超级方便的工具，那么一步一步找出导致 NDK 程序 Crash 的 Bug 就非常 Easy 了。 但上面的这些工作也还只是帮助你快速地定位到你的代码出现问题的位置，具体的 Bug 还是需要你进一步地根据业务逻辑来分析代码。</p>
+
+<h1 id="参考链接">参考链接</h1>
+
+<ol>
+  <li>
+    <p>[cocos2dx]利用NDK崩溃日志查找BUG]<a href="http://www.cnblogs.com/jhzhu/p/3801640.html">0</a></p>
+  </li>
+  <li>
+    <p><a href="http://bytesthink.com/blog/?p=133">Debugging tombstones with ndk-stack and addr2line</a></p>
+  </li>
+  <li>
+    <p><a href="https://source.android.com/devices/tech/debug/index.html">Debugging Native Android Platform Code</a></p>
+  </li>
+  <li>
+    <p><a href="http://blog.csdn.net/helldevil/article/details/6682211">Android Tombstone/Crash的log分析和定位</a></p>
+  </li>
+  <li>
+    <p><a href="http://blog.csdn.net/chi_wy/article/details/42472279">Android重启原因分析</a></p>
+  </li>
+  <li>
+    <p><a href="http://www.51testing.com/html/34/361634-859594.html">android crash的类型及原因分析（上）</a></p>
+  </li>
+  <li>
+    <p><a href="https://sites.google.com/a/itspaclub.com/www/android-debug">Android Debug</a></p>
+  </li>
+  <li>
+    <p><a href="http://github.dudukr.com/VWiki/2013/02/21/tombstone-on-android.html">Android平台抓取native crash log</a></p>
+  </li>
+  <li>
+    <p><a href="http://dylangao.com/2014/05/16/android-debuggerd-%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D%E5%92%8C%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">Android Debuggerd 简要介绍和源码分析</a></p>
+  </li>
+  <li>
+    <p><a href="http://www.voidcn.com/blog/u011279649/article/p-5769267.html">Android NDK tombstone分析工具</a></p>
+  </li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/NDK">NDK</a>,&nbsp;<a href="/tag/Debug">Debug</a>,&nbsp;<a href="/tag/Tombstone">Tombstone</a>,&nbsp;<a href="/tag/Android">Android</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/androidBg.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E7%94%9F%E6%B4%BB/2016/06/05/%E6%88%91%E7%9A%84%E4%B9%A6%E5%8D%95.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">书单</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/linux/2016/07/07/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html">
+					<span class="page-number">Linux 中的 EOF 到底是什么？</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html',
+    'title': 'Android NDK Tombstone/Crash 分析'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

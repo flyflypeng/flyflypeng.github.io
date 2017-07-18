@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>单生产者和单消费者共同操作同一个环形缓冲区的问题</title>
+  <meta name="description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题">
+  <meta name="twitter:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">单生产者和单消费者共同操作同一个环形缓冲区的问题</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">December 14, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Linux">Linux</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/circular_buffer.png" alt="" /></p>
+
+<h1 id="问题描述">问题描述</h1>
+
+<ol>
+  <li>本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。</li>
+  <li>生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。</li>
+  <li>环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 <code class="highlighter-rouge">2^N</code> 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
+    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="cp">#define RING_BUFFER_SIZE N
+</span>    
+ <span class="k">struct</span> <span class="n">RingBuffer</span><span class="p">{</span>
+     <span class="kt">int</span> <span class="n">w_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区写入位置值
+</span>     <span class="kt">int</span> <span class="n">r_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区读取位置值
+</span>     <span class="n">data_block</span> <span class="n">data</span><span class="p">[(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)];</span> <span class="c1">//data_block 是环形缓冲区中所存放的数据单元的类型
+</span> <span class="p">}</span>
+</code></pre>
+    </div>
+    <p>在创建环形缓冲区之后，RingBuffer 结构体中的成员<code class="highlighter-rouge">w_pos</code>和<code class="highlighter-rouge">r_pos</code>都被初始化为 0。</p>
+  </li>
+  <li>判断环形缓冲区是否为空的伪代码：
+    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+     <span class="c1">//判断语句为真，RingBuffer 为空
+</span></code></pre>
+    </div>
+  </li>
+  <li>判断环形缓冲区是否为满的伪代码：
+    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span>
+     <span class="c1">//判断语句为真，RingBuffer 为满
+</span></code></pre>
+    </div>
+  </li>
+  <li>生产者进程中的处理逻辑伪代码：
+    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span> <span class="c1">//缓冲区满了
+</span>     <span class="p">{</span>
+         <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+         <span class="k">continue</span><span class="p">;</span>
+     <span class="p">}</span>
+    
+     <span class="c1">//否则，则将数据填入到环形缓冲区中空闲的单元中
+</span>     <span class="n">data</span><span class="p">[</span><span class="n">w_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="n">some_data</span><span class="p">;</span> <span class="c1">//将需要写入的数据写入到指定的环形缓冲区单元中
+</span>        
+     <span class="n">w_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将写入位置向前移动
+</span> <span class="p">}</span>
+</code></pre>
+    </div>
+  </li>
+  <li>消费者进程中的处理逻辑伪代码：
+    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+ <span class="p">{</span>
+     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//缓冲区为空
+</span>     <span class="p">{</span>
+         <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+         <span class="k">continue</span><span class="p">;</span>
+     <span class="p">}</span>
+    
+     <span class="c1">//否则，从环形缓冲区中读取数据出来进行处理
+</span>     <span class="n">process</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">r_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]);</span> <span class="c1">//process() 函数只是对读取到的数据进行一个处理
+</span>        
+     <span class="n">r_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将读取位置向前移动
+</span> <span class="p">}</span>
+</code></pre>
+    </div>
+    <h1 id="疑惑">疑惑？</h1>
+    <p>如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加<code class="highlighter-rouge">互斥锁</code>，上面代码是否会出现<code class="highlighter-rouge">Bug</code>，或者不确定的状态？</p>
+  </li>
+</ol>
+
+<p>而且我想了很多遍生产者和消费者的处理逻辑，他们只会在最后执行语句 <code class="highlighter-rouge">w_pos++</code> 和 <code class="highlighter-rouge">r_pos++</code> 时改变两个进程都共享的值，虽然 <code class="highlighter-rouge">w_pos++</code> 和 <code class="highlighter-rouge">r_pos++</code> 的操作不是原子操作的，但是好像是不是原子操作都不会对结果产生影响，我就是在这里思考不清楚！不知道大家对此有什么看法呢？能否举出特殊的栗子来描述一下。</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/同步">同步</a>,&nbsp;<a href="/tag/生产者消费者">生产者消费者</a>,&nbsp;<a href="/tag/环形缓冲区">环形缓冲区</a>,&nbsp;<a href="/tag/RingBuffer">RingBuffer</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Ubuntu 软件源详解</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">
+					<span class="page-number">Android NDK  vs AOSP Build System</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html',
+    'title': '单生产者和单消费者共同操作同一个环形缓冲区的问题'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>《Linux 内核分析》完成一个简单的时间片轮转多道程序内核代码</title>
+  <meta name="description" content="1. 概要上周我在网易云课堂上学习了孟宁老师的《Linux 内核分析》第二周的课程内容：操作系统是如何工作的？课程的重点内容就是介绍了函数调用堆栈的过程、Linux 中内联汇编的使用方法，以及一个基于 Linux 3.9.4 内核自己实现的时间片轮转多道程序内核。本文就主要对最后一个重点内容：一个简单的时间片轮转...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="1. 概要上周我在网易云课堂上学习了孟宁老师的《Linux 内核分析》第二周的课程内容：操作系统是如何工作的？课程的重点内容就是介绍了函数调用堆栈的过程、Linux 中内联汇编的使用方法，以及一个基于 Linux 3.9.4 内核自己实现的时间片轮转多道程序内核。本文就主要对最后一个重点内容：一个简单的时间片轮转..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="《Linux 内核分析》完成一个简单的时间片轮转多道程序内核代码" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="《Linux 内核分析》完成一个简单的时间片轮转多道程序内核代码">
+  <meta name="twitter:description" content="1. 概要上周我在网易云课堂上学习了孟宁老师的《Linux 内核分析》第二周的课程内容：操作系统是如何工作的？课程的重点内容就是介绍了函数调用堆栈的过程、Linux 中内联汇编的使用方法，以及一个基于 Linux 3.9.4 内核自己实现的时间片轮转多道程序内核。本文就主要对最后一个重点内容：一个简单的时间片轮转...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%86%85%E6%A0%B8/2016/03/19/Linux-%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90-%E7%AE%80%E5%8D%95%E7%9A%84%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">《Linux 内核分析》完成一个简单的时间片轮转多道程序内核代码</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">March 19, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/内核">内核</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/myKernel.png" alt="mykernel" /></p>
+
+<h2 id="1-概要">1. 概要</h2>
+
+<p>上周我在<a href="http://study.163.com/search.htm?p=Linux%E5%86%85%E6%A0%B8">网易云课堂</a>上学习了孟宁老师的《Linux 内核分析》第二周的课程内容：操作系统是如何工作的？课程的重点内容就是介绍了函数调用堆栈的过程、Linux 中内联汇编的使用方法，以及一个基于 Linux 3.9.4 内核自己实现的时间片轮转多道程序内核。</p>
+
+<p>本文就主要对最后一个重点内容：<strong>一个简单的时间片轮转多道程序内核代码</strong> 进行一个分析。</p>
+
+<h2 id="2-实验环境搭建">2. 实验环境搭建</h2>
+
+<p>首先，当然是要搭建好实验的环境，实验中使用到的主要是在 qemu 模拟器中运行我们自己编写的非常简单的内核。实验环境的具体的搭建过程在孟宁老师的 github 中的 <a href="https://github.com/woshijpf/mykernel">mykernel</a> 项目中的 README 文档中有详细的说明。</p>
+
+<p>我是在自己本地电脑上的 Ubuntu 14.04 64位版本电脑上进行实验的。</p>
+
+<h2 id="3-原理分析">3. 原理分析</h2>
+
+<p>为了精简内核初始化启动的过程，上一步中我们在现有的 Linux 3.9.4 的源码基础上，打上了孟宁老师为我们准备好的内核补丁，这样我们的内核启动后就会从打上补丁后 Linux 源码目录下的 <strong>kernel/mymain.c</strong> 文件中__init my_start_kernel() 函数开始执行，关于如何实现上述的过程，我们不做深究，现在只需知道打完补丁之后，我们就可以从这个函数开始执行我们自己编写的内核代码了。</p>
+
+<p>首先，先直观地给出整个时间片轮转多道程序内核代码的执行过程的一个流程示意图：</p>
+
+<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/Linux%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90-week2-%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC%E6%9C%80%E6%96%B0.png" alt="时间片轮转多道程序内核代码流程图" /></p>
+
+<!--more-->
+
+<h3 id="31-进程控制块pcb">3.1 进程控制块(PCB)</h3>
+
+<p>如果学习过操作系统的理论原理，那么你一定不会对进程控制块这个名词感到陌生。</p>
+
+<p>进程控制块是一个数据结构，它保存了描述一个进程所需的各种信息，例如进程的编号(pid)，进程的当前状态(status)，进程的内核栈(kernel stack)，程序计数器(PC)等等。</p>
+
+<p>在本实验中，我们就定义了如下所示的进程控制块结构：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">// 代码中文件 mypcb.h 中
+</span><span class="cp">#define MAX_TASK_NUM 4
+#define KERNEL_STACK_SIZE 4*1024
+</span>
+<span class="c1">// 定义一个进程中主线程执行时，CPU 中 eip 和 esp 寄存器中的值
+</span><span class="k">struct</span> <span class="n">Thread</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">ip</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">sp</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="c1">// 进程控制块定义
+</span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">PCB</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">pid</span><span class="p">;</span>   <span class="c1">// 进程号
+</span>    <span class="k">volatile</span> <span class="kt">long</span> <span class="n">state</span><span class="p">;</span>   <span class="c1">// 表示当前进程的状态， -1: 不可运行，0: 运行中，&gt;0: 停止
+</span>    <span class="kt">char</span> <span class="n">stack</span><span class="p">[</span><span class="n">KERNEL_STACK_SIZE</span><span class="p">];</span>  <span class="c1">// 内核堆栈空间
+</span>    <span class="c1">// 进程执行时的 CPU 中关键寄存器的状态
+</span>    <span class="k">struct</span> <span class="n">Thread</span> <span class="kr">thread</span><span class="p">;</span>
+    <span class="c1">// 进程中主程序的入口地址
+</span>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">task_entry</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">PCB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>   <span class="c1">// 指向下一个进程控制块
+</span><span class="p">}</span> <span class="n">tPCB</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p>为了方便管理，我们在我们的内核里将进程块按照循环链表的形式进行管理。</p>
+
+<p>上面的代码中的注释已经非常清楚了，下面还要补充一点关于 PCB 中struct Thread thread 字段的说明。结构体 Thread 中就定义两个数据成员：</p>
+
+<ul>
+  <li>ip： 表示的含义是进程下一条执行指令的地址</li>
+  <li>sp： 表示的含义是使用进程中内核栈中的栈顶指针，初始时指向栈底 (KERNEL_STACK_SIZE-1)。</li>
+</ul>
+
+<h3 id="32-中断">3.2 中断</h3>
+
+<p>中断机制是现代计算机中不可或缺的一种运行机制，它允许你暂停当前正在执行的程序流，转而去执行另外一个可能是非常紧急或重要的处理程序，然后执行完了之后，又返回到原来的程序流接着往下执行，这种机制增强了计算机运行程序的灵活性。</p>
+
+<p>正如我们现在能在计算机中同时（这里的同时指的是一个很短暂的时间范围，例如10ms）运行多个进程，这是得益于中断这种机制，它让我们的计算机可以在程序之间在短时间内可以完成快速地切换。</p>
+
+<p>有关中断的初始化等一系列调用中断处理函数前的工作，已经由我们打的内核补丁和 Linux 内核帮我们完成了，所以我们所需要做的就是编写中断处理函数，在中断处理函数中处理我们进程时间片轮转的进程调用工作。</p>
+
+<p>下面我们就来看看中断处理函数的实现：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">// 代码在文件 myinterrupt.c 文件中
+</span><span class="k">extern</span> <span class="k">volatile</span> <span class="kt">int</span> <span class="n">my_need_sched</span><span class="p">;</span>
+<span class="k">volatile</span> <span class="kt">int</span> <span class="n">time_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="cm">/*
+ * Called by timer interrupt.
+ */</span>
+<span class="kt">void</span> <span class="nf">my_timer_handler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">time_count</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">my_need_sched</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 每个 1000 次时间中断并且没有进行调度，则执行一次打印输出
+</span>    <span class="p">{</span>
+        <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"&gt;&gt;&gt;my_timer_handler here&lt;&lt;&lt;</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="n">my_need_sched</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">//进行调度
+</span>    <span class="p">}</span>
+    <span class="n">time_count</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>由于系统的时钟中断是由 CPU 的运行主频决定的，假设我们用 qemu 模拟出来的 CPU 主频为 1GHZ，那么它表示 CPU 的一个始终周期是 1 ns，为了使得我们能够看得出调度的效果，我们程序里就使用了一个计算值，每隔 1000 个时钟周期来处理一次进程调度。</p>
+
+<p>并且，如果进行调度的标志位 my_need_sched 为0，则在中断处理程序中将其设置为 1，表示需要进行一次进程调度了。如果进行调度的标志位 my_need_sched 为 1，则表示已经正在进行调度了。</p>
+
+<h3 id="33-创建多个进程">3.3 创建多个进程</h3>
+
+<p>我们的实验目的就是为了实现多个进程之间轮转，那么我们当然需要创建好一组进程啦。</p>
+
+<p>下面我们就直接上代码了：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">// 代码位于 mymain.c 文件中
+</span><span class="n">tPCB</span> <span class="n">task</span><span class="p">[</span><span class="n">MAX_TASK_NUM</span><span class="p">];</span>   <span class="c1">// 创建包含所有进程的进程数组
+</span><span class="n">tPCB</span> <span class="o">*</span><span class="n">my_current_task</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// my_current_task 指针指向当前正在运行的进程的进程控制块
+</span><span class="k">volatile</span> <span class="kt">int</span> <span class="n">my_need_sched</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 是否需要进行调度的标志
+</span>
+<span class="kt">void</span> <span class="n">my_process</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="c1">// 这个 my_start_kernel 是经过打过补丁之后，新的内核的开始执行的入口函数
+</span><span class="kt">void</span> <span class="n">__init</span> <span class="nf">my_start_kernel</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="c1">// 初始化 0 号进程
+</span>    <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// 0 表示当前进程正在执行
+</span>    <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">task_entry</span> <span class="o">=</span> <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">my_process</span><span class="p">;</span> <span class="c1">// 将第 0 号进程的主函数入口地址设置为 my_process
+</span>    <span class="c1">// my_process 是定义在本文件中的一个函数
+</span>    <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">stack</span><span class="p">[</span><span class="n">KERNEL_STACK_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span> <span class="c1">// 将进程中的栈指针 sp 指向进程所使用栈的栈顶
+</span>    <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">next</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">];</span>  <span class="c1">// 在还没有初始化更多进程之前，它所指向的下一个进程块还是它自己
+</span>
+    <span class="c1">// fork 出更多的进程
+</span>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_TASK_NUM</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 首先使用 0 号进程对应的进程块中的内容来初始化其他新创建的进程
+</span>        <span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tPCB</span><span class="p">));</span>
+        <span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">pid</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+        <span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">state</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">stack</span><span class="p">[</span><span class="n">KERNEL_STACK_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span>
+        <span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">next</span> <span class="o">=</span> <span class="n">task</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">next</span><span class="p">;</span>
+        <span class="n">task</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">].</span><span class="n">next</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">task</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="p">}</span>
+<span class="p">......</span>
+
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>首先，在这个文件中我们创建一个进程控制块的数组 task，它里面保存了 MAX_TASK_NUM(值等于4)个进程的控制块。</p>
+
+<p>接下来第二步就是对我们进程控制块中的每个数据成员进行赋值初始化了。</p>
+
+<p>其中以下这句：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">task_entry</span> <span class="o">=</span> <span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">my_process</span>
+</code></pre>
+</div>
+
+<p>表示的是将进程下一条执行的指令地址，指向函数 my_process() 的地址，同时设置这个函数的地址为进程执行的入口地址。</p>
+
+<p>而下面这句：</p>
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="n">next</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">];</span>
+</code></pre>
+</div>
+
+<p>这里我们对进程控制块的管理方式，使用的是循环链表的结构，所以初始化第一个进程的时候，进程控制块中 next 指针就指向了它自己。</p>
+
+<p>初始化完成第一个进程之后，我们用同样的方式去初始化进程中的其他三个进程，并将新初始化完成的进程控制块添加到循环链表中。</p>
+
+<h3 id="34-启动运行第-0-号进程">3.4 启动运行第 0 号进程</h3>
+
+<p>完成了进程初始化之后，我们就可以启动运行我们内核的第 0 号进程了（这个进程就是内核中第一个运行的进程）。而启动运行第 0 号进程，整个启动过程主要是由 Linux 中的内联汇编完成，具体的代码如下所示：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code>    <span class="c1">// 代码位于 mymain.c 文件中
+</span>    <span class="c1">// 准备启动第 0 号进程
+</span>    <span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">my_current_task</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">task</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">asm</span> <span class="k">volatile</span> <span class="p">(</span>
+        <span class="s">"movl %1,%%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 应该将 "pushl %1\n\t" 替换成这句话，并放在现在这个位置
+</span>        <span class="s">"movl %1,%%esp</span><span class="se">\n\t</span><span class="s">"</span>  <span class="c1">// 将 task[pid].thread.sp 的值存放到 esp 寄存器中
+</span>        <span class="c1">// "pushl %1\n\t"  // 这句话得删除了，添加第一句汇编代码
+</span>        <span class="s">"pushl %0</span><span class="se">\n\t</span><span class="s">"</span>  <span class="c1">// 将进程 0 主函数入口地址压入堆栈
+</span>        <span class="s">"ret</span><span class="se">\n\t</span><span class="s">"</span>  <span class="c1">// 弹出进程 0 的 ip 值到 eip 寄存器中
+</span>        <span class="s">"popl %%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">//将进程 0 对应的栈的栈底弹出到 ebp 寄存器中
+</span>        <span class="o">:</span>  <span class="c1">// 没有输出
+</span>        <span class="o">:</span>  <span class="s">"c"</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">),</span> <span class="s">"d"</span><span class="p">(</span><span class="n">task</span><span class="p">[</span><span class="n">pid</span><span class="p">].</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">)</span>
+    <span class="p">);</span>
+</code></pre>
+</div>
+
+<p>其中，asm volatile(); 括号中的就是内联汇编，如果你要读懂内联汇编的代码，你可能还需要一点汇编的基础知识，有关 Linux 中的 AT&amp;T 汇编，你可以参考这篇文章：<a href="https://www.ibm.com/developerworks/cn/linux/sdk/assemble/inline/">Linux 中 x86 的内联汇编</a>。</p>
+
+<p>这里我觉得需要对老师提供的代码做一个小的修正：</p>
+
+<pre><code class="language-assemble">pushl %1\n\t //将这句话删除了
+movl %1,%%ebp\n\t //在内联汇编的第一行中加上这句
+</code></pre>
+
+<p>因为，当初始化一个进程的栈时，首先第一步要做的就是指向栈底和栈顶的寄存器 ebp 和 esp，而 **push %1\n\t ** 这句代码并没有很好的体现这种意思。并且经过测试，这样的修改是对的，进程键的轮转也正常地实现了。</p>
+
+<p>有关代码的说明，都在上面的代码的注释中，但是这里还着说明一下下面这两行代码的含义：</p>
+
+<pre><code class="language-assemble"> pushl %0\n\t  // 讲进程 0 主函数入口地址压入堆栈
+ ret\n\t  // 弹出进程 0 的 ip 值到 eip 寄存器中
+</code></pre>
+
+<p>其中 pushl 语句的功能就是将进程初始时执行的第一条指令的地址(也就是函数 my_process 的地址)压入堆栈中，接着使用了 ret 指令将当前栈顶保存着的刚压入栈顶的 my_process 函数的首地址保存到 eip 寄存器中。这里补充一下 eip 寄存器的作用，它保存的是计算机中下一条执行指令的地址，也就是说，接下来程序就会从汇编指令 <strong>ret</strong> 跳转到函数 <strong>my_process()</strong> 去执行。</p>
+
+<h3 id="35-进入进程的主函数-my_process-运行">3.5 进入进程的主函数 my_process() 运行</h3>
+
+<p>当上一步中内联汇编程序中的 ret 指令执行完毕后，第 0 号进程就会跳转到 my_process() 函数中继续执行。其实这里的 my_process() 函数有点类似于我们平时最常见的 main 函数，它相当于我们自定进程的主函数。</p>
+
+<p>虽然我们最开始接触编程就是从 main 函数开始的，知道main 函数是整个程序执行的入口，但是我们可能对 main 函数是如何由操作系统进行加载运行的，其实事实上 main 函数并不是我们运行程序时那个进程的第一条指令的地址，进程需要初始化建立好 main 函数的运行环境，然后才跳转到 main 函数中开始执行 main 函数中的代码。</p>
+
+<p>Ok，有点扯远了，现在我们就来看看 my_process() 函数的源码：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">// 自定义进程所对应的主函数，类似于我们 C 语言中的 main 函数
+</span><span class="kt">void</span> <span class="nf">my_process</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">10000000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// 每执行 10000000 次来进行一次主动的进程调度
+</span>        <span class="p">{</span>
+            <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"this is process %d -</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">my_current_task</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+            <span class="c1">// 如果需要进行调度
+</span>            <span class="k">if</span> <span class="p">(</span><span class="n">my_need_sched</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">my_need_sched</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="n">my_schedule</span><span class="p">();</span>
+            <span class="p">}</span>
+            <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"this is process %d +</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">my_current_task</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>为了让我们的进程一直在运行，所以在 my_process() 中就包含了一个死循环，然后程序就在死循环中不停地在执行，并且在死循环中还添加一个判断语句，每执行 10000000 次循环，就判断是否需要进行进程调度，如果需要就跳转到 my_schedule() 函数（my_schedule() 函数在 my_interrupt.c 文件中实现）中进行进程的主动轮转调度。</p>
+
+<h3 id="36-进程调度--my_schedule">3.6 进程调度 – my_schedule()</h3>
+
+<p>my_schedule() 函数的主要功能就是切换进程执行，而进程间切换主要需要完成的工作就是保存进程的上下文环境，换句话说，就是先保存上一个进程的执行时相关寄存器的状态（例如 ebp,esp,eip等寄存器中内容），以便进程切换回来时能够从上一次执行的位置继续往下执行。具体函数代码实现如下所示：</p>
+
+<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">// 代码实现在 myinterrupt.c 文件中
+</span><span class="kt">void</span> <span class="nf">my_schedule</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">tPCB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span> <span class="c1">// 下一个需要调度的进程
+</span>    <span class="n">tPCB</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span> <span class="c1">// 调度前执行的进程
+</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">my_current_task</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">my_current_task</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"&gt;&gt;&gt; my_schedule &lt;&lt;&lt;</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="n">next</span> <span class="o">=</span> <span class="n">my_current_task</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="n">prev</span> <span class="o">=</span> <span class="n">my_current_task</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">my_current_task</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+        <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"&gt;&gt;&gt;switch %d to %d&lt;&lt;&lt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">prev</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span> <span class="n">next</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+        <span class="cm">/* switch to next process */</span>
+        <span class="k">asm</span> <span class="k">volatile</span> <span class="p">(</span>
+            <span class="s">"pushl %%ebp</span><span class="se">\n\t</span><span class="s">"</span>  <span class="c1">// 保存 prev 进程的栈底指针地址，并将其压入到 prev 栈中
+</span>            <span class="s">"movl %%esp, %0</span><span class="se">\n\t</span><span class="s">"</span>   <span class="c1">// 将 prev 进程中 栈顶指针 esp 保存到 prev 进程控制块中 thread.sp 数据成员中
+</span>            <span class="s">"movl %2, %%esp</span><span class="se">\n\t</span><span class="s">"</span>   <span class="c1">// 将 next 指向进程中的栈底指针保存到 esp 中
+</span>            <span class="s">"movl $1f,%1</span><span class="se">\n\t</span><span class="s">"</span>      <span class="c1">// 将 prev 指向进程下一条要执行的指令保存到进程控制块中
+</span>            <span class="s">"pushl %3</span><span class="se">\n\t</span><span class="s">"</span>         <span class="c1">// 将 next 指向进程的下一条指令入栈
+</span>            <span class="s">"ret</span><span class="se">\n\t</span><span class="s">"</span>              <span class="c1">// 将 next 进程需要执行的下一条指令弹出到 eip 寄存器中
+</span>            <span class="s">"1: </span><span class="se">\t</span><span class="s">"</span>
+            <span class="s">"popl %%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 弹出 next 进程栈订顶的值到 ebp 寄存器中
+</span>            <span class="o">:</span> <span class="s">"=m"</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span> <span class="s">"=m"</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">"m"</span><span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span> <span class="s">"m"</span><span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">next</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">my_current_task</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+        <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"&gt;&gt;&gt;switch %d to %d&lt;&lt;&lt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">prev</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span> <span class="n">next</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+        <span class="cm">/* switch to new process */</span>
+        <span class="k">asm</span> <span class="k">volatile</span> <span class="p">(</span>
+            <span class="s">"pushl %%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 将 prev 进程中栈的栈底指针保存到 prev 栈中
+</span>            <span class="s">"movl %%esp,%0</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 将 prev 进程中 栈顶指针 esp 保存到 prev 进程控制块中 thread.sp 数据成员中
+</span>            <span class="s">"movl %2,%%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 将 next 进程的栈底地址送到 ebp 寄存器中
+</span>            <span class="s">"movl %2,%%esp</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 将 next 进程的栈顶地址送到 esp 寄存器中
+</span>            <span class="s">"movl $1f,%1</span><span class="se">\n\t</span><span class="s">"</span>   <span class="c1">// 保存 prev 指向进程下一次执行时的指令地址，也就是标号为 1 处的地址
+</span>            <span class="s">"pushl %3</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 将 next 进程的入口地址压入到栈中
+</span>            <span class="s">"ret</span><span class="se">\n\t</span><span class="s">"</span> <span class="c1">// 将 next 进程的下一条执行的指令弹出，然后从刚弹出的指令地址开始执行
+</span>            <span class="o">:</span> <span class="s">"=m"</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span> <span class="s">"=m"</span><span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">"m"</span><span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span> <span class="s">"m"</span><span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>下面我们就详细来分析下这个函数的实现：</p>
+
+<ul>
+  <li>
+    <p>step 1：首先函数中先定义了两个进程控制块的指针<strong>next</strong> 和 <strong>prev</strong> ，分别用来指向下一个轮转到的进程，以及轮转前执行的进程。</p>
+  </li>
+  <li>
+    <p>step 2：接下来，我们就得对分两种情况进行讨论了，第一种情况是进程链表中下一个轮转到的进程还从未运行过，第二种情况是下一个轮转到的集成已经在运行了。这两种情况的主要区别就在于第一种情况中在内联汇编代码中需要首先初始化进程中的栈，第二种情况中每个进程的栈都已经初始化好了，只需要简单地切换栈即可。</p>
+  </li>
+  <li>
+    <p>step 3: 有关两种情况所执行的内联汇编代码的含义，我都在上面的代码中给出了详细的注释。</p>
+  </li>
+</ul>
+
+<h2 id="4-实验结果">4. 实验结果</h2>
+
+<p>最后，我们将上面的代码重新 “make” 编译之后，然后使用以下命令启动 qemu 来运行我们的内核程序：</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>qemu -kernel arch/x86/boot/bzImage
+</code></pre>
+</div>
+
+<p>实验结果截图如下所示：</p>
+
+<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/myKernel.png" alt="实验结果" /></p>
+
+<h2 id="5-总结">5. 总结</h2>
+
+<p>写到最后，我觉得对于这样一个简单的时间片轮转多道程序内核代码，我也是花了好几天才真正的理解清楚，而且当我在写这篇文章的时候，会发现原来自己感觉想清楚的地方事实上并没有完全地弄懂，于是又一遍一遍地看代码，画个栈的草图来模拟整个执行的过程，然后才慢慢地理解地更加深一层。</p>
+
+<p>如果大家对这个过程还不是特别清楚，我强烈地推荐大家多画草图，把每个进程中栈的变化给弄清楚，如果光靠脑子想想是很难把这些抽象的东西给理得很顺。</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/内核">内核</a>,&nbsp;<a href="/tag/调度">调度</a>,&nbsp;<a href="/tag/Linux">Linux</a>,&nbsp;<a href="/tag/操作系统">操作系统</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=%E3%80%8ALinux+%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90%E3%80%8B%E5%AE%8C%E6%88%90%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC%E5%A4%9A%E9%81%93%E7%A8%8B%E5%BA%8F%E5%86%85%E6%A0%B8%E4%BB%A3%E7%A0%81&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F03%2F19%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%2588%2586%25E6%259E%2590-%25E7%25AE%2580%25E5%258D%2595%25E7%259A%2584%25E6%2597%25B6%25E9%2597%25B4%25E7%2589%2587%25E8%25BD%25AE%25E8%25BD%25AC.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=%E3%80%8ALinux+%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90%E3%80%8B%E5%AE%8C%E6%88%90%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC%E5%A4%9A%E9%81%93%E7%A8%8B%E5%BA%8F%E5%86%85%E6%A0%B8%E4%BB%A3%E7%A0%81&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F03%2F19%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%2588%2586%25E6%259E%2590-%25E7%25AE%2580%25E5%258D%2595%25E7%259A%2584%25E6%2597%25B6%25E9%2597%25B4%25E7%2589%2587%25E8%25BD%25AE%25E8%25BD%25AC.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F03%2F19%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%2588%2586%25E6%259E%2590-%25E7%25AE%2580%25E5%258D%2595%25E7%259A%2584%25E6%2597%25B6%25E9%2597%25B4%25E7%2589%2587%25E8%25BD%25AE%25E8%25BD%25AC.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=%E3%80%8ALinux+%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90%E3%80%8B%E5%AE%8C%E6%88%90%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC%E5%A4%9A%E9%81%93%E7%A8%8B%E5%BA%8F%E5%86%85%E6%A0%B8%E4%BB%A3%E7%A0%81&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F03%2F19%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%2588%2586%25E6%259E%2590-%25E7%25AE%2580%25E5%258D%2595%25E7%259A%2584%25E6%2597%25B6%25E9%2597%25B4%25E7%2589%2587%25E8%25BD%25AE%25E8%25BD%25AC.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Sublime-Text-3-插件安装</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/10/%E7%A1%AC%E7%9B%98%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">
+					<span class="page-number">硬盘--你所不知道的事</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E5%86%85%E6%A0%B8/2016/03/19/Linux-%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90-%E7%AE%80%E5%8D%95%E7%9A%84%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC.html',
+    'title': '《Linux 内核分析》完成一个简单的时间片轮转多道程序内核代码'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

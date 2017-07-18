@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Fly Higher's Blog</title>
+  <meta name="description" content="Do one thing and do it well.
+">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Do one thing and do it well.
+" />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Fly Higher's Blog" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Fly Higher's Blog">
+  <meta name="twitter:description" content="Do one thing and do it well.
+">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="home">
+
+<div class="site-header-container has-cover" style="background-image: url(/assets/rainbow_comp.jpg);">
+  <div class="scrim has-cover">
+    <header class="site-header">
+      <h1 class="title">Fly Higher's Blog</h1>
+      <p class="subtitle">Do one thing and do it well</p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+<ul class="post-list">
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html">Linux I/O 模型详解</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>Linux I/O 模型 在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词： Synchronous I/O Asynchronous I/O Blocking I/O Non-blocking I/O 首先，这里讲的 I/O 指的是用户空间的 I/O，并且主要侧重于网络编程中的...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">July 10, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/linux">Linux</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">Linux 内核加载启动过程分析</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>本文是基于 Linux Kernel 4.4.49 版本内核源码中的 x86 32 位体系结构进行分析。 BIOS 传统模式下的 X86 PC 启动过程 什么是 BIOS？ 简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">June 26, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/内核">内核</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html">ramfs, tmpfs, rootfs, initramfs的区别</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>什么是 ramfs？ Ramfs 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。 ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，而不存放在磁盘中，如果计算机掉电关闭，那么 ramfs 文件系统中所有文件也就都没有了。 当普通磁盘中的文件被操作系统加载到内存中并分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">June 14, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/内核">内核</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">Android HAL 层原理分析</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>Android HAL 简介 Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。 为什么要添加一个 HAL 层？ Android 在用户空间中新建一个的 HAL...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">March 25, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/android">Android</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">Android NDK  vs AOSP Build System</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>前言 最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 Android NDK 和 AOSP(Android Open Source Project) Build System 这两个东西，但是由于他们两者都可以将 C/C++ 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所以，痛定思痛，不想再被这种似四而非的感觉折磨了，今天就抽空写下这篇文章来捋清楚两者之间关系。 Android NDK Android NDK...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">December 17, 2016</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/android">Android</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  
+</ul>
+
+<nav class="pagination" role="navigation">
+	<p>
+    
+		<span class="fa-stack fa-lg">
+      <i class="fa fa-square fa-stack-2x"></i>
+      <i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+    </span>
+		
+		<span class="page-number">Page 1 of 7</span>
+		
+		<a class="newer-posts" href="/page2">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-square fa-stack-2x"></i>
+        <i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+		
+	</p>
+</nav>
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/',
+    'title': 'Fly Higher's Blog'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

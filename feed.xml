@@ -1,0 +1,2164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fly Higher's Blog</title>
+    <description>Do one thing and do it well.
+</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 18 Jul 2017 22:29:06 +0800</pubDate>
+    <lastBuildDate>Tue, 18 Jul 2017 22:29:06 +0800</lastBuildDate>
+    <generator>Jekyll v3.5.0</generator>
+    
+      <item>
+        <title>Linux I/O 模型详解</title>
+        <description>&lt;h1 id=&quot;linux-io-模型&quot;&gt;Linux I/O 模型&lt;/h1&gt;
+&lt;p&gt;在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Synchronous I/O&lt;/li&gt;
+  &lt;li&gt;Asynchronous I/O&lt;/li&gt;
+  &lt;li&gt;Blocking I/O&lt;/li&gt;
+  &lt;li&gt;Non-blocking I/O&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;首先，这里讲的 &lt;strong&gt;I/O&lt;/strong&gt; 指的是用户空间的 I/O，并且主要侧重于网络编程中的 I/O 操作，而用户空间的 I/O 操作主要分为两个阶段：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;等待数据准备就绪（waiting for the data to be ready）&lt;/li&gt;
+  &lt;li&gt;将数据从内核拷贝到进程中（copying the data from kernel to the process）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;正是因为这两个阶段，Linux 系统中的 I/O 模型主要可以分为下面五种：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Blocking I/O&lt;/li&gt;
+  &lt;li&gt;Non-blocking I/O&lt;/li&gt;
+  &lt;li&gt;I/O multiplexing&lt;/li&gt;
+  &lt;li&gt;Asynchronous I/O&lt;/li&gt;
+  &lt;li&gt;Signal driven I/O&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;blocking-io&quot;&gt;Blocking I/O&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003778419199.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在 Linux 中所有的 socket 文件描述符默认都是 blocking 的，一个典型的网络 socket 文件描述符的 read 操作的流程如上图所示。&lt;/p&gt;
+
+&lt;p&gt;当用户进程调用 read 这个系统调用，kernel 就开始了 &lt;strong&gt;I/O&lt;/strong&gt; 的第一个阶段：准备数据（对于网络IO来说，很多时候数据在一开始还没有到达。比如，还没有收到一个完整的UDP包。这个时候 kernel 就要等待足够的数据到来），这个过程需要等待，也就是说&lt;strong&gt;数据被拷贝到操作系统内核的缓冲区&lt;/strong&gt;中是需要一个过程的。&lt;/p&gt;
+
+&lt;p&gt;而在用户进程这边，整个进程一直处于阻塞状态。当 kernel 中数据准备好之后，系统就会将数据从 kernel 中拷贝到用户空间进程的缓冲区中，然后 kernel 返回结果，用户进程才解除 blocking 的状态，重新运行起来。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;blocking I/O 的特点是用户进程在 I/O 操作的两个阶段都被 block 了。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;non-blocking-io&quot;&gt;Non-blocking I/O&lt;/h1&gt;
+&lt;p&gt;Linux 系统中可以在调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数打开 socket 文件时或者调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;fcntl&lt;/code&gt; 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003788703867.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在 non-blocking I/O 的情境下，当用户进程调用 read 系统调用函数时，如果 kernel 中的数据没有准备好，那么系统并不会 block 用户进程，而是立即返回一个 error。&lt;/p&gt;
+
+&lt;p&gt;从用户进程角度看 ，当它发起一个 read 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 error 时，它就知道数据还没有准备好，于是它可以再次发送read操作。&lt;/p&gt;
+
+&lt;p&gt;一旦 kernel 中的数据准备好之后，并且再次收到了用户进程发送的 read 系统调用时，它就马上将准备好的数据拷贝到用户空间的缓冲区中。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;non-blocking I/O 的特点就是用户进程需要不断地询问 kernel 数据是否准备好了。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;io-multiplexing&quot;&gt;I/O Multiplexing&lt;/h1&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 就是我们经常说的 &lt;strong&gt;select&lt;/strong&gt;、&lt;strong&gt;poll&lt;/strong&gt;和&lt;strong&gt;epoll&lt;/strong&gt;，有些地方也称这种 I/O 方式为 &lt;code class=&quot;highlighter-rouge&quot;&gt;event driven I/O&lt;/code&gt;。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003804947449.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;I/O multiplexing 的特点是通过一种机制让一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入可读的就绪状态，select/poll/epoll函数就可以立即返回。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;这个图和 &lt;code class=&quot;highlighter-rouge&quot;&gt;blocking I/O&lt;/code&gt; 的图其实并没有太大的不同，事实上，开销还会更大一点。因为这里需要使用两个 system call (select 和 read)，而 blocking I/O 只调用了一个system call (read)。但是，&lt;strong&gt;用 select 的优势在于它可以同时处理多个connection&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;所以，如果处理的连接数不是很高的话，使用 &lt;strong&gt;select/epoll&lt;/strong&gt; 的 web server 不一定比使用 &lt;strong&gt;multi-threading + blocking I/O&lt;/strong&gt; 的 web server 性能更好，可能延迟还更大。&lt;strong&gt;select/epoll&lt;/strong&gt;的优势并不是对于单个连接能处理得更快，而是在于能处理更多的连接。&lt;/p&gt;
+
+&lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。&lt;/p&gt;
+
+&lt;h1 id=&quot;signal-driven-io&quot;&gt;Signal Driven I/O&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003812004927.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。&lt;/p&gt;
+
+&lt;p&gt;但是这种 I/O 模型存在一个非常重大的&lt;strong&gt;缺陷问题&lt;/strong&gt;：&lt;code class=&quot;highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 这种信号对于每个进程来说只有一个！如果使该信号对进程中的两个描述符（这两个文件描述符都等待着 I/O 操作）都起作用，那么进程在接到此信号后就无法判别是哪一个文件描述符准备好了。所以 &lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 模型在现实中用的非常少。&lt;/p&gt;
+
+&lt;h1 id=&quot;asynchronous-io&quot;&gt;Asynchronous I/O&lt;/h1&gt;
+&lt;p&gt;Linux 系统中 Asynchronous I/O 的操作流程如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003826926363.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;用户进程通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;aio_read()&lt;/code&gt; 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 &lt;strong&gt;asynchronous read&lt;/strong&gt;  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Asynchronous I/O 操作最大的特点就是整个 I/O 操作流程中，用户进程始终没有被 block。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在 POSIX 异步 I/O 中，会有一个 &lt;strong&gt;struct aiocb&lt;/strong&gt; 结构体来描述异步 I/O 操作，这个结构体的定义如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aiocb&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;aio_fildes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* file descriptor */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;off_t&lt;/span&gt;           &lt;span class=&quot;n&quot;&gt;aio_offset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* file offset for I/O */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;aio_buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* buffer for I/O */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;          &lt;span class=&quot;n&quot;&gt;aio_nbytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* number of bytes to transfer */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;aio_reqprio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* priority */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sigevent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aio_sigevent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* signal infomation */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;aio_lio_opcode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* operation for list I/O */&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这个 POSIX 异步 I/O 控制块结构体描述了，异步 I/O 操作对应的文件描述符，用户空间的进程存放读/写的数据的缓冲区，以及异步 I/O 操作完成之后，对接收到信号的处理结构体等等。&lt;/p&gt;
+
+&lt;h1 id=&quot;synchronous-io-和-asynchronous-io-的区别&quot;&gt;Synchronous I/O 和 Asynchronous I/O 的区别&lt;/h1&gt;
+
+&lt;p&gt;在说明 &lt;strong&gt;Synchronous I/O&lt;/strong&gt; 和 &lt;strong&gt;Asynchronous I/O&lt;/strong&gt; 的区别之前，需要先给出两者的定义，POSIX 中两者的定义是这样子的：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A synchronous I/O operation causes the requesting process to be blocked until that I/O operation completes;&lt;/li&gt;
+  &lt;li&gt;An asynchronous I/O operation does not cause the requesting process to be blocked;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;两者的区别就在于 Synchronous I/O 做 &lt;code class=&quot;highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 的时候会将用户空间的进程阻塞。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;按照这个定义，之前所说的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Blocking I/O&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;IO multiplexing&lt;/code&gt;都属于 &lt;strong&gt;Synchronous I/O&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;有人会说，&lt;code class=&quot;highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 并没有被block啊。这里有个非常“狡猾”的地方，定义中所指的 &lt;code class=&quot;highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 是指&lt;strong&gt;真实的I/O操作&lt;/strong&gt;，就是例子中的 read 这个 system call。&lt;code class=&quot;highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 在执行 read 这个system call 的时候，如果 kernel 的数据没有准备好，这时候不会 block 进程。但是，当kernel 中数据准备好的时候，read 会将数据从kernel 拷贝到用户空间的缓冲区中，这个时候进程是被 block 的。&lt;/p&gt;
+
+&lt;p&gt;而&lt;strong&gt;Asynchronous I/O&lt;/strong&gt;则不一样，当进程发起 &lt;strong&gt;I/O&lt;/strong&gt; 操作之后，就直接返回再也不理睬了，直到 kernel 发送一个信号，告诉进程说 I/O完成。在这整个过程中，&lt;strong&gt;进程完全没有被 block&lt;/strong&gt;。&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 11 Jul 2017 03:55:24 +0800</pubDate>
+        <link>http://localhost:4000/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html</link>
+        <guid isPermaLink="true">http://localhost:4000/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html</guid>
+        
+        <category>Linux</category>
+        
+        <category>Unix</category>
+        
+        <category>I/O</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>Linux 内核加载启动过程分析</title>
+        <description>&lt;p&gt;本文是基于 &lt;code class=&quot;highlighter-rouge&quot;&gt;Linux Kernel 4.4.49&lt;/code&gt; 版本内核源码中的 x86 32 位体系结构进行分析。&lt;/p&gt;
+
+&lt;h1 id=&quot;bios-传统模式下的-x86-pc-启动过程&quot;&gt;BIOS 传统模式下的 X86 PC 启动过程&lt;/h1&gt;
+
+&lt;h2 id=&quot;什么是-bios&quot;&gt;什么是 BIOS？&lt;/h2&gt;
+&lt;p&gt;简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在 PC 设备中的只读存储器（ROM）中，主要完成检测内存、显卡等一系列硬件设备和建立中断向量表（IVT，Interrupt Vector Table）的工作。&lt;/p&gt;
+
+&lt;p&gt;ROM 其实也一块内存，它会被映射到 CPU 实模式下所能访问的 1MB 物理内存空间的顶部，即地址 &lt;code class=&quot;highlighter-rouge&quot;&gt;0xF000:0000 ~ 0xF000:FFFF&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;在这里补充一下， X86 处理器有两种运行模式一种是实模式，另外一种是保护模式，它们两者之间最主要的区别就是：实模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分段&lt;/strong&gt;方式（也就是&lt;strong&gt;段基址：段内便宜&lt;/strong&gt;），生成的是可以直接访问物理内存的&lt;strong&gt;物理地址&lt;/strong&gt;，而保护模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分页&lt;/strong&gt;方式，生成的是&lt;strong&gt;虚拟地址&lt;/strong&gt;，不能直接访问物理内存，需要通过 &lt;strong&gt;MMU&lt;/strong&gt; 硬件将虚拟地址转换为物理地址后才能访问物理内存。&lt;/p&gt;
+
+&lt;p&gt;X86 实模式下物理内存映射空间结构如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14983994852650.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;bios-启动过程&quot;&gt;BIOS 启动过程&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;当 X86 架构的 PC 在开机上电的一瞬间，CPU 中的 &lt;strong&gt;CS&lt;/strong&gt; 和 &lt;strong&gt;IP&lt;/strong&gt; 寄存器就被设置成了 &lt;code class=&quot;highlighter-rouge&quot;&gt;0xF000:FFF0&lt;/code&gt;（这个地址就是 BIOS 代码所在内存区域），这个地址指向了 CPU 执行第一条指令的位置。而在这个地址里只存放了一条非常简单的跳转指令 &lt;code class=&quot;highlighter-rouge&quot;&gt;jmp far f000:e05b&lt;/code&gt;，然后程序就跳转到了 BIOS 代码中的另外一个地址 &lt;code class=&quot;highlighter-rouge&quot;&gt;f000:e05b&lt;/code&gt; 处开始接着往下执行。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;接下来，BIOS 就马不停蹄地检测内存、显卡等外设信息，当硬件检测通过之后，就在内存的物理内存的起始位置 &lt;code class=&quot;highlighter-rouge&quot;&gt;0x000 ~ 0x3FF&lt;/code&gt; （刚好 1KB 的内存空间)建立中断向量表（IVT），如上图物理内存最底部的所示。&lt;/p&gt;
+
+    &lt;p&gt;x86 中断向量表中有 256 个中断向量，每个中断向量用 4 个字节来表示（CS 用两个字节表示，IP 也用两个字节表示），通过中断向量中保存的 &lt;code class=&quot;highlighter-rouge&quot;&gt;CS:IP&lt;/code&gt; 地址就可以跳转到对应的中断处理程序去处理中断请求信号。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;最后，BIOS 将&lt;strong&gt;启动磁盘&lt;/strong&gt;中的第 1 个扇区（MBR 扇区，Master Boot Record）的 512 个字节的数据加载到物理内存地址为 &lt;code class=&quot;highlighter-rouge&quot;&gt;0x7C00 ~ 0x7E00&lt;/code&gt; 的区域，然后程序就跳转到 &lt;code class=&quot;highlighter-rouge&quot;&gt;0x7C00&lt;/code&gt; 处开始执行，至此，BIOS 就完成了所有的工作，将控制权转交到了 MBR 中的代码。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;mbr-扇区&quot;&gt;MBR 扇区&lt;/h2&gt;
+&lt;p&gt;MBR（Master Boot Record）扇区是启动磁盘中的第 1 个扇区，它主要由三部分组成：第一部分是一段引导程序，主要用来加载启动内核所需 Bootloader 程序；第二部分是当前启动磁盘的分区表；第三部分是标识 MBR 扇区的魔数 &lt;strong&gt;0x55&lt;/strong&gt; 和 &lt;strong&gt;0xAA&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;MBR 分区组成结构如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984029056904.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;bootloader-加载程序&quot;&gt;Bootloader 加载程序&lt;/h2&gt;
+&lt;p&gt;Bootloader 是一段用来将 Linux Kernel 镜像文件加载到物理内存中指定地址的程序，这里所指的 Bootloader 是广义上概念，其实它还可以细分成两个独立的 bootloader：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;第一个 bootloader&lt;/strong&gt;：由 MBR 扇区中的前 446 个字节构成，作用是找到第二个 bootloader 并将其加载到物理内存中，并跳转到第二个 bootloader 中执行。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;第二个 bootloader&lt;/strong&gt;：这个 bootloader 位于启动盘中 MBR 扇区之后，根据 bootloader 代码的大小可能会占用一个或多个磁盘分区，它的主要作用就是找到磁盘中存放的 Linux Kernel 镜像文件以及 initrd 文件（如果在内核命令行参数中指定了的话），并将其加载到物理内存当中。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;注：initrd 是 initialized ram disk 的意思。主要用于加载硬件驱动模块，辅助内核的启动，挂载真正的根文件系统。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;上述这两个 bootloader 程序合在一起就构成了我们在 Linux 系统中经常用到的两个 Bootloader 程序，LILO（Linux Loader）或者是 GRUB（Grand Unified Boot Loader）。&lt;/p&gt;
+
+&lt;p&gt;GRUB 是我们现在 Linux 发行版系统中最常用到的 Bootloader，它的&lt;strong&gt;优势在于它可以识别 Linux 文件系统&lt;/strong&gt;，例如 ext3，ext4 格式的文件系统。不像 LILO 只能从原始的磁盘扇区中加载 Linux Kernel 镜像，GRUB 可以从 ext3 或者 ext4 格式文件系统的磁盘分区中加载 Linux Kernel 镜像。&lt;/p&gt;
+
+&lt;p&gt;总结一下 Bootloader 主要完成了下面几项工作：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;从 MBR 扇区中的第一个 bootloader 程序跳转实际执行内核加载操作的第二个 bootloder 程序。&lt;/li&gt;
+  &lt;li&gt;第二个 bootloder 程序查找 Linux Kernel 镜像在启动盘中的位置（要么存放磁盘中的固定位置，要么通过文件系统去解析）。&lt;/li&gt;
+  &lt;li&gt;将找到的 Linux Kernel 镜像和 initrd 文件加载到物理内存中的指定地址处，并建立运行内核的所需的基本环境。&lt;/li&gt;
+  &lt;li&gt;最后，Bootloader 就将控制权转交到 Linux 内核，然后由内核开始执行。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;x86 系统中 Bootloader 加载内核启动的过程，如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984058448893.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;linux-kernel-镜像&quot;&gt;Linux Kernel 镜像&lt;/h1&gt;
+
+&lt;h2 id=&quot;linux-kernel-镜像格式&quot;&gt;Linux Kernel 镜像格式&lt;/h2&gt;
+&lt;p&gt;Linux 内核有多种格式的镜像，例如 vmlinux、Image、zImage、bzImage、uImage、xipImage、bootpImage 等。&lt;/p&gt;
+
+&lt;h3 id=&quot;vmlinux&quot;&gt;vmlinux&lt;/h3&gt;
+&lt;p&gt;vmlinux 是可引导的、未压缩、可压缩的内核镜像，vm 代表&lt;strong&gt;Virtual Memory&lt;/strong&gt;，Linux 支持虚拟内存，因此得名 vm。它是由用户对内核源码编译得到，实质是 ELF 格式的文件，也就是说vmlinux 是编译出来的最原始的内核文件，未被压缩过。&lt;/p&gt;
+
+&lt;h3 id=&quot;image&quot;&gt;Image&lt;/h3&gt;
+&lt;p&gt;Image是经过 &lt;strong&gt;objcopy&lt;/strong&gt; 处理的只包含二进制数据的内核代码，它已经不是 ELF 格式了，但这种格式的内核镜像还没有经过压缩。&lt;/p&gt;
+
+&lt;p&gt;objcopy 工具的作用是拷贝一个目标文件的内容到另一个目标文件中，也就是说，可以将一种格式的目标文件转换成另一种格式的目标文件。通过使用 binary 作为输出目标(-o binary)，可产生一个原始的二进制文件，实质上是将所有的符号和重定位信息都将被抛弃，只剩下二进制数据。&lt;/p&gt;
+
+&lt;h3 id=&quot;zimage&quot;&gt;zImage&lt;/h3&gt;
+&lt;p&gt;zImage 是 ARM Linux 常用的一种压缩镜像文件，它是由vmlinux 加上&lt;strong&gt;解压代码&lt;/strong&gt;经 gzip 压缩而成，命令格式是 &lt;code class=&quot;highlighter-rouge&quot;&gt;make zImage&lt;/code&gt;，这种格式的 Linux 内核镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
+
+&lt;h3 id=&quot;bzimage&quot;&gt;bzImage&lt;/h3&gt;
+&lt;p&gt;bzImage 不是用 bzip2 压缩的，&lt;strong&gt;bz 表示 big zImage&lt;/strong&gt;,其格式与 zImage 类似，但采用了不同的压缩算法，注意，bzImage 的压缩率更高是压缩的内核映像。&lt;/p&gt;
+
+&lt;p&gt;zImage vs bzImage：它们不仅是一个压缩文件，而且在这两个文件的开头部分内嵌有解压缩代码。两者的&lt;strong&gt;不同之处&lt;/strong&gt;在于，老的&lt;strong&gt;zImage 解压缩内核到低端内存&lt;/strong&gt;(第一个 640K)，&lt;strong&gt;bzImage解压缩内核到高端内存(1M以上)&lt;/strong&gt;。如果内核比较小，那么可以采用 zImage 或 bzImage 之一，两种方式引导的系统运行时是相同的。大的内核采用 bzImage，不能采用 zImage。&lt;/p&gt;
+
+&lt;h3 id=&quot;uimage&quot;&gt;uImage&lt;/h3&gt;
+&lt;p&gt;uImage 是 uboot 专用的镜像文件，它是在 zImage 之前加上一个长度为&lt;strong&gt;0x40&lt;/strong&gt;的头信息(tag)，在头信息内说明了该镜像文件的类型、加载 位置、生成时间、大小等信息。换句话说，若直接从 uImage 的0x40位置开始执行，则 zImage 和 uImage 没有任何区别，命令格式是 &lt;code class=&quot;highlighter-rouge&quot;&gt;make uImage&lt;/code&gt;，这种格式的 Linux 镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
+
+&lt;h3 id=&quot;xipimage&quot;&gt;xipImage&lt;/h3&gt;
+&lt;p&gt;这种格式的 Linux 镜像文件多存放在 NOR Flash 上，且运行时不需要拷贝到内存 SDRAM 中，可以直接在 NOR Flash 中运行。&lt;/p&gt;
+
+&lt;p&gt;有关 NOR Flash 和 NAND Flash 的概念和区别可以参靠下面这篇文章：&lt;a href=&quot;http://blog.csdn.net/shuaishuai80/article/details/6202205&quot;&gt;NorFlash和NandFlash区别&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;linux-kernel-镜像生成过程&quot;&gt;Linux Kernel 镜像生成过程&lt;/h2&gt;
+&lt;p&gt;一个可以被&lt;strong&gt;加载启动&lt;/strong&gt;的 Linux 内核镜像除了包含上面介绍的最基本的压缩或者未被压缩的编译好的 Linux Kernel 镜像目标文件之外，还包含一个文件头部分和末尾的CRC校验码部分，它的结构如下图所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/Linux-kernel-boot-image.png&quot; alt=&quot;Linux-kernel-boot-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：如上图所示的内核镜像中，&lt;strong&gt;boot/setup.bin&lt;/strong&gt; 是实模式下执行的代码，&lt;strong&gt;boo/vmlinux.bin&lt;/strong&gt; 则是保护模式下执行的代码。&lt;/p&gt;
+
+&lt;p&gt;例如，在内核从 &lt;strong&gt;vmlinux&lt;/strong&gt; 文件编译生成 &lt;strong&gt;bzImage&lt;/strong&gt; 内核镜像文件的过程如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;MKPIGGY arch/x86/boot/compressed/piggy.S
+  AS      arch/x86/boot/compressed/piggy.o &lt;span class=&quot;c&quot;&gt;# 编译 arch/x86/boot/compressed/piggy.S&lt;/span&gt;
+  LD      arch/x86/boot/compressed/vmlinux &lt;span class=&quot;c&quot;&gt;# 将 piggy.o 和 vmlinux 链接在一起生成 vmlinux.bin&lt;/span&gt;
+  ZOFFSET arch/x86/boot/zoffset.h
+  OBJCOPY arch/x86/boot/vmlinux.bin &lt;span class=&quot;c&quot;&gt;# 使用 objcopy 命令去除 vmlinux 中的符号表信息&lt;/span&gt;
+  AS      arch/x86/boot/header.o &lt;span class=&quot;c&quot;&gt;# 汇编 arch/x86/boot/header.S 文件&lt;/span&gt;
+  LD      arch/x86/boot/setup.elf &lt;span class=&quot;c&quot;&gt;# 链接 setup.elf 文件和 header.o 文件生成 setup.bin 文件&lt;/span&gt;
+  OBJCOPY arch/x86/boot/setup.bin
+  BUILD   arch/x86/boot/bzImage &lt;span class=&quot;c&quot;&gt;# 最后将 vmlinux.bin 和 setup.bin 文件链接到一起生成 bzImage 内核镜像文件&lt;/span&gt;
+Setup is 15612 bytes &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;padded to 15872 bytes&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.
+System is 6254 kB
+CRC 88b350d1 &lt;span class=&quot;c&quot;&gt;#生成 CRC 校验码，添加到bzImage 内核镜像的末尾&lt;/span&gt;
+Kernel: arch/x86/boot/bzImage is ready  &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;#1)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;整个从 vmlinux 内核镜像文件生成一个可被加载启动的内核镜像文件的过程可以用下面这张图来描述：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984462874879.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;有关 x86 架构 Linux Kernel 启动相关的具体细节可以查看内核源码中的文档：&lt;a href=&quot;https://www.kernel.org/doc/Documentation/x86/boot.txt&quot;&gt;THE LINUX/x86 BOOT PROTOCOL&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;linux-kernel-加载过程&quot;&gt;Linux Kernel 加载过程&lt;/h2&gt;
+
+&lt;p&gt;Bootloader 将内核镜像加载到物理内存之后，内存的布局如下所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984488084415.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;整个Linux Kernel 的加载过程就是对 Linux Kernel 镜像分阶段加载，然后在实模式中进行一些基本硬件的设置，建立页表等操作之后，跳转到保护模式下的内核入口开始执行。&lt;/p&gt;
+
+&lt;h2 id=&quot;实模式下内核加载过程&quot;&gt;实模式下内核加载过程&lt;/h2&gt;
+&lt;p&gt;Bootloader 在找到内核镜像之后，第一步做的工作就是将内核镜像文件中的起始第一部分 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 加载到 &lt;strong&gt;0x7c00&lt;/strong&gt; 地址之上的物理内存中，然后跳转到 setup.bin 文件中的入口地址开始执行，注意这部分的代码是在&lt;strong&gt;实模式&lt;/strong&gt;下运行的。&lt;/p&gt;
+
+&lt;p&gt;如在 &lt;strong&gt;Linux Kernel 镜像生成过程&lt;/strong&gt; 小节中可启动的内核镜像图所示，boot/setup.bin 文件是由 &lt;strong&gt;boot sector&lt;/strong&gt;（注意这个 boot sector 和 MBR 扇区是不一样的，是内核中遗留下来的一块地方，现在基本不怎么使用这块地方了，可能在其他体系架构的内核镜像中会使用这一部分来存储一些参数） 和 &lt;strong&gt;setup 代码&lt;/strong&gt; 组成，其中 boot sector 占用了 512 字节的空间。&lt;/p&gt;
+
+&lt;p&gt;实模式设置（setup）阶段主要完成一些&lt;strong&gt;体系结构相关的硬件初始化工作&lt;/strong&gt;，涉及的文件有 &lt;em&gt;arch/x86/boot/header.S&lt;/em&gt;、链接脚本&lt;em&gt;setup.ld&lt;/em&gt;、&lt;em&gt;arch/x86/boot/main.c&lt;/em&gt;。header.S 第一部分定义了 .bstext、.bsdata、.header 这 3 个节，共同构成了vmlinuz 的第一个512字节(即引导扇区的内容)。常量 BOOTSEG 和SYSSEG 定义了引导扇区和内核的载入的地址。&lt;/p&gt;
+
+&lt;p&gt;header.S 文件中的部分代码如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;BOOTSEG     = 0x07C0        /* original address of boot-sector */
+SYSSEG      = 0x1000        /* historical load address &amp;gt;&amp;gt; 4 */
+
+......
+
+    .code16
+    .section &quot;.bstext&quot;, &quot;ax&quot; /* .bstext 小节 */
+
+    .global bootsect_start
+bootsect_start:
+#ifdef CONFIG_EFI_STUB
+    # &quot;MZ&quot;, MS-DOS header
+    .byte 0x4d
+    .byte 0x5a
+#endif
+
+    # Normalize the start address
+    ljmp    $BOOTSEG, $start2
+
+start2:
+    movw    %cs, %ax
+    movw    %ax, %ds
+    movw    %ax, %es
+    movw    %ax, %ss
+    xorw    %sp, %sp
+    sti
+    cld
+
+    movw    $bugger_off_msg, %si
+    
+......
+
+.section &quot;.bsdata&quot;, &quot;a&quot; /* .bsdata 小节 */
+bugger_off_msg:
+    .ascii  &quot;Use a boot loader.\r\n&quot;
+    .ascii  &quot;\n&quot;
+    .ascii  &quot;Remove disk and press any key to reboot...\r\n&quot;
+    .byte   0
+    
+......
+
+# Kernel attributes; used by setup.  This is part 1 of the
+    # header, from the old boot sector.
+
+    .section &quot;.header&quot;, &quot;a&quot; /* .header 小节 */
+    .globl  sentinel
+sentinel:   .byte 0xff, 0xff        /* Used to detect broken loaders */
+
+    .globl  hdr
+hdr:
+setup_sects:    .byte 0         /* Filled in by build.c */
+root_flags: .word ROOT_RDONLY
+syssize:    .long 0         /* Filled in by build.c */
+ram_size:   .word 0         /* Obsolete */
+vid_mode:   .word SVGA_MODE
+root_dev:   .word 0         /* Filled in by build.c */
+boot_flag:  .word 0xAA55
+
+/*---------------------512 字节偏移处-----------------------------*/
+
+/* _start 位置是内核装载时实模式执行代码的入口地址
+    这一点我们可以从 setup.ld 脚本文件中的 ENTRY(_start) 
+    得知
+ */
+/* 从 _start 开始真正的进入实模式开始执行 setup 代码 */
+# offset 512, entry point
+
+    .globl  _start
+_start:
+        # Explicitly enter this as bytes, or the assembler
+        # tries to generate a 3-byte jump here, which causes
+        # everything else to push off to the wrong offset.
+        .byte   0xeb        # short (2-byte) jump
+        .byte   start_of_setup-1f
+
+......
+
+# Zero the bss
+    movw    $__bss_start, %di
+    movw    $_end+3, %cx
+    xorl    %eax, %eax
+    subw    %di, %cx
+    shrw    $2, %cx
+    rep; stosl
+
+# Jump to C code (should not return)
+    calll   main
+
+# Setup corrupt somehow...
+setup_bad:
+    movl    $setup_corrupt, %eax
+    calll   puts
+    # Fall through...
+
+    .globl  die
+    .type   die, @function
+die:
+    hlt
+    jmp die
+
+    .size   die, .-die
+
+    .section &quot;.initdata&quot;, &quot;a&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;setup.ld 链接脚本&lt;/strong&gt;的工作就是将 header.S 中的各个小节按照 ELF 可执行文件格式链接在一起，最终生成 &lt;strong&gt;boot/setup.bin&lt;/strong&gt;  文件，setup.ld 文件中的部分内容如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/*
+ * setup.ld
+ *
+ * Linker script for the i386 setup code
+ */
+OUTPUT_FORMAT(&quot;elf32-i386&quot;, &quot;elf32-i386&quot;, &quot;elf32-i386&quot;)
+OUTPUT_ARCH(i386)
+ENTRY(_start)
+
+SECTIONS
+{
+    . = 0;
+    .bstext     : { *(.bstext) }
+    .bsdata     : { *(.bsdata) }
+
+    . = 495;
+    .header     : { *(.header) }
+    .entrytext  : { *(.entrytext) }
+    .inittext   : { *(.inittext) }
+    .initdata   : { *(.initdata) }
+    __end_init = .;
+
+    .text       : { *(.text) }
+    .text32     : { *(.text32) }
+
+    . = ALIGN(16);
+    .rodata     : { *(.rodata*) }
+    
+    ......
+
+    . = ALIGN(16);
+    .data       : { *(.data*) }
+
+    .signature  : {
+        setup_sig = .;
+        LONG(0x5a5aaa55)
+    }
+    
+    ....
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;由 setup.ld 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;ENTRY(_start)&lt;/code&gt; 可知，&lt;strong&gt;header.S&lt;/strong&gt; 文件中 &lt;code class=&quot;highlighter-rouge&quot;&gt;_start&lt;/code&gt; 汇编程序是 bzImage 内核映像开始执行的入口点，即引导扇区之后的开始处（偏移512字节处），它会准备大量的&lt;strong&gt;bootloader&lt;/strong&gt; 参数，最后的 &lt;code class=&quot;highlighter-rouge&quot;&gt;call main&lt;/code&gt; 跳转到 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/boot/main.c:main()&lt;/code&gt; 函数处执行，这就是众所周知的 main 函数，它们都工作在&lt;strong&gt;实模式&lt;/strong&gt;下。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;arch/x86/boot/main.c:main()&lt;/strong&gt; 函数主要完成的工作：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;copy_boot_params&lt;/code&gt; 函数把位于第一个扇区(boot/setup.bin 中的 boot sector)的参数复制到 &lt;strong&gt;boot_params&lt;/strong&gt; 变量中，boot_params 变量位于 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 的数据段。&lt;/li&gt;
+  &lt;li&gt;初始化早期启动状态下的控制台（console）。&lt;/li&gt;
+  &lt;li&gt;初始化堆空间。&lt;/li&gt;
+  &lt;li&gt;检测 CPU 相关信息。&lt;/li&gt;
+  &lt;li&gt;通过向 BIOS 查询的方式，收集硬件相关信息，并将结果存放在第 0 号物理页中。&lt;/li&gt;
+  &lt;li&gt;调用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/boot/pm.c:go_to_protected_mode(void) ---&amp;gt; arch/x86/boot/pmjump.S:protected_mode_jump()&lt;/code&gt; 函数，从 bzImage 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;boot/setup.bin&lt;/code&gt; &lt;strong&gt;实模式部分&lt;/strong&gt;的代码跳转到了 &lt;code class=&quot;highlighter-rouge&quot;&gt;boot/vmlinux.bin&lt;/code&gt; &lt;strong&gt;保护模式&lt;/strong&gt;的代码。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;保护模式下内核加载过程&quot;&gt;保护模式下内核加载过程&lt;/h2&gt;
+&lt;p&gt;执行完 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 部分的代码之后，Bootloader 就接着把内核镜像 bzImage 中的第二部分 &lt;strong&gt;boot/vmlinux.bin&lt;/strong&gt; 加载到物理内存中起始地址为 &lt;strong&gt;0x100000&lt;/strong&gt; 的位置，boot/vmlinux.bin 代码在&lt;strong&gt;保护模式&lt;/strong&gt;下的入口是 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/boot/compressed/head_32.S::startup_32&lt;/code&gt; 汇编代码，这段汇编代码中主要完成两个工作：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;将 boot/vmlinux.bin 文件中解压内核的代码拷贝到物理内存中 boot/vmlinux.bin 的后面。&lt;/li&gt;
+  &lt;li&gt;初始化 stack 和 heap 空间。&lt;/li&gt;
+  &lt;li&gt;解压缩内核，解压缩后的内核就是我们从源码编译得到的 vmlinux ELF 可执行文件。&lt;/li&gt;
+  &lt;li&gt;如果有选项指定，可能还需要对解压后的内核地址进行一个重定位（Relocate）。&lt;/li&gt;
+  &lt;li&gt;最后，跳转到解压缩后的内核文件 vmlinux 中的入口函数开始启动内核。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;解压缩后的内核文件 vmlinux 的入口函数是 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/kernel/head_32.S::startup_32&lt;/code&gt; 中的startup_32（32位内核的入口函数），在这个函数中会拷贝 &lt;strong&gt;boot_params&lt;/strong&gt; 结构体变量以及&lt;strong&gt;boot_command_line&lt;/strong&gt;，初始化页表，开启分页机制。startup_32() 汇编代码会接着调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;init/main.c:start_kernel()&lt;/code&gt; 函数，这是Linux 内核的启动函数。&lt;code class=&quot;highlighter-rouge&quot;&gt;init/main.c&lt;/code&gt; 文件是整个 Linux 内核的中央联结点。每种体系结构都会执行一些底层设置函数，然后执行名为&lt;code class=&quot;highlighter-rouge&quot;&gt;start_kernel&lt;/code&gt; 的函数（在 init/main.c 中可以找到这个函数）。可以认为 main.c 是内核的“粘合剂（glue）”，之前执行的代码都是&lt;strong&gt;各种体系结构相关&lt;/strong&gt;的代码，一旦到达&lt;strong&gt;start_kernel()&lt;/strong&gt;，就与体系结构无关了。&lt;/p&gt;
+
+&lt;p&gt;至此，Linux Kernel 的加载过程就分析完毕了，整个过程可以用下面这张图来总结一下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984654332695.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;参考文章&quot;&gt;参考文章&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;http://linux-development-for-fresher.blogspot.com/2012/07/linux-boot-process-in-nutshell.html&quot;&gt;Linux Boot Process in a nutshell&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/efi-stub.txt&quot;&gt;The EFI Boot Stub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/efi-stub.txt&quot;&gt;Archlinux-EFISTUB&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.wowotech.net/armv8a_arch/UEFI.html&quot;&gt;ARM64的启动过程之（五）：UEFI&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface&quot;&gt;Unified Extensible Firmware Interface - ArchWiki&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.woodelf.org/2014/05/28/uefi-boot-how-it-works.html&quot;&gt;UEFI 启动：实际工作原理&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.rodsbooks.com/efi-bootloaders/principles.html&quot;&gt;Managing EFI Boot Loaders for Linux:BasicPrinciples&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/duguteng/article/details/7552774&quot;&gt;x86中断向量表&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://wiki.osdev.org/Boot_Sequence&quot;&gt;Boot Sequence&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.linuxidc.com/Linux/2014-10/108033.htm&quot;&gt;Linux内核启动过程分析&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Tue, 27 Jun 2017 00:35:33 +0800</pubDate>
+        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</guid>
+        
+        <category>内核</category>
+        
+        <category>操作系统</category>
+        
+        
+        <category>内核</category>
+        
+      </item>
+    
+      <item>
+        <title>ramfs, tmpfs, rootfs, initramfs的区别</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14973695337147.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;什么是-ramfs&quot;&gt;什么是 ramfs？&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Ramfs&lt;/strong&gt; 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。&lt;/p&gt;
+
+&lt;p&gt;ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，而不存放在磁盘中，如果计算机掉电关闭，那么 ramfs 文件系统中所有文件也就都没有了。&lt;/p&gt;
+
+&lt;p&gt;当普通磁盘中的文件被操作系统加载到内存中并分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的 page 实现对文件的读写修改操作，当完成了所有的读写操作之后，文件对应的 page 就会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，然后在合适的时机被操作系统写回到原来的磁盘中对应的文件中，然后内存中原来存放这些文件的 page 就会被标记为干净，然后被系统回收重新使用。而 ramfs 文件系统中的文件当同样被加载到内存中 page 进行读写操作之后，它对应的 page 并不会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，因为 ramfs 中文件没有下级的后备存储器（例如，磁盘），也就没有了写回后备存储器的操作，所以为它分配的这些 page 也就无法回收了。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;什么是-tmpfs&quot;&gt;什么是 tmpfs？&lt;/h1&gt;
+&lt;p&gt;ramfs 中有一个非常大的&lt;strong&gt;缺点&lt;/strong&gt;就是你可以持续不断地向 ramfs 文件系统中的文件持续不断地写入数据直到填满整个物理内存空间为止。出现这个问题的原因就是前面介绍的 ramfs 文件系统不存在向普通磁盘那样的将内存中的文件内容写回到文件的操作，也就导致了它所占据的那部分内存空间是无法被释放的，正是因为这个原因，通常只有 &lt;strong&gt;root&lt;/strong&gt; 用户才有读写 ramfs 文件系统中文件的权限。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;tmpfs&lt;/strong&gt; 文件系统是从 &lt;strong&gt;ramfs&lt;/strong&gt; 衍生而来的一个文件系统，但是它相对于 ramfs 多了&lt;strong&gt;空间容量大小限制&lt;/strong&gt;，并且还可以将文件系统中一些&lt;strong&gt;不必要的的文件内容写到交换空间&lt;/strong&gt;中（swap space）。并且 tmpfs 文件系统的大小还可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;mount -o remount ...&lt;/code&gt; 命令来重新调整。&lt;/p&gt;
+
+&lt;p&gt;有关 tmpfs 更加详细的内容可以查看内核源码中的文档：&lt;em&gt;Documentation/filesystems/tmpfs.txt&lt;/em&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;什么是-rootfs&quot;&gt;什么是 rootfs？&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;rootfs&lt;/strong&gt;（也叫根文件系统） 是一个特殊的 ramfs（或者是 tmpfs） 的实例，它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录下的结构，例如，&lt;code class=&quot;highlighter-rouge&quot;&gt;/boot&lt;/code&gt; 目录下存放的是启动内核相关的文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc&lt;/code&gt; 目录中存放的则是一些系统配置文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/dev&lt;/code&gt; 目录下存放的则是系统的设备文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/bin&lt;/code&gt; 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录的结构如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.
+├── bin
+├── boot
+├── cdrom
+├── data
+├── dev
+├── etc
+├── home
+├── initrd.img -&amp;gt; boot/initrd.img-3.13.0-107-generic
+├── lib
+├── lib32
+├── lib64
+├── libx32
+├── lost+found
+├── media
+├── mnt
+├── opt
+├── proc
+├── root
+├── run
+├── sbin
+├── srv
+├── sys
+├── tmp
+├── usr
+├── var
+└── vmlinuz -&amp;gt; boot/vmlinuz-4.2.0-27-generic
+
+24 directories, 5 files
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;通常 rootfs 文件系统应该非常简洁，它只包含了它所必须用的文件，并且尽量避免少去修改 rootfs，以免破坏 rootfs，导致整个 Linux 系统无法启动。&lt;/p&gt;
+
+&lt;h2 id=&quot;什么是-initramfs&quot;&gt;什么是 initramfs？&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;initramfs&lt;/strong&gt; 是一种以 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpio&lt;/code&gt; 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像，BootLoader 加载 boot.img，并启动内核之后，内核接着就对 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpio&lt;/code&gt; 格式的 initramfs 进行解压，并将解压后得到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootfs&lt;/code&gt; 加载进内存，最后内核会检查 rootfs 中是否存在 &lt;strong&gt;init&lt;/strong&gt; 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 &lt;strong&gt;init&lt;/strong&gt; 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录上，最后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;exec chroot . /sbin/init&lt;/code&gt; 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 &lt;strong&gt;/sbin/init&lt;/strong&gt; 程序来启动系统中的其他进程和服务。&lt;/p&gt;
+
+&lt;p&gt;有关更加详细的 Linux Kernel + initramfs 的启动过程可以阅读下面这篇文章：&lt;a href=&quot;http://xstarcd.github.io/wiki/Linux/ShengRuLiJie_linux_2.6_initramfs.html&quot;&gt;深入理解Linux 2.6 的initramfs 机制&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.linfo.org/root_filesystem.html&quot;&gt;Root Filesystem Definition&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt&quot;&gt;Kernel-doc:ramfs, rootfs and initramfs&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/filesystems/tmpfs.txt&quot;&gt;Kernel-doc: tmpfs&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://xstarcd.github.io/wiki/Linux/ShengRuLiJie_linux_2.6_initramfs.html&quot;&gt;深入理解Linux 2.6 的initramfs 机制&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/goodboychina/article/details/27306985&quot;&gt;initramfs完全解读&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/fjb2080/article/details/5344525&quot;&gt;跟我一步一步制作一个基本的linux启动盘&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Wed, 14 Jun 2017 08:00:51 +0800</pubDate>
+        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</guid>
+        
+        <category>ramfs</category>
+        
+        <category>tmpfs</category>
+        
+        <category>rootfs</category>
+        
+        <category>initramfs</category>
+        
+        <category>文件系统</category>
+        
+        <category>Linux</category>
+        
+        
+        <category>内核</category>
+        
+      </item>
+    
+      <item>
+        <title>Android HAL 层原理分析</title>
+        <description>&lt;h2 id=&quot;android-hal-简介&quot;&gt;Android HAL 简介&lt;/h2&gt;
+&lt;p&gt;Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170324149036043728849.png&quot; alt=&quot;20170324149036043728849.png&quot; /&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;为什么要添加一个-hal-层&quot;&gt;为什么要添加一个 HAL 层？&lt;/h2&gt;
+&lt;p&gt;Android 在用户空间中新建一个的 HAL 层来支持硬件设备的主要原因还是因为 Android 使用的开源协议是 Apache License，这个协议比较宽松，它允许开发者获取并修改了源码之后，不用把源码公开出来。而 Linux 使用的开源协议 GPL，它的要求限制就比较多，它要求开发者添加或修改了源码之后，必须把添加或修改后的代码公开出来，所以我们在 Linux 内核中的所使用的设备驱动程序都是源码公开的，任何人都可以获取并修改它。&lt;/p&gt;
+
+&lt;p&gt;因此，如果 Android 系统像其他 Linux 系统一样，把对硬件的支持完全实现在 Linux 内核的驱动模块中，那么硬件厂商就必须将这些硬件驱动源码公开，这样就可能损害到移动厂商的利益，因为这相当于暴露了硬件的实现细节和参数。&lt;/p&gt;
+
+&lt;p&gt;所以，Android 就在用户空间搞了一个 HAL 层，将硬件的一些重要的操作都放在这一层中完成，这些操作都封装在厂商所提供的一个动态链接库中，从而达到了避免源码公开的目的，而底层 Linux 内核空间中的设备驱动模块，现在则只提供一些最基本的硬件设备寄存器操作的功能。&lt;/p&gt;
+
+&lt;h2 id=&quot;hal-模块是如何实现的&quot;&gt;HAL 模块是如何实现的？&lt;/h2&gt;
+&lt;p&gt;由于最近一直在做一个 Android-x86 系统相关的项目，其中就有一部分是跟音频 HAL 模块紧密相关，所以我就重新对 HAL 的相关知识进行了一个学习和整理，所以本文中将以音频系统对应的 audio HAL 模块（ 它最终是以 &lt;code class=&quot;highlighter-rouge&quot;&gt;audio.primary.x86.so&lt;/code&gt; 的动态链接库形式存在 ）为例来介绍一个 HAL 模块的定义及实现过程。&lt;/p&gt;
+
+&lt;h3 id=&quot;hal-层的三个重要结构体&quot;&gt;HAL 层的三个重要结构体&lt;/h3&gt;
+&lt;p&gt;Android 系统的 HAL 层其实并不复杂，只要你能理解清楚下面这 3 个结构体的含义：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;hw_module_t&lt;/strong&gt;：用来描述硬件模块&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;hw_device_t&lt;/strong&gt;：用来描述硬件设备&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;hw_module_methods_t&lt;/strong&gt;：用来打开硬件模块中包含硬件设备，获得指向硬件设备结构体的指针&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Android 系统中 HAL 层是以&lt;strong&gt;模块&lt;/strong&gt;的方式来管理各个硬件访问的接口，每一个硬件模块都对应一个动态链接库文件，而这些动态链接库文件需要符号一定的规范，而上述的这 3 种结构体就是用来建立这种规范。并且一个&lt;strong&gt;硬件模块&lt;/strong&gt;可以管理多个&lt;strong&gt;硬件设备&lt;/strong&gt;，例如 audio HAL 硬件模块中就管理了扬声器、麦克风等多个硬件设备。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注意：这里一定区分 hw_module_t 和 hw_device_t 它们所表示的含义&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;hw_module_t&quot;&gt;hw_module_t&lt;/h4&gt;
+&lt;p&gt;结构体 hw_module_t 定义在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt; 文件中，其定义如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Every hardware module must have a data structure named HAL_MODULE_INFO_SYM
+ * and the fields of this data structure must begin with hw_module_t
+ * followed by module specific information.
+ */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/** tag must be initialized to HARDWARE_MODULE_TAG */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/**
+     * The API version of the implemented module. The module owner is
+     * responsible for updating the version when a module interface has
+     * changed.
+     *
+     * The derived modules such as gralloc and audio own and manage this field.
+     * The module user must interpret the version field to decide whether or
+     * not to inter-operate with the supplied module implementation.
+     * For example, SurfaceFlinger is responsible for making sure that
+     * it knows how to manage different versions of the gralloc-module API,
+     * and AudioFlinger must know how to do the same for audio-module API.
+     *
+     * The module API version should include a major and a minor component.
+     * For example, version 1.0 could be represented as 0x0100. This format
+     * implies that versions 0x0100-0x01ff are all API-compatible.
+     *
+     * In the future, libhardware will expose a hw_get_module_version()
+     * (or equivalent) function that will take minimum/maximum supported
+     * versions as arguments and would be able to reject modules with
+     * versions outside of the supplied range.
+     */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;uint16_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module_api_version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define version_major module_api_version
+&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/**
+     * version_major/version_minor defines are supplied here for temporary
+     * source code compatibility. They will be removed in the next version.
+     * ALL clients must convert to the new version format.
+     */&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/**
+     * The API version of the HAL module interface. This is meant to
+     * version the hw_module_t, hw_module_methods_t, and hw_device_t
+     * structures and definitions.
+     *
+     * The HAL interface owns this field. Module users/implementations
+     * must NOT rely on this value for version information.
+     *
+     * Presently, 0 is the only valid value.
+     */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;uint16_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hal_api_version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define version_minor hal_api_version
+&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/** Identifier of module */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** Name of this module */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** Author/owner/implementor of the module */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;author&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** Modules methods */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** module's dso */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;cp&quot;&gt;#ifdef __LP64__
+&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;uint64_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#else
+&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/** padding to 128 bytes, reserved for future use */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif
+&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们先看下结构体 hw_module_t 定义最前面的一段注释说明，它的意思是：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;每个硬件模块中都要定义一个名字叫做 HAL_MODULE_INFO_SYM 结构体变量，而这结构体变量中的第一个成员必须是  hw_module_t 类型。也就是说，每个硬件模块都要自己实现一个结构体，但是这个结构体的第一个成员必须是 hw_module_t 结构体类型。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;其实这里蕴含着一种面向对象中继承的思想，hw_module_t 就是一个基类，描述所有硬件模块都应该具有的一些属性，然后具体到某个特定的硬件模块实现时，都需要继承自 hw_module_t 结构体。也就是说 hw_module_t 是所有特定硬件模块的父类。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;有关结构体 hw_module_t 中各个成员的具体含义，这里就不一一进行说明了，相信大家从它们的注释说明中就能了解到每一个成员所表示的含义，这里就挑一些重要的结构体成员来进一步说明。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;id：这个成员用一个字符串来表示硬件模块的，用来区别于其他硬件模块。&lt;/li&gt;
+  &lt;li&gt;methods：这个成员是一个 hw_module_methods_t 指针，它表示硬件模块所包含的方法集（其实里面就一个 open 函数指针，用来打开 hw_device_t 硬件设备，获得指向对应的硬件设备的结构体对象的指针）。&lt;/li&gt;
+  &lt;li&gt;dso：我们前面提到，HAL 层中的&lt;strong&gt;硬件模块&lt;/strong&gt;是用动态链接库表示的，所以 dso 指针就是系统使用 dlopen() 函数打开共享动态共享链接库之后获得的句柄。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;hw_device_t&quot;&gt;hw_device_t&lt;/h4&gt;
+&lt;p&gt;结构体 hw_device_t 定义在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt; 文件中，其定义如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Every device data structure must begin with hw_device_t
+ * followed by module specific public methods and attributes.
+ */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/** tag must be initialized to HARDWARE_DEVICE_TAG */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/**
+     * Version of the module-specific device API. This value is used by
+     * the derived-module user to manage different device implementations.
+     *
+     * The module user is responsible for checking the module_api_version
+     * and device version fields to ensure that the user is capable of
+     * communicating with the specific module implementation.
+     *
+     * One module can support multiple devices with different versions. This
+     * can be useful when a device interface changes in an incompatible way
+     * but it is still necessary to support older implementations at the same
+     * time. One such example is the Camera 2.0 API.
+     *
+     * This field is interpreted by the module user and is ignored by the
+     * HAL interface itself.
+     */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** reference to the module this device belongs to */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** padding reserved for future use */&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#ifdef __LP64__
+&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;uint64_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#else
+&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif
+&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/** Close this device */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;和 hw_module_t 类似，hw_device_t 也可以看做是一个基类，它描述了所有硬件设备都应该具有的属性，然后具体到某个特定的硬件设备（例如，音频播放时需要的扬声器设备）实现时，都需要继承自 audio_device 结构体。所以，每个 HAL 层中硬件设备对应的结构体中的第一个成员必须是 hw_device_t。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;下面还是简单提一下结构体 hw_device_t 比较关键的几个成员：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;module：这个成员是一个 hw_module_t 指针，表示该结构体 hw_device_t 表示的&lt;strong&gt;硬件设备&lt;/strong&gt;是由哪个 hw_module_t 表示的&lt;strong&gt;硬件模块&lt;/strong&gt;进行管理的。（在这里所以一定要区分清楚==&lt;strong&gt;硬件设备&lt;/strong&gt;==和==&lt;strong&gt;硬件模块&lt;/strong&gt;==的区别！）&lt;/li&gt;
+  &lt;li&gt;close：这是一个函数指针，表示如何关闭打开的硬件设备，通常==打开硬件设备的操作==在 hw_module_t 中包含的 hw_module_methods_t 函数列表中的 &lt;strong&gt;open()&lt;/strong&gt; 函数中打开的。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;hw_module_methods_t&quot;&gt;hw_module_methods_t&lt;/h4&gt;
+&lt;p&gt;结构体 hw_module_methods_t 定义在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt; 文件中，其定义如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/** Open a specific device */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;结构体 hw_module_methods_t 就比较简单了，它里面就只有一个 &lt;strong&gt;open&lt;/strong&gt; 函数指针，用来打开 module 硬件模块==所管理==的硬件设备id值为 id 的硬件设备，最后将打开的==硬件设备（用 hw_device_t 结构体来描述）==通过 device 返回。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注意：这个 open 函数明确指出第三个参数的类型为 struct hw_device_t**，这主要是为了统一不同硬件设备向上层提供的硬件接口，然后在具体使用到某中硬件设备时，再转换成特定硬件设备的结构体类型。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;audio-hal-模块的实现&quot;&gt;Audio HAL 模块的实现&lt;/h2&gt;
+
+&lt;h3 id=&quot;step-1定义-struct-audio_module-模块&quot;&gt;Step 1：定义 struct audio_module 模块&lt;/h3&gt;
+&lt;p&gt;我们前面在结构体 hw_module_t 介绍时，有提到具体的&lt;strong&gt;硬件模块&lt;/strong&gt;要定义一个新的结构体并且这个结构体的==第一个成员必须是 hw_module_t 类型==，所以根据这个规则，audio_module 的定义如下所示：
+代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/audio.h&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_module&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;step-2定义-struct-audio_module-类型的-hal_module_info_sym-变量&quot;&gt;step 2：定义 struct audio_module 类型的 HAL_MODULE_INFO_SYM 变量&lt;/h3&gt;
+&lt;p&gt;HAL_MODULE_INFO_SYM 其实是一个宏，它定义如下所示：
+代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Name of the hal_module_info
+ */&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define HAL_MODULE_INFO_SYM         HMI
+&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;/**
+ * Name of the hal_module_info as a string
+ */&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define HAL_MODULE_INFO_SYM_AS_STR  &quot;HMI&quot;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而 struct audio_module 类型名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;HAL_MODULE_INFO_SYM&lt;/code&gt; 变量的定义如下所示：
+代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;aosp&amp;gt;/generic/goldfish/audio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_module&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL_MODULE_INFO_SYM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HARDWARE_MODULE_TAG&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module_api_version&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_MODULE_API_VERSION_0_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hal_api_version&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HARDWARE_HAL_API_VERSION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_HARDWARE_MODULE_ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Generic audio HW HAL&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;author&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;The Android Open Source Project&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hal_module_methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;```&lt;/span&gt;
+
+&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;但是我们为什么要在每个硬件模块中都定义一个变量名为&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL_MODULE_INFO_SYM&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;的变量呢？&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;
+
+&lt;span class=&quot;err&quot;&gt;原因是&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;为了统一标准的接口&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;。这个硬件模块类型的变量主要是在&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;动态链接库加载时用到，它使得上层的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Framework&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;层打开所有的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;动态链接库时都能找到名为&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_MODULE&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_INFO&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_SYM&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;（也就是&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hmi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;）的硬件模块类型变量，然后通过这个变量再来打开它所管理的硬件设备，从而与之进行交互。这么做的好处就是&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Framework&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;层中只需要用相同的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;API&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;，就能处理各个厂商所提供的不同的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;动态链接库。&lt;/span&gt;
+
+&lt;span class=&quot;cp&quot;&gt;### step 3：定义 struct audio\_hw\_device 硬件设备结构体
+&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;每个硬件设备都需要通过一个结构体来表示，并且这个结构体的第一个成员必须是&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_device&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_t&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;类型。而有关的对底层硬件设备的有关操作的函数指针接口，也是在这个结构体中定义。&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_hw&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_device&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;硬件设备结构体的定义如下所示：&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;代码路径：`&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hardware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libhardware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;include&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hardware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;audio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;
+
+&lt;span class=&quot;err&quot;&gt;```&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/**
+     * Common methods of the audio device.  This *must* be the first member of audio_hw_device
+     * as users of this structure will cast a hw_device_t to audio_hw_device pointer in contexts
+     * where it's known the hw_device_t references an audio_hw_device.
+     */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;......&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* Returns audio input buffer size according to parameters passed or
+     * 0 if one of the parameters is not supported.
+     * See also get_buffer_size which is for a particular stream.
+     */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_input_buffer_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                                    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** This method creates and opens the audio hardware output stream.
+     * The &quot;address&quot; parameter qualifies the &quot;devices&quot; audio device type if needed.
+     * The format format depends on the device type:
+     * - Bluetooth devices use the MAC address of the device in the form &quot;00:11:22:AA:BB:CC&quot;
+     * - USB devices use the ALSA card and device numbers in the form  &quot;card=X;device=Y&quot;
+     * - Other devices may use a number or any other string.
+     */&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                              &lt;span class=&quot;n&quot;&gt;audio_io_handle_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                              &lt;span class=&quot;n&quot;&gt;audio_devices_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;devices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                              &lt;span class=&quot;n&quot;&gt;audio_output_flags_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                              &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                              &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                              &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                                &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/** This method creates and opens the audio hardware input stream */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;n&quot;&gt;audio_io_handle_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;n&quot;&gt;audio_devices_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;devices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;n&quot;&gt;audio_input_flags_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                             &lt;span class=&quot;n&quot;&gt;audio_source_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                               &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;p&quot;&gt;......&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在上面音频硬件设备结构体 &lt;code class=&quot;highlighter-rouge&quot;&gt;audio_hw_device&lt;/code&gt; 的定义中，第一个结构体成员就是 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct hw_device_t&lt;/code&gt; 类型的，而其他的结构体成员都是函数指针，例如 &lt;code class=&quot;highlighter-rouge&quot;&gt;open_output_stream&lt;/code&gt; 函数就是用来打开播放音频的扬声器设备，&lt;code class=&quot;highlighter-rouge&quot;&gt;open_input_stream&lt;/code&gt; 函数则是用来打开录音用的麦克风设备。&lt;/p&gt;
+
+&lt;h3 id=&quot;step-4定义-struct-hw_module_methods_t-函数列表变量&quot;&gt;step 4：定义 struct hw_module_methods_t 函数列表变量&lt;/h3&gt;
+&lt;p&gt;在前面介绍的结构体 hw_module_t 的定义中就有一个 hw_module_methods_t 函数指针类型的成员&lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt;，该函数的作用就是让&lt;strong&gt;硬件模块&lt;/strong&gt;打开&lt;strong&gt;硬件设备&lt;/strong&gt;，然后对特定硬件设备（例如上面的 struct audio_device_t结构体）中定义函数指针变量进行赋值绑定，所以在每个&lt;strong&gt;硬件模块&lt;/strong&gt;都要实现这样一个变量。&lt;/p&gt;
+
+&lt;p&gt;struct audio_module 结构体中 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct hw_module_t 类型的成员 common &lt;/code&gt;中的 hw_module_methods_t 函数指针成员的实现绑定如下所示：
+代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;aosp&amp;gt;/generic/goldfish/audio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hal_module_methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;可以看到，在 audio HAL 模块中使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open&lt;/code&gt; 函数来初始化了 struct hw_module_methods_t 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数指针成员。我们现在回过头来看 &lt;strong&gt;step 2&lt;/strong&gt;中 &lt;strong&gt;struct audio_module HAL_MODULE_INFO_SYM&lt;/strong&gt; 变量的定义中，audio_module 中的第一个成员 common中的结构体变量 methods 的指针就是被初始化指向了现在这里定义的 &lt;code class=&quot;highlighter-rouge&quot;&gt;hal_module_methods&lt;/code&gt; 变量。&lt;/p&gt;
+
+&lt;h3 id=&quot;step-5adev_open-函数的实现&quot;&gt;step 5：adev_open 函数的实现&lt;/h3&gt;
+&lt;p&gt;最后，我们来看看 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open&lt;/code&gt; 函数的实现，看看它是如何通过 audio_module 硬件模块对象来打开 audio_hw_device 硬件设备对象。
+代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;aosp&amp;gt;/generic/goldfish/audio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;adev_open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                     &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;generic_audio_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;strcmp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_HARDWARE_INTERFACE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EINVAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AUDIO_DEVICE_NAME&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;O_RDWR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ENOSYS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;generic_audio_device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HARDWARE_DEVICE_TAG&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_DEVICE_API_VERSION_2_0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init_check&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_init_check&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_voice_volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_voice_volume&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_master_volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_master_volume&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_master_volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_master_volume&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_master_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_master_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_master_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_master_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_mode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_mic_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_mic_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_mic_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_mic_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_parameters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_parameters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_input_buffer_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_input_buffer_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_output_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_open_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_output_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_close_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_input_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_open_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_input_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_close_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dump&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_dump&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这里再补充一个小的定义，&lt;code class=&quot;highlighter-rouge&quot;&gt;struct generic_audio_device&lt;/code&gt; 中的第一个成员 &lt;code class=&quot;highlighter-rouge&quot;&gt;device&lt;/code&gt; 就是我们前面提到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 结构体，它的定义如下:
+代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libaudio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;generic_audio_device&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;pthread_mutex_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mic_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们可以从 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open&lt;/code&gt; 函数中的实现中看到，它里面的主要工作就是做一些对 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 对象的初始化，将其定义的函数指针指向对应的已经实现好的函数中。例如，这里将&lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt;中定义的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open_output_stream&lt;/code&gt; 函数指针成员指向了 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open_output_stream&lt;/code&gt; 函数。这样在 Framework 层调用的 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 对象的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open_output_stream&lt;/code&gt; 函数，其实最终调用的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open_output_stream&lt;/code&gt;函数。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;这里，还有一点需要特别注意的就是我们所打开的硬件设备对象是怎么返回的？&lt;/strong&gt;
+答案就是它是通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数中的第三个参数 &lt;code class=&quot;highlighter-rouge&quot;&gt;hw_device_t** device&lt;/code&gt;返回的。在 open 函数初始化并打开特定的硬件设备之后，它就将硬件设备结构体中的第一个成员 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 类型的 common 对象返回。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;那么为什么这里返回的是 hw_device_t** 类型的硬件设备，而是不是audio_hw_device** 类型呢？&lt;/strong&gt;
+其实这个问题在前面在介绍 &lt;code class=&quot;highlighter-rouge&quot;&gt;hw_module_methods_t&lt;/code&gt; 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数时已经提到过了。这里主要也蕴含着面向对象编程中的另外一种重要思想&lt;strong&gt;多态&lt;/strong&gt;，这使得使用的 hw_device_t 指针就可以访问到子类中继承了父类的属性和方法，如果要获得某个子类所特有的属性，那么只要将其进行类型的强制转换即可。&lt;/p&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+&lt;p&gt;理解 Android HAL 层最关键的还是要弄清楚 hw_module_t 、 hw_device_t、 hw_module_methods_t 这三个结构体的含义即关系，以及如何基于这三个结构体来实现特定硬件的&lt;strong&gt;硬件模块结构体&lt;/strong&gt;、&lt;strong&gt;硬件设备结构体&lt;/strong&gt;、&lt;strong&gt;硬件模块方法列表结构体&lt;/strong&gt;。其实从面向对象编程的角度来考虑，前面三者和后面三者之间的关系，就好比是父类和子类的关系，如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/android_hal_architecture.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;后面，我可能会写一片关于 Android 系统加载 HAL 模块的文章。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;罗升阳. Android 系统源代码情景分析作者. 电子工业出版社, 2012: 13-44&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Sun, 26 Mar 2017 03:56:24 +0800</pubDate>
+        <link>http://localhost:4000/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</guid>
+        
+        <category>HAL</category>
+        
+        <category>Android</category>
+        
+        
+        <category>android</category>
+        
+      </item>
+    
+      <item>
+        <title>Android NDK  vs AOSP Build System</title>
+        <description>&lt;h1 id=&quot;前言&quot;&gt;前言&lt;/h1&gt;
+&lt;p&gt;最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android NDK&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP(Android Open Source Project) Build System&lt;/code&gt; 这两个东西，但是由于他们两者都可以将 &lt;code class=&quot;highlighter-rouge&quot;&gt;C/C++&lt;/code&gt; 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所以，痛定思痛，不想再被这种似四而非的感觉折磨了，今天就抽空写下这篇文章来捋清楚两者之间关系。&lt;/p&gt;
+
+&lt;h1 id=&quot;android-ndk&quot;&gt;Android NDK&lt;/h1&gt;
+
+&lt;h2 id=&quot;android-ndk-是什么&quot;&gt;Android NDK 是什么？&lt;/h2&gt;
+&lt;p&gt;先引用一段来自 &lt;a href=&quot;https://developer.android.com/ndk/index.html&quot;&gt;Android NDK 官网&lt;/a&gt;上的非常简洁的介绍吧：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;The Android NDK is a toolset that lets you implement parts of your app using native-code languages such as C and C++. For certain types of apps, this can help you reuse code libraries written in those languages.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;上面的介绍我觉得已经解释地非常清楚了，我再扩展地补充一下：Android NDK 本质上是一套&lt;code class=&quot;highlighter-rouge&quot;&gt;交叉编译工具集&lt;/code&gt;，它可以将 C/C++ 源码编译成适用于不同硬件平台的&lt;code class=&quot;highlighter-rouge&quot;&gt;库文件&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;可执行文件&lt;/code&gt;，而这些库文件和可执行文件可以被上层的基于 Java 语言编写的 APP 加载调用，从而实现了 C/C++ 源码在 APP 中的复用。&lt;/p&gt;
+
+&lt;p&gt;下面这幅图就非常简洁地体现了 NDK 的用途：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/Screen%20Shot%202016-12-15%20at%209.02.21%20PM.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;android-ndk-应用实例&quot;&gt;Android NDK 应用实例&lt;/h2&gt;
+
+&lt;p&gt;例如，在图像处理中我们常用的 &lt;code class=&quot;highlighter-rouge&quot;&gt;OpenCV&lt;/code&gt; 库就是使用 C++ 编写的，如果我们想在我们使用 Java 开发的 Android APP 中使用 OpenCV 库中的一些处理函数，那么该怎么办呢？
+当然，你可以直接去找基于 Java 实现的 OpenCV 的 jar 包，然后去调用对应的函数，但是这种Java 实现版本的 OpenCV 在处理的效率上肯定不及 C++ 实现版本的 OpenCV（尤其是在做图形处理方面）。
+所以，另外一种方法就是通过 Android NDK 工具将 OpenCV 的代码编译成指定硬件平台的库文件，然后在 Android APP 进程中通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;JNI&lt;/code&gt; 的方式来使用 OpenCV 中提供的处理函数，实现自己想要的某种功能。&lt;/p&gt;
+
+&lt;h2 id=&quot;android-ndk-编译系统&quot;&gt;Android NDK 编译系统&lt;/h2&gt;
+&lt;p&gt;Android NDK 编译系统其实本质上就是一系列的&lt;code class=&quot;highlighter-rouge&quot;&gt;交叉编译工具链&lt;/code&gt;，而 NDK 中所使用的编译脚本 &lt;code class=&quot;highlighter-rouge&quot;&gt;ndk-build&lt;/code&gt; 就是根据编译配置文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;Application.mk&lt;/code&gt; 来调用这些交叉编译工具链中的工具编译生成指定 ABI 平台下目标链接库文件或者可执行文件。&lt;/p&gt;
+
+&lt;p&gt;这里我觉得还是有必要多费点文字对 Android NDK 包中的文件及目录的内容进行一个说明，以便大家对 NDK 有更加深一步的理解。NDK 包中的文件及目录结构如下所示：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b$ &lt;/span&gt;tree -L 1
+.
+|-- build
+|-- CHANGELOG.md
+|-- ndk-build
+|-- ndk-depends
+|-- ndk-gdb
+|-- ndk-stack
+|-- ndk-which
+|-- platforms
+|-- prebuilt
+|-- python-packages
+|-- shader-tools
+|-- source.properties
+|-- sources
+&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;-- toolchains
+
+7 directories, 7 files
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;build：该目录下包含了 ndk-build 编译脚本中所使用到的各种小的脚本文件，例如我们在 Android.mk 中常见的将源码编译成共享链接库文件的语句： &lt;code class=&quot;highlighter-rouge&quot;&gt;include $(BUILD_SHARED_LIBRARY)&lt;/code&gt;中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;BUILD_SHARED_LIBRARY&lt;/code&gt; 对应的就是一个编译脚本文件： &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;ndk-home&amp;gt;/build/core/build-shared-library.mk&lt;/code&gt;。&lt;/li&gt;
+  &lt;li&gt;ndk-build：NDK 的核心，NDK 编译所使用的最主要的编译脚本。&lt;/li&gt;
+  &lt;li&gt;ndk-gdb：调试 NDK 编译出来的库的工具。&lt;/li&gt;
+  &lt;li&gt;ndk-stack：对 Android 系统运行时共享链接库崩溃时产生的 &lt;code class=&quot;highlighter-rouge&quot;&gt;tombstone&lt;/code&gt; 文件进行解析的工具。它在调试异常崩溃 Bug 时定为到具体出错的源码位置非常有帮助，具体使用方法详见我的这篇博客：&lt;a href=&quot;http://woshijpf.github.io/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90/&quot;&gt;Android NDK Tombstone/Crash 分析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;platforms：这个文件夹里保存的是各个 Android 系统版本下不同硬件平台对应的 NDK 提供的系统共享链接库文件，例如：&lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so, libdl.so, libc.so等等&lt;/code&gt;。&lt;/li&gt;
+  &lt;li&gt;source：这个目录下主要包含的就是 NDK 所中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;C++ STL&lt;/code&gt; 库的源码，有 &lt;code class=&quot;highlighter-rouge&quot;&gt;gnu_stl&lt;/code&gt; 的实现，也有 &lt;code class=&quot;highlighter-rouge&quot;&gt;llvm-stl&lt;/code&gt;的实现。&lt;/li&gt;
+  &lt;li&gt;toolchains：这个目录也是非常关键的一个目录，它里面包含了不同目标硬件平台下面的交叉编译工具，可以将 C/C++ 库编译成可运行在 &lt;code class=&quot;highlighter-rouge&quot;&gt;arm,x86,x86-64,mips&lt;/code&gt;等不同硬件平台上面。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这里就不对 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 编译配置文件的编写方法展开说明了，有关内容可以参见下面这篇文章：&lt;a href=&quot;http://web.guohuiwang.com/technical-notes/androidndk1&quot;&gt;Mastering Android NDK Build System - Part 1: Techniques with ndk-build&lt;/a&gt;和&lt;a href=&quot;https://developer.android.com/ndk/guides/android_mk.html&quot;&gt;Android.mk&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;android-ndk-中系统提供的共享链接库&quot;&gt;Android NDK 中系统提供的共享链接库&lt;/h2&gt;
+&lt;p&gt;有时我们的自己编写的源码中除了实现某种特定的功能之外，可能还会在C/C++代码中使用到日志打印输出函数，而这个日志打印函数就位于 Android NDK 中 Android 系统提供的 &lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so&lt;/code&gt; 库中。除了 liblog.so 库之外，NDK 还提供了下面这些系统共享链接库供我们自己的源码进行加载调用：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b/platforms/android-22/arch-x86/usr/lib$ &lt;/span&gt;ls -al
+total 10996
+drwxr-xr-x 2 woshijpf woshijpf    4096 Jun 15  2016 .
+drwxr-xr-x 4 woshijpf woshijpf    4096 Jun 15  2016 ..
+-rw-r--r-- 1 woshijpf woshijpf    2204 Jun 15  2016 crtbegin_dynamic.o
+-rw-r--r-- 1 woshijpf woshijpf    1992 Jun 15  2016 crtbegin_so.o
+-rw-r--r-- 1 woshijpf woshijpf    2204 Jun 15  2016 crtbegin_static.o
+-rw-r--r-- 1 woshijpf woshijpf     704 Jun 15  2016 crtend_android.o
+-rw-r--r-- 1 woshijpf woshijpf     648 Jun 15  2016 crtend_so.o
+-rwxr-xr-x 1 woshijpf woshijpf   10772 Jun 15  2016 libEGL.so
+-rwxr-xr-x 1 woshijpf woshijpf   34640 Jun 15  2016 libGLESv1_CM.so
+-rwxr-xr-x 1 woshijpf woshijpf   28428 Jun 15  2016 libGLESv2.so
+-rwxr-xr-x 1 woshijpf woshijpf   46592 Jun 15  2016 libGLESv3.so
+-rwxr-xr-x 1 woshijpf woshijpf    6752 Jun 15  2016 libOpenMAXAL.so
+-rwxr-xr-x 1 woshijpf woshijpf    7036 Jun 15  2016 libOpenSLES.so
+-rwxr-xr-x 1 woshijpf woshijpf   28876 Jun 15  2016 libandroid.so
+-rw-r--r-- 1 woshijpf woshijpf 8814206 Jun 15  2016 libc.a
+-rwxr-xr-x 1 woshijpf woshijpf  125464 Jun 15  2016 libc.so
+-rwxr-xr-x 1 woshijpf woshijpf    5400 Jun 15  2016 libdl.so
+-rwxr-xr-x 1 woshijpf woshijpf    5212 Jun 15  2016 libjnigraphics.so
+-rwxr-xr-x 1 woshijpf woshijpf    5436 Jun 15  2016 liblog.so
+-rw-r--r-- 1 woshijpf woshijpf 1333352 Jun 15  2016 libm.a
+-rwxr-xr-x 1 woshijpf woshijpf   26708 Jun 15  2016 libm.so
+-rwxr-xr-x 1 woshijpf woshijpf   18184 Jun 15  2016 libmediandk.so
+-rw-r--r-- 1 woshijpf woshijpf  105024 Jun 15  2016 libstdc++.a
+-rwxr-xr-x 1 woshijpf woshijpf    5536 Jun 15  2016 libstdc++.so
+-rw-r--r-- 1 woshijpf woshijpf  575800 Jun 15  2016 libz.a
+-rwxr-xr-x 1 woshijpf woshijpf   11768 Jun 15  2016 libz.so
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;那么这些系统提供的共享链接库是怎么被加载使用的呢？&lt;/strong&gt;
+例如，我现在写了一个 C++ 源文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;hello.cpp&lt;/code&gt;，并且在这个源文件中调用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;__android_log_print()&lt;/code&gt; 函数打印日志，那么我就需要在对应的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 文件中加入下面这条语句来显示地链接 &lt;code class=&quot;highlighter-rouge&quot;&gt;/system/lib/liblog.so&lt;/code&gt; 库：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;LOCAL_LDLIBS :&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; -llog
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;那么这些系统共享链接库是如何编译出来的呢？&lt;/strong&gt;
+因为安全性和兼容性问题以及上层应用程序的需求，NDK 提供的只是 Android 系统中一小部分系统共享链接库，并且这些系统共享链接库都是在 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android 源码&lt;/code&gt; 编译时生成的，例如，&lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so&lt;/code&gt; 库就是由 Android 源码中 &lt;em&gt;/system/core/liblog/&lt;/em&gt; 目录下的源码编译而来的。而在 &lt;em&gt;$NDK/platforms/android-22/arch-arm/usr/include/android/log.h&lt;/em&gt; 头文件中声明的日志打印函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;__android_log_write()&lt;/code&gt; 的实际代码实现就在 Android 源码的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/system/core/liblog/logd_write.c&lt;/code&gt; 文件中。&lt;/p&gt;
+
+&lt;h2 id=&quot;相关参考文章&quot;&gt;相关参考文章&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://developer.android.com/ndk/guides/stable_apis.html&quot;&gt;Android NDK Native APIs&lt;/a&gt;
+&lt;a href=&quot;https://developer.android.com/ndk/guides/cpp-support.html&quot;&gt;C++ Library Support&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;aosp-build-system&quot;&gt;AOSP Build System&lt;/h1&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP&lt;/code&gt; 是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android Open Source Project&lt;/code&gt; 的简称，接下来用我就用它等价地表示 Android 系统源码。&lt;/p&gt;
+
+&lt;h2 id=&quot;aosp-build-system-是什么&quot;&gt;AOSP Build System 是什么？&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 是用来编译 Android 系统，Android SDK 以及相关文档的一套框架。该编译系统主要由 Make 文件（&lt;strong&gt;注意：这里的 Make 文件不是 Makefile 文件，而是 Android 编译系统自己构架的一套编译配置文件，通常以*.mk 为文件后缀&lt;/strong&gt;），Shell 脚本以及 Python 脚本组成，其中最主要的是 Make 文件。&lt;/p&gt;
+
+&lt;p&gt;在 Android Build System 中编译所使用到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Make&lt;/code&gt; 文件主要分为三类：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;第一类是 Build 系统核心文件，此类文件定义了整个 Build 系统的框架，而其他所有 Make 文件都是在这个框架的基础上编写出来的。&lt;/li&gt;
+  &lt;li&gt;第二类是针对某个产品（一个产品可能是某个型号的手机或者平板电脑）的 Make 文件，这些文件通常位于 device 目录下，该目录下又以公司名以及产品名分为两级目录。&lt;/li&gt;
+  &lt;li&gt;第三类是针对某个模块的 Make 文件。整个 Android 系统中，包含了大量的模块，每个模块都有一个专门的 Make 文件，这类文件的名称统一为 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt;，该文件中定义了如何编译当前模块。Build 系统会在整个源码树中扫描名称为“Android.mk”的文件并根据其中的内容执行模块的编译。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;aosp-build-system-所依赖的编译工具&quot;&gt;AOSP Build System 所依赖的编译工具&lt;/h2&gt;
+&lt;p&gt;Android 系统从下到上主要分为下面5层，而每一层所使用的编程语言如下：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Kernel：Android 定制化过的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Linux Kernel&lt;/code&gt;，使用的当然是 &lt;code class=&quot;highlighter-rouge&quot;&gt;C&lt;/code&gt; 语言了。&lt;/li&gt;
+  &lt;li&gt;HAL：这一层是用户态驱动层，它主要功能是和下层 Kernel 中的硬件驱动程序进行交互，这一层主要使用的语言是 &lt;code class=&quot;highlighter-rouge&quot;&gt;C/C++&lt;/code&gt;。&lt;/li&gt;
+  &lt;li&gt;Frameworks native：这一层是 Android 系统核心组件的实现位置，在这一层中主要通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;C++&lt;/code&gt; 语言来实现。&lt;/li&gt;
+  &lt;li&gt;Frameworks java：这一层其实是对 Frameworks native 层套上一层 Java 的外壳，封装成 Android SDK 提供给上层的 APP 开发者进行调用，这一层主要使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Java&lt;/code&gt; 语言进行实现。&lt;/li&gt;
+  &lt;li&gt;APP：这一层主要面向的是 Android APP 开发人员，并且 Android 提供的 SDK 是基于 Java 语言的，所以 APP 的代码实现也是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Java&lt;/code&gt; 语言。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;既然 Android 系统源码中包含了 3 种编程语言，那么在 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 中肯定也使用了许多编译工具来进行编译（&lt;strong&gt;Android 官方推荐使用 Ubuntu 14.04 来对 Android 源码进行编译，所以这里就以 Ubuntu 系统中所使用的编译工具为例&lt;/strong&gt;）：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;编译 C/C++ 代码：使用 Ubuntu 14.04 中自带的 &lt;code class=&quot;highlighter-rouge&quot;&gt;gcc&lt;/code&gt; 编译器即可。&lt;/li&gt;
+  &lt;li&gt;编译 Java 代码：在 Ubuntu 14.04 中推荐使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;OpenJDK-1.7&lt;/code&gt; 来进行编译。&lt;/li&gt;
+  &lt;li&gt;make 工具：前面提到 AOSP Build System 是基于 make 工具，所以这里也使用 Ubuntu 14.04 中自带的 &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; 工具即可。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;aosp-build-system-编译系统共享链接库的方法&quot;&gt;AOSP Build System 编译系统共享链接库的方法&lt;/h2&gt;
+&lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System 是什么？&lt;/code&gt; 小节中，我提到了 Android 系统源码中也使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 文件来将某个模块编译成库文件或者可执行文件。&lt;/p&gt;
+
+&lt;p&gt;例如，Android 系统源码中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;AudioFlinger&lt;/code&gt; 服务对应使用的是系统中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;libaudioflinge.so&lt;/code&gt;共享链接库文件 ，该共享链接库的源码实现位于 &lt;code class=&quot;highlighter-rouge&quot;&gt;frameworks/av/services/audioflinger&lt;/code&gt;，在同一目录下面的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 编译配置文件如下所示：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;LOCAL_SRC_FILES:=               \ # 编译该模块所需要使用到的源文件
+    AudioFlinger.cpp            \
+    Threads.cpp                 \
+    Tracks.cpp                  \
+    Effects.cpp                 \
+    AudioMixer.cpp.arm          \
+    PatchPanel.cpp
+
+LOCAL_SRC_FILES += StateQueue.cpp
+
+LOCAL_C_INCLUDES := \
+    $(TOPDIR)frameworks/av/services/audiopolicy \
+    $(call include-path-for, audio-effects) \
+    $(call include-path-for, audio-utils)
+
+LOCAL_SHARED_LIBRARIES := \ # 链接该模块所依赖的共享链接库文件
+    libaudioresampler \
+    libaudioutils \
+    libcommon_time_client \
+    libcutils \
+    libutils \
+    liblog \
+    libbinder \
+    libmedia \
+    libnbaio \
+    libhardware \
+    libhardware_legacy \
+    libeffects \
+    libpowermanager \
+    libserviceutility
+
+LOCAL_STATIC_LIBRARIES := \ # 链接该模块所依赖的静态链接库文件
+    libscheduling_policy \
+    libcpustats \
+    libmedia_helper
+
+LOCAL_MODULE:= libaudioflinger 
+
+LOCAL_CFLAGS += -fvisibility=hidden #隐藏共享链接库中的符号，使之不被其他共享库所访问
+
+include $(BUILD_SHARED_LIBRARY) # 编译成 libaudioflinger.so 库文件
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在 Android 源码树的根目录下运行下面的命令来配置好 Android 源码编译的环境：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;build/envsetup.sh
+&lt;span class=&quot;nv&quot;&gt;$lunch&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 选择自己需要编译的 Android 系统版本&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;有了 Android 编译环境之后，只需要在将当前的工作目录切换到 &lt;em&gt;frameworks/av/services/audioflinger&lt;/em&gt; 目录下来编译 &lt;code class=&quot;highlighter-rouge&quot;&gt;AudioFlinger&lt;/code&gt; 模块&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# 由于 libaudioflinger.so 所需依赖其他的系统共享链接库文件，所以需要先把整个 Android 源码生成这些共享链接库文件
+$ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger.so 共享链接库文件
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;注意：&lt;/strong&gt;虽然咋一看上去 Android 源码中某个模块的编译配置文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt;和 NDK 中所用的编译配置文件 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 没有什么不同，但是其实还是有一些细微的区别的，尤其是在&lt;strong&gt;使用共享链接库&lt;/strong&gt;方面。&lt;/p&gt;
+
+&lt;p&gt;例如，上面 Android 系统中源码编译出来的 &lt;code class=&quot;highlighter-rouge&quot;&gt;libaudioflinger.so&lt;/code&gt; 库文件中链接 &lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so&lt;/code&gt; 库文件使用的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;LOCAL_SHARED_LIBRARIES&lt;/code&gt; 编译变量：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;LOCAL_SHARED_LIBRARIES := \ # 链接该模块所依赖的共享链接库文件
+    ...
+    liblog \
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而在 NDK 编译自己使用 C/C++ 编写的模块时，如果要链接 &lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so&lt;/code&gt; 库文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;Android.mk&lt;/code&gt; 文件中的写法则是：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;LOCAL_LDLIBS := -llog
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;所以，我们可以看出来在 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP&lt;/code&gt; 中所有编译出来的系统链接库文件（不管是静态库文件还是共享链接库文件）对 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP&lt;/code&gt; 中各个模块都是可见和可以被链接使用的，而对于 NDK 来说它只能通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;LOCAL_LDLIBS&lt;/code&gt; 的变量来链接使用 Android 系统中提供的一小部分系统链接库文件。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;相关参考文章-1&quot;&gt;相关参考文章&lt;/h2&gt;
+&lt;p&gt;有关 AOSP Build System 更加详细的介绍，可以参考下面的的文章：
+&lt;a href=&quot;https://www.ibm.com/developerworks/cn/opensource/os-cn-android-build/&quot;&gt;理解 Android Build 系统&lt;/a&gt;
+&lt;strong&gt;《Embedded Android》 Chapter 4 – The Build System&lt;/strong&gt;
+&lt;a href=&quot;https://aabdelfattah.wordpress.com/2013/04/08/android-build-system-ultimate-guide/&quot;&gt;Android Build System Ultimate Guide&lt;/a&gt;
+&lt;a href=&quot;http://source.android.com/source/initializing.html&quot;&gt;Establishing a Build Environment&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;android-ndk-和-aosp-build-system-的差异&quot;&gt;Android NDK 和 AOSP Build System 的差异&lt;/h1&gt;
+&lt;p&gt;前面我们对 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android NDK&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 做了比较详细的说明，所以在这一小节中就是对两者从下面几个方面进行一个差异对比：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;两种编译系统面向的开发人员群体&lt;/li&gt;
+  &lt;li&gt;生成的链接库或可执行文件的目的&lt;/li&gt;
+  &lt;li&gt;系统共享链接库的支持&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;两种编译系统面向的开发人员群体&quot;&gt;两种编译系统面向的开发人员群体&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Android NDK&lt;/code&gt; 它所面对的开发人员群体是&lt;code class=&quot;highlighter-rouge&quot;&gt;APP&lt;/code&gt; 开发人员，他们想使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;C/C++&lt;/code&gt; 代码来实现某种功能，然后在上层 APP 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Java&lt;/code&gt; 代码中来通过 JNI 的方式来调用这些函数。例如，一些手机游戏 APP 的开发人员，为了使得游戏运行时画面更加流畅，他们就常常会把这些图像渲染这块耗时和性能要求较高的模块通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;C/C++&lt;/code&gt; 代码调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;OpenGLES API&lt;/code&gt; 函数来实现，然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;ndk-build&lt;/code&gt; 编译成共享库文件，然后被上层的 APP 中的 Java 代码加载调用。&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 面向的开发人员群体则是一些底层操作系统的开发人员，他们需要根据自己的需求和硬件平台的特性对 &lt;code class=&quot;highlighter-rouge&quot;&gt;Android&lt;/code&gt; 源码进行一个定制修改，然后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 重新编译得到自己想要的 Android 系统的镜像和库文件。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;生成的链接库或可执行文件的目的&quot;&gt;生成的链接库或可执行文件的目的&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Android NDK&lt;/code&gt; 生成链接库或可执行文件的目的是为了执行实现上层 APP 层中的需要通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;C/C++&lt;/code&gt; 才能实现的某种功能，还是上面举过的例子，手机游戏 APP 开发人员需要通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;C/C++&lt;/code&gt; 才能实现一些性能要求很高的图像渲染操作。&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 中生成的链接库文件或可执行文件都是 Android 系统运行起来&lt;code class=&quot;highlighter-rouge&quot;&gt;必须依赖&lt;/code&gt;的库文件，非常重要！！！例如，我们前面一直举的  &lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so&lt;/code&gt; 就是由 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 编译出来的一个系统共享链接库文件，如果没有这个文件，那么 Android 系统的日志系统就挂了。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;系统共享链接库的支持&quot;&gt;系统共享链接库的支持&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Android NDK&lt;/code&gt; 中支持用户自己编写的 C/C++ 代码链接调用一部分系统共享链接库文件，例如 &lt;code class=&quot;highlighter-rouge&quot;&gt;liblog.so, libOpenSLES.so, libGLESv2.so&lt;/code&gt; 等库文件，有关 Andorid NDK 支持那些系统库文件，详见 NDK 的官方文档：&lt;a href=&quot;https://developer.android.com/ndk/guides/stable_apis.html&quot;&gt;Android NDK Native APIs&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP Build System&lt;/code&gt; 就好比是系统共享链接库的“妈”，既然这些库文件都由它编译出来的，那么 &lt;code class=&quot;highlighter-rouge&quot;&gt;AOSP&lt;/code&gt; 中任意一个模块肯定都可以使用全部的系统共享链接库文件。&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Sat, 17 Dec 2016 18:39:07 +0800</pubDate>
+        <link>http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</guid>
+        
+        <category>NDK</category>
+        
+        <category>AOSP</category>
+        
+        <category>Android</category>
+        
+        
+        <category>android</category>
+        
+      </item>
+    
+      <item>
+        <title>单生产者和单消费者共同操作同一个环形缓冲区的问题</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/circular_buffer.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;问题描述&quot;&gt;问题描述&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。&lt;/li&gt;
+  &lt;li&gt;生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。&lt;/li&gt;
+  &lt;li&gt;环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 &lt;code class=&quot;highlighter-rouge&quot;&gt;2^N&lt;/code&gt; 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
+    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;cp&quot;&gt;#define RING_BUFFER_SIZE N
+&lt;/span&gt;    
+ &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RingBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//环形缓冲区写入位置值
+&lt;/span&gt;     &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//环形缓冲区读取位置值
+&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;data_block&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//data_block 是环形缓冲区中所存放的数据单元的类型
+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;p&gt;在创建环形缓冲区之后，RingBuffer 结构体中的成员&lt;code class=&quot;highlighter-rouge&quot;&gt;w_pos&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;r_pos&lt;/code&gt;都被初始化为 0。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;判断环形缓冲区是否为空的伪代码：
+    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;c1&quot;&gt;//判断语句为真，RingBuffer 为空
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;判断环形缓冲区是否为满的伪代码：
+    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+     &lt;span class=&quot;c1&quot;&gt;//判断语句为真，RingBuffer 为满
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;生产者进程中的处理逻辑伪代码：
+    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//缓冲区满了
+&lt;/span&gt;     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+         &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+     &lt;span class=&quot;c1&quot;&gt;//否则，则将数据填入到环形缓冲区中空闲的单元中
+&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;some_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将需要写入的数据写入到指定的环形缓冲区单元中
+&lt;/span&gt;        
+     &lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将写入位置向前移动
+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;消费者进程中的处理逻辑伪代码：
+    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//缓冲区为空
+&lt;/span&gt;     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+         &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+     &lt;span class=&quot;c1&quot;&gt;//否则，从环形缓冲区中读取数据出来进行处理
+&lt;/span&gt;     &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//process() 函数只是对读取到的数据进行一个处理
+&lt;/span&gt;        
+     &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将读取位置向前移动
+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+    &lt;h1 id=&quot;疑惑&quot;&gt;疑惑？&lt;/h1&gt;
+    &lt;p&gt;如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加&lt;code class=&quot;highlighter-rouge&quot;&gt;互斥锁&lt;/code&gt;，上面代码是否会出现&lt;code class=&quot;highlighter-rouge&quot;&gt;Bug&lt;/code&gt;，或者不确定的状态？&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;而且我想了很多遍生产者和消费者的处理逻辑，他们只会在最后执行语句 &lt;code class=&quot;highlighter-rouge&quot;&gt;w_pos++&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;r_pos++&lt;/code&gt; 时改变两个进程都共享的值，虽然 &lt;code class=&quot;highlighter-rouge&quot;&gt;w_pos++&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;r_pos++&lt;/code&gt; 的操作不是原子操作的，但是好像是不是原子操作都不会对结果产生影响，我就是在这里思考不清楚！不知道大家对此有什么看法呢？能否举出特殊的栗子来描述一下。&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 14 Dec 2016 08:58:26 +0800</pubDate>
+        <link>http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</link>
+        <guid isPermaLink="true">http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</guid>
+        
+        <category>同步</category>
+        
+        <category>生产者消费者</category>
+        
+        <category>环形缓冲区</category>
+        
+        <category>RingBuffer</category>
+        
+        
+        <category>Linux</category>
+        
+      </item>
+    
+      <item>
+        <title>Ubuntu 软件源详解</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/ubuntu_logo.png&quot; alt=&quot;ubuntu_logo&quot; /&gt;&lt;/p&gt;
+&lt;h1 id=&quot;什么是软件源&quot;&gt;什么是软件源？&lt;/h1&gt;
+&lt;h2 id=&quot;ubuntu-中安装软件的方式&quot;&gt;Ubuntu 中安装软件的方式&lt;/h2&gt;
+&lt;p&gt;在 Ubuntu 中软件安装的方式和 Windows 系统中双击 exe 文件的傻瓜式软件安装的方式有很大的不同，它主要可以分为下面三种安装方式：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;通过 apt 包管理工具从软件源中安装&lt;/li&gt;
+  &lt;li&gt;通过 deb 格式的软件包安装&lt;/li&gt;
+  &lt;li&gt;从软件源码手动编译安装&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;软件源介绍&quot;&gt;软件源介绍&lt;/h2&gt;
+&lt;p&gt;Ubuntu 系统中软件源其实本质上就是一个软件仓库，在这个仓库中包含了 Ubuntu 系统中各种软件，需要什么软件，只要记得正确的软件名，就可以非常简单地通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt-get install &amp;lt;package-name&amp;gt;&lt;/code&gt; 命令进行安装，而卸载软件也非常方便，只需要运行 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt-get remove &amp;lt;package-name&amp;gt;&lt;/code&gt; 的命令即可。而在平时的使用过程中，我们使用最多的软件安装方式就是&lt;strong&gt;软件源&lt;/strong&gt;的方式。&lt;/p&gt;
+
+&lt;p&gt;其实通过软件源安装软件的原理非常简单，Ubuntu 系统中自带了一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;apt&lt;/code&gt; 的软件包管理工具，它的主要功能就是负责 Ubuntu 系统中所有软件包的管理，包括从软件源中下载软件，卸载系统中已经安装的软件等。而每当我们通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo apt-get install &amp;lt;package-name&amp;gt;&lt;/code&gt; 命令去安装一个软件时，apt 包管理工具就会从系统中一个叫做&lt;code class=&quot;highlighter-rouge&quot;&gt;源列表&lt;/code&gt;的文件中去读取软件源的网址信息，查找可以包含该软件的软件源的网址，然后就从这个网址上把指定的软件给下载下来，然后由 apt 包管理工具在本地进行一些解压和安装的其他操作。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;软件源的分类&quot;&gt;软件源的分类&lt;/h2&gt;
+&lt;p&gt;在 Ubuntu 中软件源其实还细分为下面两种：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Ubuntu 官方软件源&lt;/li&gt;
+  &lt;li&gt;PPA 软件源&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;ubuntu-官方软件源&quot;&gt;Ubuntu 官方软件源&lt;/h3&gt;
+&lt;p&gt;Ubuntu 官方软件源中包含了 Ubuntu 系统中所用到的绝大部分的软件，它对应的&lt;code class=&quot;highlighter-rouge&quot;&gt;源列表&lt;/code&gt;是 &lt;em&gt;/etc/apt/sources.list&lt;/em&gt;。在这个文件中，记录了 Ubuntu 官方源的地址，基本格式内容如下所示：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
+deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main universe restricted multiverse
+deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
+deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted multiverse
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;这里我使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;http://mirrors.zju.edu.cn&lt;/code&gt; 镜像地址，它其实和 Ubuntu 官方的镜像是相同的，我这里做了替换主要是为了加快 apt 安装和更新软件源的速度，毕竟学校里的内网速度还是相当不错的。&lt;/p&gt;
+
+&lt;h3 id=&quot;ppa-软件源&quot;&gt;PPA 软件源&lt;/h3&gt;
+&lt;p&gt;以前我一直不明白既然有了官方的软件源，为什么还多出了一个 PPA 软件源，统一用 Ubuntu 官方源不是挺好吗？
+直到在网上看了有关有关 PPA 的介绍后，我才了解了它的真正用途。&lt;/p&gt;
+
+&lt;p&gt;PPA 源出现的背景是因为&lt;strong&gt;系统自带的源是很有限的&lt;/strong&gt;，我们肯定需要一些其他的软件包然而如果是直接下载deb格式的文件的话，又不能获取到更新和维护，所以这就用到了十分重要的 PPA 源了。&lt;/p&gt;
+
+&lt;p&gt;所谓 PPA 源，就是指 &lt;code class=&quot;highlighter-rouge&quot;&gt;“Personal Package Archives”&lt;/code&gt; ，也就是个人软件包集。这其实是一个网站，即－&lt;code class=&quot;highlighter-rouge&quot;&gt;launchpad.net&lt;/code&gt;。Launchpad 是 Ubuntu 母公司 Canonical 有限公司所架设的网站，是一个提供维护、支援或联络 Ubuntu 开发者的平台。由于不是所有的软件都能进入 Ubuntu 的官方的软件库，launchpad.net 提供了 PPA，允许开发者建立自己的软件仓库，自由的上传软件。供用户安装和查看更新。&lt;/p&gt;
+
+&lt;h1 id=&quot;软件源替换和添加&quot;&gt;软件源替换和添加&lt;/h1&gt;
+
+&lt;h2 id=&quot;为什么要替换系统默认的官方软件源&quot;&gt;为什么要替换系统默认的官方软件源？&lt;/h2&gt;
+&lt;p&gt;如果你是一个程序员，那么我觉得我回答这个问题会显得很白痴，但是如果你是一个 Ubuntu 小白用户，我觉得我还是有必要和大家解释下这个原因：这时因为 Ubuntu 的官方软件源的服务器是在国外，而从我们中国访问国外的网站都必须先经过一堵“墙”来验证这个网站是否可以访问，另外一个原因就是服务器在国外，距离远了，访问的速度当然没有直接访问国内的网站快。正是由于这种的访问检查和网络传输距离问题，导致我们通常访问 Ubuntu 官方软件源的速度很慢。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;那么有什么好的方法来解决访问 Ubuntu 官方软件源速度慢的问题吗？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;当然啦！就是下面就要介绍的替换官方软件源的方法。&lt;/p&gt;
+
+&lt;h2 id=&quot;如何替换系统默认的官方软件源&quot;&gt;如何替换系统默认的官方软件源？&lt;/h2&gt;
+&lt;p&gt;为了解决上面提到的这个问题，在我们国内有许多学校和公司的镜像网站都对 Ubuntu 的官方软件源进行了镜像备份，并且定期地进行同步更新，而国内访问这些镜像网站的速度都要比直接访问 Ubuntu 官方镜像源要快地多，所以我们只要将 Ubuntu 官方软件源的网址替换成国内的 Ubuntu 软件源镜像网站的网址就可以达到加速的目的了。&lt;/p&gt;
+
+&lt;p&gt;前面我已经介绍过 Ubuntu 官方软件源对应的&lt;code class=&quot;highlighter-rouge&quot;&gt;源列表&lt;/code&gt;是 &lt;em&gt;/etc/apt/sources.list&lt;/em&gt;，我们只要对这个文件中内容进行替换就可以了，例如我自己电脑上使用就是浙江大学开源镜像网站上的软件源，如下所示：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
+deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main universe restricted multiverse
+deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
+deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
+deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;下面我也贴出一个汇总了我们国内常用开源镜像站点的信息，你们可以到这些地方去获取 Ubuntu 软件源的源列表：&lt;a href=&quot;https://segmentfault.com/a/1190000000375848&quot;&gt;国内开源镜像站点汇总&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注意：我推荐你在选择开源镜像站点，首先去 ping 一下你到这个站点看一下网络速度，选择一个比较快的站点就好。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;如何添加-ppa-软件源&quot;&gt;如何添加 PPA 软件源&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;添加 PPA 软件源的命令&lt;/strong&gt;：&lt;code class=&quot;highlighter-rouge&quot;&gt;sudo add-apt-repository ppa:user/ppa-name&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;删除 PPA 软件源的命令&lt;/strong&gt;：&lt;code class=&quot;highlighter-rouge&quot;&gt;sudo add-apt-repository --remove ppa:user/ppa-name&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;例如，我们想要添加一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Wireshark&lt;/code&gt; 软件的 PPA 源，我们可以根据它官网上提供的命令来进行添加，如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/test.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;当我们添加完 PPA 源之后，系统就会在 &lt;em&gt;/etc/apt/sources.list.d/&lt;/em&gt; 文件夹里创建了两个文件：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /etc/apt/sources.list.d
+
+&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;ls | grep wireshark
+wireshark-dev-stable-trusty.list
+wireshark-dev-stable-trusty.list.save
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;我们再来打开一下 &lt;code class=&quot;highlighter-rouge&quot;&gt;wireshark-dev-stable-trusty.list&lt;/code&gt; 文件看看里面的内容是什么：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;deb http://ppa.launchpad.net/wireshark-dev/stable/ubuntu trusty main
+# deb-src http://ppa.launchpad.net/wireshark-dev/stable/ubuntu trusty main
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;哈哈～原来文件里就是添加了一个跟软件源一模一样的东西，他们的作用殊途同归啊。我想这其实是 Ubuntu 为了分辨官方的源和第三方的源才设计成在sources.list 和 sources.list.d/这两个地方中存储软件源信息。因为第三方的源毕竟不太可信，如果随便更新的话可是会出事情的。&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 24 Oct 2016 06:53:49 +0800</pubDate>
+        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html</guid>
+        
+        <category>PPA</category>
+        
+        <category>APT</category>
+        
+        <category>Ubuntu</category>
+        
+        
+        <category>利器</category>
+        
+      </item>
+    
+      <item>
+        <title>Git 常用命令</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/woshijpf_git-command-page-001.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;1-我为什么要做这个--cheat-sheet&quot;&gt;1. 我为什么要做这个  Cheat Sheet？&lt;/h1&gt;
+&lt;p&gt;从接触 &lt;code class=&quot;highlighter-rouge&quot;&gt;Git&lt;/code&gt; 到现在已经快两年多了，虽然以前入门学习 Git 时刷过一遍 &lt;a href=&quot;http://git-scm.com/book/zh/v2&quot;&gt;《Pro Git》&lt;/a&gt;（这本书就像是 Git 的红宝书，非常值得你全部通读一遍），但是因为那时并没有什么机会去使用 Git，所以曾经看过的许多 Git 命令也就慢慢淡忘了，感觉自己的 Git 水平还仅仅停留在 &lt;code class=&quot;highlighter-rouge&quot;&gt;add&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;commit&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;push&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;pull&lt;/code&gt; 几个基本命令上，完全没有发挥出 Git 这个 “神器” 该有的威力。&lt;/p&gt;
+
+&lt;p&gt;作为一个程序员，我相信你肯定有过这样一种体会：当你在学习某种技术或者某种工具时，如果你不掉几次坑，不犯几次错，你就无法深入地掌握这门技术或者工具。学习 Git 也是如此，只有你在项目中千锤百炼地使用 Git，你的 Git 使用能力才会得到提升，面对以前遇到过的问题，也才会迎刃而解。&lt;/p&gt;
+
+&lt;p&gt;其实我们日常使用的 Git 命令也就五六个，如果想要熟练使用 Git 的话，那么你恐怕就需要掌握 50 ～ 100 个 Git 命令。但是，人的记忆能力毕竟有限，要想一次性完全记住这些命令是不可能的，所以我就做了一个有关 Git 常用的命令的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Cheat Sheet&lt;/code&gt;，以便在记不清楚命令时能够快速地查到所需的命令。（&lt;strong&gt;我现在就是把我这张  Cheat Sheet 打印出来，贴在我电脑边上的隔板上，以便进行查找。&lt;/strong&gt;）&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;2-git-command-cheat-sheet&quot;&gt;2. Git Command Cheat Sheet&lt;/h1&gt;
+
+&lt;h2 id=&quot;21-git-关键概念&quot;&gt;2.1 Git 关键概念&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/git_principle.jpg&quot; alt=&quot;&quot; /&gt;
+要想深入地理解 Git 各个命令的含义，那么首先就必须弄清楚 Git 中三个非常重要的概念：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;工作区（workspace）：工作区就是我们实际电脑中通过文件管理器实际看到的目录。&lt;/li&gt;
+  &lt;li&gt;暂存区（index）：暂存区像一个临时的缓冲区域，临时保存了你的改动。&lt;/li&gt;
+  &lt;li&gt;仓库（repository）：仓库其实又可以分为&lt;strong&gt;本地仓库&lt;/strong&gt;和&lt;strong&gt;远程仓库&lt;/strong&gt;两种。因为 Git 是一个分布式的管理工具，我们可以将我们本地仓库所做的修改同步地更新到远程的仓库上。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;上面这张图就非常简洁地说明了这三者之间的关系，同时也列出了 Git 中常用的一些命令。&lt;/p&gt;
+
+&lt;h2 id=&quot;22-git-command-cheat-sheet&quot;&gt;2.2 Git Command Cheat Sheet&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/woshijpf_git-command-page-001.jpg&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/woshijpf_git-command-page-002.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;上面的是图片格式的 Cheat Sheet，PDF 版本的 Cheat Sheet &lt;a href=&quot;https://www.cheatography.com/woshijpf/cheat-sheets/git-command/pdf/&quot;&gt;点此下载&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;3-参考文章&quot;&gt;3. 参考文章&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html&quot;&gt;常用 Git 命令清单&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://ndpsoftware.com/git-cheatsheet.html&quot;&gt;git-cheatsheet 动画图示&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://raw.githubusercontent.com/AlexZeitler/gitcheatsheet/master/gitcheatsheet.jpg&quot;&gt;AlexZeitler’s Git Cheat&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Tue, 18 Oct 2016 06:33:12 +0800</pubDate>
+        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2016/10/17/Git-Command.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2016/10/17/Git-Command.html</guid>
+        
+        <category>Git</category>
+        
+        
+        <category>利器</category>
+        
+      </item>
+    
+      <item>
+        <title>Linux 中的 EOF 到底是什么？</title>
+        <description>&lt;h1 id=&quot;eof-的定义&quot;&gt;EOF 的定义&lt;/h1&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;EOF 是 end of file 的缩写，表示”文字流”（stream）的结尾。这里的”文字流”，可以是文件（file），也可以是标准输入（stdin）。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;以前在学习 C 语言文件操作的时候，一直记得 EOF 就是一个标记，通过它可以判断程序是否读取到文件的末尾了，例如下面的这段代码就是将一个文本文件中的字符输出到标准输出中，并通过 EOF 来判断程序是否读到了文件末尾：&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;
+&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define FILENAME &quot;gdb_test.c&quot;
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;FILE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fopen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FILENAME&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;r&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fgetc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EOF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fputc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;所以，我一直很好奇 &lt;code class=&quot;highlighter-rouge&quot;&gt;EOF&lt;/code&gt; 到底是什么个什么东西，它只是一个简单的常量还是一个特殊的字符呢？&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;EOF&lt;/strong&gt; 定义在 &lt;em&gt;/usr/include/stdio.h&lt;/em&gt; 文件中：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-C&quot;&gt;/* End of file character.
+Some things throughout the library rely on this being -1.  */
+    #ifndef EOF
+    # define EOF (-1)
+    #endif
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从上面 &lt;code class=&quot;highlighter-rouge&quot;&gt;EOF&lt;/code&gt; 的定义我们可以看出 EOF 本质上就是一个值为&lt;code class=&quot;highlighter-rouge&quot;&gt;-1&lt;/code&gt;的常量！&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;怎么通过-eof-来判断程序是否读取到了文件末尾&quot;&gt;怎么通过 EOF 来判断程序是否读取到了文件末尾？&lt;/h1&gt;
+&lt;p&gt;Linux 系统一个非常重要的思想就是：&lt;strong&gt;一切皆文件。&lt;/strong&gt;不管是标准输入，文件系统中的普通文本文件，还是网络流都可以看做是文件，都可以通过 read/write 函数进行读写操作。因此，不同的文件类型，判断是否读取到文件末尾的方式也就有所不同，下面就按照&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;普通文本文件&lt;/li&gt;
+  &lt;li&gt;标准输入文件（stdin）&lt;/li&gt;
+  &lt;li&gt;socket 流文件&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这三类文件来介绍判断它们是否读取到文件末尾的方法。&lt;/p&gt;
+
+&lt;h2 id=&quot;普通文本文件&quot;&gt;普通文本文件&lt;/h2&gt;
+&lt;p&gt;这里的普通文件指的是我们平时在通过文件管理器所能看到那些文本文件，它存在于 Linux 中的文件系统中，并且文件的大小是固定的。&lt;/p&gt;
+
+&lt;p&gt;对于这种文件，Linux 系统判断普通文本文件是否读取到文件末尾的方法是：&lt;strong&gt;read 函数会对所打开的文件维护一个读取指针，然后根据这个指针跟文件开始位置的指针值相减得到一个相对于文件开始位置的偏移字节数，最后通过这样一个偏移字节数和文件本身的大小进行一个比较，如果相对于文件开始位置的偏移字节数大于文件本身的大小，那么就返回一个 EOF 常量，说明此时已经读取到文件末尾了。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;标准输入文件&quot;&gt;标准输入文件&lt;/h2&gt;
+&lt;p&gt;标准输入文件（stdin）它对应的是外设键盘输入，而在 Linux 系统中它被抽象成一个文件，准确地说是一个流文件。这种文件和上面普通文本文件最大的区别就是它的文件大小是不固定的，它就像是一个水管的进水端，可以在任何时候都可以接收输入。&lt;/p&gt;
+
+&lt;p&gt;正是因为标准输入文件这种流式的特点，决定了无法通过前面提到那种比较文件大小方法来判断是否读取到了文件末尾。因此，Linux 系统判断标准输入文件是否读取到文件末尾的方法是：&lt;strong&gt;设置一个特殊的输入标记来表示文件末尾，而在Linux 系统中这个标记就是组合键&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+D&lt;/code&gt;，当系统捕获到这个组合键时，就让 r read 函数返回一个 EOF 常量，告知程序已经读取到标准文件的末尾了。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;socket-流文件&quot;&gt;socket 流文件&lt;/h2&gt;
+&lt;p&gt;socket 流文件和标准输入文件类似都是流式文件，并且它是从网络上进行数据读取，所以上面两种判断文件是否读取到末尾的方法都不适用于 socket 流文件。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;那么客户端进程怎么判断服务端进程是否已经写完所有数据？&lt;/strong&gt;
+在 socket 流文件中，当客户端进程通过 read 函数读取远程服务端进程发送过来的数据时，使用的是阻塞I/O的方式进行读取的。只要客户端和服务端之间的连接没有断开，如果服务端没有向 socket 写入数据，那么客户端的读操作就会阻塞，直到服务端中写入了新的数据。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;如果服务端进程关闭了socket连接，那么客户端会接收到服务端发送过来的一个 TCP 协议的 FIN 数据包，然后客户端进程中原本阻塞着等待接收服务端进程数据的 read函数此时就会被唤醒，返回一个值 0。&lt;/strong&gt;这跟我们前面提到两种文件读到文件末尾返回 EOF（值为-1）的情况有点差别，所以在程序中从 socket 进行读取操作时，判断数据流结束的标志不是 -1 而是 0。&lt;/p&gt;
+
+&lt;p&gt;所以，一个简单的从 socket 文件读取数据的样例代码，通常是下面这样的：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-C&quot;&gt;    char recvline[MAX_LINE_LENGTH];
+    int read_count;
+    while ((read_count = read(sock_fd, recvline, MAX_LINE_LENGTH)) &amp;gt; 0)
+    {
+        printf(&quot;%s\n&quot;, &quot;String received from server: &quot;);
+        fputs(recvline, stdout);
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&quot;总结&quot;&gt;总结&lt;/h1&gt;
+&lt;p&gt;所以，一定要记住这样一个概念：&lt;strong&gt;EOF 是一个常量而不是一个字符！&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.ruanyifeng.com/blog/2011/11/eof.html&quot;&gt;EOF是什么？&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Fri, 08 Jul 2016 05:29:43 +0800</pubDate>
+        <link>http://localhost:4000/linux/2016/07/07/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html</link>
+        <guid isPermaLink="true">http://localhost:4000/linux/2016/07/07/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html</guid>
+        
+        <category>EOF</category>
+        
+        <category>Linux</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>Android NDK Tombstone/Crash 分析</title>
+        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/android_bug.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;前言&quot;&gt;前言&lt;/h1&gt;
+&lt;p&gt;作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。&lt;/p&gt;
+
+&lt;p&gt;通常我们调试程序 Bug 的方法主要有下面 3 种：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;打印日志信息
+ 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。&lt;/li&gt;
+  &lt;li&gt;单步调试
+ 这个方法则主要使用到了调试工具，例如 gdb 和 Visual Studio 中内置的调试器。这些高级的工具使得我们可以在程序中任何位置设置断点，或者查看相关变量的值，或者更进一步直接查看 CPU 中寄存器的值。&lt;/li&gt;
+  &lt;li&gt;分析崩溃后的错误信息
+ 这种方法则主要是分析程序崩溃之后产生的错误信息相关文件来确定产生 Bug 的原因和位置。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;android-开发中常见-crash-的情况&quot;&gt;Android 开发中常见 Crash 的情况&lt;/h1&gt;
+&lt;p&gt;在 Android 开发中，程序 Crash 分三种情况：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;未捕获的异常&lt;/li&gt;
+  &lt;li&gt;ANR（Application Not Responding）&lt;/li&gt;
+  &lt;li&gt;闪退（NDK 程序引发错误）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其中未捕获的异常根据 logcat 打印的堆栈信息很容易定位错误。&lt;/p&gt;
+
+&lt;p&gt;ANR错误也好查，Android规定，应用与用户进行交互时，如果5秒内没有响应用户的操作，则会引发ANR错误，并弹出一个系统提示框，让用户选择继续等待或立即关闭程序。并会在/data/anr目录下生成一个traces.txt文件，记录系统产生anr异常的堆栈和线程信息。&lt;/p&gt;
+
+&lt;p&gt;如果是闪退，这问题比较难查，通常是项目中用到了 NDK 引发某类致命的错误导致闪退。因为 NDK 是使用 C/C++ 来进行开发，熟悉 C/C++ 的程序员都知道，指针和内存管理是最重要也是最容易出问题的地方，稍有不慎就会遇到诸如内存地址访问错误、使用野指针、内存泄露、堆栈溢出、初始化错误、类型转换错误、数字除0等常见的问题，导致最后都是同一个结果：程序崩溃。它不会像在 Java 层产生的异常时弹出“xxx程序无响应，是否立即关闭”之类的提示框。当发生 NDK 错误后，logcat 打印出来的那堆日志根据看不懂，更别想从日志当中定位错误的根源。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;那么我们该怎么调试引发 Crash 的 NDK 程序呢？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;哈哈，好在 Google 早就料到了我们写的 NDK 代码肯定会漏洞百出。首先，当 NDK 程序在发生 Crash 时，它会在路径 &lt;em&gt;/data/tombstones/&lt;/em&gt; 下产生导致程序 Crash 的文件 tombstone_xx。并且 Google 还在 NDK 包中为我们提供了一系列的调试工具，例如 &lt;strong&gt;addr2line&lt;/strong&gt;、&lt;strong&gt;objdump&lt;/strong&gt;、&lt;strong&gt;ndk-stack&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h1 id=&quot;tombstone&quot;&gt;Tombstone&lt;/h1&gt;
+
+&lt;h2 id=&quot;linux-信号机制&quot;&gt;Linux 信号机制&lt;/h2&gt;
+&lt;p&gt;在介绍 Tombstone 之前，我们首先补充一个 Linux 信号机制的知识。&lt;/p&gt;
+
+&lt;p&gt;信号机制是 Linux 进程间通信的一种重要方式，Linux 信号一方面用于正常的进程间通信和同步，如任务控制(SIGINT, SIGTSTP,SIGKILL, SIGCONT，……)；另一方面，它还负责监控系统异常及中断。 当应用程序运行异常时， Linux 内核将产生错误信号并通知当前进程。 当前进程在接收到该错误信号后，可以有三种不同的处理方式。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;忽略该信号。&lt;/li&gt;
+  &lt;li&gt;捕捉该信号并执行对应的信号处理函数(signal handler)。&lt;/li&gt;
+  &lt;li&gt;执行该信号的缺省操作(如 SIGSEGV， 其缺省操作是终止进程)。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;当 Linux 应用程序在执行时发生严重错误，一般会导致程序 crash。其中，Linux 专门提供了一类 crash 信号，在程序接收到此类信号时，缺省操作是将 crash 的现场信息记录到 core 文件，然后终止进程。&lt;/p&gt;
+
+&lt;p&gt;Crash 信号列表：&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Signal&lt;/th&gt;
+      &lt;th&gt;Description&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGSEGV&lt;/td&gt;
+      &lt;td&gt;Invalid memory reference.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGBUS&lt;/td&gt;
+      &lt;td&gt;Access to an undefined portion of a memory object.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGFPE&lt;/td&gt;
+      &lt;td&gt;Arithmetic operation error, like divide by zero.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGILL&lt;/td&gt;
+      &lt;td&gt;Illegal instruction, like execute garbage or a privileged instruction&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGSYS&lt;/td&gt;
+      &lt;td&gt;Bad system call.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGXCPU&lt;/td&gt;
+      &lt;td&gt;CPU time limit exceeded.&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;SIGXFSZ&lt;/td&gt;
+      &lt;td&gt;File size limit exceeded.&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;什么-tombstone&quot;&gt;什么 Tombstone？&lt;/h2&gt;
+&lt;p&gt;Android Native 程序本质上就是一个 Linux 程序，因此当它在执行时发生严重错误，也会导致程序 crash，然后产生一个记录 crash 的现场信息的文件，而这个文件在 Android 系统中就是 tombstone 文件。&lt;/p&gt;
+
+&lt;p&gt;Tombstone 英文的本意是墓碑，我觉得用这个单词来表示程序 Crash 之后产生的现场死亡信息真的再恰当不过了，tombstone 文件的确就像墓碑一样记录了死亡了的进程的基本信息（例如进程的进程号，线程号），死亡的地址（在哪个地址上发生了 Crash），死亡时的现场是什么样的（记录了一系列的堆栈调用信息）等等。&lt;/p&gt;
+
+&lt;p&gt;因此，分析出现 Crash 的原因和代码位置最重要的就是分析这个 tombstone 文件。&lt;/p&gt;
+
+&lt;p&gt;tombstone 文件位于路径 &lt;em&gt;/data/tombstones/&lt;/em&gt; 下，&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root@x86:/data/tombstones &lt;span class=&quot;c&quot;&gt;# ls&lt;/span&gt;
+tombstone_00
+tombstone_01
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;它的主要内容如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+Build fingerprint: 'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'
+Revision: '0'
+ABI: 'x86'
+pid: 1019, tid: 1019, name: surfaceflinger  &amp;gt;&amp;gt;&amp;gt; /system/bin/surfaceflinger &amp;lt;&amp;lt;&amp;lt;
+signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x4
+    eax a6265c06  ebx b7467d88  ecx b7631a22  edx a6265c06
+    esi 00000000  edi b6867140
+    xcs 00000073  xds 0000007b  xes 0000007b  xfs 00000000  xss 0000007b
+    eip b745a639  ebp bfcfc1e8  esp bfcfc150  flags 00010282
+
+backtrace:
+    #00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
+    #01 pc 00034b86  /system/lib/libsurfaceflinger.so
+    #02 pc 0003229e  /system/lib/libsurfaceflinger.so
+    #03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;amp;)+652)
+    #04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
+    #05 pc 0004eafb  /system/lib/libgui.so (android::Surface::queueBuffer(ANativeWindowBuffer*, int)+411)
+    #06 pc 0004ce06  /system/lib/libgui.so (android::Surface::hook_queueBuffer(ANativeWindow*, ANativeWindowBuffer*, int)+38)
+    #07 pc 00014bc6  /system/lib/egl/libGLES_android.so
+    #08 pc 00017f73  /system/lib/egl/libGLES_android.so (eglSwapBuffers+163)
+    #09 pc 00015fdb  /system/lib/libEGL.so (eglSwapBuffers+203)
+    #10 pc 000013ea  /system/lib/hw/hwcomposer.x86.so
+    #11 pc 00034730  /system/lib/libsurfaceflinger.so
+    #12 pc 000256d4  /system/lib/libsurfaceflinger.so
+    #13 pc 00024bf4  /system/lib/libsurfaceflinger.so
+    #14 pc 000236fb  /system/lib/libsurfaceflinger.so
+    #15 pc 0002338a  /system/lib/libsurfaceflinger.so
+    #16 pc 0001e0ff  /system/lib/libsurfaceflinger.so
+    #17 pc 0001d9ce  /system/lib/libutils.so (android::Looper::pollInner(int)+926)
+    #18 pc 0001db73  /system/lib/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+67)
+    #19 pc 0001e561  /system/lib/libsurfaceflinger.so
+    #20 pc 00022ce7  /system/lib/libsurfaceflinger.so (android::SurfaceFlinger::run()+39)
+    #21 pc 00000ca3  /system/bin/surfaceflinger
+    #22 pc 0001365a  /system/lib/libc.so (__libc_init+106)
+    #23 pc 00000da8  /system/bin/surfaceflinger
+
+stack:
+         bfcfc110  00000000  
+         bfcfc114  b6839270  
+         bfcfc118  00000000  
+         bfcfc11c  00000000  
+         bfcfc120  b68394e0  
+         bfcfc124  00000002  
+         bfcfc128  00000002  
+         bfcfc12c  b75d8185  /system/lib/libutils.so (android::RefBase::incStrong(void const*) const+53)
+         bfcfc130  b6839270  
+         bfcfc134  bfcfc1e8  [stack]
+         bfcfc138  00000002  
+         bfcfc13c  a6265c06  
+         bfcfc140  b7467d88  /system/lib/libui.so
+         bfcfc144  00000000  
+         bfcfc148  b6867140  
+         bfcfc14c  b745a639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
+    #00  bfcfc150  b683af18  
+         bfcfc154  bfcfc1e8  [stack]
+         bfcfc158  00000000  
+         bfcfc15c  00000000  
+         bfcfc160  00000000  
+         bfcfc164  b683af18  
+         bfcfc168  b75ec9c4  /system/lib/libutils.so
+         bfcfc16c  b75d8285  /system/lib/libutils.so (android::RefBase::weakref_type::decWeak(void const*)+37)
+         bfcfc170  00000000  
+         bfcfc174  00000000  
+         bfcfc178  00000000  
+         bfcfc17c  00000000  
+         bfcfc180  b7642968  /system/lib/libsurfaceflinger.so
+         bfcfc184  bfcfc1e8  [stack]
+         bfcfc188  b6867140  
+         bfcfc18c  b7622b87  /system/lib/libsurfaceflinger.so
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;tombstone-文件解析&quot;&gt;tombstone 文件解析&lt;/h2&gt;
+&lt;p&gt;第一次看到 tombstone 文件时，我也是一头雾水，一脸懵逼，加上调 Bug 时本来就烦躁的心情，简直不想多看它一眼。但是没办法，导致 Crash 的原因只有在这里才能找到，所以我们硬着头皮也要去分析啊（最好还是在心情比较平静时去调 Bug 吧，这样效率可能会更好一点）。&lt;/p&gt;
+
+&lt;p&gt;tombstone 文件它主要由下面几部分组成：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Build fingerprint&lt;/li&gt;
+  &lt;li&gt;Crashed process and PIDs&lt;/li&gt;
+  &lt;li&gt;Terminated signal and fault address&lt;/li&gt;
+  &lt;li&gt;CPU registers&lt;/li&gt;
+  &lt;li&gt;Call stack&lt;/li&gt;
+  &lt;li&gt;Stack content of each call&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;但是也不是 tombstone 中的信息我们都需要分析，我们最主要的就是分析 &lt;strong&gt;Crashed process and PIDs&lt;/strong&gt;、&lt;strong&gt;Terminated signal and fault address&lt;/strong&gt;和&lt;strong&gt;Call stack&lt;/strong&gt; 部分。&lt;/p&gt;
+
+&lt;h3 id=&quot;crashed-process-and-pids-信息&quot;&gt;Crashed process and PIDs 信息&lt;/h3&gt;
+&lt;p&gt;从上面 tombstone 文件中的第 5 行中我们可以看到 Crash 掉进程的基本信息，如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nl&quot;&gt;pid:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1019&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1019&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;surfaceflinger&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;surfaceflinger&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;如果 pid 等于 tid ，那么就说明这个程序是在主线程中 Crash 掉的，name 的属性则表示 Crash 进程的名称以及在文件系统中位置。&lt;/p&gt;
+
+&lt;h3 id=&quot;terminated-signal-and-fault-address-信息&quot;&gt;Terminated signal and fault address 信息&lt;/h3&gt;
+&lt;p&gt;在上面 tombstone 文件中的第 6 行中我们可以看到程序是因为什么信号导致了 Crash 以及出现错误的地址，如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;signal&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SIGSEGV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SEGV_MAPERR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fault&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x4&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;这里的信息说明出现进程 Crash 的原因是因为程序产生了段错误的信号，访问了非法的内存空间，而访问的非法地址是 0x4。&lt;/p&gt;
+
+&lt;h3 id=&quot;call-stack-信息&quot;&gt;Call Stack 信息&lt;/h3&gt;
+&lt;p&gt;调用栈信息是分析程序崩溃的非常重要的一个信息，它主要记录了程序在 Crash 前的函数调用关系以及当前正在执行函数的信息，它对应的是我们 tombstone 文件中 backtrace 符号开始的信息，上面例子中的 backtrace 的信息如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nl&quot;&gt;backtrace:&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#01 pc 00034b86  /system/lib/libsurfaceflinger.so
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#02 pc 0003229e  /system/lib/libsurfaceflinger.so
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;amp;)+652)
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在上面的输出信息中， ##00，#01，#02……等表示的都是函数调用栈中栈帧的编号，其中编号越小的栈帧表示着当前最近调用的函数信息，所以栈帧标号 #00 表示的就是当前正在执行并导致程序 &lt;strong&gt;Crash&lt;/strong&gt; 函数的信息。&lt;/p&gt;
+
+&lt;p&gt;在栈帧的每一行中，pc 后面的 16 进制数值表示的是当前函数正在执行语句的在共享链接库或者可执行文件中的位置，然后 /system/lib/libui.so 则表示的是当前执行指令是在哪个文件当中，后面的小括号则是注明对应的是哪个函数。&lt;/p&gt;
+
+&lt;p&gt;例如，在上面的例子中，我们就可以定位到是程序是在 Fence::waitForever(char const* )中出现了错误，但是具体在那一行呢，我们还不是特别清楚，所以就需要我们进一步地使用更加高级的工具来帮助我们解析 tombstone 中有关调用栈的信息。&lt;/p&gt;
+
+&lt;h2 id=&quot;定位-crash-源码位置的工具&quot;&gt;定位 Crash 源码位置的工具&lt;/h2&gt;
+&lt;p&gt;前面我们简要地介绍了 tombstone 文件的结构以及每个部分的相关含义，我们可以得到导致程序 Crash 掉的主要原因是什么（根据 Signal 的类型），也知道了是在主线程还是在子线程中挂掉了，但是我们对程序具体在代码中的哪个位置挂掉了，还不是特别清楚，最多还只是通过 &lt;strong&gt;backtrace&lt;/strong&gt; 中的栈帧的信息大概定位到位于哪个函数中，但具体是哪个文件哪个函数那一行还是不清楚的。所以，我们接下来就需要借助一些更加高级的工具来定位 Bug 在代码中的具体位置。&lt;/p&gt;
+
+&lt;h3 id=&quot;说明&quot;&gt;说明&lt;/h3&gt;
+&lt;p&gt;Google 提供的 Android NDK 开发包中已经为我们提供了非常便利好用的解析工具了，我们主要使用了下面两种工具来解析 tombstone：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;addr2line&lt;/li&gt;
+  &lt;li&gt;ndk-stack&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;所以，在使用这两种工具之前，你首先得把 Android NDK 工具包在你的电脑上安装好。&lt;/p&gt;
+
+&lt;h3 id=&quot;addr2line&quot;&gt;addr2line&lt;/h3&gt;
+&lt;p&gt;addr2line 是 NDK 中用来获得指定动态链接库文件或者可执行文件中指定地址对应的源代码信息，它位于 NDK 包中的如下位置中：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$NDK_HOME&lt;/span&gt;/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;其中 NDK_HOME 表示你 NDK 的安装路径。&lt;/strong&gt;
+虽然在 Linux 中同样有 addr2line 命令了，但是它与 NDK 中提供的 addr2line 指令还是略有差别的，所以我们可以使用 &lt;strong&gt;alias&lt;/strong&gt; 来将 shell 中默认的 addr2line 指令链接的 NDK 的上述路径中，命令如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;addr2line&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'$NDK_HOME/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这样之后，我们就可以在 Linux 中的 shell 环境中来直接使用 &lt;strong&gt;addr2line&lt;/strong&gt; 命令了。
+addr2line 命令的各个参数的含义如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ &lt;/span&gt;addr2line -h
+Usage: addr2line &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;option&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;addr&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)]&lt;/span&gt;
+ Convert addresses into line number/file name pairs.
+ If no addresses are specified on the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, they will be &lt;span class=&quot;nb&quot;&gt;read &lt;/span&gt;from stdin
+ The options are:
+  @&amp;lt;file&amp;gt;                Read options from &amp;lt;file&amp;gt;
+  -a --addresses         Show addresses
+  -b --target&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;bfdname&amp;gt;  Set the binary file format
+  -e --exe&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;executable&amp;gt;  Set the input file name &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default is a.out&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  -i --inlines           Unwind inlined functions
+  -j --section&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;name&amp;gt;    Read section-relative offsets instead of addresses
+  -p --pretty-print      Make the output easier to &lt;span class=&quot;nb&quot;&gt;read &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;humans
+  -s --basenames         Strip directory names
+  -f --functions         Show &lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;names
+  -C --demangle[&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;style]  Demangle &lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;names
+  -h --help              Display this information
+  -v --version           Display the program&lt;span class=&quot;s1&quot;&gt;'s version
+
+addr2line: supported targets: elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big elf32-little elf32-big pe-x86-64 pe-i386 plugin srec symbolsrec verilog tekhex binary ihex
+Report bugs to &amp;lt;http://www.sourceware.org/bugzilla/&amp;gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;addr2line 的基本用法如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ &lt;/span&gt;addr2line -f -e libui.so 00006639
+_ZN7android5Fence11waitForeverEPKc
+/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;哈哈，使用了 addr2line 工具之后，我们终于看到 libui.so 文件中地址 00006639 对应的源码是什么了，它对应的是 Android 系统源码中 &lt;em&gt;/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59&lt;/em&gt; 处代码（因为上面的 tombstone 文件是由于 Android 系统中的 surfaceFlinger 进程崩溃而产生的，所以它对应的源码也是 Android 系统中有关 SurfaceFlinger 部分的源码）。&lt;/p&gt;
+
+&lt;h3 id=&quot;ndk-stack&quot;&gt;ndk-stack&lt;/h3&gt;
+&lt;p&gt;Android NDK 自从版本 r6开始, 提供了一个工具 ndk-stack。这个工具能自动分析 tombstone 文件, 能将崩溃时的调用内存地址和 c++ 代码一行一行对应起来.&lt;/p&gt;
+
+&lt;p&gt;ndk-stack 工具同样也位于 NDK 包中，它的路径如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$NDK_HOME&lt;/span&gt;/ndk-stack
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;ndk-stack 的使用说明如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Usage:
+   ndk-stack -sym &amp;lt;path&amp;gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;-dump &amp;lt;path&amp;gt;]
+
+      -sym  Contains full path to the root directory &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;symbols.
+      -dump Contains full path to the file containing the crash dump.
+            This is an optional parameter. If ommited, ndk-stack will
+            &lt;span class=&quot;nb&quot;&gt;read &lt;/span&gt;input data from stdin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;其中，&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;dump 参数很容易理解, 即 dump 下来的 log 文本文件. ndk-stack会分析此文件，这里我们就是指定我们从 Android 系统中获取到的 tombstone（这个需要通过 adb pull 的方式拉取到本地的宿主机中） 文件存放的位置。&lt;/li&gt;
+  &lt;li&gt;sym 参数就是你android项目下，编译成功之后，obj目录下的文件。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;由于 &lt;strong&gt;ndk-stack&lt;/strong&gt; 主要是用来分析用 C++ 编写的单独的 NDK 程序，所以下面就以解析一个 NDK 程序运行时 Crash 后产生的 tombstone 为例，tombstone 文件的内容如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// tombstone_01 文件内容
+&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Build&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fingerprint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Android&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x86&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;android_x86&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x86&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LMY48W&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;woshijpf04211939&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eng&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Revision&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'0'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;ABI&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x86&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2125&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2125&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;androidvncserve&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;signal&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SIGSEGV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SEGV_MAPERR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fault&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x0&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ebx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b76ffff4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ecx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b6a37000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;edx&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;esi&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;edi&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;xcs&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000073&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xds&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0000007&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xes&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0000007&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xfs&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xss&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0000007&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;eip&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b75a4ec5&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bfa9bd08&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bfa9bbf0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00010246&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;backtrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#00 pc 0004bec5  /system/bin/androidvncserver
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#01 pc 0004e3e4  /system/bin/androidvncserver
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#02 pc 0001365a  /system/lib/libc.so (__libc_init+106)
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#03 pc 0001060c  /system/bin/androidvncserver
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbb0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bbc8&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbb4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b72c6fb0&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libdvnc_flinger_sdk22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbb8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b72c7004&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libdvnc_flinger_sdk22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbbc&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b72c5b26&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libdvnc_flinger_sdk22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;readfb_flinger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;38&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbc0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b68ae080&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bbc4&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bbc8&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bbcc&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bbd0&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bbd4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76ffff4&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbd8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76a5e20&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbdc&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b75ac181&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbe0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b75ac16b&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbe4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76ffff4&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbe8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bd08&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbec&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b75a579b&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#00  bfa9bbf0  00000012  
+&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bbf4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bc1c&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bbf8&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bbfc&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc00&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bc14&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bc04&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc08&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc0c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7498825&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;je_free&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;453&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bc10&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;0000000&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc14&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000400&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc18&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc1c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b749538a&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;je_malloc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;778&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bc20&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;0000000&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc24&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000065&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc28&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bc2c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b6a37000&lt;/span&gt;  
+         &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#01  bfa9bd10  b6bb7300  
+&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bd14&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00001&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b58&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd18&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76aa954&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bd1c&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;0000000&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd20&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000005&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd24&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd28&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd2c&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000005&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd30&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000006&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd34&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000005&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd38&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd3c&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd40&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bd44&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bd24&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bd48&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b754f9c8&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bd4c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7557bd8&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
+         &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#02  bfa9bed0  00000001  
+&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bed4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf14&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bed8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf1c&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bedc&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bee0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7556fec&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bee4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf10&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bee8&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9beec&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7556fec&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bef0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf10&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bef4&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bef8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf0c&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9befc&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b756960d&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#03  bfa9bf00  bfa9bf10  [stack]
+&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bf04&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bf08&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b756960d&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf0c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7569612&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf10&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000001&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bf14&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb05&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf18&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
+         &lt;span class=&quot;n&quot;&gt;bfa9bf1c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb16&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf20&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb35&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf24&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb48&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf28&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cba3&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf2c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbae&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf30&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbc1&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf34&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbdc&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf38&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbe7&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;n&quot;&gt;bfa9bf3c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbfd&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;使用 &lt;strong&gt;ndk-stack&lt;/strong&gt; 处理之后的结果：&lt;/p&gt;
+
+&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/android_workspace/droidVNCserver-real$ &lt;/span&gt;ndk-stack -sym obj/local/x86/ -dump ~/android-x86-debug-log/tombstone_01
+&lt;span class=&quot;k&quot;&gt;**********&lt;/span&gt; Crash dump: &lt;span class=&quot;k&quot;&gt;**********&lt;/span&gt;
+Build fingerprint: &lt;span class=&quot;s1&quot;&gt;'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'&lt;/span&gt;
+pid: 2125, tid: 2125, name: androidvncserve  &amp;gt;&amp;gt;&amp;gt; androidvncserver &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;
+signal 11 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;SIGSEGV&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, code 1 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;SEGV_MAPERR&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, fault addr 0x0
+Stack frame &lt;span class=&quot;c&quot;&gt;#00 pc 0004bec5  /system/bin/androidvncserver: Routine update_screen_16 in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/updateScreen.c:68&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#01 pc 0004e3e4  /system/bin/androidvncserver: Routine main in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:805&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#02 pc 0001365a  /system/lib/libc.so (__libc_init+106)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#03 pc 0001060c  /system/bin/androidvncserver: Unable to locate routine information for address 1060c in module obj/local/x86//androidvncserver&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#00 pc 0007bf71  /system/lib/libc.so (nanosleep+17)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#01 pc 00047ed6  /system/lib/libc.so (usleep+70)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#02 pc 0004fa6b  /system/bin/androidvncserver: Routine camera_io in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/camera_io.c:557&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#03 pc 0004af6a  /system/bin/androidvncserver: Routine receive_camera in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:273&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#04 pc 00022168  /system/lib/libc.so (__pthread_start(void*)+56)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#05 pc 0001cc69  /system/lib/libc.so (__start_thread+25)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#06 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#00 pc 0007cc33  /system/lib/libc.so (recvfrom+19)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#01 pc 00050cdb  /system/bin/androidvncserver: Routine handle_connections in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/gui.c:105&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#02 pc 00022168  /system/lib/libc.so (__pthread_start(void*)+56)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#03 pc 0001cc69  /system/lib/libc.so (__start_thread+25)&lt;/span&gt;
+Stack frame &lt;span class=&quot;c&quot;&gt;#04 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;经过 &lt;strong&gt;ndk-stack&lt;/strong&gt;地这么处理之后，我们就非常直接明了地看到了每个栈帧中调用函数的内存地址和程序源码的关系。是不是感觉很爽啊！&lt;/p&gt;
+
+&lt;h1 id=&quot;总结&quot;&gt;总结&lt;/h1&gt;
+&lt;p&gt;Android NDK 程序的系统调试其实也没那么复杂，虽然它长着一副恐怖的外表，但是只要掌握了正确的方法，了解 Tombstone 文件中关键信息的含义，学会使用 addr2line 和 ndk_stack 这两个超级方便的工具，那么一步一步找出导致 NDK 程序 Crash 的 Bug 就非常 Easy 了。 但上面的这些工作也还只是帮助你快速地定位到你的代码出现问题的位置，具体的 Bug 还是需要你进一步地根据业务逻辑来分析代码。&lt;/p&gt;
+
+&lt;h1 id=&quot;参考链接&quot;&gt;参考链接&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;[cocos2dx]利用NDK崩溃日志查找BUG]&lt;a href=&quot;http://www.cnblogs.com/jhzhu/p/3801640.html&quot;&gt;0&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://bytesthink.com/blog/?p=133&quot;&gt;Debugging tombstones with ndk-stack and addr2line&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://source.android.com/devices/tech/debug/index.html&quot;&gt;Debugging Native Android Platform Code&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/helldevil/article/details/6682211&quot;&gt;Android Tombstone/Crash的log分析和定位&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/chi_wy/article/details/42472279&quot;&gt;Android重启原因分析&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://www.51testing.com/html/34/361634-859594.html&quot;&gt;android crash的类型及原因分析（上）&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://sites.google.com/a/itspaclub.com/www/android-debug&quot;&gt;Android Debug&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://github.dudukr.com/VWiki/2013/02/21/tombstone-on-android.html&quot;&gt;Android平台抓取native crash log&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://dylangao.com/2014/05/16/android-debuggerd-%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D%E5%92%8C%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&quot;&gt;Android Debuggerd 简要介绍和源码分析&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://www.voidcn.com/blog/u011279649/article/p-5769267.html&quot;&gt;Android NDK tombstone分析工具&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Tue, 14 Jun 2016 08:35:39 +0800</pubDate>
+        <link>http://localhost:4000/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html</guid>
+        
+        <category>NDK</category>
+        
+        <category>Debug</category>
+        
+        <category>Tombstone</category>
+        
+        <category>Android</category>
+        
+        
+        <category>android</category>
+        
+      </item>
+    
+  </channel>
+</rss>

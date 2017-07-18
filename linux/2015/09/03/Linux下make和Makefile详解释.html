@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux make 和 Makefile 详解</title>
+  <meta name="description" content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Linux make 和 Makefile 详解" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Linux make 和 Makefile 详解">
+  <meta name="twitter:description" content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Linux make 和 Makefile 详解</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">September 3, 2015</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/linux">Linux</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="1-前言">1. 前言</h2>
+
+<p>如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。</p>
+
+<p>在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只需要一个命令”make”就可以完成编译、链接和运行。不过在使用”make”命令之前，我们需要完成一个叫做”Makefile”文件的编写，这个文件详细描述了我们整个工程该如何取编译、链接以及最后生成一个可执行的文件，以及这个过程中所需要依赖的文件和其他工具软件。</p>
+
+<!--more-->
+
+<p>在介绍make和Makefile之前，我们来补充说明一下linux下一个简单C语言源程序的编译、链接的过程。</p>
+
+<p>编译: 编译就是把文本形式的源代码翻译称为及其语言形式的目标文件的过程。
+链接: 链接就是把目标文件和使用到的库文件进行组织，最终形成可执行代码的过程。
+整个编译和链接的过程的图解如下:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/compile_and_link_procedure.jpg" alt="编译链接图解" /></p>
+
+<p>从上图可知，整个代码编译的过程分为编译和链接两个阶段，其中编译对应的是大括号对应的部分，其余则是链接过程。</p>
+
+<p>在这里我们还要特别说明一下linux中的库文件！
+库: 库是一组<strong>预先编译好的函数的集合</strong>，这些函数都是按照可重用的原则编写的。</p>
+
+<p>在linux中库文件可以分为静态库和共享库(有的地方也叫做动态库)。
+静态库: 它也称为归档文件(archive file)，按照惯例它们的文件都是以”.a”结尾，比如标准C语言函数库”/usr/lib/libc.a”。静态库在程序链接时会使用，链接器会将程序中使用到函数的代码从静态库文件中拷贝到应用程序中。一旦链接完成，在执行程序的时候就不需要静态库了。由于每个使用静态库的应用程序都需要拷贝所用到函数的代码，所以静态链接生成的可执行文件都会比较大。</p>
+
+<p>共享库: 共享库以”.so”结尾(so = shared objecct)。共享库在程序链接的时候并不像静态库那样在拷贝所使用到函数的代码到应用程序中，而只是作些标记。然后在程序加载到内存中开始运行的时候，动态地加载所需的共享库。所以，应用程序在运行的时候仍然需要共享库的支持，共享库链接出来的文件要比静态库要小的多。</p>
+
+<h2 id="2-make和makefile">2. make和Makefile</h2>
+
+<h3 id="21-make简介">2.1 make简介</h3>
+
+<p>make是一个GNU/Linux中自带一个使用软件工具，它能够自动地判断出一个大的工程文件中那些源文件需要被重新编译，并且可以直接使用特定的命令来对这些文件进行重新编译。</p>
+
+<h3 id="22-makefile简介">2.2 Makefile简介</h3>
+<p>当你准备使用”make”命令来编译你的工程文件前，你需要准备好一个叫做Makefile的文件。通常，这个文件会告诉make如何编译和链接程序，在这个文件中主要描述了你程序中各个文件之间的关系并且提供了一些命令来编译文件，最终生成可执行的目标文件。</p>
+
+<p>当使用make工具进行编译时，工程中以下几种文件在执行make时将会被编译(重新编译):</p>
+<ol>
+  <li>所有的源文件都没有被编译过，则对各个源文件进行编译和链接，生成最后可执行的程序。</li>
+  <li>每一个在上次执行make之后修改过的源文件在本次执行make时，都会被重新编译。</li>
+  <li>头文件在上次执行make之后被修改过，那么所有包含该修改过头文件的源程序文件都会在执行本次make命令时重新进行编译。</li>
+</ol>
+
+<h3 id="23-makefile规则介绍">2.3 Makefile规则介绍</h3>
+<p>一个简单的Makefile由以下这种类型的“规则”构成:</p>
+<blockquote>
+  <p>target…: prerequistes…
+[tab] command</p>
+</blockquote>
+
+<p><strong>target: 规则目标</strong>。target通常是最后需要生成的文件名或者为了实现这个目的而必须的中间过程文件名，可以是目标文件名“*.o”或者最后可执行的程序的文件名。另外，目标也可以是一个make执行动作的的名称，比如“clean”(目标”clean”不是一个文件，它仅仅代表执行一个动作的标识)，我们将这样的目标称为“伪目标”。</p>
+
+<p><strong>prerequisites:规则依赖</strong>。生成规则目标所需要的文件列表。通常一个目标依赖于一个或者多个文件。</p>
+
+<p><strong>command: 规则的命令行</strong>，是规则所要执行的动作（任意的shell命令或者是可在shell中执行的程序）。它限定了make执行这条规则时所需要的动作。一个规则可以有多个命令行，每一条命令占一行。
+<strong>注意: 每一个命令行必须以[Tab]字符开始，[Tab]字符告诉make此行是一个命令行。make按照命令完成相应的动作。这也是书写Makefile中容易产生并且十分隐蔽的错误。</strong></p>
+
+<p>命令就是在任何一个目标的依赖文件发生变化后重建目标的动作描述。一个目标可以没有依赖而只有动作（指定的命令）。比如Makefile中的目标“clean”，此目标没有依赖，只有命令。它所定义的命令用来删除make过程中生成的中间文件，进行清理工作。</p>
+
+<p>在Makefile中“规则”就是描述在什么情况下、如何重建规则的目标文件，通常规则中包括了目标的依赖关系（目标的依赖文件）和重建目标的命令。make执行重建目标的命令，来创建或者重建规则的目标（此目标文件也可以是触发这个规则的上一个规则中依赖文件）。规则包含了文件之间的依赖关系和更新此规则目标所需要的命令。</p>
+
+<p>一个Makefile文件中通常还包含了除规则以外的很多东西。一个最简单的Makefile可能只包含规则。规则在有些Makefile中可能看起来非常复杂，但是无论规则的书写是多么复杂，它都符合规则的基本格式。</p>
+
+<p><strong>规则告诉make就是两件事情，第一就是文件的依赖关系，第二就是如何生成目标文件</strong></p>
+
+<h2 id="24-一个简单的makefile的例子">2.4 一个简单的Makefile的例子</h2>
+
+<p>为了更好地理解Makefile，我们就通过一个简单的例子来进行阐述说明。在这个例子中，我们有总共有三个文件file1.c,file2.c和file2.h，通过这三个文件我们要构造一个可执行的目标程序“helloworld”。</p>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="c1">//file1.c
+</span><span class="cp">#include &lt;stdio.h&gt;
+#include "file2.h"
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"print file1$$$$$$$$$$$$$$$$$$$$</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+	<span class="n">File2Print</span><span class="p">();</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="c1">//file2.h
+</span><span class="cp">#ifndef FILE2_H_
+#define FILE2_H_
+</span>	<span class="cp">#ifdef __cplusplus
+</span>		<span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
+	<span class="cp">#endif
+</span>	<span class="kt">void</span> <span class="n">File2Print</span><span class="p">();</span>
+	<span class="cp">#ifdef __cplusplus
+</span>		<span class="p">}</span>
+	<span class="cp">#endif
+#endif
+</span></code></pre>
+</div>
+
+<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="c1">//file2.c
+</span><span class="cp">#include &lt;stdio.h&gt;
+#include "file2.h"
+</span>
+<span class="kt">void</span> <span class="nf">File2Print</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">"Print file2********************</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">helloworld</span><span class="o">:</span><span class="nf">file1.o file2.o</span>
+	gcc file1.o file2.o -o helloworld
+<span class="nl">file1.o</span><span class="o">:</span> <span class="nf">file1.c file2.h</span>
+	gcc -c file1.c -o file1.o
+<span class="nl">file2.o</span><span class="o">:</span> <span class="nf">file2.c file2.h</span>
+	gcc -c file2.c -o file2.o
+<span class="nl">clean</span><span class="o">:</span>
+	rm -rf <span class="k">*</span>.o helloworld
+</code></pre>
+</div>
+
+<p>上面的makefile文件目的就是要编译一个helloworld的可执行文件。让我们一句句来解释:</p>
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">helloworld</span><span class="o">:</span><span class="nf">file1.o file2.o  </span><span class="c">#</span><span class="nf">目标helloworld依赖于file1.o和file2.o两个目标文件。</span>
+
+	<span class="err">gcc</span> <span class="err">file1.o</span> <span class="err">file2.o</span> <span class="err">-o</span> <span class="err">helloworld</span>  <span class="c">#使用gcc编译出helloworld可执行文件。-o 表示执行输出的目标文件名。
+</span>    
+<span class="nl">file1.o</span><span class="o">:</span> <span class="nf">file1.c file2.h   </span><span class="c">#</span><span class="nf">file1.o依赖于file1.c和file2.h文件。</span>
+
+	<span class="err">gcc</span> <span class="err">-c</span> <span class="err">file1.c</span> <span class="err">-o</span> <span class="err">file1.o</span>  <span class="c">#编译出file1.o文件。-c表示gcc只把源文件编译成目标文件。
+</span>    
+<span class="nl">file2.o</span><span class="o">:</span> <span class="nf">file2.c file2.h</span>
+	gcc -c file2.c -o file2.o
+<span class="c">#这两句的含义上面两句的含义相同
+</span>
+<span class="nl">clean</span><span class="o">:</span>
+	rm -rf <span class="k">*</span>.o helloworld
+<span class="c">#当用户在shenll终端中输入make clean的命令时，就会删除*.o和helloworld文件。
+</span></code></pre>
+</div>
+
+<p>写好Makefile文件之后，只需要简单地在终端命令行中输入make命令，就会开始执行Makefile中的内容了。</p>
+
+<h3 id="241-使用变量">2.4.1 使用变量</h3>
+
+<p>如果我们需要编译cpp文件时，只需要把gcc改成g++就可以了。但是如果Makefile中有很多gcc，那不就很麻烦嘛。
+下面我们就使用变量来改写上面的Makefile文件。</p>
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nv">OBJS</span> <span class="o">=</span> file1.o file2.o
+<span class="nv">CC</span> <span class="o">=</span> gcc
+<span class="nv">CFLAGS</span> <span class="o">=</span> -Wall -O -g
+<span class="nl">helloworld</span><span class="o">:</span><span class="nf">$(OBJS)</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(OBJS)</span> -o helloworld
+<span class="nl">file1.o</span><span class="o">:</span><span class="nf">file1.c file2.h</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c file1.c -o file1.o
+<span class="nl">file2.o</span><span class="o">:</span><span class="nf">file2.c file2.h</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c file2.c -o file2.o
+<span class="nl">clean</span><span class="o">:</span>
+	rm -rf <span class="k">*</span>.o helloworld
+</code></pre>
+</div>
+
+<p>在上面我们使用到了变量。如果要设定一个变量，你只要在一行的开始写下这个变量的名字，后面跟一个“=”号，后面跟你要设定的这个变量的值。已有你要引用这个变量，写一个“$“符号在变量名前，就表示引用变量的值。</p>
+
+<p>CFLAGS = -Wall -O -g，解释一下，这个是gcc编译器的参数设置，并把它赋值给CFLAGS变量。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>参数</th>
+      <th>意义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>-Wall</td>
+      <td>输出所有的警告信息</td>
+    </tr>
+    <tr>
+      <td>-O</td>
+      <td>在编译时进行优化</td>
+    </tr>
+    <tr>
+      <td>-g</td>
+      <td>表示编译debug版本</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>这样写的Makefile文件比较简单，但很容易就会发现缺点，那就是要列出所有的c文件。如果你添加一个c文件，那就需要对Makefile文件进行修改，这在项目开发中是比较麻烦的。</p>
+
+<h3 id="242-使用函数">2.4.2 使用函数</h3>
+
+<p>学到这里，你可能发现在Makefile中既有变量，又有函数，这不就是在编程吗？其实写Makefile就是在编程，只不过使用不同的语言而已。</p>
+
+<p>下面我们就使用函数来继续改写上面的Makefile。</p>
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nv">CC</span> <span class="o">=</span> gcc
+<span class="nv">XX</span> <span class="o">=</span> g++
+<span class="nv">CFLAGS</span> <span class="o">=</span> -Wall -O -g
+<span class="nv">TARGET</span> <span class="o">=</span>  ./helloworld
+<span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
+<span class="nl">%.o</span><span class="o">:</span><span class="nf">%.cpp</span>
+	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
+<span class="nv">SOURCES</span> <span class="o">=</span> <span class="err">$</span><span class="o">(</span>wildcard <span class="k">*</span>.c <span class="k">*</span>.cpp<span class="o">)</span>
+<span class="nv">OBJS</span> <span class="o">=</span> <span class="err">$</span><span class="o">(</span>patsubst %.c,%.o,<span class="err">$</span><span class="o">(</span>patsubst %.cpp,%.o,<span class="nv">$(SOURCES)</span><span class="o">))</span>
+
+<span class="nl">$(TARGET)</span><span class="o">:</span><span class="nf">$(OBJS)</span>
+	<span class="nv">$(XX)</span> <span class="nv">$(OBJS)</span> -o <span class="nv">$(TARGET)</span>
+    <span class="err">chmod</span> <span class="err">a+x</span> <span class="err">$(TARGET)</span>
+<span class="nl">clean</span><span class="o">:</span>
+	rm -rf <span class="k">*</span>.o helloworld
+</code></pre>
+</div>
+
+<p>看到上面这个Makefile文件我们的感觉就是要炸了，什么语法啊，看不懂啊，所以我们要一步一步来分析。</p>
+
+<p>函数1: wildcard
+功能: 产生一个所有以“.c”结尾的文件的列表
+SOURCES = $(wildcard *.c *.cpp)  #这句代码表示产生一个所有以.c，.cpp结尾的文件的列表，然后存入变量SOURCES中。</p>
+
+<p>函数: patsubst
+功能: 匹配替换，有三个参数。第一个参数是一个需要匹配的式样，第二个表示用什么来替换它，第三个是一个需要<strong>被处理的由空格分隔的文件列表</strong>
+OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示把文件列表中的所有的.c,.cpp字符变成.o，形成一个新的文件列表，然后存入OBJS变量中。</p>
+
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
+<span class="nl">%.o</span><span class="o">:</span><span class="nf">%.cpp</span>
+	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
+</code></pre>
+</div>
+<p>这几句命令表示把所有的 .c , .cpp 文件编译成.o文件。
+这里有三个比较有用的内部变量:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>内部变量</th>
+      <th>含义</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$@</td>
+      <td>表示目标文件</td>
+    </tr>
+    <tr>
+      <td>$&lt;</td>
+      <td>表示依赖文件列表中第一个依赖文件</td>
+    </tr>
+    <tr>
+      <td>$^</td>
+      <td>表示整个依赖文件列表</td>
+    </tr>
+    <tr>
+      <td>$?</td>
+      <td>表示比目标文件还要新的依赖文件列表</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>chmod a+x $(TARGET)表示把helloworld强制变成可执行的文件。</p>
+
+<p>到此，我们就可以编写一个比较简单通用的Makefile文件了。</p>
+
+<p><strong>上面的所有例子，都假定所有的文件都在同一个目录下，不包括字目录。</strong></p>
+
+<h3 id="25-make是如何处理一个makefile文件">2.5 Make是如何处理一个Makefile文件</h3>
+
+<p>在默认情况下，也就是我们只在shell环境中输入一个make命令，那么make接下来会执行以下的操作:</p>
+
+<ol>
+  <li>make会在当前目录下寻找一个名字叫做”Makefile”的文件。</li>
+  <li>然后make会在Makefile文件中找到第一个目标(target)，并将该目标当做最终要生成的目标，例如上面例子中的“helloworld”。</li>
+  <li>在make执行第一条规则之前（例如我们上面例子中生成helloworld可执行程序的规则），首先需要把目标可执行程序(target)所依赖的其他目标文件(object)的规则先执行处理完（在上面的例子中就是要先生成目标文件file1.o和file2.o）。</li>
+  <li>当规则中依赖文件中源程序文件或者头文件经过修改导致更新的时间比目标文件更新时或者目标文件根本不存在时，则这个规则就会进行编译(complication)或者重建(recomplication)。</li>
+  <li>在编译生成或者重新编译生成第一个目标所需的依赖文件后，make最后就会执行第一条规则中的命令，将一个或者多个依赖文件链接生成最终的可执行程序。如果所依赖的目标文件更新的时间比原来已经存在的目标文件生成的时间还新的话，那么也会进行目标重建。</li>
+</ol>
+
+<h3 id="26-清空目标文件的规则">2.6 清空目标文件的规则</h3>
+
+<p>每个Makefile都应该编写一个清空目标文件(.o和执行文件)的规则，这不仅便于重编译，也很利于保持文件的整洁。
+一般的风格是:</p>
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">clean</span><span class="o">:</span>
+	rm <span class="k">*</span>.o helloworld
+</code></pre>
+</div>
+<p>但是更为稳健的方法是:</p>
+<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">clean</span>
+<span class="nl">clean</span><span class="o">:</span>
+	<span class="p">-</span>rm <span class="k">*</span>.o helloworld
+</code></pre>
+</div>
+
+<p>在这里”.PHONY”的意思表示clean是一个“伪目标”，而在rm命令前机上一个小减号”-“表示的意思是:也许莫邪文件出现了问题，但是不要管，继续做后面的事。当然，clean的规则不要放在文件的开头，不然会被make以为是默认的目标。所有有个不成文的规定是——”clean从来都是放在最后面的”。</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/make">make</a>,&nbsp;<a href="/tag/Makefile">Makefile</a>,&nbsp;<a href="/tag/Linux">Linux</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/25/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Python 学习笔记（4）</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">
+					<span class="page-number">Sublime-Text-3-插件安装</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html',
+    'title': 'Linux make 和 Makefile 详解'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

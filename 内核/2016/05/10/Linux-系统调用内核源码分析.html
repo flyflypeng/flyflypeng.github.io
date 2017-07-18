@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux 系统调用内核源码分析</title>
+  <meta name="description" content="什么是系统调用？系统调用是应用程序与内核交互的一种方式。系统调用作为一种接口，通过系统调用，应用程序能够进入操作系统内核，从而使用内核提供的各种资源，比如操作硬件，开关中断，改变特权模式等等。首先，系统调用是一个软中断，既然是中断那么一般就具有中断号和中断处理程序两个属性，Linux 使用 0x80 号中断作为系...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="什么是系统调用？系统调用是应用程序与内核交互的一种方式。系统调用作为一种接口，通过系统调用，应用程序能够进入操作系统内核，从而使用内核提供的各种资源，比如操作硬件，开关中断，改变特权模式等等。首先，系统调用是一个软中断，既然是中断那么一般就具有中断号和中断处理程序两个属性，Linux 使用 0x80 号中断作为系..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Linux 系统调用内核源码分析" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Linux 系统调用内核源码分析">
+  <meta name="twitter:description" content="什么是系统调用？系统调用是应用程序与内核交互的一种方式。系统调用作为一种接口，通过系统调用，应用程序能够进入操作系统内核，从而使用内核提供的各种资源，比如操作硬件，开关中断，改变特权模式等等。首先，系统调用是一个软中断，既然是中断那么一般就具有中断号和中断处理程序两个属性，Linux 使用 0x80 号中断作为系...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%86%85%E6%A0%B8/2016/05/10/Linux-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Linux 系统调用内核源码分析</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">May 10, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/内核">内核</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="什么是系统调用">什么是系统调用？</h1>
+<p>系统调用是应用程序与内核交互的一种方式。系统调用作为一种接口，通过系统调用，应用程序能够进入操作系统内核，从而使用内核提供的各种资源，比如操作硬件，开关中断，改变特权模式等等。首先，系统调用是一个软中断，既然是中断那么一般就具有中断号和中断处理程序两个属性，Linux 使用 0x80 号中断作为系统调用的入口，而中断处理程序的地址放在中断向量表里。</p>
+
+<p>系统调用在内核空间和用户空间之间建立了一个连接的中间层，它主要为系统提供了下面三个主要功能：</p>
+
+<ul>
+  <li>第一，系统调用在底层硬件和用户空间之间建立了一个抽象的接口。例如，当用户空间的应用程序想读写一个文件时，程序员只需要通过系统调用接口完成读写操作即可，而不需要知道文件所在的底层磁盘是什么介质类型以及它所使用的是什么文件系统等一系列复杂的底层细节。</li>
+  <li>第二，系统调用让操作系统变得更加稳定和安全。Linux 中的内核好比就是一个仲裁者，它基于访问权限、用户组、临界区等机制来控制用户空间中应用程序用户空间中应用程序对底层硬件资源的访问，使得应用程序不会非法地使用硬件资源或者窃取其他应用程序所使用的资源以致对系统造成损害。</li>
+  <li>第三，系统调用便于实现系统虚拟化。系统调用提供的中间层，它屏蔽了许多的底层的细节，使得应用程序和底层系统的耦合性降低，这样系统的虚拟化变得更加简单。</li>
+</ul>
+
+<h1 id="系统调用的处理过程">系统调用的处理过程</h1>
+<p>当我们在用户态应用程序中调用一个系统调用函数时，它背后所隐藏的从用户态到内核态的整个处理过程，如下图所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/system_call.png" alt="" /></p>
+
+<!--more-->
+
+<p>在上图中，应用程序中调用 libc 库中的封装好的 xyz() 系统调用函数，然后 xyz() 就接着执行 libc 库中 xyz() 函数的具体实现的代码，其中非常关键的一句代码就是 <strong>int 0x80</strong>，它使得进程从用户态切换到内核态，然后开始执行内核中系统调用处理程序的代码 system_call，在后面的分析中我们会看到这部分代码是用汇编语言编写的，接着在 system_call 系统调用处理程序就根据传入的系统调用号从系统调用服务程序数组中寻找对应系统调用服务程序，最后执行完成后按照调用顺序的相反顺序一步步返回结果。</p>
+
+<p>在后面的系统调用内核代码分析中，我们将对其中所使用到的名称作一个规定说明：</p>
+
+<ul>
+  <li>xyz()：系统调用库函数</li>
+  <li>system_call：系统调用处理程序</li>
+  <li>sys_xyz(): 系统调用服务程序</li>
+</ul>
+
+<h2 id="系统调用例子">系统调用例子</h2>
+<p>Linux 系统中实现了 300 多个系统调用，例如我们常用的 read、write、fork、time等等，有关 Linux 内核中定义了哪些系统调用，可以从 <em>/arch/x86/syscalls/syscall_32.tbl</em>中查阅到。</p>
+
+<p>下面我们就介绍两种用户态下调用 sys_time 系统调用获取当前系统时间的方法。</p>
+
+<h3 id="使用-libc-中封装的好的-time-系统调用库函数">使用 libc 中封装的好的 time 系统调用库函数</h3>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">Time</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">time_t</span> <span class="n">tt</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">tm</span> <span class="o">*</span><span class="n">t</span><span class="p">;</span>
+    <span class="n">tt</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">localtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tt</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"time:%d:%d:%d:%d:%d:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_year</span> <span class="o">+</span> <span class="mi">1900</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_mon</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_mday</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_hour</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_min</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_sec</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h3 id="使用-linux-内联汇编来直接调用-13-号系统调用-sys_time">使用 Linux 内联汇编来直接调用 13 号系统调用 sys_time</h3>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">TimeAsm</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">time_t</span> <span class="n">tt</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">tm</span> <span class="o">*</span><span class="n">t</span><span class="p">;</span>
+    <span class="n">asm</span> <span class="k">volatile</span><span class="p">(</span>
+        <span class="s">"mov $0,%%ebx</span><span class="se">\n\t</span><span class="s">"</span>
+        <span class="s">"mov $0xd,%%eax</span><span class="se">\n\t</span><span class="s">"</span>
+        <span class="s">"int $0x80</span><span class="se">\n\t</span><span class="s">"</span>
+        <span class="s">"mov %%eax,%0</span><span class="se">\n\t</span><span class="s">"</span>
+        <span class="o">:</span> <span class="s">"=m"</span> <span class="p">(</span><span class="n">tt</span><span class="p">)</span>
+    <span class="p">);</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">localtime</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tt</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"time:%d:%d:%d:%d:%d:%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_year</span> <span class="o">+</span> <span class="mi">1900</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_mon</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_mday</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_hour</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_min</span><span class="p">,</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">tm_sec</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<h1 id="系统调用内核代码分析">系统调用内核代码分析</h1>
+<p>上面我们举的例子是在用户空间中调用系统调用函数，那么当从用户空间切换到内核空间中，内核是如何处理系统调用的呢？</p>
+
+<h2 id="系统调用处理程序初始化">系统调用处理程序初始化</h2>
+
+<p>首先，在内核启动初始化的 <strong>start_kernel</strong> 函数中就有一个对 trap 进行初始化工作的函数 <strong>trap_init()</strong> 函数，</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/init/main.c */</span>
+<span class="n">asmlinkage</span> <span class="n">__visible</span> <span class="kt">void</span> <span class="n">__init</span> <span class="nf">start_kernel</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">......</span>
+    <span class="n">trap_init</span><span class="p">();</span>
+    <span class="p">......</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>而在 <strong>trap_init()</strong> 函数中就包含了对系统调用对应中断向量的初始化工作，它将系统调用对应的 0x80 号系统调用和它对应的处理程序关联起来，如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/kernel/traps.c */</span>
+<span class="kt">void</span> <span class="n">__init</span> <span class="nf">trap_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>   
+    <span class="p">......</span>
+    <span class="cp">#ifdef CONFIG_X86_32
+</span>    <span class="n">set_system_trap_gate</span><span class="p">(</span><span class="n">SYSCALL_VECTOR</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">system_call</span><span class="p">);</span>
+    <span class="n">set_bit</span><span class="p">(</span><span class="n">SYSCALL_VECTOR</span><span class="p">,</span> <span class="n">used_vectors</span><span class="p">);</span>
+    <span class="cp">#endif
+</span>    <span class="p">......</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>上面第 6 行代码中的 SYSCALL_VECTOR 的定义如下所示：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/include/asm/irq_vectors.h */</span>
+<span class="p">......</span>
+<span class="cp">#ifdef CONFIG_X86_32
+# define SYSCALL_VECTOR         0x80
+#endif
+</span><span class="p">......</span>
+</code></pre>
+</div>
+
+<p>我们可以看到 SYSCALL_VECTOR 对应的中断向量号就是我们上面使用内联汇编例子中 <strong>int 0x80</strong> 指令中的中断向量号。</p>
+
+<p>而 0x80 中断向量对应中断向量的中断服务程序就是上面 set_system_trap_gate() 函数中所设置的 <strong>system_call</strong> 程序，它是处理系统调用的入口程序。</p>
+
+<h2 id="系统调用处理程序分析">系统调用处理程序分析</h2>
+<p>当执行 <strong>int 0x80</strong> 之后，系统就从用户态切换到内核态，并跳转到了 0x80 中断向量号 对应的中断向量服务程序 <strong>system_call</strong>，该服务程序的代码位置是：<strong>/linux-3.18.6/arch/x86/kernel/entry_32.S</strong> 文件中的 490 行处的 ENTRY(system_call)。由于这部分的汇编代码涉及到比较多的知识，所以下面的代码是作了一些精简，保留了最核心的那部分代码：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/kernel/entry_32.S */</span>
+<span class="cp"># system call handler stub
+# 系统调用汇编代码的起点
+</span><span class="n">ENTRY</span><span class="p">(</span><span class="n">system_call</span><span class="p">)</span>
+    <span class="cp"># step 1: 
+</span>    <span class="n">SAVE_ALL</span>                <span class="err">#</span> <span class="err">进入中断处理程序前，保存内核态下的现场</span>
+    <span class="p">......</span>
+    <span class="n">cmpl</span> <span class="err">$</span><span class="p">(</span><span class="n">NR_syscalls</span><span class="p">),</span> <span class="o">%</span><span class="n">eax</span> <span class="err">#</span> <span class="err">比较传入的系统调用号是否大于最大的系统调用号</span>
+    <span class="n">jae</span> <span class="n">syscall_badsys</span>  <span class="err">#</span> <span class="err">如果传入的系统调用号太大，则跳转到处理无效系统调用号的处理程序</span>
+<span class="cp"># step 2: 
+</span><span class="n">syscall_call</span><span class="o">:</span>
+    <span class="n">call</span> <span class="o">*</span><span class="n">sys_call_table</span><span class="p">(,</span><span class="o">%</span><span class="n">eax</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="err">#</span> <span class="err">根据</span> <span class="n">eax</span> <span class="err">中传入的系统调用号来调用对应的系统调用服务程序，在我们的例子中就是调用</span> <span class="n">sys_time</span>
+<span class="cp"># step 3: 
+</span><span class="n">syscall_after_call</span><span class="o">:</span>
+    <span class="n">movl</span> <span class="o">%</span><span class="n">eax</span><span class="p">,</span><span class="n">PT_EAX</span><span class="p">(</span><span class="o">%</span><span class="n">esp</span><span class="p">)</span>      <span class="err">#</span> <span class="n">store</span> <span class="n">the</span> <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="err">保存系统调用后返回的值到</span> <span class="n">eax</span> <span class="err">中</span>
+<span class="cp"># step 4: 
+</span><span class="n">syscall_exit</span><span class="o">:</span> <span class="err">#</span> <span class="err">会检测要不要执行</span><span class="n">syscall_exit_work</span><span class="err">，正常情况会有一些需要处理的工作，比如当前进程有一些信号要处理，系统需要进行调度</span>
+    <span class="p">......</span>
+    <span class="n">movl</span> <span class="n">TI_flags</span><span class="p">(</span><span class="o">%</span><span class="n">ebp</span><span class="p">),</span> <span class="o">%</span><span class="n">ecx</span>
+    <span class="n">testl</span> <span class="err">$</span><span class="n">_TIF_ALLWORK_MASK</span><span class="p">,</span> <span class="o">%</span><span class="n">ecx</span>  <span class="err">#</span> <span class="n">current</span><span class="o">-&gt;</span><span class="n">work</span>
+    <span class="n">jne</span> <span class="n">syscall_exit_work</span>
+
+<span class="cp"># step 5: 
+</span><span class="n">restore_all</span><span class="o">:</span>
+<span class="n">restore_nocheck</span><span class="o">:</span>
+    <span class="n">RESTORE_REGS</span> <span class="mi">4</span>          <span class="err">#</span> <span class="n">skip</span> <span class="n">orig_eax</span><span class="o">/</span><span class="n">error_code</span>
+<span class="n">irq_return</span><span class="o">:</span>
+    <span class="n">INTERRUPT_RETURN</span>    <span class="err">#</span> <span class="err">这是一个宏定义，本质上是一条</span> <span class="n">iret</span> <span class="err">指令</span>
+<span class="cp"># system_call 结束位置
+</span><span class="p">......</span>
+<span class="n">ENDPROC</span><span class="p">(</span><span class="n">system_call</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>由于代码比较长，所以我们在上面的代码中加入了 “step n” 的注释，将代码分成 5 个步骤进行解析。首先，通过一个流程图对内核源码中系统调用的处理过程进行一个概要性地描述。</p>
+
+<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/Kernel_System_Call.png" alt="" /></p>
+
+<h3 id="step-1">step 1</h3>
+<p>内核源码是从 Entry(system_call) 入口处开始处理系统调用，然后通过 <strong>SAVE_ALL</strong> 宏来保存一下当前的上下文状态，SAVE_ALL 宏的具体代码实现如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/kernel/entry_32.S */</span>
+<span class="cp"># 在进入中断处理程序前，保存相关寄存器的值
+</span><span class="p">.</span><span class="n">macro</span> <span class="n">SAVE_ALL</span> 
+    <span class="n">cld</span>
+    <span class="n">PUSH_GS</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">fs</span>
+    <span class="cm">/*CFI_REL_OFFSET fs, 0;*/</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">es</span>
+    <span class="cm">/*CFI_REL_OFFSET es, 0;*/</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">ds</span>
+    <span class="cm">/*CFI_REL_OFFSET ds, 0;*/</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">eax</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">eax</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">ebp</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">ebp</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">edi</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">edi</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">esi</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">esi</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">edx</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">edx</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">ecx</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">ecx</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">pushl_cfi</span> <span class="o">%</span><span class="n">ebx</span>
+    <span class="n">CFI_REL_OFFSET</span> <span class="n">ebx</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">movl</span> <span class="err">$</span><span class="p">(</span><span class="n">__USER_DS</span><span class="p">),</span> <span class="o">%</span><span class="n">edx</span>
+    <span class="n">movl</span> <span class="o">%</span><span class="n">edx</span><span class="p">,</span> <span class="o">%</span><span class="n">ds</span>
+    <span class="n">movl</span> <span class="o">%</span><span class="n">edx</span><span class="p">,</span> <span class="o">%</span><span class="n">es</span>
+    <span class="n">movl</span> <span class="err">$</span><span class="p">(</span><span class="n">__KERNEL_PERCPU</span><span class="p">),</span> <span class="o">%</span><span class="n">edx</span>
+    <span class="n">movl</span> <span class="o">%</span><span class="n">edx</span><span class="p">,</span> <span class="o">%</span><span class="n">fs</span>
+    <span class="n">SET_KERNEL_GS</span> <span class="o">%</span><span class="n">edx</span>
+<span class="p">.</span><span class="n">endm</span>
+</code></pre>
+</div>
+<p>从上面 SAVE_ALL 的实现代码中，我们可以知道 SAVE_ALL 的主要工作就是将 gs、fs、es、ds、eax、ebp 等寄存器中的值在调用系统调用服务程序之前将其压入到内核栈中保存。</p>
+
+<p>接下来的 cmpl 指令语句则是用来判断从用户态传入的系统调用号是否大于系统中所实现的最大的系统调用编号，如果是，那么就说明我们传入的系统调用编号不合法，程序就跳转到 syscall_badsys 处执行相应的出错处理程序。</p>
+
+<h3 id="step-2">step 2</h3>
+<p>在 step 2 中的工作就是就是去调用与传入系统调用号对应的系统调用服务程序，而这一步中就只有一条非常简单的 call 指令语句，如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="n">call</span> <span class="o">*</span><span class="n">sys_call_table</span><span class="p">(,</span><span class="o">%</span><span class="n">eax</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="err">#</span> <span class="err">根据</span> <span class="n">eax</span> <span class="err">中传入的系统调用号来调用对应的系统调用服务程序，在我们的例子中就是调用</span> <span class="n">sys_time</span>
+</code></pre>
+</div>
+<p>那么程序是怎么通过 %eax 中保存的系统调用号返回指定的系统调用服务程序的起始地址的呢？</p>
+
+<p>我们首先可以从 <strong>sys_call_table</strong> 入手分析！</p>
+
+<p>sys_call_table 代码：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/kernel/syscall_32.c */</span>
+<span class="cp">#define __SYSCALL_I386(nr, sym, compat) [nr] = sym,
+</span>
+<span class="k">typedef</span> <span class="n">asmlinkage</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">sys_call_ptr_t</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="k">extern</span> <span class="n">asmlinkage</span> <span class="kt">void</span> <span class="n">sys_ni_syscall</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="n">__visible</span> <span class="k">const</span> <span class="n">sys_call_ptr_t</span> <span class="n">sys_call_table</span><span class="p">[</span><span class="n">__NR_syscall_max</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="cm">/*
+     * Smells like a compiler bug -- it doesn't work
+     * when the &amp; below is removed.
+     */</span>
+    <span class="p">[</span><span class="mi">0</span> <span class="p">...</span> <span class="n">__NR_syscall_max</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">sys_ni_syscall</span><span class="p">,</span>
+<span class="cp">#include &lt;asm/syscalls_32.h&gt;
+</span><span class="p">};</span>
+</code></pre>
+</div>
+<p>从上面的代码中，我们可知 sys_call_table 是一个数据元素为函数指针类型的的数组，数组长度就是系统中所包含的全部系统调用的数量： __NR_syscall_max + 1，然后在这个花括号里面的代码完成的就是对数组元素初始化的工作。</p>
+
+<p>也许你会对 [0…__NR_syscall_max] 这样风格的代码感到陌生和疑惑，其实它的功能就是将数组中从 0 号数组元素到 __NR_syscall_max 数组元素全部初始化成 &amp;sys_ni_syscall（sys_ni_syscall 是系统中未实现的系统调用的默认系统调用服务程序），有关这个数组初始化的方式，更多详细的内容请参考下面这篇博客 <a href="http://www.cnblogs.com/hazir/p/array_initialization.html">Linux Kernel代码艺术——数组初始化</a>。</p>
+
+<p>在默认的系统调用服务程序之后，就是每个已经在系统中有对应实现的系统调用的初始化，但是在这里只有一个 include 语句啊？我们还是首先来看看 include 的 asm/syscall_32.h 中内容是什么：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/* 代码文件路径：/linux-3.18.6/arch/x86/include/asm/syscalls_32.h */
+__SYSCALL_I386(0, sys_restart_syscall, sys_restart_syscall)
+__SYSCALL_I386(1, sys_exit, sys_exit)
+__SYSCALL_I386(2, sys_fork, stub32_fork)
+__SYSCALL_I386(3, sys_read, sys_read)
+__SYSCALL_I386(4, sys_write, sys_write)
+__SYSCALL_I386(5, sys_open, compat_sys_open)
+__SYSCALL_I386(6, sys_close, sys_close)
+__SYSCALL_I386(7, sys_waitpid, sys32_waitpid)
+__SYSCALL_I386(8, sys_creat, sys_creat)
+__SYSCALL_I386(9, sys_link, sys_link)
+__SYSCALL_I386(10, sys_unlink, sys_unlink)
+__SYSCALL_I386(11, sys_execve, stub32_execve)
+__SYSCALL_I386(12, sys_chdir, sys_chdir)
+__SYSCALL_I386(13, sys_time, compat_sys_time)
+......
+</code></pre>
+</div>
+
+<p>在这个文件中全部都是 __SYSCALL_I386 对应的宏代码，而 __SYSCALL_I386 宏的定义就在前面的 syscall_32.c 文件中，</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cp">#define __SYSCALL_I386(nr, sym, compat) [nr] = sym,
+</span></code></pre>
+</div>
+
+<p>所以，展开一下 <strong>__SYSCALL_I386(1, sys_exit, sys_exit)</strong> 这样一条宏语句，它本质上就是等价于：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys_exit</span>
+</code></pre>
+</div>
+
+<p>总结一下，也就是说 sys_call_table 数组是一个存储系统调用服务程序的这么一个数组，例如系统中 0 号元素保存的是 0 号系统调用服务程序的地址，1 号元素保存的是 1 号系统调用的处理函数地址，如果某个系统调用没有对应的服务程序，那么对应数组元素保存的就是用默认的系统调用服务程序 sys_ni_syscall 地址。</p>
+
+<p>因此，<strong>call *sys_call_table(,%eax,4)</strong> 含义就是根据寄存器 %eax 中系统调用号，跳转到对应的系统调用服务程序中去执行。在分析这条语句时，我卡壳了半天一直不知道 sys_call_table 后面括号中的参数是什么含义，后面 google 了以后才想起来这是 AT&amp;T 汇编中的间接寻址方式，也就是说对应的系统调用处理函数的地址在是在 *(sys_call_table + %eax * 4) 的位置处，这里有个 4 表示的含义是数组中每个元素大小是 4 字节。</p>
+
+<p>接下去，通过 call 指令程序就会跳转到对应的系统调用服务程序中去执行具体的操作，最后将执行后的结果保存到 eax 寄存器中后返回。</p>
+
+<h3 id="step-3">step 3</h3>
+<p>step 3 中的代码就比较简单了，它就是将系统调用处理函数返回的状态值保存在 eax 寄存器中的结果保存到内核栈中，保存的位置就是在 SAVE_ALL 宏中保存 eax 寄存器值的位置。</p>
+
+<p>在这里补充一点的就是，系统调用服务程序执行完成之后保存在 eax 寄存器中返回值就是一个整型数据，用来表示系统调用成功与否！一般来说，返回的值是负数则表示此次系统调用失败，而返回值为 0 则表示此次系统调用成功，具体系统调用失败的原因，我们可以在应用程序中通过 <strong>perror()</strong> 函数来输出相应的出错信息。</p>
+
+<h3 id="step-4">step 4</h3>
+<p>step 4 中首先读取 thread_info 结构体中的标志位，如果在发生系统调用的同时当前进程还接收到一些信号，那么程序就会接着跳转到 syscall_exit_work 处去执行有关信号处理相关的相关的代码，以及此时可能系统还会进行一个进程调度的工作，最后处理完这些系统调用返回前的操作之后，系统调用处理程序就接着往下执行到 step 5。</p>
+
+<p>syscall_exit_work 的代码如下所示：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/kernel/entry_32.S */</span>
+<span class="n">syscall_exit_work</span><span class="o">:</span>      <span class="err">#</span> <span class="err">退出系统调用后所做的一些工作</span>
+    <span class="n">testl</span> <span class="err">$</span><span class="n">_TIF_WORK_SYSCALL_EXIT</span><span class="p">,</span> <span class="o">%</span><span class="n">ecx</span>
+    <span class="n">jz</span> <span class="n">work_pending</span> <span class="err">#</span> <span class="err">跳转到</span> <span class="n">work_pending</span> <span class="err">去处理一些信号相关的处理程序</span>
+    <span class="n">TRACE_IRQS_ON</span>
+    <span class="n">ENABLE_INTERRUPTS</span><span class="p">(</span><span class="n">CLBR_ANY</span><span class="p">)</span> <span class="err">#</span> <span class="n">could</span> <span class="n">let</span> <span class="n">syscall_trace_leave</span><span class="p">()</span> <span class="n">call</span>
+                    <span class="cp"># schedule() instead
+</span>    <span class="n">movl</span> <span class="o">%</span><span class="n">esp</span><span class="p">,</span> <span class="o">%</span><span class="n">eax</span>
+    <span class="n">call</span> <span class="n">syscall_trace_leave</span>
+    <span class="n">jmp</span> <span class="n">resume_userspace</span>
+<span class="n">END</span><span class="p">(</span><span class="n">syscall_exit_work</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<h3 id="step-5">step 5</h3>
+<p>完成系统调用服务程序的一系列处理之后，最后所需要做的工作就是返回到系统调用处理程序中，恢复调用系统调用服务程序前的内核的上下文状态，也就是将保存在内核栈中的寄存器的值恢复到相应的寄存器中，而这一步主要是由 <strong>RESTORE_REGS</strong> 宏来完成，它的定义如下所示：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/kernel/entry_32.S */</span>
+<span class="cp"># 执行完中断处理程序后，返回时恢复原来保存在栈中的寄存器的值
+</span><span class="p">.</span><span class="n">macro</span> <span class="n">RESTORE_INT_REGS</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">ebx</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">ebx</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">ecx</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">ecx</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">edx</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">edx</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">esi</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">esi</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">edi</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">edi</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">ebp</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">ebp</span>
+    <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">eax</span>
+    <span class="n">CFI_RESTORE</span> <span class="n">eax</span>
+<span class="p">.</span><span class="n">endm</span>
+
+<span class="p">.</span><span class="n">macro</span> <span class="n">RESTORE_REGS</span> <span class="n">pop</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">RESTORE_INT_REGS</span>
+<span class="mi">1</span><span class="o">:</span>  <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">ds</span>
+    <span class="cm">/*CFI_RESTORE ds;*/</span>
+<span class="mi">2</span><span class="o">:</span>  <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">es</span>
+    <span class="cm">/*CFI_RESTORE es;*/</span>
+<span class="mi">3</span><span class="o">:</span>  <span class="n">popl_cfi</span> <span class="o">%</span><span class="n">fs</span>
+    <span class="cm">/*CFI_RESTORE fs;*/</span>
+    <span class="n">POP_GS</span> <span class="err">\</span><span class="n">pop</span>
+<span class="p">.</span><span class="n">pushsection</span> <span class="p">.</span><span class="n">fixup</span><span class="p">,</span> <span class="s">"ax"</span>
+<span class="mi">4</span><span class="o">:</span>  <span class="n">movl</span> <span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="o">%</span><span class="n">esp</span><span class="p">)</span>
+    <span class="n">jmp</span> <span class="mi">1</span><span class="n">b</span>
+<span class="mi">5</span><span class="o">:</span>  <span class="n">movl</span> <span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="o">%</span><span class="n">esp</span><span class="p">)</span>
+    <span class="n">jmp</span> <span class="mi">2</span><span class="n">b</span>
+<span class="mi">6</span><span class="o">:</span>  <span class="n">movl</span> <span class="err">$</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="o">%</span><span class="n">esp</span><span class="p">)</span>
+    <span class="n">jmp</span> <span class="mi">3</span><span class="n">b</span>
+<span class="p">.</span><span class="n">popsection</span>
+    <span class="n">_ASM_EXTABLE</span><span class="p">(</span><span class="mi">1</span><span class="n">b</span><span class="p">,</span><span class="mi">4</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">_ASM_EXTABLE</span><span class="p">(</span><span class="mi">2</span><span class="n">b</span><span class="p">,</span><span class="mi">5</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">_ASM_EXTABLE</span><span class="p">(</span><span class="mi">3</span><span class="n">b</span><span class="p">,</span><span class="mi">6</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">POP_GS_EX</span>
+<span class="p">.</span><span class="n">endm</span>
+</code></pre>
+</div>
+
+<p>我们可以从上面的代码中看到 RESTORE_INT_REGS 宏从栈中恢复寄存器的值顺序刚好是和前面所提到的 SAVE_ALL 宏压栈的顺序是相反的。</p>
+
+<p>恢复了内核态中内核栈的状态之后，接下来就是执行 INTERRUPT_RETURN 宏了，而这个宏实际上就是 iret 指令，它将系统从内核态又切换回用户态，然后使得用户态的应用程序往下接着执行。</p>
+
+<h2 id="系统调用服务程序分析">系统调用服务程序分析</h2>
+<p>应用程序调用某个系统调用的目的就是完成一些无法在用户空间完成的操作，从而得到想要的结果。我们前面大费周章讲到的系统调用处理程序就像是一个领路者，它把应用程序想要内核代替执行的操作，从用户空间传递到内核空间，然后再从内核空间中找到对应的服务程序去处理它。</p>
+
+<p><strong>因此，我们在这个小节中所要分析就是系统调用程序在内核中是如何实现的？</strong>我们还是以前面的 13 号系统调用 time 为例。</p>
+
+<p>在前面一节系统调用处理程序分析中的 step 2 中，我们知道系统调用号和系统调用服务程序是一一对应关系，一个系统调用对应一个系统调用服务程序。而我们所要分析的 13 号系统调用对应的系统调用服务程序就是 sys_time，如下所示：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/arch/x86/include/asm/syscalls_32.h */</span>
+<span class="n">__SYSCALL_I386</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="n">sys_time</span><span class="p">,</span> <span class="n">compat_sys_time</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>那么，sys_time() 函数是怎么实现的呢？</p>
+
+<p>sys_time() 函数的代码实现如下所示：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/kernel/time/time.c */</span>
+<span class="n">SYSCALL_DEFINE1</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="kt">time_t</span> <span class="n">__user</span> <span class="o">*</span><span class="p">,</span> <span class="n">tloc</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">time_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">get_seconds</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">tloc</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">put_user</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">tloc</span><span class="p">))</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">force_successful_syscall_return</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>为什么不是 sys_time() 作为函数名呢？其实规范统一的系统调用服务程序接口， Linux 系统中的系统调用服务函数都是使用 SYSCALL_DEFINEx (x可以0,1,2,3…等数字)宏来实现的。</p>
+
+<p>SYSCALL_DEFINEx 的定义如下所示，</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* 代码文件路径：/linux-3.18.6/include/linux/syscalls.h */</span>
+<span class="cp">#define SYSCALL_METADATA(sname, nb, ...)
+#endif
+</span>
+<span class="cp">#define SYSCALL_DEFINE0(sname)                  \
+    SYSCALL_METADATA(_##sname, 0);              \
+    asmlinkage long sys_##sname(void)
+</span>
+<span class="cp">#define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
+#define SYSCALL_DEFINE2(name, ...) SYSCALL_DEFINEx(2, _##name, __VA_ARGS__)
+#define SYSCALL_DEFINE3(name, ...) SYSCALL_DEFINEx(3, _##name, __VA_ARGS__)
+#define SYSCALL_DEFINE4(name, ...) SYSCALL_DEFINEx(4, _##name, __VA_ARGS__)
+#define SYSCALL_DEFINE5(name, ...) SYSCALL_DEFINEx(5, _##name, __VA_ARGS__)
+#define SYSCALL_DEFINE6(name, ...) SYSCALL_DEFINEx(6, _##name, __VA_ARGS__)
+</span>
+<span class="cp">#define SYSCALL_DEFINEx(x, sname, ...)              \
+    SYSCALL_METADATA(sname, x, __VA_ARGS__)         \
+    __SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
+</span>
+<span class="cp">#define __PROTECT(...) asmlinkage_protect(__VA_ARGS__)
+#define __SYSCALL_DEFINEx(x, name, ...)                 \
+    asmlinkage long sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))   \
+        __attribute__((alias(__stringify(SyS##name))));     \
+</span></code></pre>
+</div>
+
+<p>所以根据上面的定义，宏 SYSCALL_DEFINE1(time, time_t __user *, tloc) 展开后得到的结果就是：</p>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="n">asmlinkage</span> <span class="kt">long</span> <span class="n">sys_time</span><span class="p">(</span><span class="kt">time_t</span> <span class="n">__user</span> <span class="o">*</span><span class="n">tloc</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<h1 id="参考文章">参考文章</h1>
+<ol>
+  <li><a href="http://www.cnblogs.com/hazir/p/array_initialization.html">Linux Kernel代码艺术——数组初始化</a></li>
+  <li><a href="http://blog.csdn.net/yusiguyuan/article/details/12225331">linux内核–系统调用（四）</a></li>
+  <li><a href="http://articles.manugarg.com/systemcallinlinux2_6.html">Sysenter Based System Call Mechanism in Linux 2.6</a></li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/系统调用">系统调用</a>,&nbsp;<a href="/tag/内核">内核</a>,&nbsp;<a href="/tag/Linux">Linux</a>,&nbsp;<a href="/tag/操作系统">操作系统</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Linux+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F10%2FLinux-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E5%2586%2585%25E6%25A0%25B8%25E6%25BA%2590%25E7%25A0%2581%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Linux+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F10%2FLinux-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E5%2586%2585%25E6%25A0%25B8%25E6%25BA%2590%25E7%25A0%2581%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F10%2FLinux-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E5%2586%2585%25E6%25A0%25B8%25E6%25BA%2590%25E7%25A0%2581%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F10%2FLinux-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E5%2586%2585%25E6%25A0%25B8%25E6%25BA%2590%25E7%25A0%2581%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/29/CPU-%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">CPU 是如何工作的？</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2016/05/14/%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86%E7%9A%84%E4%B8%83%E5%8F%A5%E8%AF%9D.html">
+					<span class="page-number">时间管理的七句话</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E5%86%85%E6%A0%B8/2016/05/10/Linux-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html',
+    'title': 'Linux 系统调用内核源码分析'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

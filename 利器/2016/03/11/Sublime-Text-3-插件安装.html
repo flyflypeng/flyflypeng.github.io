@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Sublime-Text-3-插件安装</title>
+  <meta name="description" content="Package Control 简介Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。Package...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Package Control 简介Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。Package..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Sublime-Text-3-插件安装" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Sublime-Text-3-插件安装">
+  <meta name="twitter:description" content="Package Control 简介Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。Package...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Sublime-Text-3-插件安装</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">March 11, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/利器">利器</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="package-control-简介">Package Control 简介</h2>
+
+<p>Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。</p>
+
+<p>而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。</p>
+
+<h2 id="package-control-安装">Package Control 安装</h2>
+
+<p>Package Control 的安装方法也非常简单，官方安装文档：<a href="https://packagecontrol.io/installation">Package Control INSTALLATION</a>。</p>
+
+<p>如果是 Sublime Text 3 的话，只需要将下面的内容复制到 Sublime 的控制台中（Sublime 的控制台可以通过快捷键 “Ctrl + `”来打开）</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">urllib.request</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="p">;</span> <span class="n">h</span> <span class="o">=</span> <span class="s">'2915d1851351e5ee549c20394736b442'</span> <span class="o">+</span> <span class="s">'8bc59f460fa1548d1514676163dafc88'</span><span class="p">;</span> <span class="n">pf</span> <span class="o">=</span> <span class="s">'Package Control.sublime-package'</span><span class="p">;</span> <span class="n">ipp</span> <span class="o">=</span> <span class="n">sublime</span><span class="o">.</span><span class="n">installed_packages_path</span><span class="p">();</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">())</span> <span class="p">);</span> <span class="n">by</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span> <span class="s">'http://packagecontrol.io/'</span> <span class="o">+</span> <span class="n">pf</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'</span><span class="si">%20</span><span class="s">'</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">();</span> <span class="n">dh</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">by</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">();</span> <span class="k">print</span><span class="p">(</span><span class="s">'Error validating download (got </span><span class="si">%</span><span class="s">s instead of </span><span class="si">%</span><span class="s">s), please try manual install'</span> <span class="o">%</span> <span class="p">(</span><span class="n">dh</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span> <span class="k">if</span> <span class="n">dh</span> <span class="o">!=</span> <span class="n">h</span> <span class="k">else</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">ipp</span><span class="p">,</span> <span class="n">pf</span><span class="p">),</span> <span class="s">'wb'</span> <span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<h2 id="插件安装">插件安装</h2>
+
+<p>这样安装完了之后，我们就可以打开菜单栏中的 “Preferences” 看到下拉菜单中最后一行就是 “Package Control”，如下所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/sublime_package_control_install.png" alt="Sublime_Package_Control_Installation" /></p>
+
+<!--more-->
+
+<p>OK，到现在为止，我们就可以通过 Package Control 工具来安装其他的插件了。</p>
+
+<p>具体的方法如下：</p>
+<ol>
+  <li>使用快捷键 “Ctrl + Shift + P” 打开命令搜索框。</li>
+  <li>在文本框中输入 “Package Control: “，然后就会弹出选项让我们去选择安装插件还是卸载插件等等的一系列操作。</li>
+  <li>如果是安装插件，则选择”Package Control: Install Package”</li>
+</ol>
+
+<p><strong>注意</strong>
+在这里可能会存在一个问题，那就是 Sublime 无法连接到 PackageControl 网站上，无法安装插件。因此，这个问题的解决方法，可以参考下面的解决方案：
+<a href="http://blog.csdn.net/zhyh1986/article/details/40678263">解决sublimeText3无法安装插件问题 – There are no packages available for installation</a></p>
+
+<p>解决了这个问题之后，我们就可以愉快地在搜索框中输入自己想要的插件名称了。</p>
+
+<h2 id="常用插件列表">常用插件列表</h2>
+
+<h3 id="1-alignment">1. Alignment</h3>
+<p>代码对齐插件</p>
+
+<h3 id="2-c-improved">2. C Improved</h3>
+<p>更加人性化的C语言着色方案</p>
+
+<h3 id="3-docblockr">3. DocBlockr</h3>
+<p>自动生成大块的注释，并且可以用tab在不同内容之间切换</p>
+
+<h3 id="4-sublimeastyleformatter">4. SublimeAStyleFormatter</h3>
+<p>国人做的Astyle Sublime版，蛮不错的。安装完成之后，下面这个配置一定要打开，即保存自动格式，保存之后就会对代码进行自动按格式对齐。
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/sublimeAStyleFormatter.png" alt="保存自动格式化配置" /></p>
+<h3 id="5-ctags">5. CTags</h3>
+<p>代码标签生成器，它支持函数的跳转，用来阅读源码非常方便。安装完 CTags 插件之后还要在 Ubuntu 中安装一个 ctags 的工具。</p>
+
+<p>插件官方地址：<a href="https://github.com/SublimeText/CTags">CTags</a></p>
+
+<h3 id="6-sublimecodeintel">6. SublimeCodeIntel</h3>
+<p>代码自动补全插件。它支持以下语言的自动提示功能：</p>
+
+<blockquote>
+  <p>JavaScript, Mason, XBL, XUL, RHTML, SCSS, Python, HTML, Ruby, Python3, XML, Sass, XSLT, Django, HTML5, Perl, CSS, Twig, Less, Smarty, Node.js, Tcl, TemplateToolkit, PHP</p>
+</blockquote>
+
+<p>插件官方地址：<a href="http://sublimecodeintel.github.io/SublimeCodeIntel/">SublimeCodeIntel</a></p>
+
+<h3 id="7-cheaders">7. CHeaders</h3>
+<p>该插件可以帮助你自动填充/提示 C/C++ 的头文件。 使用方法：该插件在 Linux 系统中会默认从以下两个路径去寻找头文件：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code>/usr/include/
+/usr/local/include 
+</code></pre>
+</div>
+
+<p>如果你想再添加一些头文件的查找路径，可以将头文件路径添加到设置文件中的 “PATHS_HEADERS” 参数中</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="o">{</span>
+     <span class="s2">"PATHS_HEADERS"</span> : <span class="o">[</span><span class="s2">"~/Desktop/project/include"</span><span class="o">]</span>,
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>为了能够使编写 C++ 代码时，我们还可以添加系统中 gcc-4.8 中有关 C++ 的相关头文件，改完之后的配置文件如下：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="o">{</span>
+    // Path to your c headers files...
+    // example linux: 
+    //      /home/leoxnidas/include/
+    //      ~/include/
+    //      <span class="nv">$HOME</span>/include/
+    // example window: 
+    //      C:<span class="se">\</span>
+    //      %HOME% &lt;<span class="o">=</span> Same <span class="o">=</span>&gt; C:<span class="se">\</span>
+    <span class="s2">"PATHS_HEADERS"</span> : 
+    <span class="o">[</span> 
+        <span class="s2">"/usr/include/c++/"</span>,
+        <span class="s2">"/usr/include/c++/4.8/"</span>,
+        <span class="s2">"/usr/include/boost/"</span>,
+        <span class="s2">"/usr/lib/gcc/x86_64-linux-gnu/4.8/include"</span>
+    <span class="o">]</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+
+<p>如果有时插件不能在输入头文件时智能提示相关的头文件，这可能说明插件工作不正常了，所有就需要重新加载插件，我们只需要使用快捷键 “Ctrl + Shift + P” 来打开命令行输入框，并在框中输入以下的命令：</p>
+
+<div class="language-shell highlighter-rouge"><pre class="highlight"><code>CHeaders: Load Plugin
+</code></pre>
+</div>
+
+<p>如下图所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/sublime_CHeaders.png" alt="Sublime_CHeader" /></p>
+
+<p><a href="https://github.com/leoxnidas/CHeaders">github 插件地址</a></p>
+
+<h3 id="8-sidebarfolders">8. SideBarFolders</h3>
+<p>这个插件可以用来管理 Sublime 中打开的文件夹，如下图所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/SideBarFolders.png" alt="SideBarFolders" /></p>
+
+<h3 id="9-sidebarenhancements">9. SideBarEnhancements</h3>
+<p>SideBarEnhancements 是一款很实用的右键菜单增强插件；在安装该插件前，在Sublime Text左侧FOLDERS栏中点击右键，只有寥寥几个简单的功能；安装了就相当于给其丰了大胸一般。</p>
+
+<h3 id="10-converttoutf8">10. ConvertToUTF8</h3>
+<p>支持将编辑的文件保存成各种不同的编码格式，例如: GB2312, GBK, BIG5, EUC-KR, EUC-JP 等</p>
+
+<h3 id="11-brackethighlighter">11. BracketHighlighter</h3>
+<p>用于匹配括号，引号和html标签。</p>
+
+<h3 id="12-markdown-editing">12. MarkDown Editing</h3>
+<p>SublimeText不仅仅是能够查看和编辑 Markdown 文件，但它会视它们为格式很糟糕的纯文本。这个插件通过适当的颜色高亮和其它功能来更好地完成这些任务。</p>
+
+<h3 id="13-markdown-preview">13. Markdown Preview</h3>
+<p>Markdown Preview较常用的功能是preview in browser和Export HTML in Sublime Text，前者可以在浏览器看到预览效果，后者可将markdown保存为html文件。
+使用方法：按Ctrl + Shift + P
+输入mp 后回车(Markdown Preview: current file in browser)
+此时就可以在浏览器里看到刚才编辑的文档了</p>
+
+<h3 id="14-emmet">14. Emmet</h3>
+<p>Emmet 插件对于前端开发者来说可谓大大提高了他们的工作效率，它可以自动地补全 HTML 和 CSS 代码中的闭合标签。
+<a href="https://packagecontrol.io/packages/Emmet">插件官方地址</a></p>
+
+<h3 id="15-sublimeclang">15. SublimeClang</h3>
+<p>SublimeClang 是 Sublime Text 中唯一的 C/C++ 代码自动补全插件，功能强大，并且自带语法检查功能。但是这个插件在 Sublime Text 3 中已经停止更新了，所以在 Sublime  Text 3 中就不能使用 Package Control 工具进行下载使用了，只能自己直接从 github 上的仓库中下载下来手动安装。有关安装的步骤，请见另一篇文章。</p>
+
+<p><a href="http://blog.csdn.net/cywosp/article/details/32721011">点滴记录——Ubuntu 14.04中安装Sublime Text 3并使用SublimeClang插件</a></p>
+
+<h2 id="参考链接">参考链接</h2>
+<ol>
+  <li><a href="http://www.jianshu.com/p/3cb5c6f2421c">如何优雅地使用Sublime Text3</a></li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/SublimeText">SublimeText</a>,&nbsp;<a href="/tag/Ubuntu">Ubuntu</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Linux make 和 Makefile 详解</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E5%86%85%E6%A0%B8/2016/03/19/Linux-%E5%86%85%E6%A0%B8%E5%88%86%E6%9E%90-%E7%AE%80%E5%8D%95%E7%9A%84%E6%97%B6%E9%97%B4%E7%89%87%E8%BD%AE%E8%BD%AC.html">
+					<span class="page-number">《Linux 内核分析》完成一个简单的时间片轮转多道程序内核代码</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html',
+    'title': 'Sublime-Text-3-插件安装'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

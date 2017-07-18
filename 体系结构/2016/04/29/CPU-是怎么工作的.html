@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>CPU 是如何工作的？</title>
+  <meta name="description" content="CPU 发展历史20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Inte...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="CPU 发展历史20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Inte..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="CPU 是如何工作的？" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CPU 是如何工作的？">
+  <meta name="twitter:description" content="CPU 发展历史20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Inte...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/29/CPU-%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">CPU 是如何工作的？</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">April 29, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/体系结构">体系结构</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="cpu-发展历史">CPU 发展历史</h1>
+<p>20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Intel 8080 ，这款处理器芯片一经推出后就得到了各大计算机厂商的青睐，因为它采用了全新的制造工艺，完全取代了其他微处理器的原有的制作工艺，它将 CPU 变地更小更快，并且随着这款芯片的广泛应用， Intel 慢慢地也形成了自己独有的指令集。</p>
+
+<!--more-->
+
+<p>伴随着 CPU 的快速发展以及个人电脑的不断普及，CPU 一词也逐渐地取代了微处理器(microprocessor)，用来表示计算中最核心的功能部件。</p>
+
+<p>早期 CPU 它主要是由多个分离的功能部件和许多微小的集成电路集成在一个电路板上。随着 CPU 制作工艺的快速发展，现在 CPU 的制作工艺已经达到了 20 nm 的级别，同时 CPU 的主频也从原来的百兆级(MHz)别发展到现在千兆级别(GHz)。此外，集成电路的迅猛发展使得在单个 CPU 中的晶体管的数量及复杂性也显著地增加，这也让 CPU 变得越来越快。后来这种 CPU 的发展趋势就就被描述成摩尔定律(Moore’s law)其内容为：</p>
+<blockquote>
+  <p>集成电路上可容纳的电晶体（晶体管）数目，约每隔24个月便会增加一倍；</p>
+</blockquote>
+
+<p>尽管 CPU 的尺寸、制作工艺不断地在发展变化，但是我们现在几乎所有正在使用的 CPU 还都是基于冯诺依曼的存储程序的计算机模型设计的。</p>
+
+<p>摩尔定律的预测到现在为止还依然非常准确，但是由于集成电路晶体管技术在往更微小的级别发展时受到了限制，摩尔定律的极限也逐渐在逼近。尤其当晶体管的栅极长度足够短的时候，量子隧穿效应就会发生，会导致漏电流增加。正是由于上面这些新的问题的产生，使得有越来越多的研究学者投入到新的计算机模型的研究上，例如量子计算机。与此同时，还有许多研究人员基于传统的冯诺依曼的计算机模型不断地扩展计算机的并行处理能力，达到加快计算机运行的目的。</p>
+
+<h1 id="什么是-cpu">什么是 CPU？</h1>
+<p>CPU 是计算机的大脑，是计算机中最重要的部件，通常也被称为中央处理单元。CPU 最核心的功能就是读取和执行指令。而整个 CPU 主要由以下几个部件组成：</p>
+
+<ul>
+  <li>算术逻辑运算单元(ALU)</li>
+  <li>控制单元</li>
+  <li>寄存器</li>
+  <li>总线</li>
+</ul>
+
+<p>下图是一个 CPU 内部结构的简图：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/cpu_circuit.gif" alt="" /></p>
+
+<h1 id="cpu-的组成">CPU 的组成</h1>
+
+<h2 id="算术逻辑运算单元alu">算术逻辑运算单元(ALU)</h2>
+<p>ALU 它本质上是一个数字电路，它的主要功能就是输入的数据进行算术运算操作(例如，加法-add，减法-sub)和逻辑运算操作(例如，与-&amp;，异或-^)，因此它也是 CPU 中最最基础的功能部件。</p>
+
+<h2 id="控制单元">控制单元</h2>
+<p>控制单元控制着 CPU 内部的指令流和数据流的流动。控制单元本质上也是由多个数字电路模块组成，例如上图中出现的多路选择器、指令译码器。</p>
+
+<h2 id="寄存器">寄存器</h2>
+<p>寄存器是 CPU 中特殊的存储区域，CPU 能够快速地从其中访问到其中的数据，它是计算中最快的存储器，但数量也非常有限。在 CPU 中的寄存器可以简单地分为下面几类：</p>
+
+<ul>
+  <li>指令寄存器(Instruction Register，IR)：用来保存当前正在执行的一条指令。</li>
+  <li>程序计数器(Program Counter，PC)：用来指出下一条指令在主存储器中的地址。</li>
+  <li>通用寄存器：用于传送和暂存数据，也可参与算术逻辑运算，并保存运算结果。例如，16 位 cpu 通用寄存器共有 8 个：AX,BX,CX,DX,BP,SP,SI,DI.</li>
+  <li>累加寄存器(Accumulator，AC):它是一个通用寄存器，例如在 Intel 8086 16 位处理器中累加寄存器通常是由通用寄存器组中的 AX 来充当。它的主要功能就是当运算器的算术逻辑单元 ALU 执行算术或逻辑运算时，可以为 ALU 暂时保存一个操作数或运算结果。</li>
+  <li>程序状态字寄存器(Program Status Word，PSW)：用来表征当前运算的状态及程序的工作方式。</li>
+</ul>
+
+<h2 id="总线">总线</h2>
+<p>总线是 CPU 中连接上述各个部件的高速传输通道，它能够在各个部件之间高速地传输数据。而 CPU 内部的总线可以分为下面 3 种：</p>
+
+<ul>
+  <li>数据总线</li>
+  <li>控制总线</li>
+  <li>地址总线</li>
+</ul>
+
+<h1 id="cpu-是怎么工作的">CPU 是怎么工作的？</h1>
+<p>传统的基于冯诺依曼体系结构的 CPU，它采用的存储程序的模型来实现的，简单地说它就是首先将程序存储在主存当中，然后 CPU 不断的进行 “fetch-decode-execute” 的这样一个指令处理过程。CPU 的一个指令周期中所执行的操作可以分为下面 4 个阶段：</p>
+
+<ul>
+  <li>fetch：获取指令</li>
+  <li>decode：指令译码</li>
+  <li>execute：执行指令</li>
+  <li>writeback：数据结果写回</li>
+</ul>
+
+<p>整个指令的过程，如下图所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/CPU_block_diagram.png" alt="" /></p>
+
+<h2 id="fetch获取指令">fetch：获取指令</h2>
+<p>CPU 在一个指令周期第一步需要做的就是获取指令。CPU 会从内存当中存储程序指令的地址开始取出指令(指令在内存中也是通过数字进行表示的，它由操作码和数字共同组成)。那么我们不经要想 CPU 怎么知道程序指令的存放地址呢？其实在 CPU 的内部还有一个叫做程序计数器的寄存器(PC)，它存储了当前指令在内存中的存储地址，并且每当 CPU 取出一条指令后，PC 寄存器中的值就被修改为程序中下一条执行指令的地址。如果 CPU 每次都从内存中进行取指令，由于 CPU 的执行速度远远快于内存的访问速度，所以就会导致 CPU 会出现等待的情况，降低了 CPU 的利用率。为了解决上面这种问题，在现代的 CPU 处理器中引入了 Cache 缓存和流水线技术。</p>
+
+<h2 id="decode指令译码">decode：指令译码</h2>
+<p>CPU 从内存中取出了指令，而这个指令的目的就是告诉 CPU 接下来该做什么操作。在指令译码阶段，每条指令会被分割成操作码和操作数两部分，其结构如下所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/instruction_format.gif" alt="" /></p>
+
+<p>CPU 中每条指令所代表的具体含义是由处理器对应的指令集(ISA)进行解析。指令当中的操作码部分表示的含义是该指令将会执行什么样的操作，而剩余的部分则表示指令执行某种操作时所需要的操作数，例如在 add 指令中，指令操作码后面的数据表示的就是加法操作所需要的两个操作数的相关信息。而在指令中的操作数，它可以是一个常数(也叫立即数)，也可以是一个保存有操作数据的寄存器，还可以是一个操作数在内存中的地址，这主要取决于指令中操作数的寻址方式。</p>
+
+<h2 id="execute执行指令">execute：执行指令</h2>
+<p>完成了上面的指令译码操作之后，CPU 就进入了执行指令的阶段。在这个阶段中 CPU 中的各个部件会协同工作来完成指令中操作码所指定的操作。例如，CPU 正在执行一条 add 指令，那么算术逻辑单元(ALU)就会被使用到，并且 ALU 会和一组存放 输入数据的寄存器和存放最终运算结果的输出数据关联在一起。如果最终 add 指令产生的输出值太大，以致于 CPU 无法处理，那么 CPU 中的程序状态字寄存器(PSW)中的算术溢出(arithmetic overflow)标志就会被置位。</p>
+
+<h2 id="writeback数据结果写回">writeback：数据结果写回</h2>
+<p>最后一步，数据结果写回(writeback)，也就是说将通过指令执行得到的数据结果写回到以某种形式存在的存储空间中。通常，指令执行得到的数据结果都是写回到 CPU 中的寄存器组中，这主要是根据<strong>时间局部性的原理</strong>：接下来执行的指令很可能需要访问上一条指令得到的数据结果。因此，如果将上一条指令执行得到的数据结果保存在寄存器中，CPU 可以非常快速地访问到它。而在另外一些场合中，我们有时需要将执行执行的结果数据写回到价格更加便宜，存储空间更大的内存当中。</p>
+
+<p>这里还有一点需要特别注意的就是，CPU 指令集中还存在一些指令，它执行之后不会产生新的数据结果，而只是修改了 PC 寄存器的值，这类指令我们通常称它是跳转指令(Jump)。通常程序中的循环、条件判断以及函数调用，在编译成机器指令时就会使用到跳转指令来决定程序的执行路径。</p>
+
+<p>CPU 中还有一些指令，它们在执行之后除了得到对应的数据结果之外，同时还会影响到 PSW 寄存器中相应标志位的值。举个例子，一条 cmp 指令它所执行的是比较输入的两个数的大小关系，然后指令执行完成之后，它会根据两个数据的大小关系来设置 PSW 中相应标志位。然后，接下来的执行的跳转指令可能就会根据这个标志位来决定程序接下来跳转到哪个位置接着往下执行。</p>
+
+<h2 id="指令重复执行">指令重复执行</h2>
+<p>在完成上面的指令执行阶段和数据结果写回操作之后，一个 CPU 的指令周期就此结束了，紧接着 CPU 又根据 PC 寄存器中的值来取出下一条指令，同样还是进行 “fetch-decode-execute-writeback” 的处理过程，然后指令一条接一条地重复上面的过程。如果使用的是更加高级和更加复杂的 CPU 的话，在一个指令周期中，还可以同时进行指令的 “fetch-decode-execute-writeback” 的处理过程。所以说，CPU 其实还是挺笨的，它只会做一些重复性的工作，而不会像人类一样进行思考。</p>
+
+<h1 id="总结">总结</h1>
+<p>通过上面的简单介绍，其实你会发现 CPU 的基本工作原理还是非常简单易懂的，只要你能搞清楚它内部的组成结构以及它在一个指令周期中进行什么样的操作。虽然现在的 CPU 在性能、设计、制作工艺已经远远超过了最开始的 Intel 8080 处理器，但是万变不离其宗，它们现在还是使用者相同的数学模型，那就是冯诺依曼的<strong>存储程序计算机模型</strong>，所以说它们的基本原理在本质上没有发生太大的变化。</p>
+
+<p>如果你想进一步深入地了解有关 CPU 的当前发展情况，那么你可以去看下 <strong>《计算机体系结构：量化研究方法》</strong> 这本书，从这本书中你可以了解到高级流水线、指令多发射、Cache 一致性等更加高级的 CPU 相关的问题。</p>
+
+<h1 id="参考文章">参考文章</h1>
+<ol>
+  <li><a href="http://www.ahmetozkurt.net/comporg/ekonomi/hw2006/meltem/main.html">HOW DOES THE CPU PROCESS ?</a></li>
+  <li><a href="http://courses.cs.vt.edu/~csonline/MachineArchitecture/Lessons/CPU/index.html">The Central Processing Unit</a></li>
+  <li><a href="https://zh.wikipedia.org/wiki/%E6%91%A9%E5%B0%94%E5%AE%9A%E5%BE%8B">维基百科-摩尔定律</a></li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/CPU">CPU</a>,&nbsp;<a href="/tag/体系结构">体系结构</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&u=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E5%88%A9%E5%99%A8/2016/04/18/Ubuntu-Terminator-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Ubuntu 14.04 下安装和配置 Terminator</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E5%86%85%E6%A0%B8/2016/05/10/Linux-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html">
+					<span class="page-number">Linux 系统调用内核源码分析</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/29/CPU-%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84.html',
+    'title': 'CPU 是如何工作的？'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

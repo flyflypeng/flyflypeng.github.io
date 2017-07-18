@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux 内核源码中的 container_of 宏和 offsetof 宏分析</title>
+  <meta name="description" content="1. 前言今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。2. offsetof 宏2.1 宏的功能offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="1. 前言今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。2. offsetof 宏2.1 宏的功能offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Linux 内核源码中的 container_of 宏和 offsetof 宏分析" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Linux 内核源码中的 container_of 宏和 offsetof 宏分析">
+  <meta name="twitter:description" content="1. 前言今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。2. offsetof 宏2.1 宏的功能offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%86%85%E6%A0%B8/2016/05/16/Linux-container-of-%E5%AE%8F%E5%92%8C-offsetof-%E5%AE%8F%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Linux 内核源码中的 container_of 宏和 offsetof 宏分析</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">May 16, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/内核">内核</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="1-前言">1. 前言</h2>
+<p>今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。</p>
+
+<h2 id="2-offsetof-宏">2. offsetof 宏</h2>
+
+<h3 id="21-宏的功能">2.1 宏的功能</h3>
+<p>offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变量起始地址的偏移量。</p>
+
+<h3 id="22-宏的定义">2.2 宏的定义</h3>
+<p>offsetof 宏的定义如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="c1">// 代码所在路径：/linux-3.18.6/include/linux/stddef.h
+</span><span class="cp">#define offsetof(TYPE, MEMBER) ((size_t) &amp;((TYPE *)0)-&gt;MEMBER)
+</span></code></pre>
+</div>
+
+<!--more-->
+
+<p>我们可以分 4 步来对这个宏进行解析：</p>
+
+<ul>
+  <li>step 1：((TYPE *)0) 0 地址强制 “转换” 为 TYPE 结构类型的指针；</li>
+  <li>step 2：((TYPE *)0)-&gt;MEMBER 访问 TYPE 结构中的 MEMBER 数据成员；</li>
+  <li>step 3：&amp;(((TYPE *)0 )-&gt;MEMBER) 取出 TYPE 结构中的数据成员 MEMBER 的地址；</li>
+  <li>step 4：(size_t)(&amp;(((TYPE*)0)-&gt;MEMBER)) 结果转换为 size_t 类型。</li>
+</ul>
+
+<p>在这里，我以前有个想不明白的地方就是我们最后从 step 3 获得的不是成员变量 MEMBER 的地址嘛，怎么会最终成了 MEMBER 相对于结构体变量的首地址了呢？</p>
+
+<p>最终通过参考文章 1，我才恍然大悟领略到 offsetof 宏的巧妙之处。它通过将 0 地址强制转换为 TYPE 结构类型的指针，TYPE 结构体以内存空间首地址 0 作为起始地址，则成员地址自然就是偏移地址了。</p>
+
+<h3 id="23-使用例子">2.3 使用例子</h3>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#include &lt;stddef.h&gt;
+</span>
+<span class="k">struct</span> <span class="n">S</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"the first element is at offset %zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">offsetof</span><span class="p">(</span><span class="k">struct</span> <span class="n">S</span><span class="p">,</span> <span class="n">c</span><span class="p">));</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"the double is at offset %zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">offsetof</span><span class="p">(</span><span class="k">struct</span> <span class="n">S</span><span class="p">,</span> <span class="n">i</span><span class="p">));</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>编译运行得到的结果是：</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>gcc offsetof_macro_test.c -o offsetof_macro_test
+<span class="gp">$ </span>./offsetof_macro_test 
+the first element is at offset 0
+the double is at offset 4
+
+</code></pre>
+</div>
+
+<h2 id="3-container_of-宏">3. container_of 宏</h2>
+
+<h3 id="31-宏的功能">3.1 宏的功能</h3>
+<p>container_of 宏是一个函数宏，它的功能就是通过一个结构变量中一个成员的地址找到这个结构体变量的首地址。下面我们看一个例子：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="k">struct</span> <span class="n">test</span>
+<span class="p">{</span>
+<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">j</span><span class="p">;</span>
+<span class="kt">char</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">test</span> <span class="n">temp</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p>现在如果我们想通过 temp.j 的地址找到 temp 的首地址就可以使用 <strong>container_of(&amp;temp.j,struct test,j)</strong>来实现这一功能。</p>
+
+<h3 id="32-宏的定义">3.2 宏的定义</h3>
+<p>下面我们就来具体分析一下 container_of 宏的定义。</p>
+
+<p>container_of() 宏的定义如下：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="c1">// 代码所在路径：/linux-3.18.6/include/linux/kernel.h
+</span><span class="cm">/**
+ * container_of - cast a member of a structure out to the containing structure
+ * @ptr:    the pointer to the member.
+ * @type:   the type of the container struct this is embedded in.
+ * @member: the name of the member within the struct.
+ *
+ */</span>
+<span class="cp">#define container_of(ptr, type, member) ({          \
+    const typeof( ((type *)0)-&gt;member ) *__mptr = (ptr);    \
+    (type *)( (char *)__mptr - offsetof(type,member) );})
+</span></code></pre>
+</div>
+
+<p>首先，我们看一下函数宏中括号内传入的参数的含义分别是：</p>
+
+<ul>
+  <li>ptr: 一个指针，指向结构体中的成员变量</li>
+  <li>type: 结构体的类型</li>
+  <li>member: 结构体中成员变量，即 ptr 所指向的成员变量</li>
+</ul>
+
+<p>现在我们根据把上面例子中的 struct test temp 变量来展开 container_of() 定义中的第 10 行代码，替换后的结果如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="k">const</span> <span class="n">typeof</span><span class="p">(((</span><span class="k">struct</span> <span class="n">test</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="n">__mptr</span> <span class="o">=</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">temp</span><span class="p">.</span><span class="n">j</span><span class="p">);</span>
+</code></pre>
+</div>
+
+<p>中，typeof 是 GNU C 对标准 C 的扩展，它的作用是根据变量获取变量的类型。因此，上述代码的作用是首先使用 typeof 获取结构体成员 j 的类型为 int，然后顶一个 int 指针类型的临时变量 __mptr ,并将结构体变量中的成员的地址赋给临时变量 __mptr 。</p>
+
+<p>下面我们接着来分析 container_of() 中第 12 行代码的含义。同样以上面的 struct test 为例，我们展开代码后得到的结果如下所示：</p>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="p">(</span><span class="k">struct</span> <span class="n">test</span> <span class="o">*</span><span class="p">)((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">__mptr</span> <span class="o">-</span> <span class="n">offsetof</span><span class="p">(</span><span class="k">struct</span> <span class="n">test</span><span class="p">,</span><span class="n">j</span><span class="p">));</span>
+</code></pre>
+</div>
+
+<p>在前面我们已经知道 offsetof 也是一个函数宏，它的作用就是获得结构体变量中的指定成员变量相对于结构体变量起始地址的偏移量。所以上面展开的代码可以分为下面 3 个步骤来理解：</p>
+
+<ul>
+  <li>step 1：将通过 container_of 宏获得结构体成员变量 <strong>j</strong> 的内存地址__mptr强制转换成 (char*) 类型。</li>
+  <li>step 2：采用 offsetof 宏来获得结构体成员变量 <strong>j</strong> 在结构体中的偏移量。</li>
+  <li>step 3：然后将结构体成员变量 <strong>j</strong> 的内存地址__mptr减去结构体成员变量 <strong>j</strong> 在结构体中的偏移量，这样就得到的就是结构体变量的起始地址。最后，通过一个强制转换将结果转换成 (struct test *)型的指针。</li>
+</ul>
+
+<h3 id="33-使用例子">3.3 使用例子</h3>
+
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+#include &lt;stddef.h&gt;
+</span>
+<span class="cp">#define container_of(ptr, type, member) ({          \
+    const typeof( ((type *)0)-&gt;member ) *__mptr = (ptr);    \
+    (type *)( (char *)__mptr - offsetof(type,member) );})
+</span>
+<span class="k">struct</span> <span class="n">test</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">j</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">k</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="k">struct</span> <span class="n">test</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"&amp;temp = %p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">temp</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"&amp;temp.j = %p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">temp</span><span class="p">.</span><span class="n">j</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"container_of(&amp;temp.j,struct test,j) = %p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">container_of</span><span class="p">(</span><span class="o">&amp;</span><span class="n">temp</span><span class="p">.</span><span class="n">j</span><span class="p">,</span> <span class="k">struct</span> <span class="n">test</span><span class="p">,</span> <span class="n">j</span><span class="p">));</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+
+<p>编译运行后的结果如下所示：</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>gcc container_of_macro_test.c -o container_of_macro_test
+<span class="gp">$ </span>./container_of_macro_test 
+&amp;temp <span class="o">=</span> 0x7fff25b39000
+&amp;temp.j <span class="o">=</span> 0x7fff25b39004
+container_of<span class="o">(</span>&amp;temp.j,struct <span class="nb">test</span>,j<span class="o">)</span> <span class="o">=</span> 0x7fff25b39000
+
+</code></pre>
+</div>
+
+<h2 id="参考文章">参考文章</h2>
+<ol>
+  <li><a href="http://blog.csdn.net/tigerjibo/article/details/8299584">offset宏的讲解</a></li>
+  <li><a href="http://blog.csdn.net/tigerjibo/article/details/8299589">container_of分析</a></li>
+  <li><a href="http://www.embedu.org/Column/Column433.htm">揭开linux内核中container_of的神秘面纱</a></li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/container_of">container_of</a>,&nbsp;<a href="/tag/offsetof">offsetof</a>,&nbsp;<a href="/tag/内核">内核</a>,&nbsp;<a href="/tag/Linux">Linux</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/linux/2016/05/15/VNC-%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">VNC 性能提升方法</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/05/20/%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">
+					<span class="page-number">每个计算机专业学生必须知道的事</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E5%86%85%E6%A0%B8/2016/05/16/Linux-container-of-%E5%AE%8F%E5%92%8C-offsetof-%E5%AE%8F%E5%88%86%E6%9E%90.html',
+    'title': 'Linux 内核源码中的 container_of 宏和 offsetof 宏分析'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

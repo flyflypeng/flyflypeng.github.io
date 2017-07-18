@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>VNC 性能提升方法</title>
+  <meta name="description" content="1. 提高客户端屏幕显示的帧率作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。1.1 屏幕更新策略屏幕更新策略主要涉及到下面两个问题：  Server 端如何检测出屏幕画面发生了变化并生成显示更新？  Server 端何时将显示更新发送到 Cli...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="1. 提高客户端屏幕显示的帧率作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。1.1 屏幕更新策略屏幕更新策略主要涉及到下面两个问题：  Server 端如何检测出屏幕画面发生了变化并生成显示更新？  Server 端何时将显示更新发送到 Cli..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="VNC 性能提升方法" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="VNC 性能提升方法">
+  <meta name="twitter:description" content="1. 提高客户端屏幕显示的帧率作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。1.1 屏幕更新策略屏幕更新策略主要涉及到下面两个问题：  Server 端如何检测出屏幕画面发生了变化并生成显示更新？  Server 端何时将显示更新发送到 Cli...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/linux/2016/05/15/VNC-%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">VNC 性能提升方法</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">May 15, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/Linux">Linux</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h1 id="1-提高客户端屏幕显示的帧率">1. 提高客户端屏幕显示的帧率</h1>
+<p>作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。</p>
+
+<h2 id="11-屏幕更新策略">1.1 屏幕更新策略</h2>
+<p>屏幕更新策略主要涉及到下面两个问题：</p>
+
+<ul>
+  <li>Server 端如何检测出屏幕画面发生了变化并生成显示更新？</li>
+  <li>Server 端何时将显示更新发送到 Client 端？</li>
+</ul>
+
+<!--more-->
+
+<p>下面就对这两个问题进行一个简单的分析：</p>
+
+<h3 id="111-显示更新的生成">1.1.1 显示更新的生成</h3>
+<p>这个问题的本质其实是显示更新与当前系统窗口系统的绘图命令之间的关系。在 Server 端可以采用来两种策略来生成显示更新：</p>
+
+<ul>
+  <li>积极更新策略（Eager display update）</li>
+  <li>懒惰更新策略（Lazy display update）</li>
+</ul>
+
+<p>在积极更新策略中，一旦窗口系统发出新的图形命令,Server 端都立刻生成该命令对应的显示更新。</p>
+
+<p>而在懒惰更新策略中，窗口系统产生的图形命令会被首先放入一个中间队列,以检测各条命令所更改的区域是否存在重合，在存在重合的情况下将对相关命令进行合并后为其生成显示更新。</p>
+
+<p>懒惰更新由于可以对多个显示更新进行合并，在带宽利用上更有优势。然而懒惰更新并不适用于对交互性要求较高的应用。</p>
+
+<h3 id="112-显示更新的驱动模式">1.1.2 显示更新的驱动模式</h3>
+<p>显示更新的驱动模式指的就是何时将 Server 端的显示更新发送到 Client 端，这里存在两种显示更新的驱动模式：</p>
+
+<ul>
+  <li>服务端主动推送（Server-Push）</li>
+  <li>客户端主动拉取（Client-Pull）</li>
+</ul>
+
+<p>在 Server-Push 的模式中，由 Server 端决定何时将生成的显示更新发送到 Client 端。而在 Client-Pull 模式中，Client 端在需要显示更新时向 Server 端发送请求，驱动着 Server 端返回更新。</p>
+
+<p>Client-Pull 模式的优势在于它是一种简单且易于实现的模式，并且整个系统具备一定的自适应能力，Client 端能够根据自身处理能力、网络状况对发送请求的频率进行调整。</p>
+
+<h2 id="12-vnc-中的屏幕更新策略">1.2 VNC 中的屏幕更新策略</h2>
+<p>在 VNC 中实现的屏幕更新策略是<strong>客户端主动拉取式的懒惰更新策略</strong>。由于 VNC 是从 Framebuffer 层截获系统原始的屏幕像素数据，所以这一特点也决定了 VNC 只能采用<strong>懒惰的更新策略</strong>。而在显示更新驱动模式上，VNC 则采用了实现更为简单并能够根据网络状况来修改发送屏幕更新请求频率的<strong>客户端拉取的更新策略</strong>。</p>
+
+<p>但是 Client-Pull 的显示更新驱动模式存在一个明显的缺陷：相邻的显示更新之间存在不可消除的时间间隔，如下图所示。
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/client_pull_before.png" alt="" /></p>
+
+<p>从上面的图中我们可以看出，如果在传输延迟比较大的情况下，Screen update time 的值就会变得很大，就会导致客户端屏幕显示的帧率下降出现卡顿的情况，用户体验变得很差。</p>
+
+<h2 id="13-vnc-屏幕更新改进方案">1.3 VNC 屏幕更新改进方案</h2>
+<p>我们改进屏幕显示帧率最直接的方法就是减小相邻图像帧数据更新的时间间隔，也就是减小上面图中所标出的 Screen update time 的值。</p>
+
+<p>那么怎么缩小 Screen update time 这个值呢？</p>
+
+<p>首先，缩短传输过程中的网络延迟是最直接的一种方法，但是我们其实还可以从 Screen update time 中挤掉一些时间。</p>
+
+<p>在上面的图中，我们还特别标出了一个虚线组成的矩形 Idle，这段时间间隔它所表示的含义是从 Server 端接收到 Client 端的 screen update 的请求，经过一系列的修改区域检测，压缩编码等过程后，最后从 Server 端发送 screen update 应答消息之间的时间间隔，也就是 Server 端处理一个 Client 屏幕更新请求所需要花费的时间。</p>
+
+<p>通过上面的分析，我们是否可以考虑下面这种方案：
+Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图像编码压缩好，一旦 Server 端接收到 Client 的屏幕更新请求，就马上将上一帧图像发送出去，其过程如下图所示：</p>
+
+<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/client_pull_after.png" alt="" /></p>
+
+<p>其实，这种改进方案的效果就像是给 VNC 加了一个双缓冲，使其能够快速地回复 Client 的屏幕更新请求。</p>
+
+<h1 id="2-改进图像修改区域检测算法modified-region-detection-algorithm">2. 改进图像修改区域检测算法（modified region detection algorithm）</h1>
+<p>VNC 中的 RFB 协议所支持的屏幕像素数据的更新方法是一种增量式的数据更新方法。整个屏幕的像素数据被切分成一个个更小粒度的矩形块（我们将其称为检测矩形块），当 Client 端第一次发送 FramebufferUpdateRequest 给 Server 端时，Server 端会将 整个屏幕像素数据发送给 Client 端，而当 Client 端接下来再次发送 FramebufferUpdateRequest 消息时，Server 端只需要将与上一帧屏幕图像不同的作了修改的部分的矩形块进行压缩编码重传即可，这种方法有效地节省了数据地传输。</p>
+
+<p>但是，计算屏幕图像修改区域需要花费额外的计算时间，因此，图像修改区域检测算法就是用来缩短这一段计算时间。修改区域检测算法所需要做的事情就是找出当前屏幕图像和上一帧图像之间存在差异的地方，如下图所示：</p>
+
+<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/m_r_d.png" alt="" /></p>
+
+<h2 id="21-传统的基于屏幕扫描顺序的检测算法">2.1 传统的基于屏幕扫描顺序的检测算法</h2>
+<p>传统的图像修改区域检测算法是按照屏幕地扫描更新顺序（从左上角到右下角的顺序），依次对比当前帧图像和上一帧图像图像在同一个坐标位置的像素值，如果像素值不相同，那么则将这个像素点所在的矩形块标记为“脏矩形块”。</p>
+
+<p>从这个检测算法的工作机制中我们就可以看出这种算法的工作效率不高，当修改了的像素点位于矩形块的右下角时，那么这个算法会对矩形块中的每个像素点做一个对比。因此，韩国的研究人员提出了下面的两种改进方案。</p>
+
+<h2 id="22-分层修改区域检测算法">2.2 分层修改区域检测算法</h2>
+<p>这个算法的核心思想就是使用不同大小的采样矩形来检测采样矩形中是否存在相对于上一帧图像做了修改了的像素点，由于整个算法是按照二维进行展开搜索的，它相对于传统的按照一维顺序扫描检测算法快地多。整个算法可以分为 3 个步骤，相关示意图如下所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/algorithm_1.png" alt="" /></p>
+
+<h3 id="step-1">step 1</h3>
+<p>首先，采用矩形的长和宽分别被设置成检测矩形大小的 1/4，然后在这个小的采样矩形块中采用传统的按照屏幕扫描顺序来依次对比其中的像素点是否发生了变化，如果是，那么整个算法停止，当前的检测矩形块就被标记为“脏矩形块”。否则，算法就接着执行下面的 step 2。</p>
+
+<h3 id="step-2">step 2</h3>
+<p>在这一步中，采样的矩形块的长宽分别被设置成检测矩形的 1/2，然后和 step 1 一样还是采用传统的按照屏幕扫描顺序来依次对比其中的像素点的方法来检测是否有像素点发生了变化。如果是，那么整个算法停止，当前的检测矩形块就被标记为“脏矩形块”。否则，算法就接着执行下面的 step 3。</p>
+
+<h3 id="step-3">step 3</h3>
+<p>在这步中，采样的矩形块的长宽分别被设置成和检测矩形一样的大小，后面的像素点的比较算法就和 2.1 小节中描述的传统的像素点扫描检测算法相同。</p>
+
+<p>如果这种算法能够在 step 1 和 step 2 两步中停止下来，那么该算法的的效率就会比 2.1 小节的传统检测算法高，否则直到 step 3 时算法才停止的话，该算法的效率就和传统的检测算法效率一样了。</p>
+
+<h2 id="23-间隔扫描检测算法">2.3 间隔扫描检测算法</h2>
+<p>这种算法的核心思想也非常简单，简单描述一下就是：先按照 1,3,5,7……这样的奇数顺序，按照传统的扫描检测算法来对指定位置的像素点的像素值依次比较，如果发现有像素点相对于上一帧图像发生了变化，那么算法就停止，当前的检测矩形块就被标记为“脏矩形块”。否则的话，下一轮扫描就是按照 2,4,6,8……这样的偶数顺序来进行检测，发现有像素点相对于上一帧图像发生了变化，那么算法就停止，当前的检测矩形块就被标记为“脏矩形块”。如果还是没有发现修改的像素点，那么这个检测矩形就不会被标记为“脏矩形块”，在后续的处理中就会被跳过。</p>
+
+<p>整个算法思想，就是如下图所示：
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/algorithm_2.png" alt="" /></p>
+
+<h1 id="3-压缩编码算法">3. 压缩编码算法</h1>
+<p>我们知道 VNC 中传输的数据量最大的就是屏幕数据，当网络带宽有限时，屏幕数据从 Server 端传送到 Client 端就非常容易发生拥塞，导致客户的屏幕更新率降低。因此，减少 VNC 传输的数据量就变得非常重要！而想要减少 VNC 传输的数据量，就要依赖于一个好的压缩编码方法。</p>
+
+<p>在 VNC 协议中已经内置了以下几种压缩编码的方法：</p>
+
+<ul>
+  <li>Raw</li>
+  <li>CopyRect</li>
+  <li>RRE</li>
+  <li>Hextile</li>
+  <li>ZRLE</li>
+</ul>
+
+<p>有关这些编码的具体含义，大家可以参考 RFB 协议中描述（参见参考文献中的第 4 个）。</p>
+
+<p>但是，由于上述几种压缩编码算法的压缩率和编码时间可能无法达到非常理想的状态，所以就有许多研究人员采用 Zlib、MPEG2、MPEG4、MJPEG 等库来对传输的图形数据进行压缩编码，下面的实验结果就是摘自参考文章中的第 1 篇文章。</p>
+
+<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/experimental.png" alt="" /></p>
+
+<p>从上面的实验结果中，综合压缩率和编码所花费的时间，MJPEG 压缩算法的效果最好。在实际的应用我们中还可以采用 libjpeg-turbo 库来进行压缩编码，因为它的压缩率和编码速度上要优于 libjpeg 库。</p>
+
+<h1 id="4-总结">4. 总结</h1>
+<p>总结一下，我们上面所提到提高 VNC 性能的方法主要就是下面三个方面：</p>
+
+<ul>
+  <li>Server 端屏幕更新和推送的方式</li>
+  <li>加快屏幕数修改区域的检测算法，找出屏幕中发生变化的区域</li>
+  <li>使用压缩率更高并且编码时间更短的压缩算法</li>
+</ul>
+
+<h1 id="参考文章">参考文章</h1>
+<ol>
+  <li>Ko H Y, Lee J H, Kim J O. Implementation and evaluation of fast mobile VNC systems[J]. Consumer Electronics, IEEE Transactions on, 2012, 58(4): 1211-1218.</li>
+  <li>吴筱桉. VNC系统中RFB协议分析及视频播放性能改进[J]. 南开大学硕士研究生毕业论文.2008.</li>
+  <li>Sejal Patel, Priyadarshani Raskar, Pragati Badhe. Journal of Engineering Research and Applications, 2014, 4(1): 141-144.</li>
+  <li>Richardson T. The RFB Protocol v3. 8[J]. Technical Document, RealVNC Ltd., http://www.realvnc.com/docs/rfbproto. pdf, 2010.</li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/VNC">VNC</a>,&nbsp;<a href="/tag/RFB">RFB</a>,&nbsp;<a href="/tag/Android">Android</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2016/05/14/%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86%E7%9A%84%E4%B8%83%E5%8F%A5%E8%AF%9D.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">时间管理的七句话</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E5%86%85%E6%A0%B8/2016/05/16/Linux-container-of-%E5%AE%8F%E5%92%8C-offsetof-%E5%AE%8F%E5%88%86%E6%9E%90.html">
+					<span class="page-number">Linux 内核源码中的 container_of 宏和 offsetof 宏分析</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/linux/2016/05/15/VNC-%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95.html',
+    'title': 'VNC 性能提升方法'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

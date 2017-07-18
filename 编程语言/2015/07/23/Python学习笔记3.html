@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Python 学习笔记（3）</title>
+  <meta name="description" content="1. 模块 为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，很多编程语言都采用这种组织代码的方式。在Python中，一个.py文件就称之为一个模块（Module）。使用模块的好处？最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模块编写完...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2017">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="1. 模块 为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，很多编程语言都采用这种组织代码的方式。在Python中，一个.py文件就称之为一个模块（Module）。使用模块的好处？最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模块编写完..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Python 学习笔记（3）" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Python 学习笔记（3）">
+  <meta name="twitter:description" content="1. 模块 为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，很多编程语言都采用这种组织代码的方式。在Python中，一个.py文件就称之为一个模块（Module）。使用模块的好处？最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模块编写完...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/23/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Python 学习笔记（3）</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">July 23, 2015</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/编程语言">编程语言</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/python_logo.png" alt="python_logo" /></p>
+
+<h2 id="1-模块-">1. 模块 <span id="1"></span></h2>
+
+<p>为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，很多编程语言都采用这种组织代码的方式。在Python中，一个.py文件就称之为一个模块（Module）。</p>
+
+<p>使用模块的好处？</p>
+
+<p>最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模块编写完毕，就可以被其他地方引用。我们在编写程序的时候，也经常引用其他模块，包括Python内置的模块和来自第三方的模块。</p>
+
+<p>使用模块还可以避免函数名和变量名冲突。相同名字的函数名和变量名可以存在于不同的模块中，因此，我们在编写模块时，不必担心模块名会与其他模块冲突。但是，尽量不要与Python中的内置函数名冲突。<a href="https://docs.python.org/2/library/functions.html">Python内置函数</a>。</p>
+
+<!--more-->
+
+<p>但是你也许会想到 ，如果两个人编写了相同的模块名，那么模块名冲突了怎么办？Python为了避免模块名冲突，引入了包(Package)。</p>
+
+<p>举个例子，一个abc.py的文件就是一个名字叫abc的模块，一个xyz.py的文件就是一个名字叫xyz的模块。</p>
+
+<p>现在，假设我们的abc和xyz这两个模块名字与其他模块冲突了，于是我们可以通过包来组织模块，避免冲突。方法是选择一个顶层包名，比如mycompany，按照如下目录存放:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/module1.png" alt="module1" /></p>
+
+<p>引入了包以后，只要顶层的包名不与别人冲突，那所有模块都不会与别人冲突。现在，abc.py模块的名字就变成了mycompany.abc，类似的，xyz.py的模块名变成了mycompany.xyz。</p>
+
+<p><strong>请注意，在每一个包目录下都会有有一个叫做__init__.py的文件，这个文件必须存在，否则Python就把这个目录当成一个普通的目录，而不是一个包。__init__.py可以是空文件，也可以有Python代码，因为__init__.py本身就是一个模块，而它的模块名就是mycompany。</strong></p>
+
+<p>类似的，可以有多层目录，组成多级层次的包结构。比如，下面的目录结构:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/module2.png" alt="module2" /></p>
+
+<p>文件www.py的模块名就是mycompany.web.www，两个文件utils.py的模块名分别是mycompany.utils和mycompany.web.utils。</p>
+
+<p>mycompany.web也是一个模块，请指出该模块对应的.py文件。
+mycompany.web模块对应的文件就是mycompany.web目录下的__init__.py文件。</p>
+
+<h3 id="11-模块使用-">1.1 模块使用 <span id="1.1"></span></h3>
+
+<p>下面我们就以Python中的内建模块sys为例，编写一个hello模块，由此来讲解Python中模块文件的编写规范。</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c">#!/usr/bin/env python</span>
+<span class="c">#-*-coding:utf-8-*-</span>
+
+<span class="s">'a test module'</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">'woshijpf'</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+	<span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+		<span class="k">print</span> <span class="s">'Hello World!'</span>
+	<span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+		<span class="k">print</span> <span class="s">'Hello </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+	<span class="k">else</span><span class="p">:</span>
+		<span class="k">print</span> <span class="s">'Too many arguments!'</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+	<span class="n">test</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>第1行和第2行是标准注释，第1行注释可以使得该hello.py文件可以直接在Mac/Linux/Unix上运行，而第2行注释则表示本.py文件采用utf-8编码格式编码。
+第4行的字符串是一个字符串，表示模块的文档注释，任何模块文件中第一个字符串都被当做是模块文档注释字符串。
+第6行使用__author__变量把作者的信息写进去，然后如果其他人引用你的模块时，就可以瞻仰你的大明明了。
+以上就是Python模板的标准模板文件。
+从后面开始就是真正的代码部分。</p>
+
+<p>使用sys模块的第一步就是导入sys模块，</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">sys</span>
+</code></pre>
+</div>
+<p>导入sys模块后，我们就有了变量sys指向该模块，利用sys这个变量，就可以访问sys模块的所有功能。</p>
+
+<p>sys模块中有一个argv的变量，用list存储了命令行的所有参数。argv变量至少拥有一个元素，因为第一个参数永远都是.py文件的文件名</p>
+
+<p>运行python hello.py获得的sys.argv就是[‘hello.py’]；</p>
+
+<p>运行python hello.py Michael获得的sys.argv就是[‘hello.py’, ‘Michael]。</p>
+
+<p>注意上面hello模块中最后两句代码:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+	<span class="n">test</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>当我们在命令行运行hello模块文件时，Python解释器把一个特殊变量__name__置为__main__，而如果在其他地方导入该hello模块时，if判断将失败，因此，这种if测试可以让一个模块通过命令行运行时执行一些额外的代码，最常见的就是运行测试。</p>
+
+<p>下面，我们就可以通过命令行来查看一下运行的效果:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>python hello.py
+<span class="gp">$ </span>Hello World!
+<span class="gp">$ </span>python hello.py <span class="s1">'Bob'</span>
+<span class="gp">$ </span>Hello Bob
+</code></pre>
+</div>
+<p>如果启动Python交互环境，然后导入hello模块:</p>
+<pre><code class="language-Python">python
+Python 2.7.6 (default, Mar 22 2014, 22:59:56) 
+[GCC 4.8.2] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; import hello
+</code></pre>
+<p>倒入时，没有打印‘Hello World’，这是因为导入hello模块时，并没有执行test()函数，当执行hello中的test模块时 ，就能够打印处‘Hello World！’</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">hello</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+<span class="n">Hello</span> <span class="n">World</span><span class="err">!</span>
+</code></pre>
+</div>
+
+<h4 id="别名">别名</h4>
+<p>当我们导入模块时，我们不一定要使用模块文件名作为导入后的模块名，我们可以给这个模块重新起个名字。比如Python标准库一般会提供StringIO和cStringIO两个库，这两个库的接口和功能是一样的，但是cStringIO是C写的，速度更快，所以，你会经常看到这样的写法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
+	<span class="kn">import</span> <span class="nn">cStringIO</span> <span class="kn">as</span> <span class="nn">StringIO</span>
+<span class="k">except</span> <span class="nb">ImportError</span><span class="p">:</span>
+	<span class="kn">import</span> <span class="nn">StringIO</span>
+</code></pre>
+</div>
+<p>这样就可以优先导入cStringIO。如果有些平台不提供cStringIO，还可以降级使用StringIO。导入cStringIO时，用import … as …指定了别名StringIO，因此，后续代码引用StringIO即可正常工作。</p>
+
+<h4 id="作用域">作用域</h4>
+<p>在模块中，我们可以定义很多的函数和变量，但是有时我们不想模块内有的函数和变量被别人直接使用，而是仅仅在模块内部进行使用，在Python中我们可以通过前缀”_“来实现。</p>
+
+<p>正常的函数和变量名是公开的（public），可以被直接引用，比如: abc，x123，PI等；</p>
+
+<p>类似__xxx__这样的变量是特殊变量，可以被直接引用，但是有特殊用途，比如上面的__author__，__name__就是特殊变量，hello模块定义的文档注释也可以用特殊变量__doc__访问，我们自己的变量一般不要用这种变量名；</p>
+
+<p>类似__xxx和_xxx的变量或者函数名是非公开的(private)，不应该被直接引用，比如_abc,__abc。</p>
+
+<p>private函数或变量不应该被别人引用，那它们有什么用呢？请看例子:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_private_1</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">'Hello, </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">name</span>
+
+<span class="k">def</span> <span class="nf">_private_2</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">'Hi, </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">name</span>
+
+<span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_private_1</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_private_2</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>我们在模块里公开greeting()函数，而把内部逻辑用private函数隐藏起来了，这样，调用greeting()函数不用关心内部的private函数细节，这也是一种非常有用的代码封装和抽象的方法，即:
+外部不需要引用的函数全部定义成private，只有外部需要引用的函数才定义为public。</p>
+
+<p><strong>这里的作用域的思想就是使用了面向对象编程中的抽象和封装的特点，就是把具体的实现的细节可以封装起来，对外只提供规定的接口。</strong></p>
+
+<h3 id="12-安装第三方模块-">1.2 安装第三方模块 <span id="1.2"></span></h3>
+
+<p>在Python中安装第三方模块是通过setuptools工具进行的。Python中封装了两个setuptools的包管理工具: easy_install 和 pip。目前官方推荐使用的是pip。</p>
+
+<p>现在，我们就来安装第一个第三方库PIL(Python Imaging Library)，这是Python下非常强大的图像处理工具库。一般说来，第三方库都会在Python官方的<a href="https://pypi.python.org/pypi">pypi.python.org</a>网站注册，要安装一个第三方库，必须先知道该库的名称，可以在官网或者pypi上搜索，比如Python Imaging Library的名称叫PIL，因此，安装Python Imaging Library的命令就是:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>pip install PIL
+</code></pre>
+</div>
+<p>耐心等待并下载完成后，就可以使用PIL库了。</p>
+
+<p>在安装PIL时，我遇到这样一个问题：</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>Could not find any downloads that satisfy the requirement PIL
+  Some externally hosted files were ignored <span class="o">(</span>use --allow-external PIL to allow<span class="o">)</span>.
+Cleaning up...
+No distributions at all found <span class="k">for </span>PIL
+Storing debug log <span class="k">for </span>failure <span class="k">in</span> /home/woshijpf/.pip/pip.log
+</code></pre>
+</div>
+<p>我的系统环境:</p>
+<blockquote>
+  <p>Ubuntu 14.04 64位
+Python 2.7.6</p>
+</blockquote>
+
+<p>解决办法:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo pip install PIL --allow-external PIL --allow-unverified PIL
+</code></pre>
+</div>
+<p>安装成功后的提示界面:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/PIL_install_pic.png" alt="PIL_install_pic" /></p>
+
+<p>有了PIL之后，处理图像就变得非常简单，下面就以一个缩小图片为例子来介绍一下PIL的用法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">Image</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'test.png'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">im</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span>
+<span class="n">PNG</span> <span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span> <span class="n">RGB</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">IOError</span><span class="p">:</span> <span class="n">decoder</span> <span class="n">jpeg</span> <span class="ow">not</span> <span class="n">available</span>
+</code></pre>
+</div>
+<p>但是当执行到”im.thumbnail((200,100))”时就出现了错误“IOError: decoder jpeg not available”，通过Google之后，找到了原因是因为PIL在不同的linux系统中可能存在一些bug，而且现在Python的图像处理库更多人选择使用<strong>pillow</strong>。pillow图像处理库是基于PIL而实现的一个图像处理库，是现在Python环境中流行的图像处理库。</p>
+
+<p>所以在安装pillow之前，我们首先需要卸载掉PIL，使用如下命令:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo pip uninstall PIL
+</code></pre>
+</div>
+<p>然后我们再安装pillow</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>sudo pip install pillow
+</code></pre>
+</div>
+<p>安装成功后的提示界面，如下所示:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/pillow_install_pic.png" alt="pillow_install" /></p>
+
+<p>然后，我们在调用Image模块来进行图像处理:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">Image</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'robot_cat.jpg'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">im</span><span class="o">.</span><span class="n">format</span><span class="p">,</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="n">im</span><span class="o">.</span><span class="n">mode</span>
+<span class="n">JPEG</span> <span class="p">(</span><span class="mi">550</span><span class="p">,</span> <span class="mi">550</span><span class="p">)</span> <span class="n">RGB</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'thumb.jpg'</span><span class="p">,</span><span class="s">'JPEG'</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>最后，我们进入文件夹中，可以查看一下是否生成了”thumb.jpg”的压缩后的图片:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/pillow_execute_result.png" alt="thumb_jpg" /></p>
+
+<p>到此，经过我们的测试，说明pillow模块已经安装成功了。</p>
+
+<p>在Python中除了我们已经安装好了的pillow库，还有许多常用的第三方库，例如: MySQL的驱动: MySQL-python，用于科学计算的NumPy库: numpy，用于生成文本的模板工具Jinja2，等等</p>
+
+<h4 id="模块的搜索路径">模块的搜索路径</h4>
+
+<p>当我们试图加载一个模块时，Python会到指定路径下去寻找对应的.py文件，如果找不到就会报错。</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">mymodule</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">ImportError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="n">mymodule</span>
+</code></pre>
+</div>
+
+<p>默认情况下，Python会搜索当前工作目录、所有已安装的内置模块和第三方模块，搜索路径存放在sys模块中的path变量中:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="p">[</span><span class="s">''</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/plat-x86_64-linux-gnu'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-tk'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-old'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-dynload'</span><span class="p">,</span> <span class="s">'/usr/local/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/PILcompat'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/gtk-2.0'</span><span class="p">,</span> <span class="s">'/usr/lib/pymodules/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/ubuntu-sso-client'</span><span class="p">]</span>
+</code></pre>
+</div>
+<p>如果我们要添加自己的模块搜索目录，我们可以有以下两种方法:</p>
+
+<p>第一种，直接些该sys.path变量，添加要搜索的目录:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'/Users/michael/my_py_scripts'</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>但是这种方法是在运行时修改，运行完之后就失效了。</p>
+
+<p>第二种，设置环境变量PYTHONPATH，该环境变量中的内容会被自动添加到模块搜索路径中。设置方式与设置Path环境变量类似。注意只需要添加你自己的搜索路径，Python自己本身的搜索路径不受影响。</p>
+
+<p>设置Linux系统中的环境变量的一个方法就是修改/etc/profile文件，在文件中添加想要添加的环境变量，然后保存后通过命令”source /etc/profile”来使其生效。下面就举个例子:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>mkdir python_module
+sudo gedit /etc/profile
+</code></pre>
+</div>
+<p>然后在<strong>/etc/profile</strong>文件末尾添加上如下的语句:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>export PYTHONPATH=/home/woshijpf/python_module
+</code></pre>
+</div>
+<p>保存后退出，接着就在命令行中输入下面的语句:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nb">source</span> /etc/profile
+</code></pre>
+</div>
+<p>最后，我们进入Python的交互环境，导入sys模块，查看sys模块中的path变量是否发生了变化:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="p">[</span><span class="s">''</span><span class="p">,</span> <span class="s">'/home/woshijpf/python_module'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/plat-x86_64-linux-gnu'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-tk'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-old'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-dynload'</span><span class="p">,</span> <span class="s">'/usr/local/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/PILcompat'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/gtk-2.0'</span><span class="p">,</span> <span class="s">'/usr/lib/pymodules/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/ubuntu-sso-client'</span><span class="p">]</span>
+</code></pre>
+</div>
+<p>从上面的结果我们可以看到，我们手动添加的Python模块目录的确被添加到了sys模块中的path变量中了。</p>
+
+<h3 id="13-使用__future__-">1.3 使用__future__ <span id="1.3"></span></h3>
+
+<p>Python的每个新版本都会增加一些新的功能，或者对原来的功能作一些改动。有些改动是不兼容旧版本的，也就是在当前版本运行正常的代码，到下一个版本运行就可能不正常了。</p>
+
+<p>从Python 2.7到Python 3.x就有不兼容的一些改动，比如2.x里的字符串用’xxx’表示str，Unicode字符串用u’xxx’表示unicode，而在3.x中，所有字符串都被视为unicode，因此，写u’xxx’和’xxx’是完全一致的，而在2.x中以’xxx’表示的str就必须写成b’xxx’，以此表示“二进制字符串”。</p>
+
+<p>Python提供了__future__模块，把下一个新版本的特性导入到当前版本，于是我们就可以在当前版本中测试一些新版本的特性。举例说明如下:
+为了适应Python 3.x的新的字符串的表示方法，在2.7版本的代码中，可以通过unicode_literals来使用Python 3.x的新的语法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># still running on python 2.7</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
+<span class="k">print</span> <span class="s">'</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is unicode?'</span><span class="p">,</span><span class="nb">isinstance</span><span class="p">(</span><span class="s">'xxx'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">'u</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is unicode?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">u'xxx'</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">'</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is str?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">'xxx'</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">'b</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is str?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="s">'xxx'</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>注意到上面的代码仍在Python2.7的运行，但结果显示去掉前缀u的’a string’仍是一个unicode，而加上前缀b的b’a string’才变成了str:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span>python futur_module.py
+<span class="s1">'xxx'</span> is unicode? True
+u<span class="s1">'xxx'</span> is unicode? True
+<span class="s1">'xxx'</span> is str? False
+b<span class="s1">'xxx'</span> is str? True
+</code></pre>
+</div>
+
+<h2 id="2-面向对象编程-">2. 面向对象编程 <span id="2"></span></h2>
+
+<p>面向对象编程–Object Oriented Programming，简称OOP，是一种程序设计思想。OOP把对象作为程序的基本单元，一个对象包含了数据和操作数据的函数。</p>
+
+<p>面向过程的程序设计把计算机程序视为一系列的命令集合，即一组函数的顺序执行。为了简化程序设计，面向过过程把函数细分为子函数，即把大块函数切割成小块函数来降低系统的复杂度，</p>
+
+<p>在Python中所有的数据类型都可以视为对象，当然也可以自定义对象。自定义对象数据类型就是面向对象中的累的概念(class)。</p>
+
+<h3 id="21-类和实例-">2.1 类和实例 <span id="2.1"></span></h3>
+
+<p>面向对象的设计思想是从自然界中来的，因为在自然界中，类(class)和实例(instance)的概念是很自然的。Class是一种抽象概念，比如我们定义一个Class–Student，它指的是学生的概念，而实例(instance)则是一个个具体的Student，比如‘Tom’，‘Peter’是两个具体的Student。</p>
+
+<p>面向对象中最重要的概念就是类（class）和实例（instance），必须牢记类是抽象的模板，比如Student类，而实例是根据类创建出来的一个个具体的“对象”，每个对象都拥有相同的方法，但是各自的数据可能不同。</p>
+
+<h4 id="类的定义">类的定义</h4>
+<p>Python中类的定义是通过关键字<strong>class</strong>实现的，例如，定义一个学生类Student:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+ 	<span class="k">pass</span>
+</code></pre>
+</div>
+<p>class后面紧跟着的是类名，即Student，类名通常是大写开头的单词，紧接着是(object)，表示该类从那个类继承而来，而object是所有类的基类。</p>
+
+<p>创建好类之后，我们可以通过类名+()的形式来构造一个类的实例，例如:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
+<span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f0871045890</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Student</span>
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">__main__</span><span class="o">.</span><span class="n">Student</span><span class="s">'&gt;</span><span class="err">
+</span></code></pre>
+</div>
+<p>可以看到变量s是一个指向类Student的对象，后面的’0x7f0871045890‘表示的是对象在内存中的地址。</p>
+
+<p>由于类可以起到模板的作用，因此，可以在创建实例的时候，把一些我们认为必须绑定的属性强制填写进去。通过定义一个特殊的__init__方法（这个__init__方法类似于C++中类的构造函数），在创建实例的时候，就把name，score等属性绑上去:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+</code></pre>
+</div>
+
+<p>注意到__init__方法的第一个参数永远都是self，表示创建的实例本身（这个self类似与Java中的this指针），因此，在__init__方法内部，就可以把各种属性绑定到self上，因为self就是指向创建的实例本身。</p>
+
+<p>有了__init__方法，在创建实例的时候，就不能传入空的参数了，必须传入与__init__方法匹配的参数，但self不用传，Python解释器会将实例变量传进去。</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">student_class</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">student_class</span><span class="o">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">,</span><span class="s">'60'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="s">'Tom'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="s">'60'</span>
+</code></pre>
+</div>
+
+<p>和普通的函数相比，在类中定义的函数只有一点不同，就是第一个参数永远是实例变量self，并且，调用时，不用传递该参数。除此之外，类的方法和普通函数没有什么区别，所以，你仍然可以用默认参数、可变参数和关键字参数。</p>
+
+<h4 id="数据封装">数据封装</h4>
+
+<p>面向对象编程的一个重要特点就是数据封装。在上面的Student类中，每个实例就拥有各种的name和score这些数据。我们可以通过函数来访问这些数据，比如打印一个学生的成绩:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">print_score</span><span class="p">(</span><span class="n">std</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s:</span><span class="si">%</span><span class="s">s'</span><span class="o">%</span><span class="p">(</span><span class="n">std</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">std</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">print_score</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">Tom</span><span class="p">:</span><span class="mi">60</span>
+</code></pre>
+</div>
+<p>但是，既然Student实例本身就拥有这些数据，要访问这些数据，就没有必要从外面的函数去访问，可以直接在Student类的内部定义访问数据的函数，这样，就把“数据”给封装起来了。这些封装数据的函数是和Student类本身是关联起来的，我们称之为类的方法:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+
+	<span class="k">def</span> <span class="nf">print_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s:</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>要定义一个方法，除了第一个参数是self外，其他和普通函数一样。要调用一个方法，只需要在实例变量上直接调用，除了self不用传递，其他参数正常传入:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">student_class</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">student_class</span><span class="o">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">,</span><span class="s">'60'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">print_score</span><span class="p">()</span>
+<span class="n">Tom</span><span class="p">:</span><span class="mi">60</span>
+</code></pre>
+</div>
+
+<p>和静态语言不同，<strong>Python允许对实例变量绑定任何数据</strong>，也就是说，对于两个实例变量，虽然它们都是同一个类的不同实例，但拥有的变量名称都可能不同:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">student_class</span> <span class="kn">import</span> <span class="n">Student</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Peter'</span><span class="p">,</span><span class="mi">90</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">59</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span>
+<span class="mi">20</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">age</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'age'</span>
+</code></pre>
+</div>
+
+<h3 id="22-访问权限-">2.2 访问权限 <span id="2.2"></span></h3>
+<p>在class内部，可以有属性和方法，而外部代码可以通过直接调用实例变量的方法来操作数据。</p>
+
+<p>如果要让内部属性不被外部访问，可以把属性的名称加上两个下划线”__“，在Python中，实例的变量如果以“__”开头，就变成了一个私有变量(private)，只有类内部的方法能够方法，外部的函数不能访问，所以我们可以将Student类修改成下面这样:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c">#!/usr/bin/env python</span>
+<span class="c">#-*- coding:utf-8 -*-</span>
+
+<span class="s">'a example of class: Student , propety is private'</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">'woshijpf'</span>
+
+
+<span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">score</span>
+
+	<span class="k">def</span> <span class="nf">print_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s:</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__score</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>改完之后，对于外部的函数，我们就无法再访问到Student实例变量__name和实例的__score。</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">student_class_private</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">student_class_private</span><span class="o">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__name</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'__name'</span>
+</code></pre>
+</div>
+<p>这样就确保了外部代码不能够随意地修改对象内部的状态，这样通过访问限制的保护，代码就会更加健壮。</p>
+
+<p>如果外部代码要获取name和score，那么可以给Student类增加get_name和get_score的方法来获取:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code>	<span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
+
+	<span class="k">def</span> <span class="nf">get_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
+</code></pre>
+</div>
+<p>如果又要允许外部修改score，那么可以给Student类增加set_score方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code>	<span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">score</span> <span class="o">&lt;=</span><span class="mi">100</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">score</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="k">raise</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'bad score'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>下面我们就来测试以下，Student类中各个方法</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">student_class_private</span> <span class="kn">import</span> <span class="n">Student</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__name</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'__name'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+<span class="s">'Bob'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">get_score</span><span class="p">()</span>
+<span class="mi">40</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">get_score</span><span class="p">()</span>
+<span class="mi">100</span>
+</code></pre>
+</div>
+
+<p>需要注意的是，在Python中，变量名类似__xxx__的，也就是以双下划线开头，并且以双下划线结尾的，是特殊变量，特殊变量是可以直接访问的，不是private变量，所以，不能用__name__、__score__这样的变量名。</p>
+
+<p>有些时候，你会看到以一个下划线开头的实例变量名，比如_name，这样的实例变量外部是可以访问的，但是，按照约定俗成的规定，当你看到这样的变量时，意思就是，“虽然我可以被访问，但是，请把我视为私有变量，不要随意访问”。</p>
+
+<p>双下划线开头的实例变量是不是一定不能从外部访问呢？其实也不是。不能直接访问__name是因为Python解释器对外把__name变量改成了_Student__name，所以，仍然可以通过_Student__name来访问__name变量:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">_Student__name</span>
+<span class="s">'Bob'</span>
+</code></pre>
+</div>
+<p>但是强烈建议你不要这么干，因为不同版本的Python解释器可能会把__name改成不同的变量名。</p>
+
+<p>###2.3 继承和多态 <span id="2.3"></span>
+在面向对象程序设计中，当我们定义一个class的时候，可以从某个现有的class继承，新的class称为子类(Subclass)，而被继承的class称为基类、父类或者超类(BaseClass,SuperClass)。</p>
+
+<p>例如，我们已经编写了一个名为<strong>Animal</strong>的class，有一个run()方法可以直接打印:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Animal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    	<span class="k">print</span> <span class="s">'Animal is running...'</span>
+</code></pre>
+</div>
+<p>当我们需要编写Dog和Cat类似，就可以直接从Animal类继承:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Dog</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+	<span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Cat</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+	<span class="k">pass</span>
+</code></pre>
+</div>
+<p>继承有什么好处？最大的好处就是子类能够获得父类的全部功能。由于Animal实现了run()方法，因此，Dog和Cat作为它的子类，什么事也不干就自动获得了run()方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">dog</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">()</span>
+<span class="n">dog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">cat</span> <span class="o">=</span> <span class="n">Cat</span><span class="p">()</span>
+<span class="n">cat</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>运行的结果如下:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>Animal is running...
+Animal is running...
+</code></pre>
+</div>
+
+<p>从上面的运行结果可以看到，无论是Dog()还是Cat()，它们在运行run()方法的时候，显示的结果都是‘Animal is running…’，但是通常符合逻辑的做法是分别显示‘Dog is running…’和‘Cat is running…’,以此我们需要对代码进行改进:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Dog</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">'Dog is runnning...'</span>
+
+<span class="k">class</span> <span class="nc">Cat</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">'Cat is runnning...'</span>
+</code></pre>
+</div>
+<p>再次运行，结果为:</p>
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>Dog is runnning...
+Cat is runnning...
+</code></pre>
+</div>
+
+<p>当子类和父类都存在相同的方法run()时，子类的run()方法会覆盖父类的run()方法，在代码运行时，总会调用子类的run()方法。这样我们就获得了继承的另外一个好处就是: 多态。</p>
+
+<p>在继承关系中，如果一个实例的数据类型是某个子类，那它的数据类型也可以被看做是父类，例如:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Animal</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">Dog</span><span class="p">)</span>
+<span class="bp">False</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">Animal</span><span class="p">)</span>
+<span class="bp">True</span>
+</code></pre>
+</div>
+<p>要理解多态的好处，我们还需要编写一个函数，这个函数接受一个Animal类型的变量:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">run_twice</span><span class="p">(</span><span class="n">animal</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">animal</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="o">...</span>     <span class="n">animal</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>当我们传入Animal的实例时，run_twice()就打印出:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">run_twice</span><span class="p">(</span><span class="n">Animal</span><span class="p">())</span>
+<span class="n">Animal</span> <span class="ow">is</span> <span class="n">running</span><span class="o">...</span>
+<span class="n">Animal</span> <span class="ow">is</span> <span class="n">running</span><span class="o">...</span>
+</code></pre>
+</div>
+<p>当我们传入Dog的实例是，run_twice()就打印出:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">run_twice</span><span class="p">(</span><span class="n">Dog</span><span class="p">())</span>
+<span class="n">Dog</span> <span class="ow">is</span> <span class="n">runnning</span><span class="o">...</span>
+<span class="n">Dog</span> <span class="ow">is</span> <span class="n">runnning</span><span class="o">...</span>
+</code></pre>
+</div>
+
+<p>多态的好处就是，当我们需要传入Dog、Cat……时，我们只需要接收Animal类型就可以了，因为Dog、Cat……都是Animal类型，然后，按照Animal类型进行操作即可。由于Animal类型有run()方法，因此，传入的任意类型，只要是Animal类或者子类，就会自动调用实际类型的run()方法，这就是多态的意思。</p>
+
+<p>对于一个变量，我们只需要知道它是Animal类型，无需确切地知道它的子类型，就可以放心地调用run()方法，而具体调用的run()方法是作用在Animal、Dog、Cat还是Tortoise对象上，由运行时该对象的确切类型决定，这就是多态真正的威力：调用方只管调用，不管细节，而当我们新增一种Animal的子类时，只要确保run()方法编写正确，不用管原来的代码是如何调用的。这就是著名的“开闭”原则:</p>
+
+<p>对扩展开放: 允许新增Animal子类；</p>
+
+<p>对修改封闭: 不需要修改依赖Animal类型的run_twice()等函数。</p>
+
+<h3 id="24-获取对象信息-">2.4 获取对象信息 <span id="2.4"></span></h3>
+
+<p>当我们拿到一个对象的引用时，我们该通过什么方法知道这个对象的另外类型呢？</p>
+
+<h4 id="使用type">使用type()</h4>
+<p>首先，判断对象类型可以使用type()函数:
+基本类型都可以用type()判断:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">'int'</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="s">'Hello'</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">'str'</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">'NoneType'</span><span class="o">&gt;</span>
+</code></pre>
+</div>
+<p>如果一个变量指向一个函数或者类，也可以通过type()函数来判断:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">abs</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="nb">type</span> <span class="s">'builtin_function_or_method'</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">inherit_polymorphic_example</span><span class="o">.</span><span class="n">Animal</span><span class="s">'&gt;</span><span class="err">
+</span><span class="s">&gt;&gt;&gt; type(b)</span><span class="err">
+</span><span class="s">&lt;class '</span><span class="n">inherit_polymorphic_example</span><span class="o">.</span><span class="n">Dog</span><span class="s">'&gt;</span><span class="err">
+</span></code></pre>
+</div>
+<p>但是type()函数返回值是什么类型呢？</p>
+
+<p>type()函数返回的是函数参数的类型值常量，Python把每种type类型都定义好了常量，放在type模块里，使用之前需要导入:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">types</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="s">'abc'</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">StringType</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">IntType</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="s">u'abc'</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">UnicodeType</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">TypeType</span>
+<span class="bp">True</span>
+</code></pre>
+</div>
+<p>最后，注意到有一种类型叫做”TypeType”，所有类型本身的类型就是TypeType，比如:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">TypeType</span>
+<span class="bp">True</span>
+</code></pre>
+</div>
+
+<h4 id="使用instance">使用instance()</h4>
+
+<p>对于class的继承关系来说，使用type()就很不方便。我们要判断class的类型，可以使用instance()函数。
+我们回顾上面的例子，如果继承关系是:</p>
+<blockquote>
+  <p>object -&gt; Animal -&gt; Dog</p>
+</blockquote>
+
+<p>那么，isintance()就可以告诉我们，一个对新啊该是否是某种类型。我们首先创建2种类型的对象:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">Animal</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>然后，判断:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Dog</span><span class="p">)</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Animal</span><span class="p">)</span>
+<span class="bp">True</span>
+</code></pre>
+</div>
+<p>d虽然是Dog类型，但是由于Dog是从Animal继承而来的，所以，d也还是Animal类型。换句话说，isinstance()判断的是一个对象是否是该类本身，或者位于该类型的父继承链上。</p>
+
+<p>而且能用type()判断的基本类型也能够通过isinstance()判断:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">u'a'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
+<span class="bp">False</span>
+</code></pre>
+</div>
+
+<p>并且还可以判断一个变量是否是某些类型中的一种，例如:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="mi">123</span><span class="p">,(</span><span class="nb">int</span><span class="p">,</span><span class="nb">str</span><span class="p">))</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="mi">123</span><span class="p">,(</span><span class="nb">float</span><span class="p">,</span><span class="nb">str</span><span class="p">))</span>
+<span class="bp">False</span>
+</code></pre>
+</div>
+
+<h4 id="使用dir">使用dir()</h4>
+
+<p>如果要获得一个对象的所有属性和方法，可以使用dir()函数，它返回一个包含字符串的list，比如，获得一个str对象的所有属性和方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">dir</span><span class="p">(</span><span class="s">'ABC'</span><span class="p">)</span>
+<span class="p">[</span><span class="s">'__add__'</span><span class="p">,</span> <span class="s">'__class__'</span><span class="p">,</span> <span class="s">'__contains__'</span><span class="p">,</span> <span class="s">'__delattr__'</span><span class="p">,</span> <span class="s">'__doc__'</span><span class="p">,</span> <span class="s">'__eq__'</span><span class="p">,</span> <span class="s">'__format__'</span><span class="p">,</span> <span class="s">'__ge__'</span><span class="p">,</span> <span class="s">'__getattribute__'</span><span class="p">,</span> <span class="s">'__getitem__'</span><span class="p">,</span> <span class="s">'__getnewargs__'</span><span class="p">,</span> <span class="s">'__getslice__'</span><span class="p">,</span> <span class="s">'__gt__'</span><span class="p">,</span> <span class="s">'__hash__'</span><span class="p">,</span> <span class="s">'__init__'</span><span class="p">,</span> <span class="s">'__le__'</span><span class="p">,</span> <span class="s">'__len__'</span><span class="p">,</span> <span class="s">'__lt__'</span><span class="p">,</span> <span class="s">'__mod__'</span><span class="p">,</span> <span class="s">'__mul__'</span><span class="p">,</span> <span class="s">'__ne__'</span><span class="p">,</span> <span class="s">'__new__'</span><span class="p">,</span> <span class="s">'__reduce__'</span><span class="p">,</span> <span class="s">'__reduce_ex__'</span><span class="p">,</span> <span class="s">'__repr__'</span><span class="p">,</span> <span class="s">'__rmod__'</span><span class="p">,</span> <span class="s">'__rmul__'</span><span class="p">,</span> <span class="s">'__setattr__'</span><span class="p">,</span> <span class="s">'__sizeof__'</span><span class="p">,</span> <span class="s">'__str__'</span><span class="p">,</span> <span class="s">'__subclasshook__'</span><span class="p">,</span> <span class="s">'_formatter_field_name_split'</span><span class="p">,</span> <span class="s">'_formatter_parser'</span><span class="p">,</span> <span class="s">'capitalize'</span><span class="p">,</span> <span class="s">'center'</span><span class="p">,</span> <span class="s">'count'</span><span class="p">,</span> <span class="s">'decode'</span><span class="p">,</span> <span class="s">'encode'</span><span class="p">,</span> <span class="s">'endswith'</span><span class="p">,</span> <span class="s">'expandtabs'</span><span class="p">,</span> <span class="s">'find'</span><span class="p">,</span> <span class="s">'format'</span><span class="p">,</span> <span class="s">'index'</span><span class="p">,</span> <span class="s">'isalnum'</span><span class="p">,</span> <span class="s">'isalpha'</span><span class="p">,</span> <span class="s">'isdigit'</span><span class="p">,</span> <span class="s">'islower'</span><span class="p">,</span> <span class="s">'isspace'</span><span class="p">,</span> <span class="s">'istitle'</span><span class="p">,</span> <span class="s">'isupper'</span><span class="p">,</span> <span class="s">'join'</span><span class="p">,</span> <span class="s">'ljust'</span><span class="p">,</span> <span class="s">'lower'</span><span class="p">,</span> <span class="s">'lstrip'</span><span class="p">,</span> <span class="s">'partition'</span><span class="p">,</span> <span class="s">'replace'</span><span class="p">,</span> <span class="s">'rfind'</span><span class="p">,</span> <span class="s">'rindex'</span><span class="p">,</span> <span class="s">'rjust'</span><span class="p">,</span> <span class="s">'rpartition'</span><span class="p">,</span> <span class="s">'rsplit'</span><span class="p">,</span> <span class="s">'rstrip'</span><span class="p">,</span> <span class="s">'split'</span><span class="p">,</span> <span class="s">'splitlines'</span><span class="p">,</span> <span class="s">'startswith'</span><span class="p">,</span> <span class="s">'strip'</span><span class="p">,</span> <span class="s">'swapcase'</span><span class="p">,</span> <span class="s">'title'</span><span class="p">,</span> <span class="s">'translate'</span><span class="p">,</span> <span class="s">'upper'</span><span class="p">,</span> <span class="s">'zfill'</span><span class="p">]</span>
+</code></pre>
+</div>
+<p>类似__xxx__的属性和方法在Python中都是有特殊用途的，比如__len__方法返回长度。在Python中，如果你调用len（)函数试图获取一个对象的长度，实际上，在len()函数内部，它自动取调用该对象的__len__()方法，所以，下面的代码是等价的:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="s">'ABC'</span><span class="p">)</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s">'ABC'</span><span class="o">.</span><span class="n">__len__</span><span class="p">()</span>
+<span class="mi">3</span>
+</code></pre>
+</div>
+<p>我们自己写的类，如果也想用len(object)的话，那么就得在类中自己实现一个__len__()方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>         <span class="k">return</span> <span class="mi">100</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="mi">100</span>
+</code></pre>
+</div>
+<p>仅仅把属性和方法列出来是不够的，配合getattr()、setattr()以及hasattr()，我们可以直接操作一个对象的状态:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>紧接着就可以测试该对象的属性:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'x'</span><span class="p">)</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">x</span>
+<span class="mi">9</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'y'</span><span class="p">)</span>
+<span class="bp">False</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'y'</span><span class="p">,</span><span class="mi">19</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'y'</span><span class="p">)</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'y'</span><span class="p">)</span>
+<span class="mi">19</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">y</span>
+<span class="mi">19</span>
+</code></pre>
+</div>
+<p>也可以获得对象的方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'power'</span><span class="p">)</span>
+<span class="bp">True</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'power'</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">power</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">MyObject</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f4c398a4e10</span><span class="o">&gt;&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'power'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">fn</span><span class="p">()</span>
+<span class="mi">81</span>
+</code></pre>
+</div>
+
+<p>对于hasattr()等方法，它们的主要用法是在不确定对象是否有该方法时，进行判断用，例如:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">readImage</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+	<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="s">'read'</span><span class="p">):</span>
+    	<span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">None</span>
+</code></pre>
+</div>
+<p>假设我们从文件流fp中读取图像，我们首先要判断该fp对象是否存在read方法，如果存在，则该对象是一个流，如果不存在，则无法读取。</p>
+
+<p>但是请注意，在在Python这类动态语言中，有read()方法，不代表该fp对象就是一个文件流，它也可能是网络流，也可能是内存中的一个字节流，但只要read()方法返回的是有效的图像数据，就不影响读取图像的功能。</p>
+
+<h2 id="3-面向对象高级编程-">3. 面向对象高级编程 <span id="3"></span></h2>
+
+<h3 id="31-使用__slots__-">3.1 使用__slots__ <span id="3.1"></span></h3>
+
+<p>正常情况下，当我们定义了一个class，创建一个class的实例后，我们就可以给该实例绑定任何属性和方法，这就是动态语言的灵活性。先定义class:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">pass</span>
+</code></pre>
+</div>
+<p>然后，尝试给实例绑定一个属性:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="s">'Michael'</span>  <span class="c">#动态地给实例绑定一个属性</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="n">Michael</span>
+</code></pre>
+</div>
+<p>同样，我们也可以给实例绑定一个方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">set_age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">age</span><span class="p">):</span>  <span class="c">#定义一个函数作为实例方法</span>
+<span class="o">...</span>     <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">age</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">set_age</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">set_age</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">Student</span><span class="p">)</span>  <span class="c">#给实例绑定一个方法</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>  <span class="c">#调用实例方法</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">age</span> <span class="c">#测试结果</span>
+<span class="mi">25</span>
+</code></pre>
+</div>
+<p>但是，给一个实例绑定的方法，对另外一个实例是不起作用的:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="o">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'set_age'</span>
+</code></pre>
+</div>
+<p>为了给所有的实例都绑定该方法，可以给class绑定方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
+<span class="o">...</span>     <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Student</span><span class="o">.</span><span class="n">set_score</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">set_score</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">Student</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> 
+</code></pre>
+</div>
+<p>给class绑定方法后，所有实例均可调用:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="mi">100</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">59</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="o">.</span><span class="n">score</span>
+<span class="mi">59</span>
+</code></pre>
+</div>
+
+<p>通常情况下，上面的set_score方法可以直接定义在class中，但是动态绑定允许我们在程序运行过程中给class加上功能，这在静态语言中是很难实现的。</p>
+
+<h4 id="使用__slots__">使用__slots__</h4>
+<p>但是如果我们想限制class的属性怎么办？比如，只允许对Student类的实例动态地绑定name和age属性，不能够再绑定其他属性。</p>
+
+<p>为了达到限制的目的，Python允许在定义class的时候，定义一个特殊的__slots__变量，来限制该class能添加的属性:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s">'name'</span><span class="p">,</span><span class="s">'age'</span><span class="p">)</span>  <span class="c">#使用tuple来定义允许绑定的属性名称</span>
+<span class="o">...</span> 
+</code></pre>
+</div>
+<p>现在，我们就来测试一下:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>    <span class="c">#新建一个Student类的实例</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Tom'</span>   <span class="c">#绑定属性name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">20</span>       <span class="c">#绑定属性age</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">99</span>     <span class="c">#绑定属性score</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'score'</span>
+</code></pre>
+</div>
+<p>由于‘score’没有被放到特殊变量__slots__中，所以不能绑定score属性，试图绑定score将会得到AttributeError的错误。
+__slots__
+使用__slots__时一定要注意，__slots__只对当前类起作用，对继承类是不起作用的:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">GraduateStudent</span><span class="p">(</span><span class="n">Student</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">pass</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">GraduateStudent</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">score</span>
+<span class="mi">100</span>
+</code></pre>
+</div>
+<p>除非在子类中也定义__slots__，这样，子类允许定义的属性就是自身的__slots__加上父类的__slots__。</p>
+
+<h3 id="32-使用property-">3.2 使用@property <span id="3.2"></span></h3>
+
+<p>在绑定属性时，如果我们直接把属性暴露出去，虽然写起来很简单，但是，没办法检查参数，导致可以把成绩随便改:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
+</code></pre>
+</div>
+<p>这显然不合逻辑。为了限制score的范围，可以通过在class的定义中一个set_score()方法来设置成绩，再通过一个get_score()来获取成绩，这样，在set_score()方法里，就可以检查参数了。</p>
+
+<p>但是上面的这种方法略显复杂，没有直接用属性这么简单直接。</p>
+
+<p>因此，Python中就出现了既能检查参数，又可以用类似属性这样简单的方式来访问变量。</p>
+
+<p>Python中内置的@property装饰器就是负责把一个方法变成属性调用:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="nd">@property</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__score</span>
+<span class="o">...</span>     <span class="nd">@score.setter</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+<span class="o">...</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+<span class="o">...</span>             <span class="k">raise</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'Score must be an integer!'</span><span class="p">)</span>
+<span class="o">...</span>         <span class="k">if</span> <span class="n">vaule</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+<span class="o">...</span>				<span class="n">raisr</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'score must between 0 ~ 100!'</span><span class="p">)</span>
+<span class="o">...</span>         <span class="bp">self</span><span class="o">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">value</span>
+
+</code></pre>
+</div>
+<p>@property的实现比较复杂，我们先考察如何使用。把一个getter方法变成属性，只需要加上@property就可以了，此时，@property本身又创建了另一个装饰器@score.setter，负责把一个setter方法变成属性赋值，于是，我们就拥有一个可控的属性操作:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">60</span>   <span class="c">#实际转换为s.set_score(60)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>        <span class="c">#实际转换为s.get_score()</span>
+<span class="mi">60</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="o">...</span>
+<span class="nb">ValueError</span><span class="p">:</span> <span class="n">score</span> <span class="n">must</span> <span class="n">between</span> <span class="mi">0</span> <span class="o">~</span> <span class="mi">100</span><span class="err">!</span>
+</code></pre>
+</div>
+<p>注意到这个神奇的@property，我们在对实例属性操作的时候，就知道该属性很可能不是直接暴露的，而是通过getter和setter方法来实现的。</p>
+
+<p>还可以定义只读属性，只定义getter方法，不定义setter方法就是一个只读属性:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">birth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_birth</span>
+
+    <span class="nd">@birth.setter</span>
+    <span class="k">def</span> <span class="nf">birth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_birth</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">2014</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_birth</span>
+</code></pre>
+</div>
+<p>上面的属性中birth属性是一个可读可写的属性，而age就是一个只读属性。</p>
+
+<p><strong>总之,@property广泛应用在类的定义中，可以让调用者写出简短的代码，同时保证对参数进行一个必要的检查，这样，程序运行时就减少了出错的可能。</strong></p>
+
+<h3 id="33-多重继承-">3.3 多重继承 <span id="3.3"></span></h3>
+
+<p>继承是面向对象编程的一个重要的方式，因为通过继承，子类就可以扩展父类的功能。而多继承就是一个子类可以同时继承多个父类，这样就可以同时拥有多个父类的不同功能了。</p>
+
+<p>例如，我们现在要实现下面4种动物:</p>
+<ul>
+  <li>Dog - 狗狗</li>
+  <li>Bat - 蝙蝠</li>
+  <li>Parrot - 鹦鹉</li>
+  <li>Ostrich - 鸵鸟</li>
+</ul>
+
+<p>如果按照哺乳动物和鸟类分类，我们可以设计处这样的类层次:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/animal_classification1.png" alt="animal_classification" /></p>
+
+<p>但是如果按照“能跑”和“能飞”来归类，我们就可以设计出下面这样的层次:
+<img src="http://7xj51c.com1.z0.glb.clouddn.com/animal_classification2.png" alt="animal_classification_2" /></p>
+
+<p>如果按照哺乳动物和鸟类进行分类，我们的代码实现就是下面这样:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c">#大类</span>
+<span class="k">class</span> <span class="nc">Mammal</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+	<span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Bird</span><span class="p">(</span><span class="n">Animal</span><span class="p">):</span>
+	<span class="k">pass</span>
+
+<span class="c">#各种动物</span>
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">(</span><span class="n">Mammal</span><span class="p">):</span>
+	<span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Bat</span><span class="p">(</span><span class="n">Mammal</span><span class="p">):</span>
+	<span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Parrot</span><span class="p">(</span><span class="n">Bird</span><span class="p">):</span>
+	<span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Ostrich</span><span class="p">(</span><span class="n">Bird</span><span class="p">):</span>
+	<span class="k">pass</span>
+</code></pre>
+</div>
+<p>现在，我们要给动物加上Runnable和Flyable的功能，只需要预先定义好Runnable和Flyable类:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Runnable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">'Running...'</span>
+
+<span class="k">class</span> <span class="nc">Flyable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">fly</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">print</span> <span class="s">'Flying...'</span>
+</code></pre>
+</div>
+<p>对于需要Runnable功能的动物，就多继承一个Runnable，例如，Dog:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Dog</span><span class="p">(</span><span class="n">Mammal</span><span class="p">,</span><span class="n">Runnable</span><span class="p">):</span>
+	<span class="k">pass</span>
+</code></pre>
+</div>
+<p>对于需要Flyable功能的动物，就可以多继承一个Flyable，例如，Bat:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Bat</span><span class="p">(</span><span class="n">Mammal</span><span class="p">,</span><span class="n">Flyable</span><span class="p">):</span>
+	<span class="k">pass</span>
+</code></pre>
+</div>
+
+<h4 id="mixin">Mixin</h4>
+<p>在设计类的继承关系时，通常，主线都是单一继承下来的，例如，Ostrich继承自Bird。但是，如果需要“混入”额外的功能，通过多重继承就可以实现，比如，让Ostrich除了继承自Bird外，再同时继承Runnable。这种设计通常称之为Mixin。</p>
+
+<p>Mixin的目的就是给一个类增加功能，这样，在设计类的时候，我们优先考虑通过多重继承组合多个Mixin的功能，而不是设计多层次的复杂的继承关系。</p>
+
+<p>Python自带的很多库也使用了Mixin。举个例子，Python自带了TCPServer和UDPServer这两类网络服务，而要同时服务多个用户就必须使用多进程或多线程模型，这两种模型由ForkingMixin和ThreadingMixin提供。通过组合，我们就可以创造出合适的服务来。</p>
+
+<p>比如，编写一个多进程模式的TCP服务，定义如下:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyTCPServer</span><span class="p">(</span><span class="n">TCPServer</span><span class="p">,</span><span class="n">ForkingMixin</span><span class="p">):</span>
+	<span class="k">pass</span>
+</code></pre>
+</div>
+<p>编写一个多线程模式的UDP服务，定义如下:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyUDPServer</span><span class="p">(</span><span class="n">UDPServer</span><span class="p">,</span><span class="n">ThreadingMixin</span><span class="p">):</span>
+	<span class="k">pass</span>
+</code></pre>
+</div>
+<h3 id="34-定制类-">3.4 定制类 <span id="3.4"></span></h3>
+
+<p>看到类似__slots__这种形如__xxx__的变量或者函数名就要注意，这些在Python中有着特殊的用途。</p>
+
+<p>__slots__我们已经知道怎么用了，__len__()方法我们也知道是为了能够让class作用于len()函数。</p>
+
+<p>除此之外，Python的class中还有许多这样有特殊用途的函数，可以帮助我们定制类。</p>
+
+<h4 id="__str__">__str__</h4>
+<p>我们先定义一个Student类，打印一个实例:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="o">...</span>         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Michael'</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x109afb190</span><span class="o">&gt;</span>
+</code></pre>
+</div>
+<p>打印出一堆&lt;<strong>main</strong>.Student object at 0x109afb190&gt;，不好看。</p>
+
+<p>怎么才能打印好看呢？只需要定义好__str__()方法，返回一个好看的字符串就可以了:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+<span class="o">...</span>             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>             <span class="k">return</span> <span class="s">'student object (name:</span><span class="si">%</span><span class="s">s)'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">)</span>
+<span class="n">student</span> <span class="nb">object</span> <span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="n">Tom</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>如果我们直接输入变量而不用print，打印出来的实例还是不好看:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
+<span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f4c398b3550</span><span class="o">&gt;</span>
+</code></pre>
+</div>
+
+<p>这是因为直接显示变量的不是__str__()，而是__repr__()，两者的区别就是__str__()返回用户看到的字符串，而__repr__()返回程序开发者看到的字符串，也就是说，__repr__()是为调试服务的。</p>
+
+<p>解决方法就是在类中定义一个__repr__()。但是通常__str__()和__repr__()的代码是一样的，所以这里可以有一个偷懒的写法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">'Student object (name=</span><span class="si">%</span><span class="s">s)'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">__repr__</span> <span class="o">=</span> <span class="n">__str__</span>
+</code></pre>
+</div>
+
+<h4 id="__iter__">__iter__</h4>
+
+<p>如果一个类想被for…in循环，类似list或tuple那样，就必须实现一个__iter__()方法，该方法返回一个迭代对象，然后Python的for循环就会不断调用该迭代对象的next()方法拿到循环的下一个值，直到遇到StopIteration错误时退出循环。</p>
+
+<p>我们以斐波那契数列为例，写一个Fib类，可以作用于for循环:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fib</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c">#c初始化两个初值a,b</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span>
+
+	<span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="bp">self</span>     <span class="c">#实例本省就是迭代对象，所以就返回了自己</span>
+
+	<span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>   <span class="c">#计算下一个值</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>			   <span class="c">#退出循环的条件</span>
+			<span class="k">raise</span> <span class="nb">StopIteration</span><span class="p">()</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>      <span class="c">#返回下一个值</span>
+</code></pre>
+</div>
+<p>现在，我们就把Fib实例作用于for循环:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">Fib</span><span class="p">():</span>
+<span class="o">...</span>     <span class="k">print</span> <span class="n">n</span>
+<span class="o">...</span> 
+<span class="mi">1</span>
+<span class="mi">1</span>
+<span class="mi">2</span>
+<span class="mi">3</span>
+<span class="mi">5</span>
+<span class="mi">8</span>
+<span class="mi">13</span>
+</code></pre>
+</div>
+<h4 id="__getitem__">__getitem__</h4>
+
+<p>Fib实例虽然能作用于for循环，看起来和list有点像，但是，把它当成list来使用还是不行，比如，取第5个元素:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">Fib</span><span class="p">()[</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">TypeError</span><span class="p">:</span> <span class="s">'Fib'</span> <span class="nb">object</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">support</span> <span class="n">indexing</span>
+</code></pre>
+</div>
+<p>要表现得像list那样按照下标取出元素，需要实现__getitem__()方法:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code>	<span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+		<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+		<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+			<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">b</span>
+		<span class="k">return</span> <span class="n">a</span>
+</code></pre>
+</div>
+<p>现在就可以通过下标来访问数列中的任意一项了，下标从0开始:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Fib</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="mi">5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="mi">8</span>
+</code></pre>
+</div>
+<p>但是list中有一个神奇的切片方法，但是对于Fib()却报错，这是因为__getitem__传入的参数可能是一个int，也有可能是一个切片对象，所以需要判断:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code>
+	<span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+			<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+				<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">b</span>
+			<span class="k">return</span> <span class="n">a</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="nb">slice</span><span class="p">):</span>
+			<span class="n">start</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">start</span>
+			<span class="n">stop</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">stop</span>
+			<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
+			<span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stop</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">:</span>
+					<span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+				<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">b</span>
+			<span class="k">return</span> <span class="n">L</span>
+</code></pre>
+</div>
+<p>现在我们就来测试一下Fib的切片功能:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Fib</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="mi">2</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="mi">5</span>
+</code></pre>
+</div>
+<p>但是上述的切片功能还没有对step参数进行处理，也还没有对负数进行处理，所以还需要实现一个__getitem__()还需要许多工作要做。</p>
+
+<p>此外，如果把对象看成dict，__getitem__()的参数也可能是一个可以作key的object，例如str。</p>
+
+<p>与之对应的是__setitem__()方法，把对象视作list或dict来对集合赋值。最后，还有一个__delitem__()方法，用于删除某个元素。</p>
+
+<p>其实__getitem__()有点类似于C++中的运算符重载，它重载了方括号[]的下标引用的功能，使得我们自定义的对象也可以通过方括号来引用对象，当实际调用f[0]时，它实际上调用的函数是__getitem__(0)。</p>
+
+<p>总之，通过上面的方法，我们自己定义的类表现得和Python自带的list、tuple、dict没什么区别，这完全归功于动态语言的“鸭子类型”，不需要强制继承某个接口。</p>
+
+<h4 id="__getattr__">__getattr__</h4>
+<p>正常情况下，当我们调用类的方法或者属性时，如果不存在，就会报错，例如定义学生类(Student):</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Michael'</span>
+<span class="o">...</span> 
+</code></pre>
+</div>
+<p>调用name属性，没有问题，但是当调用不存在的属性score属性时，就存在问题了:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="n">Michael</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'score'</span>
+</code></pre>
+</div>
+<p>错误信息很明确地告诉我们，没有找到score这个attribute。</p>
+
+<p>要避免这个错误，除了可以加上一个score属性之外，Python还有另外一个机制，那就是写一个__getattr__()方法，动态地方茴一个属性。修改如下:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="o">...</span>             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Michael'</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">attr</span><span class="p">):</span>
+<span class="o">...</span>             <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s">'score'</span><span class="p">:</span>
+<span class="o">...</span>                     <span class="k">return</span> <span class="mi">99</span>
+</code></pre>
+</div>
+<p>当调用不存在的属性时，比如score，Python解释器试图调用__getattyr__(self,’score’)来尝试获得属性，这样，我们就有机会返回score属性的值:</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="s">'Michael'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="mi">99</span>
+</code></pre>
+</div>
+<p><strong>注意，只有在没有找到属性的情况下，才调用__getattr__，已有的属性，比如name，不会在__getattr__()</strong>中查找。</p>
+
+<p>Python中更多的定制方法可以详见<a href="https://docs.python.org/2/reference/datamodel.html#special-method-names">Python的参考文档</a>。</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Python">Python</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Python+%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%883%EF%BC%89&url=http%3A%2F%2Flocalhost%3A4000%2F%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2F2015%2F07%2F23%2FPython%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B03.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Python+%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%883%EF%BC%89&u=http%3A%2F%2Flocalhost%3A4000%2F%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2F2015%2F07%2F23%2FPython%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B03.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2F2015%2F07%2F23%2FPython%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B03.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Python+%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%883%EF%BC%89&url=http%3A%2F%2Flocalhost%3A4000%2F%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2F2015%2F07%2F23%2FPython%25E5%25AD%25A6%25E4%25B9%25A0%25E7%25AC%2594%25E8%25AE%25B03.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/20/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B02.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Python 学习笔记（2）</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/25/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04.html">
+					<span class="page-number">Python 学习笔记（4）</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/23/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03.html',
+    'title': 'Python 学习笔记（3）'
+  });
+</script>
+
+
+
+  </body>
+
+</html>
