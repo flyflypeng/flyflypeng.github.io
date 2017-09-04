@@ -6,9 +6,204 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 20 Jul 2017 23:31:34 +0800</pubDate>
-    <lastBuildDate>Thu, 20 Jul 2017 23:31:34 +0800</lastBuildDate>
+    <pubDate>Mon, 04 Sep 2017 23:53:41 +0800</pubDate>
+    <lastBuildDate>Mon, 04 Sep 2017 23:53:41 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
+    
+      <item>
+        <title>Android 系统图形栈: OpenGL ES 和 EGL 介绍</title>
+        <description>&lt;h1 id=&quot;android-系统图形栈-opengl-es-和-egl-介绍&quot;&gt;Android 系统图形栈： OpenGL ES 和 EGL 介绍&lt;/h1&gt;
+
+&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
+
+&lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。&lt;sup id=&quot;fnref:footnote_1&quot;&gt;&lt;a href=&quot;#fn:footnote_1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;opengl-基本概念&quot;&gt;OpenGL 基本概念&lt;/h3&gt;
+
+&lt;p&gt;因为 OpenGL ES 是 OpenGL 的一个子集，所以下面就主要介绍一些有关 OpenGL 的一些基本概念。&lt;/p&gt;
+
+&lt;p&gt;OpenGL 的结构可以从逻辑上划分为下面 3 个部分：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;图元&lt;/strong&gt;（Primitives）&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;缓冲区&lt;/strong&gt;（Buffers）&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;光栅化&lt;/strong&gt;（Rasterize）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;图元primitives&quot;&gt;图元（Primitives）&lt;/h4&gt;
+
+&lt;p&gt;在 OpenGL 的世界里，我们只能画&lt;strong&gt;点、线、三角形&lt;/strong&gt;这三种基本图形，而其它复杂的图形都可以通过三角形来组成。所以这里的图元指的就是这三种基础图形：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;点&lt;/strong&gt;：点存在于三维空间，坐标用（x,y,z）表示。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;线&lt;/strong&gt;：由两个三维空间中的点组成。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;三角形&lt;/strong&gt;：由三个三维空间的点组成。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;缓冲区buffers&quot;&gt;缓冲区（Buffers）&lt;/h4&gt;
+
+&lt;p&gt;OpenGL 中主要有 3 种 Buffer：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;帧缓冲区&lt;/strong&gt;（Frame Buffers）
+  帧缓冲区：这个是存储&lt;strong&gt;OpenGL 最终渲染输出结果的地方&lt;/strong&gt;，它是一个包含多个图像的集合，例如颜色图像、深度图像、模板图像等。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;渲染缓冲区&lt;/strong&gt;（Render Buffers）
+  渲染缓冲区：渲染缓冲区就是一个图像，它是 Frame Buffer 的一个子集。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;缓冲区对象&lt;/strong&gt;（Buffer Objects）
+  缓冲区对象就是程序员输入到 OpenGL 的数据，分为结构类和索引类的。前者被称为“数组缓冲区对象”或“顶点缓冲区对象”（“Array Buffer Object”或“Vertex Buff
+er Object”），即用来描述模型的数组，如顶点数组、纹理数组等； 后者被称为“索引缓冲区对象”（“Index Buffer Object”），是对上述数组的索引。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;光栅化rasterize&quot;&gt;光栅化（Rasterize）&lt;/h4&gt;
+
+&lt;p&gt;在介绍光栅化之前，首先来补充 OpenGL 中的两个非常重要的概念：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Vertex
+  Vertex 就是图形中顶点，一系列的顶点就围成了一个图形。&lt;/li&gt;
+  &lt;li&gt;Fragment
+  Fragment 是三维空间的点、线、三角形这些基本图元映射到二维平面上的映射区域，通常一个 Fragment 对应于屏幕上的一个像素，但高分辨率的屏幕可能会用多个像素点映射到一个 Fragment，以减少 GPU 的工作。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;而&lt;strong&gt;光栅化&lt;/strong&gt;是把点、线、三角形映射到屏幕上的像素点的过程。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453148671075.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;着色器程序shader&quot;&gt;着色器程序（Shader）&lt;/h4&gt;
+
+&lt;p&gt;Shader 用来描述如何绘制（渲染），GLSL 是 OpenGL 的编程语言，全称 OpenGL Shader Language，它的语法类似于 C 语言。OpenGL 渲染需要两种 Shader：Vertex Shader 和 Fragment Shader。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Vertex Shader
+  Vertex Shader 对于3D模型网格的每个顶点执行一次，主要是确定该顶点的最终位置。&lt;/li&gt;
+  &lt;li&gt;Fragment Shader
+  Fragment Shader对光栅化之后2D图像中的每个像素处理一次。3D物体的表面最终显示成什么样将由它决定，例如为模型的可见表面添加纹理，处理光照、阴影的影响等等。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;opengl-流水线&quot;&gt;OpenGL 流水线&lt;/h4&gt;
+
+&lt;p&gt;OpenGL 中有两种流水线，一种是固定流水线，另外一种则是可编程流水线。&lt;/p&gt;
+
+&lt;p&gt;其中，OpenGL 1.0 版本支持固定流水线。其结构如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_1x_pipeline.gif&quot; alt=&quot;OpenGL 1.0 固定流水线&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从OpenGL 2.0版本开始，OpenGL支持可编程的流水线。也就是说，程序员可以通过Shader（一种程序）来控制GPU渲染的过程。
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_20_pipeline2.gif&quot; alt=&quot;OpenGL 2.0 可编程流水线&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;egl&quot;&gt;EGL&lt;/h2&gt;
+
+&lt;h3 id=&quot;什么是-egl&quot;&gt;什么是 EGL？&lt;/h3&gt;
+
+&lt;p&gt;EGL 是 OpenGL ES 渲染 API 和本地窗口系统(native platform window system)之间的一个中间接口层，它主要由系统制造商实现。EGL提供如下机制：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;与设备的原生窗口系统通信&lt;/li&gt;
+  &lt;li&gt;查询绘图表面的可用类型和配置&lt;/li&gt;
+  &lt;li&gt;创建绘图表面&lt;/li&gt;
+  &lt;li&gt;在OpenGL ES 和其他图形渲染API之间同步渲染&lt;/li&gt;
+  &lt;li&gt;管理纹理贴图等渲染资源&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;为了让OpenGL ES能够绘制在当前设备上，我们需要EGL作为OpenGL ES与设备的&lt;strong&gt;桥梁&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;使用-egl-绘图的基本步骤&quot;&gt;使用 EGL 绘图的基本步骤&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15038887630772.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Display(EGLDisplay) 是对实际显示设备的抽象。&lt;/li&gt;
+  &lt;li&gt;Surface（EGLSurface）是对用来存储图像的内存区域&lt;/li&gt;
+  &lt;li&gt;FrameBuffer 的抽象，包括 Color Buffer， Stencil Buffer ，Depth Buffer。Context (EGLContext) 存储 OpenGL ES绘图的一些状态信息。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;使用EGL的绘图的一般步骤：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;获取 EGL Display 对象：eglGetDisplay()&lt;/li&gt;
+  &lt;li&gt;初始化与 EGLDisplay 之间的连接：eglInitialize()&lt;/li&gt;
+  &lt;li&gt;获取 EGLConfig 对象：eglChooseConfig()&lt;/li&gt;
+  &lt;li&gt;创建 EGLContext 实例：eglCreateContext()&lt;/li&gt;
+  &lt;li&gt;创建 EGLSurface 实例：eglCreateWindowSurface()&lt;/li&gt;
+  &lt;li&gt;连接 EGLContext 和 EGLSurface：eglMakeCurrent()&lt;/li&gt;
+  &lt;li&gt;使用 OpenGL ES API 绘制图形：gl_*()&lt;/li&gt;
+  &lt;li&gt;切换 front buffer 和 back buffer 送显：eglSwapBuffer()&lt;/li&gt;
+  &lt;li&gt;断开并释放与 EGLSurface 关联的 EGLContext 对象：eglRelease()&lt;/li&gt;
+  &lt;li&gt;删除 EGLSurface 对象&lt;/li&gt;
+  &lt;li&gt;删除 EGLContext 对象&lt;/li&gt;
+  &lt;li&gt;终止与 EGLDisplay 之间的连接&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;opengl-es-和-egl-的联系&quot;&gt;OpenGL ES 和 EGL 的联系&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453844639965.png&quot; alt=&quot;20170904150453844639965.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;一个类比的例子&quot;&gt;一个类比的例子&lt;/h3&gt;
+
+&lt;p&gt;我们来思考一下画家绘画的过程：首先要有一名懂得各种绘画技艺的画家，然后他需要一张画布，一些笔，一些颜料，一些辅助工具（尺、模板、橡皮、调色板等等），然后他在画布上绘制第一幅画，完成之后展示给人们看；在人们观赏第一幅画的时候，他可以在第二张画布上绘制第二幅画，绘制完成后收回第一幅画，将第二幅画展现给人们看；接着使用工具擦除第一幅画，在同一张画布上绘制第三幅画；周而复始，人们便看到了一幅接一幅的画。&lt;/p&gt;
+
+&lt;p&gt;对比 OpenGL ES/EGL，各要素的对应关系大体如下：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;画家：编程人员&lt;/li&gt;
+  &lt;li&gt;笔、颜料、辅助工具：OpenGL ES API&lt;/li&gt;
+  &lt;li&gt;画布：EGL 创建的 Surface&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;所以计算机绘画的本质就是选择图像显示的像素格式，申请一块内存（画布），填充像素（颜色），绘制完成之后，通知计算机显示到屏幕上（按比例发射RGB光），最终就看到了所绘制的画面。之所以要先选择像素格式，是因为无论是所申请内存的大小，还是硬件驱动解析这块内存的方式，都是由像素格式决定的。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.khronos.org/egl&quot;&gt;EGL 的官方介绍说明&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.slideshare.net/SuhanLee2/understaing-android-egl&quot;&gt;Understaing Android EGL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.piasy.com/2016/06/07/Open-gl-es-android-2-part-1/&quot;&gt;安卓 OpenGL ES 2.0 完全入门（一）：基本概念和 hello world&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2920106.html&quot;&gt;EGL 参考资料1: 学习OpenGL-ES: 1 - 像素、颜色、显存、初始化&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2921123.html&quot;&gt;EGL 参考资料2: 学习OpenGL-ES: 2 - EGL解析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://mobile.51cto.com/app-show-436809.htm&quot;&gt;OpenGL ES 2.0 编程三步曲&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/22/2922487.html&quot;&gt;OpenGL 参考资料1: 学习OpenGL-ES: 3 - 3D绘图原理&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/hrlnw/p/4642272.html&quot;&gt;Android OpenGL ES 离屏渲染（offscreen render）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.shengbin.me/posts/opengl-concepts/&quot;&gt;OpenGL基本概念&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-1/&quot;&gt;All about OpenGL ES 2.x - (part 1/3)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-2/&quot;&gt;All about OpenGL ES 2.x - (part 2/3)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-3/&quot;&gt;All about OpenGL ES 2.x - (part 3/3)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://wiki.jikexueyuan.com/project/opengl-es-guide/about-egl.html&quot;&gt;关于EGL&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:footnote_1&quot;&gt;
+      &lt;p&gt;https://zh.wikipedia.org/wiki/OpenGL_ES&amp;nbsp;&lt;a href=&quot;#fnref:footnote_1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 04 Sep 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        
+        <category>Android</category>
+        
+        <category>OpenGLES</category>
+        
+        <category>EGL</category>
+        
+        <category>Graphic</category>
+        
+        
+        <category>android</category>
+        
+      </item>
     
       <item>
         <title>Linux I/O 模型详解</title>
@@ -1644,519 +1839,6 @@ Some things throughout the library rely on this being -1.  */
         
         
         <category>linux</category>
-        
-      </item>
-    
-      <item>
-        <title>Android NDK Tombstone/Crash 分析</title>
-        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/android_bug.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;前言&quot;&gt;前言&lt;/h1&gt;
-&lt;p&gt;作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。&lt;/p&gt;
-
-&lt;p&gt;通常我们调试程序 Bug 的方法主要有下面 3 种：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;打印日志信息
- 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。&lt;/li&gt;
-  &lt;li&gt;单步调试
- 这个方法则主要使用到了调试工具，例如 gdb 和 Visual Studio 中内置的调试器。这些高级的工具使得我们可以在程序中任何位置设置断点，或者查看相关变量的值，或者更进一步直接查看 CPU 中寄存器的值。&lt;/li&gt;
-  &lt;li&gt;分析崩溃后的错误信息
- 这种方法则主要是分析程序崩溃之后产生的错误信息相关文件来确定产生 Bug 的原因和位置。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h1 id=&quot;android-开发中常见-crash-的情况&quot;&gt;Android 开发中常见 Crash 的情况&lt;/h1&gt;
-&lt;p&gt;在 Android 开发中，程序 Crash 分三种情况：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;未捕获的异常&lt;/li&gt;
-  &lt;li&gt;ANR（Application Not Responding）&lt;/li&gt;
-  &lt;li&gt;闪退（NDK 程序引发错误）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;其中未捕获的异常根据 logcat 打印的堆栈信息很容易定位错误。&lt;/p&gt;
-
-&lt;p&gt;ANR错误也好查，Android规定，应用与用户进行交互时，如果5秒内没有响应用户的操作，则会引发ANR错误，并弹出一个系统提示框，让用户选择继续等待或立即关闭程序。并会在/data/anr目录下生成一个traces.txt文件，记录系统产生anr异常的堆栈和线程信息。&lt;/p&gt;
-
-&lt;p&gt;如果是闪退，这问题比较难查，通常是项目中用到了 NDK 引发某类致命的错误导致闪退。因为 NDK 是使用 C/C++ 来进行开发，熟悉 C/C++ 的程序员都知道，指针和内存管理是最重要也是最容易出问题的地方，稍有不慎就会遇到诸如内存地址访问错误、使用野指针、内存泄露、堆栈溢出、初始化错误、类型转换错误、数字除0等常见的问题，导致最后都是同一个结果：程序崩溃。它不会像在 Java 层产生的异常时弹出“xxx程序无响应，是否立即关闭”之类的提示框。当发生 NDK 错误后，logcat 打印出来的那堆日志根据看不懂，更别想从日志当中定位错误的根源。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;那么我们该怎么调试引发 Crash 的 NDK 程序呢？&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;哈哈，好在 Google 早就料到了我们写的 NDK 代码肯定会漏洞百出。首先，当 NDK 程序在发生 Crash 时，它会在路径 &lt;em&gt;/data/tombstones/&lt;/em&gt; 下产生导致程序 Crash 的文件 tombstone_xx。并且 Google 还在 NDK 包中为我们提供了一系列的调试工具，例如 &lt;strong&gt;addr2line&lt;/strong&gt;、&lt;strong&gt;objdump&lt;/strong&gt;、&lt;strong&gt;ndk-stack&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h1 id=&quot;tombstone&quot;&gt;Tombstone&lt;/h1&gt;
-
-&lt;h2 id=&quot;linux-信号机制&quot;&gt;Linux 信号机制&lt;/h2&gt;
-&lt;p&gt;在介绍 Tombstone 之前，我们首先补充一个 Linux 信号机制的知识。&lt;/p&gt;
-
-&lt;p&gt;信号机制是 Linux 进程间通信的一种重要方式，Linux 信号一方面用于正常的进程间通信和同步，如任务控制(SIGINT, SIGTSTP,SIGKILL, SIGCONT，……)；另一方面，它还负责监控系统异常及中断。 当应用程序运行异常时， Linux 内核将产生错误信号并通知当前进程。 当前进程在接收到该错误信号后，可以有三种不同的处理方式。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;忽略该信号。&lt;/li&gt;
-  &lt;li&gt;捕捉该信号并执行对应的信号处理函数(signal handler)。&lt;/li&gt;
-  &lt;li&gt;执行该信号的缺省操作(如 SIGSEGV， 其缺省操作是终止进程)。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;当 Linux 应用程序在执行时发生严重错误，一般会导致程序 crash。其中，Linux 专门提供了一类 crash 信号，在程序接收到此类信号时，缺省操作是将 crash 的现场信息记录到 core 文件，然后终止进程。&lt;/p&gt;
-
-&lt;p&gt;Crash 信号列表：&lt;/p&gt;
-
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Signal&lt;/th&gt;
-      &lt;th&gt;Description&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGSEGV&lt;/td&gt;
-      &lt;td&gt;Invalid memory reference.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGBUS&lt;/td&gt;
-      &lt;td&gt;Access to an undefined portion of a memory object.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGFPE&lt;/td&gt;
-      &lt;td&gt;Arithmetic operation error, like divide by zero.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGILL&lt;/td&gt;
-      &lt;td&gt;Illegal instruction, like execute garbage or a privileged instruction&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGSYS&lt;/td&gt;
-      &lt;td&gt;Bad system call.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGXCPU&lt;/td&gt;
-      &lt;td&gt;CPU time limit exceeded.&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;SIGXFSZ&lt;/td&gt;
-      &lt;td&gt;File size limit exceeded.&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h2 id=&quot;什么-tombstone&quot;&gt;什么 Tombstone？&lt;/h2&gt;
-&lt;p&gt;Android Native 程序本质上就是一个 Linux 程序，因此当它在执行时发生严重错误，也会导致程序 crash，然后产生一个记录 crash 的现场信息的文件，而这个文件在 Android 系统中就是 tombstone 文件。&lt;/p&gt;
-
-&lt;p&gt;Tombstone 英文的本意是墓碑，我觉得用这个单词来表示程序 Crash 之后产生的现场死亡信息真的再恰当不过了，tombstone 文件的确就像墓碑一样记录了死亡了的进程的基本信息（例如进程的进程号，线程号），死亡的地址（在哪个地址上发生了 Crash），死亡时的现场是什么样的（记录了一系列的堆栈调用信息）等等。&lt;/p&gt;
-
-&lt;p&gt;因此，分析出现 Crash 的原因和代码位置最重要的就是分析这个 tombstone 文件。&lt;/p&gt;
-
-&lt;p&gt;tombstone 文件位于路径 &lt;em&gt;/data/tombstones/&lt;/em&gt; 下，&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root@x86:/data/tombstones &lt;span class=&quot;c&quot;&gt;# ls&lt;/span&gt;
-tombstone_00
-tombstone_01
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;它的主要内容如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
-Build fingerprint: 'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'
-Revision: '0'
-ABI: 'x86'
-pid: 1019, tid: 1019, name: surfaceflinger  &amp;gt;&amp;gt;&amp;gt; /system/bin/surfaceflinger &amp;lt;&amp;lt;&amp;lt;
-signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x4
-    eax a6265c06  ebx b7467d88  ecx b7631a22  edx a6265c06
-    esi 00000000  edi b6867140
-    xcs 00000073  xds 0000007b  xes 0000007b  xfs 00000000  xss 0000007b
-    eip b745a639  ebp bfcfc1e8  esp bfcfc150  flags 00010282
-
-backtrace:
-    #00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
-    #01 pc 00034b86  /system/lib/libsurfaceflinger.so
-    #02 pc 0003229e  /system/lib/libsurfaceflinger.so
-    #03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;amp;)+652)
-    #04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
-    #05 pc 0004eafb  /system/lib/libgui.so (android::Surface::queueBuffer(ANativeWindowBuffer*, int)+411)
-    #06 pc 0004ce06  /system/lib/libgui.so (android::Surface::hook_queueBuffer(ANativeWindow*, ANativeWindowBuffer*, int)+38)
-    #07 pc 00014bc6  /system/lib/egl/libGLES_android.so
-    #08 pc 00017f73  /system/lib/egl/libGLES_android.so (eglSwapBuffers+163)
-    #09 pc 00015fdb  /system/lib/libEGL.so (eglSwapBuffers+203)
-    #10 pc 000013ea  /system/lib/hw/hwcomposer.x86.so
-    #11 pc 00034730  /system/lib/libsurfaceflinger.so
-    #12 pc 000256d4  /system/lib/libsurfaceflinger.so
-    #13 pc 00024bf4  /system/lib/libsurfaceflinger.so
-    #14 pc 000236fb  /system/lib/libsurfaceflinger.so
-    #15 pc 0002338a  /system/lib/libsurfaceflinger.so
-    #16 pc 0001e0ff  /system/lib/libsurfaceflinger.so
-    #17 pc 0001d9ce  /system/lib/libutils.so (android::Looper::pollInner(int)+926)
-    #18 pc 0001db73  /system/lib/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+67)
-    #19 pc 0001e561  /system/lib/libsurfaceflinger.so
-    #20 pc 00022ce7  /system/lib/libsurfaceflinger.so (android::SurfaceFlinger::run()+39)
-    #21 pc 00000ca3  /system/bin/surfaceflinger
-    #22 pc 0001365a  /system/lib/libc.so (__libc_init+106)
-    #23 pc 00000da8  /system/bin/surfaceflinger
-
-stack:
-         bfcfc110  00000000  
-         bfcfc114  b6839270  
-         bfcfc118  00000000  
-         bfcfc11c  00000000  
-         bfcfc120  b68394e0  
-         bfcfc124  00000002  
-         bfcfc128  00000002  
-         bfcfc12c  b75d8185  /system/lib/libutils.so (android::RefBase::incStrong(void const*) const+53)
-         bfcfc130  b6839270  
-         bfcfc134  bfcfc1e8  [stack]
-         bfcfc138  00000002  
-         bfcfc13c  a6265c06  
-         bfcfc140  b7467d88  /system/lib/libui.so
-         bfcfc144  00000000  
-         bfcfc148  b6867140  
-         bfcfc14c  b745a639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
-    #00  bfcfc150  b683af18  
-         bfcfc154  bfcfc1e8  [stack]
-         bfcfc158  00000000  
-         bfcfc15c  00000000  
-         bfcfc160  00000000  
-         bfcfc164  b683af18  
-         bfcfc168  b75ec9c4  /system/lib/libutils.so
-         bfcfc16c  b75d8285  /system/lib/libutils.so (android::RefBase::weakref_type::decWeak(void const*)+37)
-         bfcfc170  00000000  
-         bfcfc174  00000000  
-         bfcfc178  00000000  
-         bfcfc17c  00000000  
-         bfcfc180  b7642968  /system/lib/libsurfaceflinger.so
-         bfcfc184  bfcfc1e8  [stack]
-         bfcfc188  b6867140  
-         bfcfc18c  b7622b87  /system/lib/libsurfaceflinger.so
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;h2 id=&quot;tombstone-文件解析&quot;&gt;tombstone 文件解析&lt;/h2&gt;
-&lt;p&gt;第一次看到 tombstone 文件时，我也是一头雾水，一脸懵逼，加上调 Bug 时本来就烦躁的心情，简直不想多看它一眼。但是没办法，导致 Crash 的原因只有在这里才能找到，所以我们硬着头皮也要去分析啊（最好还是在心情比较平静时去调 Bug 吧，这样效率可能会更好一点）。&lt;/p&gt;
-
-&lt;p&gt;tombstone 文件它主要由下面几部分组成：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Build fingerprint&lt;/li&gt;
-  &lt;li&gt;Crashed process and PIDs&lt;/li&gt;
-  &lt;li&gt;Terminated signal and fault address&lt;/li&gt;
-  &lt;li&gt;CPU registers&lt;/li&gt;
-  &lt;li&gt;Call stack&lt;/li&gt;
-  &lt;li&gt;Stack content of each call&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;但是也不是 tombstone 中的信息我们都需要分析，我们最主要的就是分析 &lt;strong&gt;Crashed process and PIDs&lt;/strong&gt;、&lt;strong&gt;Terminated signal and fault address&lt;/strong&gt;和&lt;strong&gt;Call stack&lt;/strong&gt; 部分。&lt;/p&gt;
-
-&lt;h3 id=&quot;crashed-process-and-pids-信息&quot;&gt;Crashed process and PIDs 信息&lt;/h3&gt;
-&lt;p&gt;从上面 tombstone 文件中的第 5 行中我们可以看到 Crash 掉进程的基本信息，如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nl&quot;&gt;pid:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1019&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1019&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;surfaceflinger&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;surfaceflinger&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;如果 pid 等于 tid ，那么就说明这个程序是在主线程中 Crash 掉的，name 的属性则表示 Crash 进程的名称以及在文件系统中位置。&lt;/p&gt;
-
-&lt;h3 id=&quot;terminated-signal-and-fault-address-信息&quot;&gt;Terminated signal and fault address 信息&lt;/h3&gt;
-&lt;p&gt;在上面 tombstone 文件中的第 6 行中我们可以看到程序是因为什么信号导致了 Crash 以及出现错误的地址，如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;signal&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SIGSEGV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SEGV_MAPERR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fault&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x4&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;这里的信息说明出现进程 Crash 的原因是因为程序产生了段错误的信号，访问了非法的内存空间，而访问的非法地址是 0x4。&lt;/p&gt;
-
-&lt;h3 id=&quot;call-stack-信息&quot;&gt;Call Stack 信息&lt;/h3&gt;
-&lt;p&gt;调用栈信息是分析程序崩溃的非常重要的一个信息，它主要记录了程序在 Crash 前的函数调用关系以及当前正在执行函数的信息，它对应的是我们 tombstone 文件中 backtrace 符号开始的信息，上面例子中的 backtrace 的信息如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nl&quot;&gt;backtrace:&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#01 pc 00034b86  /system/lib/libsurfaceflinger.so
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#02 pc 0003229e  /system/lib/libsurfaceflinger.so
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;amp;)+652)
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;在上面的输出信息中， ##00，#01，#02……等表示的都是函数调用栈中栈帧的编号，其中编号越小的栈帧表示着当前最近调用的函数信息，所以栈帧标号 #00 表示的就是当前正在执行并导致程序 &lt;strong&gt;Crash&lt;/strong&gt; 函数的信息。&lt;/p&gt;
-
-&lt;p&gt;在栈帧的每一行中，pc 后面的 16 进制数值表示的是当前函数正在执行语句的在共享链接库或者可执行文件中的位置，然后 /system/lib/libui.so 则表示的是当前执行指令是在哪个文件当中，后面的小括号则是注明对应的是哪个函数。&lt;/p&gt;
-
-&lt;p&gt;例如，在上面的例子中，我们就可以定位到是程序是在 Fence::waitForever(char const* )中出现了错误，但是具体在那一行呢，我们还不是特别清楚，所以就需要我们进一步地使用更加高级的工具来帮助我们解析 tombstone 中有关调用栈的信息。&lt;/p&gt;
-
-&lt;h2 id=&quot;定位-crash-源码位置的工具&quot;&gt;定位 Crash 源码位置的工具&lt;/h2&gt;
-&lt;p&gt;前面我们简要地介绍了 tombstone 文件的结构以及每个部分的相关含义，我们可以得到导致程序 Crash 掉的主要原因是什么（根据 Signal 的类型），也知道了是在主线程还是在子线程中挂掉了，但是我们对程序具体在代码中的哪个位置挂掉了，还不是特别清楚，最多还只是通过 &lt;strong&gt;backtrace&lt;/strong&gt; 中的栈帧的信息大概定位到位于哪个函数中，但具体是哪个文件哪个函数那一行还是不清楚的。所以，我们接下来就需要借助一些更加高级的工具来定位 Bug 在代码中的具体位置。&lt;/p&gt;
-
-&lt;h3 id=&quot;说明&quot;&gt;说明&lt;/h3&gt;
-&lt;p&gt;Google 提供的 Android NDK 开发包中已经为我们提供了非常便利好用的解析工具了，我们主要使用了下面两种工具来解析 tombstone：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;addr2line&lt;/li&gt;
-  &lt;li&gt;ndk-stack&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;所以，在使用这两种工具之前，你首先得把 Android NDK 工具包在你的电脑上安装好。&lt;/p&gt;
-
-&lt;h3 id=&quot;addr2line&quot;&gt;addr2line&lt;/h3&gt;
-&lt;p&gt;addr2line 是 NDK 中用来获得指定动态链接库文件或者可执行文件中指定地址对应的源代码信息，它位于 NDK 包中的如下位置中：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$NDK_HOME&lt;/span&gt;/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;其中 NDK_HOME 表示你 NDK 的安装路径。&lt;/strong&gt;
-虽然在 Linux 中同样有 addr2line 命令了，但是它与 NDK 中提供的 addr2line 指令还是略有差别的，所以我们可以使用 &lt;strong&gt;alias&lt;/strong&gt; 来将 shell 中默认的 addr2line 指令链接的 NDK 的上述路径中，命令如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;addr2line&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'$NDK_HOME/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这样之后，我们就可以在 Linux 中的 shell 环境中来直接使用 &lt;strong&gt;addr2line&lt;/strong&gt; 命令了。
-addr2line 命令的各个参数的含义如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ &lt;/span&gt;addr2line -h
-Usage: addr2line &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;option&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;addr&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;o&quot;&gt;)]&lt;/span&gt;
- Convert addresses into line number/file name pairs.
- If no addresses are specified on the &lt;span class=&quot;nb&quot;&gt;command &lt;/span&gt;line, they will be &lt;span class=&quot;nb&quot;&gt;read &lt;/span&gt;from stdin
- The options are:
-  @&amp;lt;file&amp;gt;                Read options from &amp;lt;file&amp;gt;
-  -a --addresses         Show addresses
-  -b --target&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;bfdname&amp;gt;  Set the binary file format
-  -e --exe&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;executable&amp;gt;  Set the input file name &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default is a.out&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-  -i --inlines           Unwind inlined functions
-  -j --section&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;name&amp;gt;    Read section-relative offsets instead of addresses
-  -p --pretty-print      Make the output easier to &lt;span class=&quot;nb&quot;&gt;read &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;humans
-  -s --basenames         Strip directory names
-  -f --functions         Show &lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;names
-  -C --demangle[&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;style]  Demangle &lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;names
-  -h --help              Display this information
-  -v --version           Display the program&lt;span class=&quot;s1&quot;&gt;'s version
-
-addr2line: supported targets: elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big elf32-little elf32-big pe-x86-64 pe-i386 plugin srec symbolsrec verilog tekhex binary ihex
-Report bugs to &amp;lt;http://www.sourceware.org/bugzilla/&amp;gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;addr2line 的基本用法如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ &lt;/span&gt;addr2line -f -e libui.so 00006639
-_ZN7android5Fence11waitForeverEPKc
-/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;哈哈，使用了 addr2line 工具之后，我们终于看到 libui.so 文件中地址 00006639 对应的源码是什么了，它对应的是 Android 系统源码中 &lt;em&gt;/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59&lt;/em&gt; 处代码（因为上面的 tombstone 文件是由于 Android 系统中的 surfaceFlinger 进程崩溃而产生的，所以它对应的源码也是 Android 系统中有关 SurfaceFlinger 部分的源码）。&lt;/p&gt;
-
-&lt;h3 id=&quot;ndk-stack&quot;&gt;ndk-stack&lt;/h3&gt;
-&lt;p&gt;Android NDK 自从版本 r6开始, 提供了一个工具 ndk-stack。这个工具能自动分析 tombstone 文件, 能将崩溃时的调用内存地址和 c++ 代码一行一行对应起来.&lt;/p&gt;
-
-&lt;p&gt;ndk-stack 工具同样也位于 NDK 包中，它的路径如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$NDK_HOME&lt;/span&gt;/ndk-stack
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;ndk-stack 的使用说明如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Usage:
-   ndk-stack -sym &amp;lt;path&amp;gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;-dump &amp;lt;path&amp;gt;]
-
-      -sym  Contains full path to the root directory &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;symbols.
-      -dump Contains full path to the file containing the crash dump.
-            This is an optional parameter. If ommited, ndk-stack will
-            &lt;span class=&quot;nb&quot;&gt;read &lt;/span&gt;input data from stdin
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;其中，&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;dump 参数很容易理解, 即 dump 下来的 log 文本文件. ndk-stack会分析此文件，这里我们就是指定我们从 Android 系统中获取到的 tombstone（这个需要通过 adb pull 的方式拉取到本地的宿主机中） 文件存放的位置。&lt;/li&gt;
-  &lt;li&gt;sym 参数就是你android项目下，编译成功之后，obj目录下的文件。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;由于 &lt;strong&gt;ndk-stack&lt;/strong&gt; 主要是用来分析用 C++ 编写的单独的 NDK 程序，所以下面就以解析一个 NDK 程序运行时 Crash 后产生的 tombstone 为例，tombstone 文件的内容如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// tombstone_01 文件内容
-&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;***&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;Build&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fingerprint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Android&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x86&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;android_x86&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x86&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LMY48W&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;woshijpf04211939&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eng&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;Revision&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'0'&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;ABI&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x86&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;'&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2125&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tid&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2125&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;androidvncserve&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;signal&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SIGSEGV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SEGV_MAPERR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fault&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x0&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ebx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b76ffff4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ecx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b6a37000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;edx&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;esi&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;edi&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;xcs&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000073&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xds&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0000007&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xes&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0000007&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xfs&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;xss&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0000007&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;eip&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b75a4ec5&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bfa9bd08&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bfa9bbf0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;00010246&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;backtrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#00 pc 0004bec5  /system/bin/androidvncserver
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#01 pc 0004e3e4  /system/bin/androidvncserver
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#02 pc 0001365a  /system/lib/libc.so (__libc_init+106)
-&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#03 pc 0001060c  /system/bin/androidvncserver
-&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbb0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bbc8&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbb4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b72c6fb0&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libdvnc_flinger_sdk22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbb8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b72c7004&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libdvnc_flinger_sdk22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbbc&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b72c5b26&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libdvnc_flinger_sdk22&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;readfb_flinger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;38&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbc0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b68ae080&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bbc4&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bbc8&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bbcc&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bbd0&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bbd4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76ffff4&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbd8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76a5e20&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbdc&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b75ac181&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbe0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b75ac16b&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbe4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76ffff4&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbe8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bd08&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbec&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b75a579b&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#00  bfa9bbf0  00000012  
-&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bbf4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bc1c&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bbf8&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bbfc&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc00&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bc14&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bc04&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc08&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc0c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7498825&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;je_free&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;453&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bc10&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;0000000&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc14&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000400&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc18&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc1c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b749538a&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;so&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;je_malloc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;778&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bc20&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;0000000&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc24&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000065&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc28&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bc2c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b6a37000&lt;/span&gt;  
-         &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#01  bfa9bd10  b6bb7300  
-&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bd14&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00001&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b58&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd18&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b76aa954&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bd1c&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;0000000&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd20&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000005&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd24&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd28&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd2c&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000005&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd30&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000006&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd34&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000005&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd38&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd3c&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd40&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bd44&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bd24&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bd48&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b754f9c8&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bd4c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7557bd8&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
-         &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;........&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#02  bfa9bed0  00000001  
-&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bed4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf14&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bed8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf1c&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bedc&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bee0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7556fec&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bee4&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf10&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bee8&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9beec&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7556fec&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linker&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bef0&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf10&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bef4&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bef8&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9bf0c&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9befc&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b756960d&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#03  bfa9bf00  bfa9bf10  [stack]
-&lt;/span&gt;         &lt;span class=&quot;n&quot;&gt;bfa9bf04&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bf08&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b756960d&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf0c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;b7569612&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;androidvncserver&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf10&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000001&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bf14&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb05&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf18&lt;/span&gt;  &lt;span class=&quot;mo&quot;&gt;00000000&lt;/span&gt;  
-         &lt;span class=&quot;n&quot;&gt;bfa9bf1c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb16&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf20&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb35&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf24&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cb48&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf28&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cba3&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf2c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbae&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf30&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbc1&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf34&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbdc&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf38&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbe7&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;bfa9bf3c&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;bfa9cbfd&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;使用 &lt;strong&gt;ndk-stack&lt;/strong&gt; 处理之后的结果：&lt;/p&gt;
-
-&lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;woshijpf@woshijpf-OptiPlex-9020:~/android_workspace/droidVNCserver-real$ &lt;/span&gt;ndk-stack -sym obj/local/x86/ -dump ~/android-x86-debug-log/tombstone_01
-&lt;span class=&quot;k&quot;&gt;**********&lt;/span&gt; Crash dump: &lt;span class=&quot;k&quot;&gt;**********&lt;/span&gt;
-Build fingerprint: &lt;span class=&quot;s1&quot;&gt;'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'&lt;/span&gt;
-pid: 2125, tid: 2125, name: androidvncserve  &amp;gt;&amp;gt;&amp;gt; androidvncserver &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;
-signal 11 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;SIGSEGV&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, code 1 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;SEGV_MAPERR&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, fault addr 0x0
-Stack frame &lt;span class=&quot;c&quot;&gt;#00 pc 0004bec5  /system/bin/androidvncserver: Routine update_screen_16 in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/updateScreen.c:68&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#01 pc 0004e3e4  /system/bin/androidvncserver: Routine main in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:805&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#02 pc 0001365a  /system/lib/libc.so (__libc_init+106)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#03 pc 0001060c  /system/bin/androidvncserver: Unable to locate routine information for address 1060c in module obj/local/x86//androidvncserver&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#00 pc 0007bf71  /system/lib/libc.so (nanosleep+17)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#01 pc 00047ed6  /system/lib/libc.so (usleep+70)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#02 pc 0004fa6b  /system/bin/androidvncserver: Routine camera_io in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/camera_io.c:557&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#03 pc 0004af6a  /system/bin/androidvncserver: Routine receive_camera in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:273&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#04 pc 00022168  /system/lib/libc.so (__pthread_start(void*)+56)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#05 pc 0001cc69  /system/lib/libc.so (__start_thread+25)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#06 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#00 pc 0007cc33  /system/lib/libc.so (recvfrom+19)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#01 pc 00050cdb  /system/bin/androidvncserver: Routine handle_connections in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/gui.c:105&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#02 pc 00022168  /system/lib/libc.so (__pthread_start(void*)+56)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#03 pc 0001cc69  /system/lib/libc.so (__start_thread+25)&lt;/span&gt;
-Stack frame &lt;span class=&quot;c&quot;&gt;#04 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;经过 &lt;strong&gt;ndk-stack&lt;/strong&gt;地这么处理之后，我们就非常直接明了地看到了每个栈帧中调用函数的内存地址和程序源码的关系。是不是感觉很爽啊！&lt;/p&gt;
-
-&lt;h1 id=&quot;总结&quot;&gt;总结&lt;/h1&gt;
-&lt;p&gt;Android NDK 程序的系统调试其实也没那么复杂，虽然它长着一副恐怖的外表，但是只要掌握了正确的方法，了解 Tombstone 文件中关键信息的含义，学会使用 addr2line 和 ndk_stack 这两个超级方便的工具，那么一步一步找出导致 NDK 程序 Crash 的 Bug 就非常 Easy 了。 但上面的这些工作也还只是帮助你快速地定位到你的代码出现问题的位置，具体的 Bug 还是需要你进一步地根据业务逻辑来分析代码。&lt;/p&gt;
-
-&lt;h1 id=&quot;参考链接&quot;&gt;参考链接&lt;/h1&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;[cocos2dx]利用NDK崩溃日志查找BUG]&lt;a href=&quot;http://www.cnblogs.com/jhzhu/p/3801640.html&quot;&gt;0&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://bytesthink.com/blog/?p=133&quot;&gt;Debugging tombstones with ndk-stack and addr2line&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;https://source.android.com/devices/tech/debug/index.html&quot;&gt;Debugging Native Android Platform Code&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/helldevil/article/details/6682211&quot;&gt;Android Tombstone/Crash的log分析和定位&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://blog.csdn.net/chi_wy/article/details/42472279&quot;&gt;Android重启原因分析&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://www.51testing.com/html/34/361634-859594.html&quot;&gt;android crash的类型及原因分析（上）&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;https://sites.google.com/a/itspaclub.com/www/android-debug&quot;&gt;Android Debug&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://github.dudukr.com/VWiki/2013/02/21/tombstone-on-android.html&quot;&gt;Android平台抓取native crash log&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://dylangao.com/2014/05/16/android-debuggerd-%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D%E5%92%8C%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&quot;&gt;Android Debuggerd 简要介绍和源码分析&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://www.voidcn.com/blog/u011279649/article/p-5769267.html&quot;&gt;Android NDK tombstone分析工具&lt;/a&gt;&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Tue, 14 Jun 2016 08:35:39 +0800</pubDate>
-        <link>http://localhost:4000/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html</guid>
-        
-        <category>NDK</category>
-        
-        <category>Debug</category>
-        
-        <category>Tombstone</category>
-        
-        <category>Android</category>
-        
-        
-        <category>android</category>
         
       </item>
     
