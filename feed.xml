@@ -6,15 +6,206 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 04 Sep 2017 23:53:41 +0800</pubDate>
-    <lastBuildDate>Mon, 04 Sep 2017 23:53:41 +0800</lastBuildDate>
+    <pubDate>Tue, 05 Sep 2017 09:58:25 +0800</pubDate>
+    <lastBuildDate>Tue, 05 Sep 2017 09:58:25 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
     
       <item>
-        <title>Android 系统图形栈: OpenGL ES 和 EGL 介绍</title>
-        <description>&lt;h1 id=&quot;android-系统图形栈-opengl-es-和-egl-介绍&quot;&gt;Android 系统图形栈： OpenGL ES 和 EGL 介绍&lt;/h1&gt;
+        <title>Android 系统图形栈： OpenGL ES 和 EGL 介绍</title>
+        <description>&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
 
-&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
+&lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。&lt;sup id=&quot;fnref:footnote_1&quot;&gt;&lt;a href=&quot;#fn:footnote_1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;opengl-基本概念&quot;&gt;OpenGL 基本概念&lt;/h3&gt;
+
+&lt;p&gt;因为 OpenGL ES 是 OpenGL 的一个子集，所以下面就主要介绍一些有关 OpenGL 的一些基本概念。&lt;/p&gt;
+
+&lt;p&gt;OpenGL 的结构可以从逻辑上划分为下面 3 个部分：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;图元&lt;/strong&gt;（Primitives）&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;缓冲区&lt;/strong&gt;（Buffers）&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;光栅化&lt;/strong&gt;（Rasterize）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;图元primitives&quot;&gt;图元（Primitives）&lt;/h4&gt;
+
+&lt;p&gt;在 OpenGL 的世界里，我们只能画&lt;strong&gt;点、线、三角形&lt;/strong&gt;这三种基本图形，而其它复杂的图形都可以通过三角形来组成。所以这里的图元指的就是这三种基础图形：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;点&lt;/strong&gt;：点存在于三维空间，坐标用（x,y,z）表示。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;线&lt;/strong&gt;：由两个三维空间中的点组成。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;三角形&lt;/strong&gt;：由三个三维空间的点组成。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;缓冲区buffers&quot;&gt;缓冲区（Buffers）&lt;/h4&gt;
+
+&lt;p&gt;OpenGL 中主要有 3 种 Buffer：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;帧缓冲区&lt;/strong&gt;（Frame Buffers）
+  帧缓冲区：这个是存储&lt;strong&gt;OpenGL 最终渲染输出结果的地方&lt;/strong&gt;，它是一个包含多个图像的集合，例如颜色图像、深度图像、模板图像等。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;渲染缓冲区&lt;/strong&gt;（Render Buffers）
+  渲染缓冲区：渲染缓冲区就是一个图像，它是 Frame Buffer 的一个子集。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;缓冲区对象&lt;/strong&gt;（Buffer Objects）
+  缓冲区对象就是程序员输入到 OpenGL 的数据，分为结构类和索引类的。前者被称为“数组缓冲区对象”或“顶点缓冲区对象”（“Array Buffer Object”或“Vertex Buff
+er Object”），即用来描述模型的数组，如顶点数组、纹理数组等； 后者被称为“索引缓冲区对象”（“Index Buffer Object”），是对上述数组的索引。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;光栅化rasterize&quot;&gt;光栅化（Rasterize）&lt;/h4&gt;
+
+&lt;p&gt;在介绍光栅化之前，首先来补充 OpenGL 中的两个非常重要的概念：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Vertex
+  Vertex 就是图形中顶点，一系列的顶点就围成了一个图形。&lt;/li&gt;
+  &lt;li&gt;Fragment
+  Fragment 是三维空间的点、线、三角形这些基本图元映射到二维平面上的映射区域，通常一个 Fragment 对应于屏幕上的一个像素，但高分辨率的屏幕可能会用多个像素点映射到一个 Fragment，以减少 GPU 的工作。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;而&lt;strong&gt;光栅化&lt;/strong&gt;是把点、线、三角形映射到屏幕上的像素点的过程。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453148671075.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;着色器程序shader&quot;&gt;着色器程序（Shader）&lt;/h4&gt;
+
+&lt;p&gt;Shader 用来描述如何绘制（渲染），GLSL 是 OpenGL 的编程语言，全称 OpenGL Shader Language，它的语法类似于 C 语言。OpenGL 渲染需要两种 Shader：Vertex Shader 和 Fragment Shader。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Vertex Shader
+  Vertex Shader 对于3D模型网格的每个顶点执行一次，主要是确定该顶点的最终位置。&lt;/li&gt;
+  &lt;li&gt;Fragment Shader
+  Fragment Shader对光栅化之后2D图像中的每个像素处理一次。3D物体的表面最终显示成什么样将由它决定，例如为模型的可见表面添加纹理，处理光照、阴影的影响等等。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;opengl-流水线&quot;&gt;OpenGL 流水线&lt;/h4&gt;
+
+&lt;p&gt;OpenGL 中有两种流水线，一种是固定流水线，另外一种则是可编程流水线。&lt;/p&gt;
+
+&lt;p&gt;其中，OpenGL 1.0 版本支持固定流水线。其结构如下图所示：
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_1x_pipeline.gif&quot; alt=&quot;OpenGL 1.0 固定流水线&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从OpenGL 2.0版本开始，OpenGL支持可编程的流水线。也就是说，程序员可以通过Shader（一种程序）来控制GPU渲染的过程。
+&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_20_pipeline2.gif&quot; alt=&quot;OpenGL 2.0 可编程流水线&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;egl&quot;&gt;EGL&lt;/h2&gt;
+
+&lt;h3 id=&quot;什么是-egl&quot;&gt;什么是 EGL？&lt;/h3&gt;
+
+&lt;p&gt;EGL 是 OpenGL ES 渲染 API 和本地窗口系统(native platform window system)之间的一个中间接口层，它主要由系统制造商实现。EGL提供如下机制：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;与设备的原生窗口系统通信&lt;/li&gt;
+  &lt;li&gt;查询绘图表面的可用类型和配置&lt;/li&gt;
+  &lt;li&gt;创建绘图表面&lt;/li&gt;
+  &lt;li&gt;在OpenGL ES 和其他图形渲染API之间同步渲染&lt;/li&gt;
+  &lt;li&gt;管理纹理贴图等渲染资源&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;为了让OpenGL ES能够绘制在当前设备上，我们需要EGL作为OpenGL ES与设备的&lt;strong&gt;桥梁&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h3 id=&quot;使用-egl-绘图的基本步骤&quot;&gt;使用 EGL 绘图的基本步骤&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15038887630772.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Display(EGLDisplay) 是对实际显示设备的抽象。&lt;/li&gt;
+  &lt;li&gt;Surface（EGLSurface）是对用来存储图像的内存区域&lt;/li&gt;
+  &lt;li&gt;FrameBuffer 的抽象，包括 Color Buffer， Stencil Buffer ，Depth Buffer。Context (EGLContext) 存储 OpenGL ES绘图的一些状态信息。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;使用EGL的绘图的一般步骤：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;获取 EGL Display 对象：eglGetDisplay()&lt;/li&gt;
+  &lt;li&gt;初始化与 EGLDisplay 之间的连接：eglInitialize()&lt;/li&gt;
+  &lt;li&gt;获取 EGLConfig 对象：eglChooseConfig()&lt;/li&gt;
+  &lt;li&gt;创建 EGLContext 实例：eglCreateContext()&lt;/li&gt;
+  &lt;li&gt;创建 EGLSurface 实例：eglCreateWindowSurface()&lt;/li&gt;
+  &lt;li&gt;连接 EGLContext 和 EGLSurface：eglMakeCurrent()&lt;/li&gt;
+  &lt;li&gt;使用 OpenGL ES API 绘制图形：gl_*()&lt;/li&gt;
+  &lt;li&gt;切换 front buffer 和 back buffer 送显：eglSwapBuffer()&lt;/li&gt;
+  &lt;li&gt;断开并释放与 EGLSurface 关联的 EGLContext 对象：eglRelease()&lt;/li&gt;
+  &lt;li&gt;删除 EGLSurface 对象&lt;/li&gt;
+  &lt;li&gt;删除 EGLContext 对象&lt;/li&gt;
+  &lt;li&gt;终止与 EGLDisplay 之间的连接&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;opengl-es-和-egl-的联系&quot;&gt;OpenGL ES 和 EGL 的联系&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453844639965.png&quot; alt=&quot;20170904150453844639965.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;一个类比的例子&quot;&gt;一个类比的例子&lt;/h3&gt;
+
+&lt;p&gt;我们来思考一下画家绘画的过程：首先要有一名懂得各种绘画技艺的画家，然后他需要一张画布，一些笔，一些颜料，一些辅助工具（尺、模板、橡皮、调色板等等），然后他在画布上绘制第一幅画，完成之后展示给人们看；在人们观赏第一幅画的时候，他可以在第二张画布上绘制第二幅画，绘制完成后收回第一幅画，将第二幅画展现给人们看；接着使用工具擦除第一幅画，在同一张画布上绘制第三幅画；周而复始，人们便看到了一幅接一幅的画。&lt;/p&gt;
+
+&lt;p&gt;对比 OpenGL ES/EGL，各要素的对应关系大体如下：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;画家：编程人员&lt;/li&gt;
+  &lt;li&gt;笔、颜料、辅助工具：OpenGL ES API&lt;/li&gt;
+  &lt;li&gt;画布：EGL 创建的 Surface&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;所以计算机绘画的本质就是选择图像显示的像素格式，申请一块内存（画布），填充像素（颜色），绘制完成之后，通知计算机显示到屏幕上（按比例发射RGB光），最终就看到了所绘制的画面。之所以要先选择像素格式，是因为无论是所申请内存的大小，还是硬件驱动解析这块内存的方式，都是由像素格式决定的。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.khronos.org/egl&quot;&gt;EGL 的官方介绍说明&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.slideshare.net/SuhanLee2/understaing-android-egl&quot;&gt;Understaing Android EGL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.piasy.com/2016/06/07/Open-gl-es-android-2-part-1/&quot;&gt;安卓 OpenGL ES 2.0 完全入门（一）：基本概念和 hello world&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2920106.html&quot;&gt;EGL 参考资料1: 学习OpenGL-ES: 1 - 像素、颜色、显存、初始化&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2921123.html&quot;&gt;EGL 参考资料2: 学习OpenGL-ES: 2 - EGL解析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://mobile.51cto.com/app-show-436809.htm&quot;&gt;OpenGL ES 2.0 编程三步曲&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/22/2922487.html&quot;&gt;OpenGL 参考资料1: 学习OpenGL-ES: 3 - 3D绘图原理&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/hrlnw/p/4642272.html&quot;&gt;Android OpenGL ES 离屏渲染（offscreen render）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.shengbin.me/posts/opengl-concepts/&quot;&gt;OpenGL基本概念&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-1/&quot;&gt;All about OpenGL ES 2.x - (part 1/3)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-2/&quot;&gt;All about OpenGL ES 2.x - (part 2/3)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-3/&quot;&gt;All about OpenGL ES 2.x - (part 3/3)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://wiki.jikexueyuan.com/project/opengl-es-guide/about-egl.html&quot;&gt;关于EGL&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:footnote_1&quot;&gt;
+      &lt;p&gt;https://zh.wikipedia.org/wiki/OpenGL_ES&amp;nbsp;&lt;a href=&quot;#fnref:footnote_1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Tue, 05 Sep 2017 07:35:00 +0800</pubDate>
+        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        
+        <category>Android</category>
+        
+        <category>Graphic</category>
+        
+        <category>OpenGLES</category>
+        
+        <category>EGL</category>
+        
+        
+        <category>android</category>
+        
+      </item>
+    
+      <item>
+        <title>Android 系统图形栈: OpenGL ES 和 EGL 介绍</title>
+        <description>&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
 
 &lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
 
@@ -1734,111 +1925,6 @@ wireshark-dev-stable-trusty.list.save
         
         
         <category>利器</category>
-        
-      </item>
-    
-      <item>
-        <title>Linux 中的 EOF 到底是什么？</title>
-        <description>&lt;h1 id=&quot;eof-的定义&quot;&gt;EOF 的定义&lt;/h1&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;EOF 是 end of file 的缩写，表示”文字流”（stream）的结尾。这里的”文字流”，可以是文件（file），也可以是标准输入（stdin）。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;以前在学习 C 语言文件操作的时候，一直记得 EOF 就是一个标记，通过它可以判断程序是否读取到文件的末尾了，例如下面的这段代码就是将一个文本文件中的字符输出到标准输出中，并通过 EOF 来判断程序是否读到了文件末尾：&lt;/p&gt;
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;
-&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#define FILENAME &quot;gdb_test.c&quot;
-&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;FILE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fopen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FILENAME&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;r&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fgetc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EOF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;fputc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;所以，我一直很好奇 &lt;code class=&quot;highlighter-rouge&quot;&gt;EOF&lt;/code&gt; 到底是什么个什么东西，它只是一个简单的常量还是一个特殊的字符呢？&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;EOF&lt;/strong&gt; 定义在 &lt;em&gt;/usr/include/stdio.h&lt;/em&gt; 文件中：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-C&quot;&gt;/* End of file character.
-Some things throughout the library rely on this being -1.  */
-    #ifndef EOF
-    # define EOF (-1)
-    #endif
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;从上面 &lt;code class=&quot;highlighter-rouge&quot;&gt;EOF&lt;/code&gt; 的定义我们可以看出 EOF 本质上就是一个值为&lt;code class=&quot;highlighter-rouge&quot;&gt;-1&lt;/code&gt;的常量！&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h1 id=&quot;怎么通过-eof-来判断程序是否读取到了文件末尾&quot;&gt;怎么通过 EOF 来判断程序是否读取到了文件末尾？&lt;/h1&gt;
-&lt;p&gt;Linux 系统一个非常重要的思想就是：&lt;strong&gt;一切皆文件。&lt;/strong&gt;不管是标准输入，文件系统中的普通文本文件，还是网络流都可以看做是文件，都可以通过 read/write 函数进行读写操作。因此，不同的文件类型，判断是否读取到文件末尾的方式也就有所不同，下面就按照&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;普通文本文件&lt;/li&gt;
-  &lt;li&gt;标准输入文件（stdin）&lt;/li&gt;
-  &lt;li&gt;socket 流文件&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这三类文件来介绍判断它们是否读取到文件末尾的方法。&lt;/p&gt;
-
-&lt;h2 id=&quot;普通文本文件&quot;&gt;普通文本文件&lt;/h2&gt;
-&lt;p&gt;这里的普通文件指的是我们平时在通过文件管理器所能看到那些文本文件，它存在于 Linux 中的文件系统中，并且文件的大小是固定的。&lt;/p&gt;
-
-&lt;p&gt;对于这种文件，Linux 系统判断普通文本文件是否读取到文件末尾的方法是：&lt;strong&gt;read 函数会对所打开的文件维护一个读取指针，然后根据这个指针跟文件开始位置的指针值相减得到一个相对于文件开始位置的偏移字节数，最后通过这样一个偏移字节数和文件本身的大小进行一个比较，如果相对于文件开始位置的偏移字节数大于文件本身的大小，那么就返回一个 EOF 常量，说明此时已经读取到文件末尾了。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;标准输入文件&quot;&gt;标准输入文件&lt;/h2&gt;
-&lt;p&gt;标准输入文件（stdin）它对应的是外设键盘输入，而在 Linux 系统中它被抽象成一个文件，准确地说是一个流文件。这种文件和上面普通文本文件最大的区别就是它的文件大小是不固定的，它就像是一个水管的进水端，可以在任何时候都可以接收输入。&lt;/p&gt;
-
-&lt;p&gt;正是因为标准输入文件这种流式的特点，决定了无法通过前面提到那种比较文件大小方法来判断是否读取到了文件末尾。因此，Linux 系统判断标准输入文件是否读取到文件末尾的方法是：&lt;strong&gt;设置一个特殊的输入标记来表示文件末尾，而在Linux 系统中这个标记就是组合键&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+D&lt;/code&gt;，当系统捕获到这个组合键时，就让 r read 函数返回一个 EOF 常量，告知程序已经读取到标准文件的末尾了。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;socket-流文件&quot;&gt;socket 流文件&lt;/h2&gt;
-&lt;p&gt;socket 流文件和标准输入文件类似都是流式文件，并且它是从网络上进行数据读取，所以上面两种判断文件是否读取到末尾的方法都不适用于 socket 流文件。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;那么客户端进程怎么判断服务端进程是否已经写完所有数据？&lt;/strong&gt;
-在 socket 流文件中，当客户端进程通过 read 函数读取远程服务端进程发送过来的数据时，使用的是阻塞I/O的方式进行读取的。只要客户端和服务端之间的连接没有断开，如果服务端没有向 socket 写入数据，那么客户端的读操作就会阻塞，直到服务端中写入了新的数据。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;如果服务端进程关闭了socket连接，那么客户端会接收到服务端发送过来的一个 TCP 协议的 FIN 数据包，然后客户端进程中原本阻塞着等待接收服务端进程数据的 read函数此时就会被唤醒，返回一个值 0。&lt;/strong&gt;这跟我们前面提到两种文件读到文件末尾返回 EOF（值为-1）的情况有点差别，所以在程序中从 socket 进行读取操作时，判断数据流结束的标志不是 -1 而是 0。&lt;/p&gt;
-
-&lt;p&gt;所以，一个简单的从 socket 文件读取数据的样例代码，通常是下面这样的：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;language-C&quot;&gt;    char recvline[MAX_LINE_LENGTH];
-    int read_count;
-    while ((read_count = read(sock_fd, recvline, MAX_LINE_LENGTH)) &amp;gt; 0)
-    {
-        printf(&quot;%s\n&quot;, &quot;String received from server: &quot;);
-        fputs(recvline, stdout);
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h1 id=&quot;总结&quot;&gt;总结&lt;/h1&gt;
-&lt;p&gt;所以，一定要记住这样一个概念：&lt;strong&gt;EOF 是一个常量而不是一个字符！&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.ruanyifeng.com/blog/2011/11/eof.html&quot;&gt;EOF是什么？&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Fri, 08 Jul 2016 05:29:43 +0800</pubDate>
-        <link>http://localhost:4000/linux/2016/07/07/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html</link>
-        <guid isPermaLink="true">http://localhost:4000/linux/2016/07/07/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html</guid>
-        
-        <category>EOF</category>
-        
-        <category>Linux</category>
-        
-        
-        <category>linux</category>
         
       </item>
     
