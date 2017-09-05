@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Android 系统图形栈： OpenGL ES 和 EGL 介绍</title>
+  <title>Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍</title>
   <meta name="description" content="OpenGL ES什么是 OpenGL ES？  OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。1            https://zh.wikip...">
   
   <meta name="author" content="Pengfei Jiang">
@@ -44,7 +44,7 @@
   <meta property="og:description" content="OpenGL ES什么是 OpenGL ES？  OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。1            https://zh.wikip..." />
   <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
-  <meta property="og:title" content="Android 系统图形栈： OpenGL ES 和 EGL 介绍" />
+  <meta property="og:title" content="Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
@@ -55,7 +55,7 @@
   
   <!-- Twitter: card tags -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Android 系统图形栈： OpenGL ES 和 EGL 介绍">
+  <meta name="twitter:title" content="Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍">
   <meta name="twitter:description" content="OpenGL ES什么是 OpenGL ES？  OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。1            https://zh.wikip...">
   <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
   <meta name="twitter:url" content="http://localhost:4000">
@@ -170,7 +170,7 @@
 <div class="post-header-container has-cover" style="background-image: url(/assets/androidBg.jpg);">
   <div class="scrim has-cover">
     <header class="post-header">
-      <h1 class="title">Android 系统图形栈： OpenGL ES 和 EGL 介绍</h1>
+      <h1 class="title">Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍</h1>
       <p class="info">by <strong>FlyFlyPeng</strong></p>
     </header>
   </div>
@@ -385,7 +385,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
   
     
     
-      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%9A+OpenGL+ES+%E5%92%8C+EGL+%E4%BB%8B%E7%BB%8D&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F04%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E4%25BB%258B%25E7%25BB%258D.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A+OpenGL+ES+%E5%92%8C+EGL+%E4%BB%8B%E7%BB%8D&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F04%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E4%25BB%258B%25E7%25BB%258D.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -400,7 +400,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%9A+OpenGL+ES+%E5%92%8C+EGL+%E4%BB%8B%E7%BB%8D&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F04%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E4%25BB%258B%25E7%25BB%258D.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A+OpenGL+ES+%E5%92%8C+EGL+%E4%BB%8B%E7%BB%8D&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F04%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E4%25BB%258B%25E7%25BB%258D.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -449,7 +449,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%9A+OpenGL+ES+%E5%92%8C+EGL+%E4%BB%8B%E7%BB%8D&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F04%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E4%25BB%258B%25E7%25BB%258D.html&media=http://localhost:4000/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A+OpenGL+ES+%E5%92%8C+EGL+%E4%BB%8B%E7%BB%8D&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F04%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E4%25BB%258B%25E7%25BB%258D.html&media=http://localhost:4000/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -462,16 +462,24 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html">
+				<a href="/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
 					</span>
-					<span class="page-number">Android 系统图形栈: OpenGL ES 和 EGL 介绍</span>
+					<span class="page-number">Linux I/O 模型详解</span>
 				</a>
 			
 		</span>
 		<span class="next-post">
+			
+				<a href="/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
+					<span class="page-number">Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
 			
 		</span>
 	</section>
@@ -699,7 +707,7 @@ $(document).ready(function() {
   ga('create', 'UA-63075912-1', 'auto');
   ga('send', 'pageview', {
     'page': '/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html',
-    'title': 'Android 系统图形栈： OpenGL ES 和 EGL 介绍'
+    'title': 'Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍'
   });
 </script>
 

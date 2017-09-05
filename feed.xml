@@ -6,197 +6,598 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 05 Sep 2017 09:58:25 +0800</pubDate>
-    <lastBuildDate>Tue, 05 Sep 2017 09:58:25 +0800</lastBuildDate>
+    <pubDate>Tue, 05 Sep 2017 17:11:34 +0800</pubDate>
+    <lastBuildDate>Tue, 05 Sep 2017 17:11:34 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
     
       <item>
-        <title>Android 系统图形栈： OpenGL ES 和 EGL 介绍</title>
-        <description>&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
-
-&lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。&lt;sup id=&quot;fnref:footnote_1&quot;&gt;&lt;a href=&quot;#fn:footnote_1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;opengl-基本概念&quot;&gt;OpenGL 基本概念&lt;/h3&gt;
-
-&lt;p&gt;因为 OpenGL ES 是 OpenGL 的一个子集，所以下面就主要介绍一些有关 OpenGL 的一些基本概念。&lt;/p&gt;
-
-&lt;p&gt;OpenGL 的结构可以从逻辑上划分为下面 3 个部分：&lt;/p&gt;
+        <title>Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程</title>
+        <description>&lt;h2 id=&quot;1-opengl-es-和-opengl-es-库的区别&quot;&gt;1. OpenGL ES 和 OpenGL ES 库的区别&lt;/h2&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;图元&lt;/strong&gt;（Primitives）&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;缓冲区&lt;/strong&gt;（Buffers）&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;光栅化&lt;/strong&gt;（Rasterize）&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;OpenGL ES&lt;/strong&gt; ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;OpenGL ES 库&lt;/strong&gt;：OpenGL ES 库就是上面 OpenGL ES 中定义的 API 的具体实现。由于每个显卡制造厂商的 GPU 硬件结构不同，从而导致各个厂商的OpenGL ES 库也各不相同，所以 Android 系统中的 OpenGL ES 库通常是由硬件厂商提供的，通常存放在 Android 系统中的 &lt;em&gt;/system/lib64/egl&lt;/em&gt; 下面或者 &lt;em&gt;/vendor/lib64/egl&lt;/em&gt; 目录下。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;OpenGL ES Wrapper 库&lt;/strong&gt;：OpenGL ES Wrapper 库是一个对 OpenGL ES API 进行封装的一个包裹库，它向上为应用程序提供了标准的 OpenGL ES API，向下可以和不同厂商实现的 OpenGL ES 库进行绑定，将 OpenGL ES API 和对应的实现函数一一绑定在一起。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;图元primitives&quot;&gt;图元（Primitives）&lt;/h4&gt;
-
-&lt;p&gt;在 OpenGL 的世界里，我们只能画&lt;strong&gt;点、线、三角形&lt;/strong&gt;这三种基本图形，而其它复杂的图形都可以通过三角形来组成。所以这里的图元指的就是这三种基础图形：&lt;/p&gt;
+&lt;p&gt;并且，OpenGL ES 库的实现分为：&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;点&lt;/strong&gt;：点存在于三维空间，坐标用（x,y,z）表示。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;线&lt;/strong&gt;：由两个三维空间中的点组成。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;三角形&lt;/strong&gt;：由三个三维空间的点组成。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;软件模拟实现&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;硬件加速实现&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;缓冲区buffers&quot;&gt;缓冲区（Buffers）&lt;/h4&gt;
+&lt;p&gt;现在，因为我们 Android 手机中的 Soc 片上芯片中都集成了 GPU 模块，所以这里使用的就是硬件加速实现的 OpenGL ES 库。但是，像 Android Emulator 中的 Android 系统，如果不支持将 OpenGL ES API 指令重定向到主机系统的 GPU 加速执行的话，它所采用的 OpenGL ES 库就是软件模拟实现的。&lt;/p&gt;
 
-&lt;p&gt;OpenGL 中主要有 3 种 Buffer：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;补充：&lt;/strong&gt;
+同理，如前面一篇文章&lt;a href=&quot;http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html&quot;&gt;Android 系统图形栈: OpenGL ES 和 EGL 介绍&lt;/a&gt;中介绍的，EGL 也是一套 API，它的实现也需要系统厂商来提供。系统厂商通常会将这两套 API 的实现封装在一个共享链接库中，但是根据最新的标准，OpenGL ES API 实现的共享链接库和 EGL API 实现的共享链接库是独立分开的，例如 2.2 小节中列举的 Nexus 9 平板设备中 OpenGL ES 和 EGL API 实现库就是独立分开的。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-android-中-opengl-es-软件层次栈&quot;&gt;2. Android 中 OpenGL ES 软件层次栈&lt;/h2&gt;
+&lt;p&gt;按照分层理念的设计，Android 中的 OpenGL ES 实现也是层次设计的，形成一个软件层次栈。最上面的是 Java 层，接着下面是 JNI 层，再调用下面的 wrapper 层，wrapper 层下面则是 OpenGL ES API 的具体软件实或者硬件实现了。整个 OpenGL 软件层次栈的调用关系如下所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/OpenGL_ES_call_graph.png&quot; alt=&quot;OpenGL 软件层次栈&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;21-opengl-esegl-wrapper-库&quot;&gt;2.1 OpenGL ES/EGL Wrapper 库&lt;/h3&gt;
+&lt;p&gt;前面我们已经介绍过 OpenGL ES/EGL Wrapper 库是一个将 OpenGL ES API 和 OpenGL ES API 具体实现绑定在一起的库，它对应的源码路径是：&lt;em&gt;/frameworks/native/opengl/libs/&lt;/em&gt;，其中:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;帧缓冲区&lt;/strong&gt;（Frame Buffers）
-  帧缓冲区：这个是存储&lt;strong&gt;OpenGL 最终渲染输出结果的地方&lt;/strong&gt;，它是一个包含多个图像的集合，例如颜色图像、深度图像、模板图像等。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;渲染缓冲区&lt;/strong&gt;（Render Buffers）
-  渲染缓冲区：渲染缓冲区就是一个图像，它是 Frame Buffer 的一个子集。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;缓冲区对象&lt;/strong&gt;（Buffer Objects）
-  缓冲区对象就是程序员输入到 OpenGL 的数据，分为结构类和索引类的。前者被称为“数组缓冲区对象”或“顶点缓冲区对象”（“Array Buffer Object”或“Vertex Buff
-er Object”），即用来描述模型的数组，如顶点数组、纹理数组等； 后者被称为“索引缓冲区对象”（“Index Buffer Object”），是对上述数组的索引。&lt;/p&gt;
-  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv1_CM.so&lt;/code&gt;：OpenGL ES 1.x API 的 Wrapper 库&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt;：OpenGL ES 2.0 的 Wrapper 库&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt;：OpenGL ES 3.0 的 Wrapper 库&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&quot;光栅化rasterize&quot;&gt;光栅化（Rasterize）&lt;/h4&gt;
+&lt;p&gt;其中因为 OpenGL ES 3.0 API 是兼容 OpenGL ES 2.0 API 的，所以 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt; 库本质上和 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt; 库是一样的。&lt;/p&gt;
 
-&lt;p&gt;在介绍光栅化之前，首先来补充 OpenGL 中的两个非常重要的概念：&lt;/p&gt;
+&lt;h3 id=&quot;22-opengl-esegl-实现库&quot;&gt;2.2 OpenGL ES/EGL 实现库&lt;/h3&gt;
+&lt;p&gt;如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以&lt;code class=&quot;highlighter-rouge&quot;&gt;.so&lt;/code&gt;的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;Vertex
-  Vertex 就是图形中顶点，一系列的顶点就围成了一个图形。&lt;/li&gt;
-  &lt;li&gt;Fragment
-  Fragment 是三维空间的点、线、三角形这些基本图元映射到二维平面上的映射区域，通常一个 Fragment 对应于屏幕上的一个像素，但高分辨率的屏幕可能会用多个像素点映射到一个 Fragment，以减少 GPU 的工作。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;而&lt;strong&gt;光栅化&lt;/strong&gt;是把点、线、三角形映射到屏幕上的像素点的过程。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453148671075.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;着色器程序shader&quot;&gt;着色器程序（Shader）&lt;/h4&gt;
-
-&lt;p&gt;Shader 用来描述如何绘制（渲染），GLSL 是 OpenGL 的编程语言，全称 OpenGL Shader Language，它的语法类似于 C 语言。OpenGL 渲染需要两种 Shader：Vertex Shader 和 Fragment Shader。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Vertex Shader
-  Vertex Shader 对于3D模型网格的每个顶点执行一次，主要是确定该顶点的最终位置。&lt;/li&gt;
-  &lt;li&gt;Fragment Shader
-  Fragment Shader对光栅化之后2D图像中的每个像素处理一次。3D物体的表面最终显示成什么样将由它决定，例如为模型的可见表面添加纹理，处理光照、阴影的影响等等。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;opengl-流水线&quot;&gt;OpenGL 流水线&lt;/h4&gt;
-
-&lt;p&gt;OpenGL 中有两种流水线，一种是固定流水线，另外一种则是可编程流水线。&lt;/p&gt;
-
-&lt;p&gt;其中，OpenGL 1.0 版本支持固定流水线。其结构如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_1x_pipeline.gif&quot; alt=&quot;OpenGL 1.0 固定流水线&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;从OpenGL 2.0版本开始，OpenGL支持可编程的流水线。也就是说，程序员可以通过Shader（一种程序）来控制GPU渲染的过程。
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_20_pipeline2.gif&quot; alt=&quot;OpenGL 2.0 可编程流水线&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;egl&quot;&gt;EGL&lt;/h2&gt;
-
-&lt;h3 id=&quot;什么是-egl&quot;&gt;什么是 EGL？&lt;/h3&gt;
-
-&lt;p&gt;EGL 是 OpenGL ES 渲染 API 和本地窗口系统(native platform window system)之间的一个中间接口层，它主要由系统制造商实现。EGL提供如下机制：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;与设备的原生窗口系统通信&lt;/li&gt;
-  &lt;li&gt;查询绘图表面的可用类型和配置&lt;/li&gt;
-  &lt;li&gt;创建绘图表面&lt;/li&gt;
-  &lt;li&gt;在OpenGL ES 和其他图形渲染API之间同步渲染&lt;/li&gt;
-  &lt;li&gt;管理纹理贴图等渲染资源&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;为了让OpenGL ES能够绘制在当前设备上，我们需要EGL作为OpenGL ES与设备的&lt;strong&gt;桥梁&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;h3 id=&quot;使用-egl-绘图的基本步骤&quot;&gt;使用 EGL 绘图的基本步骤&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15038887630772.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Display(EGLDisplay) 是对实际显示设备的抽象。&lt;/li&gt;
-  &lt;li&gt;Surface（EGLSurface）是对用来存储图像的内存区域&lt;/li&gt;
-  &lt;li&gt;FrameBuffer 的抽象，包括 Color Buffer， Stencil Buffer ，Depth Buffer。Context (EGLContext) 存储 OpenGL ES绘图的一些状态信息。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使用EGL的绘图的一般步骤：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;获取 EGL Display 对象：eglGetDisplay()&lt;/li&gt;
-  &lt;li&gt;初始化与 EGLDisplay 之间的连接：eglInitialize()&lt;/li&gt;
-  &lt;li&gt;获取 EGLConfig 对象：eglChooseConfig()&lt;/li&gt;
-  &lt;li&gt;创建 EGLContext 实例：eglCreateContext()&lt;/li&gt;
-  &lt;li&gt;创建 EGLSurface 实例：eglCreateWindowSurface()&lt;/li&gt;
-  &lt;li&gt;连接 EGLContext 和 EGLSurface：eglMakeCurrent()&lt;/li&gt;
-  &lt;li&gt;使用 OpenGL ES API 绘制图形：gl_*()&lt;/li&gt;
-  &lt;li&gt;切换 front buffer 和 back buffer 送显：eglSwapBuffer()&lt;/li&gt;
-  &lt;li&gt;断开并释放与 EGLSurface 关联的 EGLContext 对象：eglRelease()&lt;/li&gt;
-  &lt;li&gt;删除 EGLSurface 对象&lt;/li&gt;
-  &lt;li&gt;删除 EGLContext 对象&lt;/li&gt;
-  &lt;li&gt;终止与 EGLDisplay 之间的连接&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;opengl-es-和-egl-的联系&quot;&gt;OpenGL ES 和 EGL 的联系&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453844639965.png&quot; alt=&quot;20170904150453844639965.png&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;一个类比的例子&quot;&gt;一个类比的例子&lt;/h3&gt;
-
-&lt;p&gt;我们来思考一下画家绘画的过程：首先要有一名懂得各种绘画技艺的画家，然后他需要一张画布，一些笔，一些颜料，一些辅助工具（尺、模板、橡皮、调色板等等），然后他在画布上绘制第一幅画，完成之后展示给人们看；在人们观赏第一幅画的时候，他可以在第二张画布上绘制第二幅画，绘制完成后收回第一幅画，将第二幅画展现给人们看；接着使用工具擦除第一幅画，在同一张画布上绘制第三幅画；周而复始，人们便看到了一幅接一幅的画。&lt;/p&gt;
-
-&lt;p&gt;对比 OpenGL ES/EGL，各要素的对应关系大体如下：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;画家：编程人员&lt;/li&gt;
-  &lt;li&gt;笔、颜料、辅助工具：OpenGL ES API&lt;/li&gt;
-  &lt;li&gt;画布：EGL 创建的 Surface&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;所以计算机绘画的本质就是选择图像显示的像素格式，申请一块内存（画布），填充像素（颜色），绘制完成之后，通知计算机显示到屏幕上（按比例发射RGB光），最终就看到了所绘制的画面。之所以要先选择像素格式，是因为无论是所申请内存的大小，还是硬件驱动解析这块内存的方式，都是由像素格式决定的。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.khronos.org/egl&quot;&gt;EGL 的官方介绍说明&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.slideshare.net/SuhanLee2/understaing-android-egl&quot;&gt;Understaing Android EGL&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://blog.piasy.com/2016/06/07/Open-gl-es-android-2-part-1/&quot;&gt;安卓 OpenGL ES 2.0 完全入门（一）：基本概念和 hello world&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2920106.html&quot;&gt;EGL 参考资料1: 学习OpenGL-ES: 1 - 像素、颜色、显存、初始化&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2921123.html&quot;&gt;EGL 参考资料2: 学习OpenGL-ES: 2 - EGL解析&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://mobile.51cto.com/app-show-436809.htm&quot;&gt;OpenGL ES 2.0 编程三步曲&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/22/2922487.html&quot;&gt;OpenGL 参考资料1: 学习OpenGL-ES: 3 - 3D绘图原理&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/hrlnw/p/4642272.html&quot;&gt;Android OpenGL ES 离屏渲染（offscreen render）&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.shengbin.me/posts/opengl-concepts/&quot;&gt;OpenGL基本概念&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-1/&quot;&gt;All about OpenGL ES 2.x - (part 1/3)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-2/&quot;&gt;All about OpenGL ES 2.x - (part 2/3)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-3/&quot;&gt;All about OpenGL ES 2.x - (part 3/3)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://wiki.jikexueyuan.com/project/opengl-es-guide/about-egl.html&quot;&gt;关于EGL&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:footnote_1&quot;&gt;
-      &lt;p&gt;https://zh.wikipedia.org/wiki/OpenGL_ES&amp;nbsp;&lt;a href=&quot;#fnref:footnote_1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;flounder:/vendor/lib64/egl &lt;span class=&quot;c&quot;&gt;# ls&lt;/span&gt;
+libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
+&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： &lt;code class=&quot;highlighter-rouge&quot;&gt;/system/lib64/egl/libGLES_android.so&lt;/code&gt;。而 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt; 库在 Android 7.1 系统对应的实现源码路径为：&lt;em&gt;/frameworks/native/opengl/libagl/&lt;/em&gt; 。&lt;/p&gt;
+
+&lt;h2 id=&quot;3-android-71-中加载-opengl-es-库的过程&quot;&gt;3. Android 7.1 中加载 OpenGL ES 库的过程&lt;/h2&gt;
+&lt;p&gt;Android 中图形渲染所采用的方式（硬件 or 软件）是在系统启动之后动态确定的，而确定渲染方式的这个源码文件就是 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 。&lt;/p&gt;
+
+&lt;h3 id=&quot;31-android-71-opengl-es-库和-egl-库加载说明&quot;&gt;3.1 Android 7.1 OpenGL ES 库和 EGL 库加载说明&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.2net.co.uk/tutorial/android-egl-cgf-is-dead&quot;&gt;How Android finds OpenGL libraries, and the death of egl.cfg&lt;/a&gt; 这篇文章中提到了非常关键的一点，就是从 Android Kitkat 4.4 之后，Android 中加载 OpenGL ES/EGL 库的方法发生了变化了（&lt;strong&gt;但是整个加载过程都是由 /frameworks/native/opengl/libs/EGL/Loader.cpp 程序所决定的，也就是说 Loader.cpp 文件发生了变化&lt;/strong&gt;）。&lt;/p&gt;
+
+&lt;p&gt;在 &lt;strong&gt;Android 4.4 之前&lt;/strong&gt;，加载 OpenGL ES 库是由 &lt;em&gt;/system/lib/egl/egl.cfg&lt;/em&gt; 文件所决定的，通过读取这个配置文件来确定是加载 OpenGL ES 软件模拟实现的库，还是OpenGL ES 硬件加速实现的库。&lt;/p&gt;
+
+&lt;p&gt;但是，在Android 4.4 之后，Android 不再通过读取 egl.cfg 配置文件的方式来加载 OpenGL ES 库，新的加载 OpenGL ES 库的规则，如下所示：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;从 &lt;em&gt;/system/lib/egl&lt;/em&gt; 或者 &lt;em&gt;/vendor/lib/egl/&lt;/em&gt; 目录下加载 libGLES.so 库文件或者 libEGL_vendor.so，libGLESv1_CM_vendor.so，libGLESv2_vendor.so 库文件。&lt;/li&gt;
+  &lt;li&gt;为了向下兼容旧的库的命名方式，同样也会加载 &lt;em&gt;/system/lib/egl&lt;/em&gt; 或者 &lt;em&gt;/vendor/lib/egl/&lt;/em&gt; 目录下的 libGLES_*.so 或者 libEGL_*.so，libGLESv1&lt;em&gt;CM&lt;/em&gt;*.so，libGLESv2_*.so 库文件。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;32硬件加速渲染-or-软件模拟渲染&quot;&gt;3.2　硬件加速渲染 or 软件模拟渲染？&lt;/h3&gt;
+
+&lt;p&gt;前面我们提到 OpenGL ES 库的实现方式有两种，一种是硬件加速实现，一种是软件模拟实现，那么系统是怎么确定加载那一种 OpenGL ES 库的呢？&lt;/p&gt;
+
+&lt;p&gt;Android 7.1 源码中负责加载 OpenGL ES/EGL 库部分的代码位于：&lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 文件中，这个文件中代码的主要入口函数是 &lt;strong&gt;Loader::open()&lt;/strong&gt; 函数，而决定加载&lt;strong&gt;硬件加速渲染库&lt;/strong&gt;还是&lt;strong&gt;软件模拟渲染库&lt;/strong&gt;主要涉及到下面两个函数：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;setEmulatorGlesValue()&lt;/li&gt;
+  &lt;li&gt;checkGlesEmulationStatus()&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面就来简要的分析一下 Android 系统是如何选择加载&lt;strong&gt;硬件加速渲染库&lt;/strong&gt;还是&lt;strong&gt;软件模拟渲染库&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;首先，&lt;code class=&quot;highlighter-rouge&quot;&gt;Loader::open()&lt;/code&gt; 入口函数会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;setEmulatorGlesValue()&lt;/code&gt; 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void setEmulatorGlesValue(void) {
+     char prop[PROPERTY_VALUE_MAX];
+     property_get(&quot;ro.kernel.qemu&quot;, prop, &quot;0&quot;); //读取 ro.kernel.qemu 属性值，判断Android系统是否运行在 qemu 中
+     if (atoi(prop) != 1) return;
+    
+     property_get(&quot;ro.kernel.qemu.gles&quot;, prop, &quot;0&quot;); //读取 ro.kernel.qemu.gles 属性值，判断 qemu 中 OpenGL ES 库的实现方式
+     if (atoi(prop) == 1) {
+         ALOGD(&quot;Emulator has host GPU support, qemu.gles is set to 1.&quot;);
+         property_set(&quot;qemu.gles&quot;, &quot;1&quot;);
+         return;
+     }
+    
+     // for now, checking the following
+     // directory is good enough for emulator system images
+     const char* vendor_lib_path =
+ #if defined(__LP64__)
+         &quot;/vendor/lib64/egl&quot;;
+ #else
+         &quot;/vendor/lib/egl&quot;;
+ #endif
+    
+     const bool has_vendor_lib = (access(vendor_lib_path, R_OK) == 0);
+     //如果存在 vendor_lib_path 这个路径，那么就说明厂商提供了 OpenGL ES库自己的软件模拟渲染库，而不是 Android 系统自己编译得到的软件模拟渲染库
+     if (has_vendor_lib) {
+         ALOGD(&quot;Emulator has vendor provided software renderer, qemu.gles is set to 2.&quot;);
+         property_set(&quot;qemu.gles&quot;, &quot;2&quot;);
+     } else {
+         ALOGD(&quot;Emulator without GPU support detected. &quot;
+               &quot;Fallback to legacy software renderer, qemu.gles is set to 0.&quot;);
+         property_set(&quot;qemu.gles&quot;, &quot;0&quot;); //最后，默认采取的是方案就是调用传统的Android系统自己编译得到软件模拟渲染库
+     }
+ }
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数中，内部类 MatchFile 类中会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;checkGlesEmulationStatus()&lt;/code&gt; 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void* load_system_driver(const char* kind) {
+     ATRACE_CALL();
+     class MatchFile {
+     public:
+         //这个函数作用是返回需要加载打开的 OpenGL ES 和 EGL API 实现库文件的绝对路径
+         static String8 find(const char* kind) {
+             String8 result;
+             int emulationStatus = checkGlesEmulationStatus(); //检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能
+             switch (emulationStatus) {
+             case 0: //Android 运行在模拟器中，使用系统软件模拟实现的 OpenGL ES API 库 libGLES_android.so
+ #if defined(__LP64__)
+                 result.setTo(&quot;/system/lib64/egl/libGLES_android.so&quot;);
+ #else
+                 result.setTo(&quot;/system/lib/egl/libGLES_android.so&quot;);
+ #endif
+                 return result;
+             case 1: // Android 运行在模拟器中，通过主机系统中实现 OpenGL ES 加速渲染，通过 libGLES_emulation.so 库将  OpenGL ES API 指令重定向到 host 中执行
+                 // Use host-side OpenGL through the &quot;emulation&quot; library
+ #if defined(__LP64__)
+                 result.appendFormat(&quot;/system/lib64/egl/lib%s_emulation.so&quot;, kind);
+ #else
+                 result.appendFormat(&quot;/system/lib/egl/lib%s_emulation.so&quot;, kind);
+ #endif
+                 return result;
+             default:
+                 // Not in emulator, or use other guest-side implementation
+                 break;
+             }
+    
+             // 如果不是上面两种情况，就根据库的命名规则去找到厂商实现库文件的绝对路径
+             String8 pattern;
+             pattern.appendFormat(&quot;lib%s&quot;, kind);
+             const char* const searchPaths[] = {
+ #if defined(__LP64__)
+                 &quot;/vendor/lib64/egl&quot;,
+                 &quot;/system/lib64/egl&quot;
+ #else
+                 &quot;/vendor/lib/egl&quot;,
+                 &quot;/system/lib/egl&quot;
+ #endif
+             };
+                
+             ......
+     }
+        
+ }
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static int
+ checkGlesEmulationStatus(void)
+ {
+     /* We're going to check for the following kernel parameters:
+      *
+      *    qemu=1                      -&amp;gt; tells us that we run inside the emulator
+      *    android.qemu.gles=&amp;lt;number&amp;gt;  -&amp;gt; tells us the GLES GPU emulation status
+      *
+      * Note that we will return &amp;lt;number&amp;gt; if we find it. This let us support
+      * more additionnal emulation modes in the future.
+      */
+     char  prop[PROPERTY_VALUE_MAX];
+     int   result = -1;
+    
+     /* Check if hardware acceleration disabled explicitly */
+     property_get(&quot;debug.egl.hw&quot;, prop, &quot;1&quot;); //读取 debu.egl.hw 属性值，判断3D硬件加速功能是否被关闭了
+     if (!atoi(prop)) {
+         ALOGD(&quot;3D hardware acceleration is disabled&quot;);
+         return 0;
+     }
+    
+     /* First, check for qemu=1 */
+     property_get(&quot;ro.kernel.qemu&quot;, prop, &quot;0&quot;); //读取ro.kernel.qemu，判断是否运行在 qemu 中
+     if (atoi(prop) != 1)
+         return -1;
+    
+     /* We are in the emulator, get GPU status value */
+     property_get(&quot;qemu.gles&quot;, prop, &quot;0&quot;); // 如果 Android 系统运行在 qemu 中，就返回 qemu.gles 的值，根据这个值就可以确定加载的是那种 OpenGL ES 库了
+     return atoi(prop);
+ }
+&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 &lt;strong&gt;emulationStatus&lt;/strong&gt; 值 来确定是加软件模拟实现的 OpenGL ES API 库 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt;，还是加载 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLES_emulation.so&lt;/code&gt;库将 OpenGL ES 指令重定向到 Host 系统中去执行。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;33-opengl-esegl-库加载和解析过程&quot;&gt;3.3 OpenGL ES/EGL 库加载和解析过程&lt;/h3&gt;
+&lt;p&gt;正如&lt;a href=&quot;http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html&quot;&gt;Android 系统图形栈: OpenGL ES 和 EGL 介绍&lt;/a&gt;这篇文章中分析的那样，在进行 OpenGL 编程时，最先开始需要获取 Display，这将调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;eglgGetDisplay()&lt;/code&gt; 函数被调用。在 eglGetDisplay() 里则会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 初始化驱动：装载各个库进行解析，将 OpenGL ES/EGL API 函数接口和具体的实现绑定在一起，并将结果保存在 &lt;strong&gt;egl_connection_t&lt;/strong&gt; 类型的全局变量 &lt;strong&gt;gEGLImpl&lt;/strong&gt; 的结构体的成员变量中。&lt;/p&gt;
+
+&lt;p&gt;下面以 SurfaceFlinger 进程为例进行分析，整个 OpenGL ES/EGL 库的加载和解析流程如下所示：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-flow&quot;&gt;st=&amp;gt;start: Start
+op1=&amp;gt;operation: SurfaceFlinger::init()
+sub=&amp;gt;subroutine: Your Subroutine
+op2=&amp;gt;operation: eglGetDisplay(EGL_DEFAULT_DISPLAY)
+op3=&amp;gt;operation: egl_init_drivers()
+op4=&amp;gt;operation: egl_init_drivers_locked();
+op5=&amp;gt;operation: loader.open()
+op6=&amp;gt;operation: load_driver()
+op7=&amp;gt;operation: load_system_driver()
+op8=&amp;gt;operation: Loader::init_api()
+e=&amp;gt;end
+
+st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;gt;op7-&amp;gt;op8-&amp;gt;e
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&quot;331-geglimpl-全局变量&quot;&gt;3.3.1 gEGLImpl 全局变量&lt;/h4&gt;
+
+&lt;p&gt;struct egl_connection_t 类型的 gEGLImpl 全局变量是一个非常重要变量，它里面的成员指向了打开的 OpenGL ES/EGL Wrapper 库和 OpenGL ES/EGL 实现库：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gEGLImpl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooksNoContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;其中 egl_connection_t 的定义：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/egldefs.h&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+    &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;              &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//指向打开的共享链接库的句柄
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//指向打开的 OpenGL ES API 对象
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;              &lt;span class=&quot;n&quot;&gt;major&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 主版本好
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;              &lt;span class=&quot;n&quot;&gt;minor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//dui x
+&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;下面就对其中的主要成员进行一个说明：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;hooks：这是一个 gl_hook_t* 类型的指针数组，它最终将 OpenGL ES API 和实现库钩在一起。&lt;/li&gt;
+  &lt;li&gt;egl：这是一个 egl_t 类型的成员变量，它最终将 EGL API 和 EGL 实现库了钩在一起。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;那么 gl_hook_t 和 egl_t 是什么呢？&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;gl_hook_t&lt;/strong&gt; 和 &lt;strong&gt;egl_t&lt;/strong&gt; 的定义如下所示：
+&lt;em&gt;/frameworks/native/opengl/libs/hooks.h&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define GL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
+#define EGL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#include &quot;EGL/egl_entries.in&quot;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;cp&quot;&gt;#include &quot;entries.in&quot;
+&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_ext_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// __eglMustCastToProperFunctionPointerType 是一个 typedef 的函数指针类型，它的返回值是void，参数也是void
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MAX_NUMBER_OF_GL_EXTENSIONS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;从上面的定义中我们发现，egl_t 和 gl_hooks_t 这两个结构体中主要就是一个 include 语句，那么它们包含的是什么呢？&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;#include “EGL/egl_entries.in&lt;/strong&gt;
+包含的文件路径如下所示：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl_entries.in&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NativeDisplayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglInitialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglTerminate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetConfigs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglChooseConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLConfig&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在这个文件中，我们可以看到所有的内容都是 EGL_ENTRY 宏定义的，根据 EGL_ENTRY 宏定义：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/hooks.h&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
+//这些函数变量最后会和具体的 OpenGL 和 EGL API 的实现绑定在一起
+#define GL_ENTRY(_r,_api,...) _r (*_api)(__VA_ARGS__);
+#define EGL_ENTRY(_r,_api,...) _r(*_api)(__VA_ARGS__);
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们可以将下面的这个宏定义展开成如下的形式:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NativeDisplayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//展开后的形式如下所示，它实际上就是 EGL API 函数声明
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NativeDisplayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;#include “entries.in”&lt;/strong&gt;
+包含的文件路径为：
+&lt;em&gt;/frameworks/native/opengl/libs/entries.in&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;GL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glReadPixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;和上面的 EGL_ENTRY 一样，GL_ENTRY 都是通过宏定义的形式来将 OpenGL ES 的 API 函数接口进行声明，例如，上面的宏定义声明可以展开成下面的形式：&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;GL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glReadPixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 展开后的形式如下所示，它实际上就是 OpenGL ES API 函数声明
+&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glReadPixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后，通过 entries.in 和 egl_entries.in 这两个文件，我们就可以得到 OpenGL ES 和 EGL 中的所有 API 函数接口的说明。&lt;/p&gt;
+
+&lt;h4 id=&quot;332-surfaceflinger-初始化成员变量-megldisplay&quot;&gt;3.3.2 SurfaceFlinger 初始化成员变量 mEGLDisplay&lt;/h4&gt;
+&lt;p&gt;在 SurfaceFlinger 类中有一个 EGLDisplay 类型的成员变量 mEGLDisplay，它是 EGL 中用来构建 OpenGL ES 渲染环境所需的参数。&lt;/p&gt;
+
+&lt;p&gt;SurfaceFlinger 中调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 初始化 mEGLDisplay 的代码如下：
+&lt;em&gt;/frameworks/native/services/surfaceflinger/SurfaceFlinger.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SurfaceFlinger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ALOGI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;&quot;SurfaceFlinger's main thread ready to run. &quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;Initializing graphics H/W...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;status_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;Mutex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Autolock&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mStateLock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// initialize EGL for the default display
+&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// 调用 eglGetDisplay 函数获取默认的显示设备
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;mEGLDisplay&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_DEFAULT_DISPLAY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;eglInitialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mEGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;紧接着在 &lt;code class=&quot;highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 中调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt;
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/eglApi.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLNativeDisplayType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 调用egl_init_drivers() 加载 OpenGL ES 库和 EGL 库
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_init_drivers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_BAD_PARAMETER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_NO_DISPLAY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dpy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_display_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getFromNativeDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后，&lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;egl_init_drivers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;pthread_mutex_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sInitDriverMutex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 使用了 pthread_mutex_lock 上锁保护，继续调用 egl_init_drivers_locked
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_init_drivers_locked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;pthread_mutex_unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sInitDriverMutex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;下面就是对 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数进行一个分析：&lt;/p&gt;
+
+&lt;p&gt;egl_init_drivers_locked() 函数代码如下所示：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//在该文件起始位置定义的全局变量
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gEGLImpl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 描述EGL实现内容的结构体对象
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// gl_hooks_t 是包含 OpenGL ES API 函数声明对应的函数指针结构体
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooksNoContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;pthread_key_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gGLWrapperKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;egl_init_drivers_locked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sEarlyInitState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// initialized by static ctor. should be set here.
+&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 得到 Loader 对象单例
+&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// get our driver loader
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;//  gEGLImple 是一个全局变量，数据类型为 egl_connection_t 结构体类型
+&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// dynamically load our EGL implementation
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gEGLImpl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// cnx-&amp;gt;dso 本质上是一个 (void *)类型的指针，它指向的对象是 EGL 共享库打开之后的句柄
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+        &lt;span class=&quot;c1&quot;&gt;// &amp;gt;= 将cnx中的 hooks 数组中指向OpenGL ES API 函数指针结构体指的数组成员，用 gHooks 中的成员的地址去初始化
+&lt;/span&gt;        &lt;span class=&quot;c1&quot;&gt;//也就是说 gEGLImpl 中 hook 数组指向 gHooks 数组，最终指向同一个 OpenGL ES API 函数指针的实现
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// &amp;gt;= 最后通过loader对象的open函数开始加载 OpenGL ES 和 EGL wrapper 库
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_TRUE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;在这个函数中，有一个非常关键的 egl_connection_t 指针指向一个全局变量 gEGLImpl，当第一次初始化加载 OpenGL ES 实现库和 EGL 实现库时，还需要将 gEGLImpl 中的 hooks 数组中的两个指针指向一个全局的 gl_hooks_t 数组 gHooks（这就是两个指针钩子，最终初始化完成后将分别勾住 OpenGL ES 1.0 和 OpenGL ES 2.0 的实现库），接着调用 Loader 类的实例的 open() 函数完成从 OpenGL ES 实现库中完成符号解析工作。&lt;/p&gt;
+
+&lt;h4 id=&quot;333-通过-loader-类加载和解析-opengl-es-库和-egl-库&quot;&gt;3.3.3 通过 Loader 类加载和解析 OpenGL ES 库和 EGL 库&lt;/h4&gt;
+
+&lt;p&gt;Loader::open() 函数的代码如下所示：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// &amp;gt;= Loader 类对象构造完成后，就在 /EGL/egl.cpp 文件中的 egl_init_drivers_locked() 中被调用
+&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ATRACE_CALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;driver_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;setEmulatorGlesValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GLES&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;driver_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Always load EGL first
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;EGL&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;driver_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GLESv1_CM&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GLESv2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;couldn't find an OpenGL ES implementation&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libEGL.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libGLESv2.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libGLESv1_CM.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;couldn't load system EGL wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;couldn't load system OpenGL ES wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;open()&lt;/code&gt; 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 函数代码如下所示：
+&lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                          &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ATRACE_CALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;nullptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mGetDriverNamespace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;android_namespace_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mGetDriverNamespace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_updated_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//加载 OpenGL ES 实现库，放回打开的共享链接库的句柄
+&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_system_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 解析 EGL 库，并将wrapper 库 libEGL.so 中的函数 API 指针和具体的实现绑定在一起
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProcAddressType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;eglGetProcAddress&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;ALOGE_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                 &lt;span class=&quot;s&quot;&gt;&quot;can't find eglGetProcAddress() in EGL driver library&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将 egl 指针指向描述当前系统支持 OpenGL ES和 EGL 全局变量的 gEGLImpl
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//egl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 EGL API 函数指针
+&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;c1&quot;&gt;// couldn't find the entry-point, use eglGetProcAddress()
+&lt;/span&gt;                &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//这一步就是最关键的将共享链接库中的 EGL API 的实现和上层调用的 API 函数指针绑定在一起
+&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//指向下一个需要绑定的 api 函数
+&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 解析 OpenGL ES 库中的 OpenGL ES 1.x API 符号
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// 调用 init_api 实现 OpenGL API 和对应实现函数的绑定
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;init_api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// gl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 OpenGL ES API 函数指针
+&lt;/span&gt;                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                 &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//gl成员变量是一个结构体变量，结构体中的是 OpenGL ES API 函数指针
+&lt;/span&gt;                 &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 解析 OpenGL ES 库中的 OpenGL ES 2.0 API 符号
+&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;init_api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                 &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                 &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 它主要实现了两个功能：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;load_system_driver() &lt;/code&gt; 函数查找 OpenGL ES/EGL 实现库，并在指定的存放路径中找到共享链接库文件并打开它。&lt;/li&gt;
+  &lt;li&gt;调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;init_api()&lt;/code&gt;解析打开的 OpenGL ES/EGL 共享链接库，将 OpenGL ES/EGL API 函数指针和共享链接库中实现的对应的函数符号绑定在一起，这样调用 OpenGL ES/EGL API 就会调用到具体实现的OpenGL ES/EGL 共享链接库中对应函数。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;具体 &lt;code class=&quot;highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数和 &lt;code class=&quot;highlighter-rouge&quot;&gt;init_api()&lt;/code&gt; 函数的实现就不一一展开了，大家可以到 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 文件中查看，应该写得非常直接清楚了。&lt;/p&gt;
+
+&lt;h3 id=&quot;34-小结&quot;&gt;3.4 &lt;strong&gt;小结&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;至此，有关 OpenGL ES/EGL 库的加载和解析过程就分析完了，&lt;strong&gt;整个加载和解析的目的就是将 OpenGL ES/EGL API 和具体实现函数绑定在一起&lt;/strong&gt;，这样当程序调用 OpenGL ES/EGL API 时，就会调用到实际的实现函数了。然后，在硬件平台上的 Android 系统加载的是硬件厂商提供的 OpenGL ES/EGL 实现库，而在 qemu 模拟器中运行的 Android 系统中加载的则是软件模拟实现的 
+OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件加速的库。&lt;/p&gt;
+
+&lt;h3 id=&quot;35-参考文章&quot;&gt;3.5 参考文章&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.2net.co.uk/tutorial/android-egl-cgf-is-dead&quot;&gt;How Android finds OpenGL libraries, and the death of egl.cfg&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
 </description>
-        <pubDate>Tue, 05 Sep 2017 07:35:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        <pubDate>Tue, 05 Sep 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
         
         <category>Android</category>
-        
-        <category>Graphic</category>
         
         <category>OpenGLES</category>
         
         <category>EGL</category>
+        
+        <category>Graphic</category>
         
         
         <category>android</category>
@@ -204,7 +605,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
       </item>
     
       <item>
-        <title>Android 系统图形栈: OpenGL ES 和 EGL 介绍</title>
+        <title>Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍</title>
         <description>&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
 
 &lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
@@ -380,16 +781,16 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;/div&gt;
 </description>
         <pubDate>Mon, 04 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
         
         <category>Android</category>
+        
+        <category>Graphic</category>
         
         <category>OpenGLES</category>
         
         <category>EGL</category>
-        
-        <category>Graphic</category>
         
         
         <category>android</category>
