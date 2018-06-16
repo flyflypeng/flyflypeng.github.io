@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>ramfs, tmpfs, rootfs, initramfs的区别</title>
-  <meta name="description" content="什么是 ramfs？Ramfs 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，...">
+  <meta name="description" content="什么是文件系统？如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什...">
   
   <meta name="author" content="Pengfei Jiang">
   <meta name="copyright" content="&copy; Pengfei Jiang 2018">
@@ -41,7 +41,7 @@
 
   
   <!-- Facebook OGP cards -->
-  <meta property="og:description" content="什么是 ramfs？Ramfs 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，..." />
+  <meta property="og:description" content="什么是文件系统？如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什..." />
   <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="ramfs, tmpfs, rootfs, initramfs的区别" />
@@ -56,7 +56,7 @@
   <!-- Twitter: card tags -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="ramfs, tmpfs, rootfs, initramfs的区别">
-  <meta name="twitter:description" content="什么是 ramfs？Ramfs 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，...">
+  <meta name="twitter:description" content="什么是文件系统？如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什...">
   <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
   <meta name="twitter:url" content="http://localhost:4000">
   
@@ -194,14 +194,28 @@
 <article class="post-content">
   <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/14973695337147.png" alt="" /></p>
 
+<h1 id="什么是文件系统">什么是文件系统？</h1>
+
+<p>如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什么东西呢？</p>
+
+<!--more-->
+
+<p>下面是引用自Wikipedia上关于<a href="https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F">文件系统</a>的介绍：</p>
+
+<blockquote>
+  <p>在计算机系统中，文件系统（file system）是一种存储和组织数据的一种方法，它使得对数据发访问和查找变得更加容易。</p>
+
+  <p>文件系统使用<strong>文件</strong>和<strong>树形目录</strong>的抽象逻辑概念代替了硬盘和光盘等物理存储设备所用的数据块的概念，用户使用文件系统来保存数据而不必关系数据实际保存在物理存储设备的地址为多少的数据块中，用户只需要记住这个文件的所属目录和文件名即可。在写入数据之前，用户也不必关心硬盘上哪个数据块没有被使用，所有的物理存储设备的存储空间的分配和释放功能都是由文件系统自动完成，用户只需要记住数据被写入到了哪个文件中。</p>
+
+  <p>文件系统可以用来在不同的物理存储介质上存储和组织数据，通常最常见的物理存储设备是硬盘，光盘以及Flash，磁带等等。但是，在某些情况下文件系统也可以使用内存（random-access memory，RAM）作为文件的存储介质，例如tmpfs，当文件存储在这种存储介质上时，一旦计算机掉电之后，该介质上面的所有文件就都消失了。甚至有的文件系统可能根本没有对应的文件，例如如proc文件系统。</p>
+</blockquote>
+
 <h1 id="什么是-ramfs">什么是 ramfs？</h1>
 <p><strong>Ramfs</strong> 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。</p>
 
 <p>ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，而不存放在磁盘中，如果计算机掉电关闭，那么 ramfs 文件系统中所有文件也就都没有了。</p>
 
-<p>当普通磁盘中的文件被操作系统加载到内存中并分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的 page 实现对文件的读写修改操作，当完成了所有的读写操作之后，文件对应的 page 就会被标记为<strong>脏页</strong>，然后在合适的时机被操作系统写回到原来的磁盘中对应的文件中，然后内存中原来存放这些文件的 page 就会被标记为干净，然后被系统回收重新使用。而 ramfs 文件系统中的文件当同样被加载到内存中 page 进行读写操作之后，它对应的 page 并不会被标记为<strong>脏页</strong>，因为 ramfs 中文件没有下级的后备存储器（例如，磁盘），也就没有了写回后备存储器的操作，所以为它分配的这些 page 也就无法回收了。</p>
-
-<!--more-->
+<p>当普通磁盘中的文件被操作系统加载到内存中时，内核会分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的 page 实现对文件的读写修改操作，当完成了所有的读写操作之后，文件对应的 page 就会被标记为<strong>脏页</strong>，然后在合适的时机被操作系统写回到原来的磁盘中对应的文件中，内存中原来存放这些文件的 page 就会被标记为干净，最后被系统回收重新使用。而 ramfs 文件系统中的文件当同样被加载到内存中 page 进行读写操作之后，它对应的 page 并不会被标记为<strong>脏页</strong>，因为 ramfs 中文件没有下级的后备存储器（例如，磁盘），也就没有了写回后备存储器的操作，所以为它分配的这些 page 也就无法回收了。</p>
 
 <h1 id="什么是-tmpfs">什么是 tmpfs？</h1>
 <p>ramfs 中有一个非常大的<strong>缺点</strong>就是你可以持续不断地向 ramfs 文件系统中的文件持续不断地写入数据直到填满整个物理内存空间为止。出现这个问题的原因就是前面介绍的 ramfs 文件系统不存在向普通磁盘那样的将内存中的文件内容写回到文件的操作，也就导致了它所占据的那部分内存空间是无法被释放的，正是因为这个原因，通常只有 <strong>root</strong> 用户才有读写 ramfs 文件系统中文件的权限。</p>
@@ -211,7 +225,7 @@
 <p>有关 tmpfs 更加详细的内容可以查看内核源码中的文档：<em>Documentation/filesystems/tmpfs.txt</em>。</p>
 
 <h2 id="什么是-rootfs">什么是 rootfs？</h2>
-<p><strong>rootfs</strong>（也叫根文件系统） 是一个特殊的 ramfs（或者是 tmpfs） 的实例，它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 <code class="highlighter-rouge">/</code> 根目录下的结构，例如，<code class="highlighter-rouge">/boot</code> 目录下存放的是启动内核相关的文件，<code class="highlighter-rouge">/etc</code> 目录中存放的则是一些系统配置文件，<code class="highlighter-rouge">/dev</code> 目录下存放的则是系统的设备文件，<code class="highlighter-rouge">/bin</code> 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 <code class="highlighter-rouge">/</code> 根目录的结构如下所示：</p>
+<p><strong>rootfs</strong>（也叫根文件系统） 它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 <code class="highlighter-rouge">/</code> 根目录下的结构，例如，<code class="highlighter-rouge">/boot</code> 目录下存放的是启动内核相关的文件，<code class="highlighter-rouge">/etc</code> 目录中存放的则是一些系统配置文件，<code class="highlighter-rouge">/dev</code> 目录下存放的则是系统的设备文件，<code class="highlighter-rouge">/bin</code> 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 <code class="highlighter-rouge">/</code> 根目录的结构如下所示：</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code>.
 ├── bin
@@ -247,6 +261,8 @@
 
 <p>通常 rootfs 文件系统应该非常简洁，它只包含了它所必须用的文件，并且尽量避免少去修改 rootfs，以免破坏 rootfs，导致整个 Linux 系统无法启动。</p>
 
+<p>Linux 系统的启动过程与 <code class="highlighter-rouge">rootfs</code> 也是密切相关，rootfs 可能会存在于存储在 RAM 存储设备中，也可能会存在硬盘设备中，这部分的我会在 Linux 系统的启动过程中作介绍。</p>
+
 <h2 id="什么是-initramfs">什么是 initramfs？</h2>
 <p><strong>initramfs</strong> 是一种以 <code class="highlighter-rouge">cpio</code> 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像，BootLoader 加载 boot.img，并启动内核之后，内核接着就对 <code class="highlighter-rouge">cpio</code> 格式的 initramfs 进行解压，并将解压后得到的 <code class="highlighter-rouge">rootfs</code> 加载进内存，最后内核会检查 rootfs 中是否存在 <strong>init</strong> 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 <strong>init</strong> 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 <code class="highlighter-rouge">/</code> 根目录上，最后通过 <code class="highlighter-rouge">exec chroot . /sbin/init</code> 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 <strong>/sbin/init</strong> 程序来启动系统中的其他进程和服务。</p>
 
@@ -254,6 +270,7 @@
 
 <h2 id="参考文章">参考文章</h2>
 <ol>
+  <li><a href="https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F">wiki-文件系统</a></li>
   <li><a href="http://www.linfo.org/root_filesystem.html">Root Filesystem Definition</a></li>
   <li><a href="https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt">Kernel-doc:ramfs, rootfs and initramfs</a></li>
   <li><a href="https://www.kernel.org/doc/Documentation/filesystems/tmpfs.txt">Kernel-doc: tmpfs</a></li>

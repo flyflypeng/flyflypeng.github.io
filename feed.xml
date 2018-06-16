@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 12 Feb 2018 15:03:44 +0800</pubDate>
-    <lastBuildDate>Mon, 12 Feb 2018 15:03:44 +0800</lastBuildDate>
+    <pubDate>Sun, 17 Jun 2018 01:08:28 +0800</pubDate>
+    <lastBuildDate>Sun, 17 Jun 2018 01:08:28 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
     
       <item>
@@ -1286,14 +1286,28 @@ SECTIONS
         <title>ramfs, tmpfs, rootfs, initramfs的区别</title>
         <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14973695337147.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
+&lt;h1 id=&quot;什么是文件系统&quot;&gt;什么是文件系统？&lt;/h1&gt;
+
+&lt;p&gt;如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什么东西呢？&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;下面是引用自Wikipedia上关于&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F&quot;&gt;文件系统&lt;/a&gt;的介绍：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;在计算机系统中，文件系统（file system）是一种存储和组织数据的一种方法，它使得对数据发访问和查找变得更加容易。&lt;/p&gt;
+
+  &lt;p&gt;文件系统使用&lt;strong&gt;文件&lt;/strong&gt;和&lt;strong&gt;树形目录&lt;/strong&gt;的抽象逻辑概念代替了硬盘和光盘等物理存储设备所用的数据块的概念，用户使用文件系统来保存数据而不必关系数据实际保存在物理存储设备的地址为多少的数据块中，用户只需要记住这个文件的所属目录和文件名即可。在写入数据之前，用户也不必关心硬盘上哪个数据块没有被使用，所有的物理存储设备的存储空间的分配和释放功能都是由文件系统自动完成，用户只需要记住数据被写入到了哪个文件中。&lt;/p&gt;
+
+  &lt;p&gt;文件系统可以用来在不同的物理存储介质上存储和组织数据，通常最常见的物理存储设备是硬盘，光盘以及Flash，磁带等等。但是，在某些情况下文件系统也可以使用内存（random-access memory，RAM）作为文件的存储介质，例如tmpfs，当文件存储在这种存储介质上时，一旦计算机掉电之后，该介质上面的所有文件就都消失了。甚至有的文件系统可能根本没有对应的文件，例如如proc文件系统。&lt;/p&gt;
+&lt;/blockquote&gt;
+
 &lt;h1 id=&quot;什么是-ramfs&quot;&gt;什么是 ramfs？&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Ramfs&lt;/strong&gt; 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。&lt;/p&gt;
 
 &lt;p&gt;ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，而不存放在磁盘中，如果计算机掉电关闭，那么 ramfs 文件系统中所有文件也就都没有了。&lt;/p&gt;
 
-&lt;p&gt;当普通磁盘中的文件被操作系统加载到内存中并分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的 page 实现对文件的读写修改操作，当完成了所有的读写操作之后，文件对应的 page 就会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，然后在合适的时机被操作系统写回到原来的磁盘中对应的文件中，然后内存中原来存放这些文件的 page 就会被标记为干净，然后被系统回收重新使用。而 ramfs 文件系统中的文件当同样被加载到内存中 page 进行读写操作之后，它对应的 page 并不会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，因为 ramfs 中文件没有下级的后备存储器（例如，磁盘），也就没有了写回后备存储器的操作，所以为它分配的这些 page 也就无法回收了。&lt;/p&gt;
-
-&lt;!--more--&gt;
+&lt;p&gt;当普通磁盘中的文件被操作系统加载到内存中时，内核会分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的 page 实现对文件的读写修改操作，当完成了所有的读写操作之后，文件对应的 page 就会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，然后在合适的时机被操作系统写回到原来的磁盘中对应的文件中，内存中原来存放这些文件的 page 就会被标记为干净，最后被系统回收重新使用。而 ramfs 文件系统中的文件当同样被加载到内存中 page 进行读写操作之后，它对应的 page 并不会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，因为 ramfs 中文件没有下级的后备存储器（例如，磁盘），也就没有了写回后备存储器的操作，所以为它分配的这些 page 也就无法回收了。&lt;/p&gt;
 
 &lt;h1 id=&quot;什么是-tmpfs&quot;&gt;什么是 tmpfs？&lt;/h1&gt;
 &lt;p&gt;ramfs 中有一个非常大的&lt;strong&gt;缺点&lt;/strong&gt;就是你可以持续不断地向 ramfs 文件系统中的文件持续不断地写入数据直到填满整个物理内存空间为止。出现这个问题的原因就是前面介绍的 ramfs 文件系统不存在向普通磁盘那样的将内存中的文件内容写回到文件的操作，也就导致了它所占据的那部分内存空间是无法被释放的，正是因为这个原因，通常只有 &lt;strong&gt;root&lt;/strong&gt; 用户才有读写 ramfs 文件系统中文件的权限。&lt;/p&gt;
@@ -1303,7 +1317,7 @@ SECTIONS
 &lt;p&gt;有关 tmpfs 更加详细的内容可以查看内核源码中的文档：&lt;em&gt;Documentation/filesystems/tmpfs.txt&lt;/em&gt;。&lt;/p&gt;
 
 &lt;h2 id=&quot;什么是-rootfs&quot;&gt;什么是 rootfs？&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;rootfs&lt;/strong&gt;（也叫根文件系统） 是一个特殊的 ramfs（或者是 tmpfs） 的实例，它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录下的结构，例如，&lt;code class=&quot;highlighter-rouge&quot;&gt;/boot&lt;/code&gt; 目录下存放的是启动内核相关的文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc&lt;/code&gt; 目录中存放的则是一些系统配置文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/dev&lt;/code&gt; 目录下存放的则是系统的设备文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/bin&lt;/code&gt; 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录的结构如下所示：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;rootfs&lt;/strong&gt;（也叫根文件系统） 它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录下的结构，例如，&lt;code class=&quot;highlighter-rouge&quot;&gt;/boot&lt;/code&gt; 目录下存放的是启动内核相关的文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc&lt;/code&gt; 目录中存放的则是一些系统配置文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/dev&lt;/code&gt; 目录下存放的则是系统的设备文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/bin&lt;/code&gt; 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录的结构如下所示：&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.
 ├── bin
@@ -1339,6 +1353,8 @@ SECTIONS
 
 &lt;p&gt;通常 rootfs 文件系统应该非常简洁，它只包含了它所必须用的文件，并且尽量避免少去修改 rootfs，以免破坏 rootfs，导致整个 Linux 系统无法启动。&lt;/p&gt;
 
+&lt;p&gt;Linux 系统的启动过程与 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootfs&lt;/code&gt; 也是密切相关，rootfs 可能会存在于存储在 RAM 存储设备中，也可能会存在硬盘设备中，这部分的我会在 Linux 系统的启动过程中作介绍。&lt;/p&gt;
+
 &lt;h2 id=&quot;什么是-initramfs&quot;&gt;什么是 initramfs？&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;initramfs&lt;/strong&gt; 是一种以 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpio&lt;/code&gt; 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像，BootLoader 加载 boot.img，并启动内核之后，内核接着就对 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpio&lt;/code&gt; 格式的 initramfs 进行解压，并将解压后得到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootfs&lt;/code&gt; 加载进内存，最后内核会检查 rootfs 中是否存在 &lt;strong&gt;init&lt;/strong&gt; 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 &lt;strong&gt;init&lt;/strong&gt; 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录上，最后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;exec chroot . /sbin/init&lt;/code&gt; 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 &lt;strong&gt;/sbin/init&lt;/strong&gt; 程序来启动系统中的其他进程和服务。&lt;/p&gt;
 
@@ -1346,6 +1362,7 @@ SECTIONS
 
 &lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
 &lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F&quot;&gt;wiki-文件系统&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://www.linfo.org/root_filesystem.html&quot;&gt;Root Filesystem Definition&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt&quot;&gt;Kernel-doc:ramfs, rootfs and initramfs&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/filesystems/tmpfs.txt&quot;&gt;Kernel-doc: tmpfs&lt;/a&gt;&lt;/li&gt;
