@@ -6,8 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>单生产者和单消费者共同操作同一个环形缓冲区的问题</title>
-  <meta name="description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
+  <title>QEMU/KVM 原理综述</title>
+  <meta name="description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM...">
   
   <meta name="author" content="Pengfei Jiang">
   <meta name="copyright" content="&copy; Pengfei Jiang 2018">
@@ -41,10 +41,10 @@
 
   
   <!-- Facebook OGP cards -->
-  <meta property="og:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER..." />
+  <meta property="og:description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM..." />
   <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
-  <meta property="og:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题" />
+  <meta property="og:title" content="QEMU/KVM 原理综述" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
@@ -55,8 +55,8 @@
   
   <!-- Twitter: card tags -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题">
-  <meta name="twitter:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
+  <meta name="twitter:title" content="QEMU/KVM 原理综述">
+  <meta name="twitter:description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM...">
   <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
   <meta name="twitter:url" content="http://localhost:4000">
   
@@ -65,7 +65,7 @@
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="canonical" href="http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">
   <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
@@ -174,7 +174,7 @@
 <div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
   <div class="scrim has-cover">
     <header class="post-header">
-      <h1 class="title">单生产者和单消费者共同操作同一个环形缓冲区的问题</h1>
+      <h1 class="title">QEMU/KVM 原理综述</h1>
       <p class="info">by <strong>FlyFlyPeng</strong></p>
     </header>
   </div>
@@ -185,95 +185,100 @@
 
 
 <section class="post-meta">
-  <div class="post-date">December 14, 2016</div>
+  <div class="post-date">November 21, 2018</div>
   <div class="post-categories">
   in 
     
-    <a href="/category/Linux">Linux</a>
+    <a href="/category/虚拟化">虚拟化</a>
     
   
   </div>
 </section>
 
 <article class="post-content">
-  <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/circular_buffer.png" alt="" /></p>
+  <h2 id="qemu-工作原理简介">QEMU 工作原理简介</h2>
 
-<h1 id="问题描述">问题描述</h1>
+<p>QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：</p>
+<ul>
+  <li>作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。</li>
+  <li>作为虚拟机监视器：模拟全系统，利用其它VMM（Xen，KVM等等）来使用硬件提供的虚拟化支持，创建接近于主机性能的虚拟机。</li>
+</ul>
 
-<ol>
-  <li>本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。</li>
-  <li>生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。</li>
-  <li>环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 <code class="highlighter-rouge">2^N</code> 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="cp">#define RING_BUFFER_SIZE N
-</span>    
- <span class="k">struct</span> <span class="n">RingBuffer</span><span class="p">{</span>
-     <span class="kt">int</span> <span class="n">w_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区写入位置值
-</span>     <span class="kt">int</span> <span class="n">r_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区读取位置值
-</span>     <span class="n">data_block</span> <span class="n">data</span><span class="p">[(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)];</span> <span class="c1">//data_block 是环形缓冲区中所存放的数据单元的类型
-</span> <span class="p">}</span>
-</code></pre>
-    </div>
-    <p>在创建环形缓冲区之后，RingBuffer 结构体中的成员<code class="highlighter-rouge">w_pos</code>和<code class="highlighter-rouge">r_pos</code>都被初始化为 0。</p>
+<!--more-->
+
+<h3 id="qemu虚拟化的主要原理">QEMU虚拟化的主要原理</h3>
+
+<p>系统虚拟化最重要的就是虚拟化出计算机系统中最重要的三大组件：CPU、内存和IO设备。QEMU虚拟出来的CPU成为vCPU，为了提升vCPU执行Guest OS中指令的效率，通过KVM、Xen等虚拟化技术，直接利用CPU硬件虚拟化的支持，在主机上安全地执行虚拟机代码（需要BIOS中CPU开启对应的硬件虚拟化支持）。</p>
+
+<p>在x86平台上最常见的虚拟化组合就是QEMU/KVM的组合了，其中利用QEMU来模拟IO外设，通过KVM来捕获Guest OS中运行的指令并将其中非特权指令在物理CPU上直接运行，达到硬件加速的目的。</p>
+
+<p>KVM内核模块对用户空间只暴露出一个<code class="highlighter-rouge">/dev/kvm</code>的设备文件，然后通过<code class="highlighter-rouge">ioctl</code>命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。</p>
+
+<h2 id="kvm-虚拟化原理简介">KVM 虚拟化原理简介</h2>
+
+<ul>
+  <li>KVM是Linux内核的一个虚拟化特性，由一组内核模块文件组成，它可以让QEMU中运行的Guest OS的指令直接在Host OS上的CPU中执行，<strong>前提是Guest OS和Host OS的硬件架构相同</strong>。</li>
+  <li>KVM解决了虚拟化中的哪个痛点？有什么优势？
+  KVM主要解决的虚拟化中CPU虚拟化的问题，这部分详细内容可以参见<strong>CPU虚拟化</strong>相关内容。
+    <ul>
+      <li>没有KVM虚拟化加速
+  QEMU需要截获Guest OS中运行的所有指令，然后通过软件的方式模拟执行，如果是跨平台架构的Guest OS，那么还需要额外的二进制指令翻译，将Guest OS中目标架构的指令翻译成Host OS上所能执行的指令，导致虚拟化的效率非常低。</li>
+      <li>有KVM虚拟化加速
+  如果QEMU中运行的Guest OS和Host OS的硬件架构相同，那么Guest OS中的指令可以直接在Host OS上的物理CPU上执行，而不需要通过QEMU软件模拟的方式去执行Guest OS中的指令，大大提高了Guest虚拟机的性能。</li>
+    </ul>
   </li>
-  <li>判断环形缓冲区是否为空的伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-     <span class="c1">//判断语句为真，RingBuffer 为空
-</span></code></pre>
-    </div>
-  </li>
-  <li>判断环形缓冲区是否为满的伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span>
-     <span class="c1">//判断语句为真，RingBuffer 为满
-</span></code></pre>
-    </div>
-  </li>
-  <li>生产者进程中的处理逻辑伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
- <span class="p">{</span>
-     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span> <span class="c1">//缓冲区满了
-</span>     <span class="p">{</span>
-         <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-         <span class="k">continue</span><span class="p">;</span>
-     <span class="p">}</span>
+  <li>QEMU结合KVM执行Guest OS指令的步骤简要描述<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>：
+    <blockquote>
+      <p>打开/dev/kvm设备文件、创建虚拟机、创建vCPU、向KVM模块发送KVM_RUN的ioctl调用，接下来KVM模块利用CPU上的硬件虚拟化扩展功能来直接执行guest的运行。当guest在执行过程中遇到读取硬件设备寄存器等I/O操作、暂停guest CPU或其他特殊指令等KVM无法执行的操作时，会退出当前KVM并交由Qemu处理。Qemu模拟器判断退出原因并执行相应的操作：如果是遇到I/O操作或特殊指令，Qemu会去模拟执行这些操作；如果是暂停guest CPU操作，Qemu停止并等待下一次guest中断。
+  上述流程用下面的代码来简单表示：</p>
+    </blockquote>
+
+    <div class="language-c highlighter-rouge"><pre class="highlight"><code>  <span class="n">open</span><span class="p">(</span><span class="s">"/dev/kvm"</span><span class="p">)</span>
     
-     <span class="c1">//否则，则将数据填入到环形缓冲区中空闲的单元中
-</span>     <span class="n">data</span><span class="p">[</span><span class="n">w_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="n">some_data</span><span class="p">;</span> <span class="c1">//将需要写入的数据写入到指定的环形缓冲区单元中
-</span>        
-     <span class="n">w_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将写入位置向前移动
-</span> <span class="p">}</span>
-</code></pre>
-    </div>
-  </li>
-  <li>消费者进程中的处理逻辑伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
- <span class="p">{</span>
-     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//缓冲区为空
-</span>     <span class="p">{</span>
-         <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-         <span class="k">continue</span><span class="p">;</span>
-     <span class="p">}</span>
+  <span class="n">ioctl</span><span class="p">(</span><span class="n">KVM_CREATE_VM</span><span class="p">)</span>
     
-     <span class="c1">//否则，从环形缓冲区中读取数据出来进行处理
-</span>     <span class="n">process</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">r_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]);</span> <span class="c1">//process() 函数只是对读取到的数据进行一个处理
-</span>        
-     <span class="n">r_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将读取位置向前移动
-</span> <span class="p">}</span>
+  <span class="n">ioctl</span><span class="p">(</span><span class="n">KVM_CREATE_VCPU</span><span class="p">)</span>
+    
+  <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+    
+       <span class="n">ioctl</span><span class="p">(</span><span class="n">KVM_RUN</span><span class="p">)</span>
+    
+       <span class="k">switch</span> <span class="p">(</span><span class="n">exit_reason</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* 分析退出原因，并执行相应操作 */</span>
+    
+       <span class="k">case</span> <span class="n">KVM_EXIT_IO</span><span class="p">:</span>  <span class="cm">/* ... */</span>
+    
+       <span class="k">case</span> <span class="n">KVM_EXIT_HLT</span><span class="p">:</span> <span class="cm">/* ... */</span>
+    
+       <span class="p">}</span>
+    
+  <span class="p">}</span>
 </code></pre>
     </div>
-    <h1 id="疑惑">疑惑？</h1>
-    <p>如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加<code class="highlighter-rouge">互斥锁</code>，上面代码是否会出现<code class="highlighter-rouge">Bug</code>，或者不确定的状态？</p>
   </li>
-</ol>
+  <li>Host, QEMU, Guest之间的关系图
+  <img src="http://97.64.33.222/temp/1811/99149dd24c5fc6b2.jpg" alt="" /></li>
+</ul>
 
-<p>而且我想了很多遍生产者和消费者的处理逻辑，他们只会在最后执行语句 <code class="highlighter-rouge">w_pos++</code> 和 <code class="highlighter-rouge">r_pos++</code> 时改变两个进程都共享的值，虽然 <code class="highlighter-rouge">w_pos++</code> 和 <code class="highlighter-rouge">r_pos++</code> 的操作不是原子操作的，但是好像是不是原子操作都不会对结果产生影响，我就是在这里思考不清楚！不知道大家对此有什么看法呢？能否举出特殊的栗子来描述一下。</p>
+<h2 id="参考文章">参考文章</h2>
 
+<ul>
+  <li><a href="https://blog.csdn.net/xiongwenwu/article/details/58586013">KVM/Qemu 工作原理系列目录</a></li>
+</ul>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en">QEMU深入解析：综述篇</a>&nbsp;<a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
 
 </article>
 
 
 
 <section class="tags">
-  <strong>Tags:</strong> <a href="/tag/同步">同步</a>,&nbsp;<a href="/tag/生产者消费者">生产者消费者</a>,&nbsp;<a href="/tag/环形缓冲区">环形缓冲区</a>,&nbsp;<a href="/tag/RingBuffer">RingBuffer</a>
+  <strong>Tags:</strong> <a href="/tag/虚拟化">虚拟化</a>,&nbsp;<a href="/tag/QEMU">QEMU</a>,&nbsp;<a href="/tag/KVM">KVM</a>
 </section>
 
 
@@ -287,7 +292,7 @@
   
     
     
-      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&url=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -302,7 +307,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+      <a href="//www.facebook.com/sharer.php?t=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&u=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -327,7 +332,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -351,7 +356,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&url=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html&media=http://localhost:4000/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -364,24 +369,16 @@
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html">
+				<a href="/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
 					</span>
-					<span class="page-number">Ubuntu 软件源详解</span>
+					<span class="page-number">Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程</span>
 				</a>
 			
 		</span>
 		<span class="next-post">
-			
-				<a href="/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">
-					<span class="page-number">Android NDK  vs AOSP Build System</span>
-					<span class="fa-stack fa-lg">
-						<i class="fa fa-square fa-stack-2x"></i>
-						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
-					</span>
-				</a>
 			
 		</span>
 	</section>
@@ -612,8 +609,8 @@ $(document).ready(function() {
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
   ga('create', 'UA-63075912-1', 'auto');
   ga('send', 'pageview', {
-    'page': '/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html',
-    'title': '单生产者和单消费者共同操作同一个环形缓冲区的问题'
+    'page': '/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html',
+    'title': 'QEMU/KVM 原理综述'
   });
 </script>
 
