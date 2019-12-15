@@ -10,7 +10,7 @@
   <meta name="description" content="Linux I/O 模型在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词：  Synchronous I/O  Asynchronous I/O  Blocking I/O  Non-blocking I/O首先，这里讲的 I/O 指的是用户空间的 I/O，并且主要侧重于...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Linux I/O 模型在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词：  Synchronous I/O  Asynchronous I/O  Blocking I/O  Non-blocking I/O首先，这里讲的 I/O 指的是用户空间的 I/O，并且主要侧重于..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Linux I/O 模型详解" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Linux I/O 模型详解">
   <meta name="twitter:description" content="Linux I/O 模型在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词：  Synchronous I/O  Asynchronous I/O  Blocking I/O  Non-blocking I/O首先，这里讲的 I/O 指的是用户空间的 I/O，并且主要侧重于...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -226,7 +226,7 @@
 <!--more-->
 
 <h1 id="blocking-io">Blocking I/O</h1>
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/15003778419199.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003778419199.jpg" alt="" /></p>
 
 <p>在 Linux 中所有的 socket 文件描述符默认都是 blocking 的，一个典型的网络 socket 文件描述符的 read 操作的流程如上图所示。</p>
 
@@ -239,7 +239,7 @@
 <h1 id="non-blocking-io">Non-blocking I/O</h1>
 <p>Linux 系统中可以在调用 <code class="highlighter-rouge">open</code> 函数打开 socket 文件时或者调用 <code class="highlighter-rouge">fcntl</code> 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/15003788703867.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003788703867.jpg" alt="" /></p>
 
 <p>在 non-blocking I/O 的情境下，当用户进程调用 read 系统调用函数时，如果 kernel 中的数据没有准备好，那么系统并不会 block 用户进程，而是立即返回一个 error。</p>
 
@@ -252,7 +252,7 @@
 <h1 id="io-multiplexing">I/O Multiplexing</h1>
 <p><code class="highlighter-rouge">I/O multiplexing</code> 就是我们经常说的 <strong>select</strong>、<strong>poll</strong>和<strong>epoll</strong>，有些地方也称这种 I/O 方式为 <code class="highlighter-rouge">event driven I/O</code>。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/15003804947449.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003804947449.jpg" alt="" /></p>
 
 <p><strong>I/O multiplexing 的特点是通过一种机制让一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入可读的就绪状态，select/poll/epoll函数就可以立即返回。</strong></p>
 
@@ -263,7 +263,7 @@
 <p>在 <code class="highlighter-rouge">I/O multiplexing</code> 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。</p>
 
 <h1 id="signal-driven-io">Signal Driven I/O</h1>
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/15003812004927.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003812004927.jpg" alt="" /></p>
 
 <p><strong>Signal Driven I/O</strong> 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 <code class="highlighter-rouge">SIGIO</code> 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。</p>
 
@@ -271,7 +271,7 @@
 
 <h1 id="asynchronous-io">Asynchronous I/O</h1>
 <p>Linux 系统中 Asynchronous I/O 的操作流程如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/15003826926363.jpg" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003826926363.jpg" alt="" /></p>
 
 <p>用户进程通过 <code class="highlighter-rouge">aio_read()</code> 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 <strong>asynchronous read</strong>  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。</p>
 
@@ -330,7 +330,7 @@
   
     
     
-      <a href="//twitter.com/share?text=Linux+I%2FO+%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Linux+I%2FO+%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -345,7 +345,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Linux+I%2FO+%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html"
+      <a href="//www.facebook.com/sharer.php?t=Linux+I%2FO+%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3&u=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -370,7 +370,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -394,7 +394,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Linux+I%2FO+%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+I%2FO+%E6%A8%A1%E5%9E%8B%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2017%2F07%2F10%2FLinux-IO%25E6%25A8%25A1%25E5%259E%258B.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

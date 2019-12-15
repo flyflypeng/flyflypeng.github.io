@@ -10,7 +10,7 @@
   <meta name="description" content="简介当第一次在网上看到虚拟激光键盘时，我真的被震惊到了，觉得这键盘好科幻好酷炫啊，完全就是电影里的未来高科技的赶脚啊。看到这么酷炫高达上的东西，其实心中早已按倷不住了，要不自己就动手DIY一个？于是，就在网上各种搜索查找相关的资料，找到一个写得很详细图文并茂的的一个教程，低成本激光投射虚拟键盘的设计制作-上(原理...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="简介当第一次在网上看到虚拟激光键盘时，我真的被震惊到了，觉得这键盘好科幻好酷炫啊，完全就是电影里的未来高科技的赶脚啊。看到这么酷炫高达上的东西，其实心中早已按倷不住了，要不自己就动手DIY一个？于是，就在网上各种搜索查找相关的资料，找到一个写得很详细图文并茂的的一个教程，低成本激光投射虚拟键盘的设计制作-上(原理..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android 虚拟激光键盘设计及实现" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Android 虚拟激光键盘设计及实现">
   <meta name="twitter:description" content="简介当第一次在网上看到虚拟激光键盘时，我真的被震惊到了，觉得这键盘好科幻好酷炫啊，完全就是电影里的未来高科技的赶脚啊。看到这么酷炫高达上的东西，其实心中早已按倷不住了，要不自己就动手DIY一个？于是，就在网上各种搜索查找相关的资料，找到一个写得很详细图文并茂的的一个教程，低成本激光投射虚拟键盘的设计制作-上(原理...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/android/2015/05/18/Android-Virtual-Keyboard.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/android/2015/05/18/Android-Virtual-Keyboard.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -196,13 +196,13 @@
 </section>
 
 <article class="post-content">
-  <p><img src="http://7xj51c.com1.z0.glb.clouddn.com/android_vkb_header.jpeg" alt="Android_VKB" /></p>
+  <p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/android_vkb_header.jpeg" alt="Android_VKB" /></p>
 
 <h2 id="简介">简介</h2>
 
 <p>当第一次在网上看到虚拟激光键盘时，我真的被震惊到了，觉得这键盘好科幻好酷炫啊，完全就是电影里的未来高科技的赶脚啊。看到这么酷炫高达上的东西，其实心中早已按倷不住了，要不自己就动手DIY一个？于是，就在网上各种搜索查找相关的资料，找到一个写得很详细图文并茂的的一个教程，<a href="http://www.csksoft.net/blog/post/lowcost.laserkbd_part1.html">低成本激光投射虚拟键盘的设计制作-上(原理和硬件)</a>和<a href="http://www.csksoft.net/blog/post/lowcost.laserkbd_part2.html">低成本激光投射虚拟键盘的设计制作-下(算法与实现)</a>，我也在<a href="http://www.robopeak.com">RoboPeak公司</a>的产品中看到了这款虚拟激光键盘的产品（其实这家公司是做国内开源硬件和机器人平台的公司，我觉得它们的很多产品都非常有创新性）。</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/celluon.jpg" alt="celluon" />
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/celluon.jpg" alt="celluon" />
 当然我也在淘宝上搜过有关虚拟激光键盘的产品，网上在售的主要是韩国Celluon公司的产品（如上图所示，价格在800-1000左右）和国内深圳某公司生产的与之相似的产品（价格只有200-300），它们都是基于蓝牙连接技术的键盘，只要你的设备支持蓝牙与其连接，智能手机、平板电脑、台式电脑、笔记本电脑也都可以使用。总之，虚拟激光键盘技术已经很成熟了，并且蓝牙技术也使得平台兼容性得到很好地解决。</p>
 
 <p>现在移动办公的概念也离我们越来越近，只要一个手机或平板连上WIFI，就能随时随地进种处理各种事务，但是对于移动办公来说，文本文件和图表文件的处理是主要的业务需求，而现在的手机中自带的触屏输入系统存在着输入速度慢、键盘按键小、误输率高等缺点，所以能不能将虚拟激光键盘和移动设备结合在一起，将虚拟激光键盘内置到移动设备中作为其内置的一个输入功能，解决移动设备中触屏输入的缺点呢？于是，我就决定做这么一个基于Android系统的虚拟激光键盘，但这只是一个功能模型，如果能够将各个部件缩小化，然后将其嵌入到移动设备中，上面的设想也就能够实现了。</p>
@@ -221,9 +221,9 @@
 <p><strong>产生键盘画面</strong></p>
 
 <p>如果你小时候也和我一样玩过下面这种激光笔的话，相信你就知道我们的键盘图案是怎么产生了
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/laser_pen.jpg" alt="laser_pen" />
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/laser_pen.jpg" alt="laser_pen" />
 实际上在激光投影键盘产品中，这类画面往往是通过全息投影技术得到的。激光器通过照射先前保存有键盘画面的全息镜片的方式在目标平面上产生相应的画面。还好现在我们有万能的淘宝，我们可以买到这样的<a href="http://item.taobao.com/item.htm?spm=2013.1.20141002.4.jUiGXj&amp;scm=1007.10009.6098.i20236940692&amp;id=10243870309&amp;pvid=879b9fb6-56c1-49b1-955a-2ea3cc753913">激光键盘投射器</a>。Ok，键盘图案就可以通过这个模块很简单地实现了。
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/键盘投射器.jpg" alt="激光键盘发射器" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/键盘投射器.jpg" alt="激光键盘发射器" /></p>
 
 <p><strong>识别按键事件</strong></p>
 
@@ -239,17 +239,17 @@
 
 <p>这3种方案国内外均有文献表明可以实现，不过相对来说计算机视觉的硬件较为简单，仅仅需要一个摄像头，因此这里我们采用这种方式。
 下面这张图是我在Ubuntu系统中通过OpenCV实现虚拟激光键盘的截图
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/一个按键检测.png" alt="一个按键检测" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/一个按键检测.png" alt="一个按键检测" /></p>
 
 <p>在左边“Source Frame”窗口中的图像中，我接触到桌面的手指指尖有一个白色光斑，我们就可以用通过视觉处理技术在视频画面中捕捉到这样的亮斑来确定用户的按键事件，那么这个是怎么实现的呢？
 这里我们就需要另一个器件: <a href="http://item.taobao.com/item.htm?spm=a1z09.2.9.64.4FcIi3&amp;id=20236940692&amp;_u=imi3dfvf487">一字线型激光</a>
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/一字线型激光.jpg" alt="一字线型激光" />
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/一字线型激光.jpg" alt="一字线型激光" />
 它与我们平时常见的激光笔有所不同，我们平时激光笔产生的是一个点，而我们这个一字线型激光它发出的激光产生的是一个平面。我们将线型激光安装平行于桌面，这样它产生的光线就会平行紧贴于桌面之上。此时若手指接近桌面，则会阻挡住激光的通路，产生反射，反射的光点画面会被图中摄像头拍摄到。我们前面的一张图中的白色光斑，正是安装了线激光器后被手指遮挡产生的反射效果。下面这张图就很形象地给出了白色光斑产生的原理: 
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/亮斑产生.gif" alt="亮斑产生原理" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/亮斑产生.gif" alt="亮斑产生原理" /></p>
 
 <p><strong>好了，现在我们也可以通过图像处理来获得用户按键的事件，那么我们怎么判断具体按下的是那个键呢？</strong>
 还是通过这张图来说明按键识别的过程
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/一个按键检测1.png" alt="一个按键检测1" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/一个按键检测1.png" alt="一个按键检测1" /></p>
 
 <p>当我们在桌面上按下某个按键时，这是在摄像头中我们就能捕获到如上图中“Source Frame”窗口中的画面，其中我们按下的位置指尖将会有一个白色光斑，这个就是我们对这张图片最感兴趣的点，而图片中的其他信息我们并不需要，所以可以通过灰度化，阈值化，形态学等图像处理操作来获得我们最感兴趣的指尖，得到如“Result Frame”中的只包含指尖白色光斑的图像。但是，有时我们的图像中可能会有其他的干扰白色光斑，就像图中左侧的干扰光斑。不过，我们可以通过截取我们键盘所在区域作为我们的刚兴趣区域进行识别处理，例如图中“InterestRegion“窗口就是在原图中截取出来的键盘所在的矩形区域，并且我这里通过一个最小包络矩形包围了我们所检测到的指尖白色光斑，并将包络矩形的中心作为我们的指尖的坐标。</p>
 
@@ -259,7 +259,7 @@
 
 <p>我也对作者提到的3D激光测距原理进行了分析，但是我总觉得这个过程有点复杂（最起码我看他画的3D测距的原理图我就看得头都大了），所以我放弃了这种检测按键位置的方法。现在这种方法也是我有一天在使用Matlab进行摄像头标定时突然间想到的一个方法，既然我在获得指尖坐标是在图像坐标系中的像素坐标，那么我为什么不可以将该坐标映射到经过摄像头畸变校正后的键盘图像中每个按键的在图像坐标系中的坐标呢?有时让你很头疼的问题，解决办法就是这么简单。</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/按键识别过程.png" alt="按键识别过程" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/按键识别过程.png" alt="按键识别过程" /></p>
 
 <p>其实这个方法通俗点讲就是: 如上图所示，我们按下的某个键时所产生的白色光斑在图像校正后的坐标是（20,25），而我们‘q’键在图像中的矩形区域的左上角坐标为（15,20），右下角的坐标为（25,30），那么我们判断可知指尖坐标位于‘q’键的矩形区域内，因此可以确定用户此时按下的键就是‘q’键。</p>
 
@@ -271,20 +271,20 @@
 
 <p><strong>总体框架图</strong></p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/激光键盘流程.png" alt="总体框架图" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/激光键盘流程.png" alt="总体框架图" /></p>
 
 <h2 id="模块器件选择">模块器件选择</h2>
 <p>| 器件 | 核心参数 | 购买链接 | 图片 |
 |——–|——–|——-|——|
-|  USB广角摄像头   |    可拍摄角度 &gt;= 150度    | <a href="http://item.taobao.com/item.htm?spm=a1z0k.7385961.1997985097.d4918997.tOVHRc&amp;id=44356048924&amp;_u=imi3dfvbb9f">广角摄像头</a> | <img src="http://7xj51c.com1.z0.glb.clouddn.com/广角摄像头.jpg" alt="广角摄像头" /> |
-|  激光键盘发射器   |    无特殊要求             | <a href="http://item.taobao.com/item.htm?spm=2013.1.20141002.4.jUiGXj&amp;scm=1007.10009.6098.i20236940692&amp;id=10243870309&amp;pvid=879b9fb6-56c1-49b1-955a-2ea3cc753913">激光键盘发射器</a> | <img src="http://7xj51c.com1.z0.glb.clouddn.com/键盘投射器.jpg" alt="激光键盘发射器" /> |
-|  一字线型激光     |    红外激光器    |  <a href="http://item.taobao.com/item.htm?spm=a1z09.2.9.64.4FcIi3&amp;id=20236940692&amp;_u=imi3dfvf487">一字线型激光</a> | <img src="http://7xj51c.com1.z0.glb.clouddn.com/一字线型激光.jpg" alt="一字线型激光" /> |
-|  红外带通滤光片   |    800nm左右光谱带通   | <a href="http://item.taobao.com/item.htm?spm=a1z09.2.9.75.4FcIi3&amp;id=8756969933&amp;_u=imi3dfvaedf">红外带通滤光片</a> | <img src="http://7xj51c.com1.z0.glb.clouddn.com/滤光片.jpg" alt="红外滤光片" /> |</p>
+|  USB广角摄像头   |    可拍摄角度 &gt;= 150度    | <a href="http://item.taobao.com/item.htm?spm=a1z0k.7385961.1997985097.d4918997.tOVHRc&amp;id=44356048924&amp;_u=imi3dfvbb9f">广角摄像头</a> | <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/广角摄像头.jpg" alt="广角摄像头" /> |
+|  激光键盘发射器   |    无特殊要求             | <a href="http://item.taobao.com/item.htm?spm=2013.1.20141002.4.jUiGXj&amp;scm=1007.10009.6098.i20236940692&amp;id=10243870309&amp;pvid=879b9fb6-56c1-49b1-955a-2ea3cc753913">激光键盘发射器</a> | <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/键盘投射器.jpg" alt="激光键盘发射器" /> |
+|  一字线型激光     |    红外激光器    |  <a href="http://item.taobao.com/item.htm?spm=a1z09.2.9.64.4FcIi3&amp;id=20236940692&amp;_u=imi3dfvf487">一字线型激光</a> | <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/一字线型激光.jpg" alt="一字线型激光" /> |
+|  红外带通滤光片   |    800nm左右光谱带通   | <a href="http://item.taobao.com/item.htm?spm=a1z09.2.9.75.4FcIi3&amp;id=8756969933&amp;_u=imi3dfvaedf">红外带通滤光片</a> | <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/滤光片.jpg" alt="红外滤光片" /> |</p>
 
 <h2 id="技术路线">技术路线</h2>
 
 <p>总体技术路线图
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/Android虚拟激光键盘技术路线图.png" alt="Android虚拟激光键盘技术路线图" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/Android虚拟激光键盘技术路线图.png" alt="Android虚拟激光键盘技术路线图" /></p>
 
 <p><strong>1. 硬件电路设计与制作</strong>
 制作稳压电路板，为键盘投射器，一字线型激光器和摄像头供电</p>
@@ -350,7 +350,7 @@
   
     
     
-      <a href="//twitter.com/share?text=Android+%E8%99%9A%E6%8B%9F%E6%BF%80%E5%85%89%E9%94%AE%E7%9B%98%E8%AE%BE%E8%AE%A1%E5%8F%8A%E5%AE%9E%E7%8E%B0&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+%E8%99%9A%E6%8B%9F%E6%BF%80%E5%85%89%E9%94%AE%E7%9B%98%E8%AE%BE%E8%AE%A1%E5%8F%8A%E5%AE%9E%E7%8E%B0&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -365,7 +365,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+%E8%99%9A%E6%8B%9F%E6%BF%80%E5%85%89%E9%94%AE%E7%9B%98%E8%AE%BE%E8%AE%A1%E5%8F%8A%E5%AE%9E%E7%8E%B0&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+%E8%99%9A%E6%8B%9F%E6%BF%80%E5%85%89%E9%94%AE%E7%9B%98%E8%AE%BE%E8%AE%A1%E5%8F%8A%E5%AE%9E%E7%8E%B0&u=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -390,7 +390,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -414,7 +414,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E8%99%9A%E6%8B%9F%E6%BF%80%E5%85%89%E9%94%AE%E7%9B%98%E8%AE%BE%E8%AE%A1%E5%8F%8A%E5%AE%9E%E7%8E%B0&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html&media=http://localhost:4000/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E8%99%9A%E6%8B%9F%E6%BF%80%E5%85%89%E9%94%AE%E7%9B%98%E8%AE%BE%E8%AE%A1%E5%8F%8A%E5%AE%9E%E7%8E%B0&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2015%2F05%2F18%2FAndroid-Virtual-Keyboard.html&media=http://woshijpf.github.io/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

@@ -10,7 +10,7 @@
   <meta name="description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android HAL 层原理分析" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Android HAL 层原理分析">
   <meta name="twitter:description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -199,7 +199,7 @@
   <h2 id="android-hal-简介">Android HAL 简介</h2>
 <p>Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/20170324149036043728849.png" alt="20170324149036043728849.png" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170324149036043728849.png" alt="20170324149036043728849.png" /></p>
 
 <!--more-->
 
@@ -591,7 +591,7 @@
 
 <h2 id="总结">总结</h2>
 <p>理解 Android HAL 层最关键的还是要弄清楚 hw_module_t 、 hw_device_t、 hw_module_methods_t 这三个结构体的含义即关系，以及如何基于这三个结构体来实现特定硬件的<strong>硬件模块结构体</strong>、<strong>硬件设备结构体</strong>、<strong>硬件模块方法列表结构体</strong>。其实从面向对象编程的角度来考虑，前面三者和后面三者之间的关系，就好比是父类和子类的关系，如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/android_hal_architecture.jpg" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/android_hal_architecture.jpg" alt="" /></p>
 
 <p>后面，我可能会写一片关于 Android 系统加载 HAL 模块的文章。</p>
 
@@ -620,7 +620,7 @@
   
     
     
-      <a href="//twitter.com/share?text=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -635,7 +635,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&u=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -660,7 +660,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -684,7 +684,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F03%2F25%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html&media=http://woshijpf.github.io/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

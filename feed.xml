@@ -4,10 +4,10 @@
     <title>Fly Higher's Blog</title>
     <description>Do one thing and do it well.
 </description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 22 Nov 2018 00:24:40 +0800</pubDate>
-    <lastBuildDate>Thu, 22 Nov 2018 00:24:40 +0800</lastBuildDate>
+    <link>http://woshijpf.github.io/</link>
+    <atom:link href="http://woshijpf.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Mon, 16 Dec 2019 00:16:56 +0800</pubDate>
+    <lastBuildDate>Mon, 16 Dec 2019 00:16:56 +0800</lastBuildDate>
     <generator>Jekyll v3.5.0</generator>
     
       <item>
@@ -90,8 +90,8 @@
 &lt;/div&gt;
 </description>
         <pubDate>Wed, 21 Nov 2018 08:12:33 +0800</pubDate>
-        <link>http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</guid>
+        <link>http://woshijpf.github.io/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</guid>
         
         <category>虚拟化</category>
         
@@ -129,7 +129,7 @@
 &lt;h2 id=&quot;2-android-中-opengl-es-软件层次栈&quot;&gt;2. Android 中 OpenGL ES 软件层次栈&lt;/h2&gt;
 &lt;p&gt;按照分层理念的设计，Android 中的 OpenGL ES 实现也是层次设计的，形成一个软件层次栈。最上面的是 Java 层，接着下面是 JNI 层，再调用下面的 wrapper 层，wrapper 层下面则是 OpenGL ES API 的具体软件实或者硬件实现了。整个 OpenGL 软件层次栈的调用关系如下所示：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/OpenGL_ES_call_graph.png&quot; alt=&quot;OpenGL 软件层次栈&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/OpenGL_ES_call_graph.png&quot; alt=&quot;OpenGL 软件层次栈&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;21-opengl-esegl-wrapper-库&quot;&gt;2.1 OpenGL ES/EGL Wrapper 库&lt;/h3&gt;
 &lt;p&gt;前面我们已经介绍过 OpenGL ES/EGL Wrapper 库是一个将 OpenGL ES API 和 OpenGL ES API 具体实现绑定在一起的库，它对应的源码路径是：&lt;em&gt;/frameworks/native/opengl/libs/&lt;/em&gt;，其中:&lt;/p&gt;
@@ -682,8 +682,8 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
 
 </description>
         <pubDate>Tue, 05 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
+        <link>http://woshijpf.github.io/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
         
         <category>Android</category>
         
@@ -765,7 +765,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 &lt;p&gt;而&lt;strong&gt;光栅化&lt;/strong&gt;是把点、线、三角形映射到屏幕上的像素点的过程。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453148671075.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170904150453148671075.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&quot;着色器程序shader&quot;&gt;着色器程序（Shader）&lt;/h4&gt;
 
@@ -783,10 +783,10 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;OpenGL 中有两种流水线，一种是固定流水线，另外一种则是可编程流水线。&lt;/p&gt;
 
 &lt;p&gt;其中，OpenGL 1.0 版本支持固定流水线。其结构如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_1x_pipeline.gif&quot; alt=&quot;OpenGL 1.0 固定流水线&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/opengles_1x_pipeline.gif&quot; alt=&quot;OpenGL 1.0 固定流水线&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;从OpenGL 2.0版本开始，OpenGL支持可编程的流水线。也就是说，程序员可以通过Shader（一种程序）来控制GPU渲染的过程。
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/opengles_20_pipeline2.gif&quot; alt=&quot;OpenGL 2.0 可编程流水线&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/opengles_20_pipeline2.gif&quot; alt=&quot;OpenGL 2.0 可编程流水线&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;egl&quot;&gt;EGL&lt;/h2&gt;
 
@@ -806,7 +806,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 &lt;h3 id=&quot;使用-egl-绘图的基本步骤&quot;&gt;使用 EGL 绘图的基本步骤&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15038887630772.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15038887630772.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;Display(EGLDisplay) 是对实际显示设备的抽象。&lt;/li&gt;
@@ -833,7 +833,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 &lt;h2 id=&quot;opengl-es-和-egl-的联系&quot;&gt;OpenGL ES 和 EGL 的联系&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170904150453844639965.png&quot; alt=&quot;20170904150453844639965.png&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170904150453844639965.png&quot; alt=&quot;20170904150453844639965.png&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;一个类比的例子&quot;&gt;一个类比的例子&lt;/h3&gt;
 
@@ -875,8 +875,8 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;/div&gt;
 </description>
         <pubDate>Mon, 04 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        <link>http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
         
         <category>Android</category>
         
@@ -923,7 +923,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;!--more--&gt;
 
 &lt;h1 id=&quot;blocking-io&quot;&gt;Blocking I/O&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003778419199.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003778419199.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在 Linux 中所有的 socket 文件描述符默认都是 blocking 的，一个典型的网络 socket 文件描述符的 read 操作的流程如上图所示。&lt;/p&gt;
 
@@ -936,7 +936,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;h1 id=&quot;non-blocking-io&quot;&gt;Non-blocking I/O&lt;/h1&gt;
 &lt;p&gt;Linux 系统中可以在调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数打开 socket 文件时或者调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;fcntl&lt;/code&gt; 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003788703867.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003788703867.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在 non-blocking I/O 的情境下，当用户进程调用 read 系统调用函数时，如果 kernel 中的数据没有准备好，那么系统并不会 block 用户进程，而是立即返回一个 error。&lt;/p&gt;
 
@@ -949,7 +949,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;h1 id=&quot;io-multiplexing&quot;&gt;I/O Multiplexing&lt;/h1&gt;
 &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 就是我们经常说的 &lt;strong&gt;select&lt;/strong&gt;、&lt;strong&gt;poll&lt;/strong&gt;和&lt;strong&gt;epoll&lt;/strong&gt;，有些地方也称这种 I/O 方式为 &lt;code class=&quot;highlighter-rouge&quot;&gt;event driven I/O&lt;/code&gt;。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003804947449.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003804947449.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;I/O multiplexing 的特点是通过一种机制让一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入可读的就绪状态，select/poll/epoll函数就可以立即返回。&lt;/strong&gt;&lt;/p&gt;
 
@@ -960,7 +960,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。&lt;/p&gt;
 
 &lt;h1 id=&quot;signal-driven-io&quot;&gt;Signal Driven I/O&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003812004927.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003812004927.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。&lt;/p&gt;
 
@@ -968,7 +968,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 &lt;h1 id=&quot;asynchronous-io&quot;&gt;Asynchronous I/O&lt;/h1&gt;
 &lt;p&gt;Linux 系统中 Asynchronous I/O 的操作流程如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/15003826926363.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003826926363.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;用户进程通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;aio_read()&lt;/code&gt; 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 &lt;strong&gt;asynchronous read&lt;/strong&gt;  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。&lt;/p&gt;
 
@@ -1009,8 +1009,8 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 </description>
         <pubDate>Tue, 11 Jul 2017 03:55:24 +0800</pubDate>
-        <link>http://localhost:4000/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html</link>
-        <guid isPermaLink="true">http://localhost:4000/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html</guid>
+        <link>http://woshijpf.github.io/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html</guid>
         
         <category>Linux</category>
         
@@ -1037,7 +1037,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;在这里补充一下， X86 处理器有两种运行模式一种是实模式，另外一种是保护模式，它们两者之间最主要的区别就是：实模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分段&lt;/strong&gt;方式（也就是&lt;strong&gt;段基址：段内便宜&lt;/strong&gt;），生成的是可以直接访问物理内存的&lt;strong&gt;物理地址&lt;/strong&gt;，而保护模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分页&lt;/strong&gt;方式，生成的是&lt;strong&gt;虚拟地址&lt;/strong&gt;，不能直接访问物理内存，需要通过 &lt;strong&gt;MMU&lt;/strong&gt; 硬件将虚拟地址转换为物理地址后才能访问物理内存。&lt;/p&gt;
 
 &lt;p&gt;X86 实模式下物理内存映射空间结构如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14983994852650.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14983994852650.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -1061,7 +1061,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;MBR（Master Boot Record）扇区是启动磁盘中的第 1 个扇区，它主要由三部分组成：第一部分是一段引导程序，主要用来加载启动内核所需 Bootloader 程序；第二部分是当前启动磁盘的分区表；第三部分是标识 MBR 扇区的魔数 &lt;strong&gt;0x55&lt;/strong&gt; 和 &lt;strong&gt;0xAA&lt;/strong&gt;。&lt;/p&gt;
 
 &lt;p&gt;MBR 分区组成结构如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984029056904.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984029056904.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;bootloader-加载程序&quot;&gt;Bootloader 加载程序&lt;/h2&gt;
 &lt;p&gt;Bootloader 是一段用来将 Linux Kernel 镜像文件加载到物理内存中指定地址的程序，这里所指的 Bootloader 是广义上概念，其实它还可以细分成两个独立的 bootloader：&lt;/p&gt;
@@ -1087,7 +1087,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;/ol&gt;
 
 &lt;p&gt;x86 系统中 Bootloader 加载内核启动的过程，如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984058448893.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984058448893.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;linux-kernel-镜像&quot;&gt;Linux Kernel 镜像&lt;/h1&gt;
 
@@ -1121,7 +1121,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;h2 id=&quot;linux-kernel-镜像生成过程&quot;&gt;Linux Kernel 镜像生成过程&lt;/h2&gt;
 &lt;p&gt;一个可以被&lt;strong&gt;加载启动&lt;/strong&gt;的 Linux 内核镜像除了包含上面介绍的最基本的压缩或者未被压缩的编译好的 Linux Kernel 镜像目标文件之外，还包含一个文件头部分和末尾的CRC校验码部分，它的结构如下图所示：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/Linux-kernel-boot-image.png&quot; alt=&quot;Linux-kernel-boot-image&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/Linux-kernel-boot-image.png&quot; alt=&quot;Linux-kernel-boot-image&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：如上图所示的内核镜像中，&lt;strong&gt;boot/setup.bin&lt;/strong&gt; 是实模式下执行的代码，&lt;strong&gt;boo/vmlinux.bin&lt;/strong&gt; 则是保护模式下执行的代码。&lt;/p&gt;
 
@@ -1145,7 +1145,7 @@ Kernel: arch/x86/boot/bzImage is ready  &lt;span class=&quot;o&quot;&gt;(&lt;/sp
 
 &lt;p&gt;整个从 vmlinux 内核镜像文件生成一个可被加载启动的内核镜像文件的过程可以用下面这张图来描述：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984462874879.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984462874879.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;有关 x86 架构 Linux Kernel 启动相关的具体细节可以查看内核源码中的文档：&lt;a href=&quot;https://www.kernel.org/doc/Documentation/x86/boot.txt&quot;&gt;THE LINUX/x86 BOOT PROTOCOL&lt;/a&gt;&lt;/p&gt;
 
@@ -1153,7 +1153,7 @@ Kernel: arch/x86/boot/bzImage is ready  &lt;span class=&quot;o&quot;&gt;(&lt;/sp
 
 &lt;p&gt;Bootloader 将内核镜像加载到物理内存之后，内存的布局如下所示：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984488084415.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984488084415.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;整个Linux Kernel 的加载过程就是对 Linux Kernel 镜像分阶段加载，然后在实模式中进行一些基本硬件的设置，建立页表等操作之后，跳转到保护模式下的内核入口开始执行。&lt;/p&gt;
 
@@ -1345,7 +1345,7 @@ SECTIONS
 
 &lt;p&gt;至此，Linux Kernel 的加载过程就分析完毕了，整个过程可以用下面这张图来总结一下：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14984654332695.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984654332695.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;参考文章&quot;&gt;参考文章&lt;/h1&gt;
 
@@ -1364,8 +1364,8 @@ SECTIONS
 
 </description>
         <pubDate>Tue, 27 Jun 2017 00:35:33 +0800</pubDate>
-        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</guid>
+        <link>http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</guid>
         
         <category>内核</category>
         
@@ -1378,7 +1378,7 @@ SECTIONS
     
       <item>
         <title>ramfs, tmpfs, rootfs, initramfs的区别</title>
-        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/14973695337147.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+        <description>&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14973695337147.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;什么是文件系统&quot;&gt;什么是文件系统？&lt;/h1&gt;
 
@@ -1467,8 +1467,8 @@ SECTIONS
 
 </description>
         <pubDate>Wed, 14 Jun 2017 08:00:51 +0800</pubDate>
-        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</guid>
+        <link>http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</guid>
         
         <category>ramfs</category>
         
@@ -1492,7 +1492,7 @@ SECTIONS
         <description>&lt;h2 id=&quot;android-hal-简介&quot;&gt;Android HAL 简介&lt;/h2&gt;
 &lt;p&gt;Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/20170324149036043728849.png&quot; alt=&quot;20170324149036043728849.png&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170324149036043728849.png&quot; alt=&quot;20170324149036043728849.png&quot; /&gt;&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -1884,7 +1884,7 @@ SECTIONS
 
 &lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
 &lt;p&gt;理解 Android HAL 层最关键的还是要弄清楚 hw_module_t 、 hw_device_t、 hw_module_methods_t 这三个结构体的含义即关系，以及如何基于这三个结构体来实现特定硬件的&lt;strong&gt;硬件模块结构体&lt;/strong&gt;、&lt;strong&gt;硬件设备结构体&lt;/strong&gt;、&lt;strong&gt;硬件模块方法列表结构体&lt;/strong&gt;。其实从面向对象编程的角度来考虑，前面三者和后面三者之间的关系，就好比是父类和子类的关系，如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/android_hal_architecture.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/android_hal_architecture.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;后面，我可能会写一片关于 Android 系统加载 HAL 模块的文章。&lt;/p&gt;
 
@@ -1895,8 +1895,8 @@ SECTIONS
 
 </description>
         <pubDate>Sun, 26 Mar 2017 03:56:24 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</guid>
+        <link>http://woshijpf.github.io/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</guid>
         
         <category>HAL</category>
         
@@ -1923,7 +1923,7 @@ SECTIONS
 &lt;p&gt;上面的介绍我觉得已经解释地非常清楚了，我再扩展地补充一下：Android NDK 本质上是一套&lt;code class=&quot;highlighter-rouge&quot;&gt;交叉编译工具集&lt;/code&gt;，它可以将 C/C++ 源码编译成适用于不同硬件平台的&lt;code class=&quot;highlighter-rouge&quot;&gt;库文件&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;可执行文件&lt;/code&gt;，而这些库文件和可执行文件可以被上层的基于 Java 语言编写的 APP 加载调用，从而实现了 C/C++ 源码在 APP 中的复用。&lt;/p&gt;
 
 &lt;p&gt;下面这幅图就非常简洁地体现了 NDK 的用途：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/Screen%20Shot%202016-12-15%20at%209.02.21%20PM.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/Screen%20Shot%202016-12-15%20at%209.02.21%20PM.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;!--more--&gt;
 
@@ -2164,8 +2164,8 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 
 </description>
         <pubDate>Sat, 17 Dec 2016 18:39:07 +0800</pubDate>
-        <link>http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</guid>
+        <link>http://woshijpf.github.io/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</guid>
         
         <category>NDK</category>
         
@@ -2180,7 +2180,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
     
       <item>
         <title>单生产者和单消费者共同操作同一个环形缓冲区的问题</title>
-        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/circular_buffer.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+        <description>&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/circular_buffer.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;问题描述&quot;&gt;问题描述&lt;/h1&gt;
 
@@ -2253,8 +2253,8 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 
 </description>
         <pubDate>Wed, 14 Dec 2016 08:58:26 +0800</pubDate>
-        <link>http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</link>
-        <guid isPermaLink="true">http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</guid>
+        <link>http://woshijpf.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</guid>
         
         <category>同步</category>
         
@@ -2271,7 +2271,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
     
       <item>
         <title>Ubuntu 软件源详解</title>
-        <description>&lt;p&gt;&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/ubuntu_logo.png&quot; alt=&quot;ubuntu_logo&quot; /&gt;&lt;/p&gt;
+        <description>&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/ubuntu_logo.png&quot; alt=&quot;ubuntu_logo&quot; /&gt;&lt;/p&gt;
 &lt;h1 id=&quot;什么是软件源&quot;&gt;什么是软件源？&lt;/h1&gt;
 &lt;h2 id=&quot;ubuntu-中安装软件的方式&quot;&gt;Ubuntu 中安装软件的方式&lt;/h2&gt;
 &lt;p&gt;在 Ubuntu 中软件安装的方式和 Windows 系统中双击 exe 文件的傻瓜式软件安装的方式有很大的不同，它主要可以分为下面三种安装方式：&lt;/p&gt;
@@ -2354,7 +2354,7 @@ deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main univ
 &lt;/ul&gt;
 
 &lt;p&gt;例如，我们想要添加一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;Wireshark&lt;/code&gt; 软件的 PPA 源，我们可以根据它官网上提供的命令来进行添加，如下图所示：
-&lt;img src=&quot;http://7xj51c.com1.z0.glb.clouddn.com/test.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/test.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;当我们添加完 PPA 源之后，系统就会在 &lt;em&gt;/etc/apt/sources.list.d/&lt;/em&gt; 文件夹里创建了两个文件：&lt;/p&gt;
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /etc/apt/sources.list.d
@@ -2374,8 +2374,8 @@ wireshark-dev-stable-trusty.list.save
 
 </description>
         <pubDate>Mon, 24 Oct 2016 06:53:49 +0800</pubDate>
-        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html</guid>
+        <link>http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html</guid>
         
         <category>PPA</category>
         

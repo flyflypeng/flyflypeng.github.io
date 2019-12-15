@@ -10,7 +10,7 @@
   <meta name="description" content="1. 前言今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。2. offsetof 宏2.1 宏的功能offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="1. 前言今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。2. offsetof 宏2.1 宏的功能offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Linux 内核源码中的 container_of 宏和 offsetof 宏分析" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Linux 内核源码中的 container_of 宏和 offsetof 宏分析">
   <meta name="twitter:description" content="1. 前言今天在看 Linux 内核源码中有关链表数据结构时，遇到到 container 宏和 offsetof 宏，然后跳转到其定义处，发觉它的定义的形式好陌生并难以理解，所以就作此笔记记录一下。2. offsetof 宏2.1 宏的功能offsetof 宏的功能就是获得结构体变量中的指定成员变量相对于结构体变...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/%E5%86%85%E6%A0%B8/2016/05/16/Linux-container-of-%E5%AE%8F%E5%92%8C-offsetof-%E5%AE%8F%E5%88%86%E6%9E%90.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2016/05/16/Linux-container-of-%E5%AE%8F%E5%92%8C-offsetof-%E5%AE%8F%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -386,7 +386,7 @@ container_of<span class="o">(</span>&amp;temp.j,struct <span class="nb">test</sp
   
     
     
-      <a href="//twitter.com/share?text=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -401,7 +401,7 @@ container_of<span class="o">(</span>&amp;temp.j,struct <span class="nb">test</sp
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.facebook.com/sharer.php?t=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -426,7 +426,7 @@ container_of<span class="o">(</span>&amp;temp.j,struct <span class="nb">test</sp
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -450,7 +450,7 @@ container_of<span class="o">(</span>&amp;temp.j,struct <span class="nb">test</sp
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E4%B8%AD%E7%9A%84+container_of+%E5%AE%8F%E5%92%8C+offsetof+%E5%AE%8F%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2016%2F05%2F16%2FLinux-container-of-%25E5%25AE%258F%25E5%2592%258C-offsetof-%25E5%25AE%258F%25E5%2588%2586%25E6%259E%2590.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

@@ -10,7 +10,7 @@
   <meta name="description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程">
   <meta name="twitter:description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -219,7 +219,7 @@
 <h2 id="2-android-中-opengl-es-软件层次栈">2. Android 中 OpenGL ES 软件层次栈</h2>
 <p>按照分层理念的设计，Android 中的 OpenGL ES 实现也是层次设计的，形成一个软件层次栈。最上面的是 Java 层，接着下面是 JNI 层，再调用下面的 wrapper 层，wrapper 层下面则是 OpenGL ES API 的具体软件实或者硬件实现了。整个 OpenGL 软件层次栈的调用关系如下所示：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/OpenGL_ES_call_graph.png" alt="OpenGL 软件层次栈" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/OpenGL_ES_call_graph.png" alt="OpenGL 软件层次栈" /></p>
 
 <h3 id="21-opengl-esegl-wrapper-库">2.1 OpenGL ES/EGL Wrapper 库</h3>
 <p>前面我们已经介绍过 OpenGL ES/EGL Wrapper 库是一个将 OpenGL ES API 和 OpenGL ES API 具体实现绑定在一起的库，它对应的源码路径是：<em>/frameworks/native/opengl/libs/</em>，其中:</p>
@@ -790,7 +790,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
   
     
     
-      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -805,7 +805,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&u=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -830,7 +830,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -854,7 +854,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&media=http://localhost:4000/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&media=http://woshijpf.github.io/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

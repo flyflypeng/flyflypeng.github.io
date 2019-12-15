@@ -10,7 +10,7 @@
   <meta name="description" content="本文是基于 Linux Kernel 4.4.49 版本内核源码中的 x86 32 位体系结构进行分析。BIOS 传统模式下的 X86 PC 启动过程什么是 BIOS？简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在 PC 设备中的只读存储器（ROM）中，主要完成...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="本文是基于 Linux Kernel 4.4.49 版本内核源码中的 x86 32 位体系结构进行分析。BIOS 传统模式下的 X86 PC 启动过程什么是 BIOS？简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在 PC 设备中的只读存储器（ROM）中，主要完成..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Linux 内核加载启动过程分析" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Linux 内核加载启动过程分析">
   <meta name="twitter:description" content="本文是基于 Linux Kernel 4.4.49 版本内核源码中的 x86 32 位体系结构进行分析。BIOS 传统模式下的 X86 PC 启动过程什么是 BIOS？简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在 PC 设备中的只读存储器（ROM）中，主要完成...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -208,7 +208,7 @@
 <p>在这里补充一下， X86 处理器有两种运行模式一种是实模式，另外一种是保护模式，它们两者之间最主要的区别就是：实模式下 CPU 访问内存的地址采用的是<strong>分段</strong>方式（也就是<strong>段基址：段内便宜</strong>），生成的是可以直接访问物理内存的<strong>物理地址</strong>，而保护模式下 CPU 访问内存的地址采用的是<strong>分页</strong>方式，生成的是<strong>虚拟地址</strong>，不能直接访问物理内存，需要通过 <strong>MMU</strong> 硬件将虚拟地址转换为物理地址后才能访问物理内存。</p>
 
 <p>X86 实模式下物理内存映射空间结构如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/14983994852650.jpg" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14983994852650.jpg" alt="" /></p>
 
 <!--more-->
 
@@ -232,7 +232,7 @@
 <p>MBR（Master Boot Record）扇区是启动磁盘中的第 1 个扇区，它主要由三部分组成：第一部分是一段引导程序，主要用来加载启动内核所需 Bootloader 程序；第二部分是当前启动磁盘的分区表；第三部分是标识 MBR 扇区的魔数 <strong>0x55</strong> 和 <strong>0xAA</strong>。</p>
 
 <p>MBR 分区组成结构如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/14984029056904.jpg" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984029056904.jpg" alt="" /></p>
 
 <h2 id="bootloader-加载程序">Bootloader 加载程序</h2>
 <p>Bootloader 是一段用来将 Linux Kernel 镜像文件加载到物理内存中指定地址的程序，这里所指的 Bootloader 是广义上概念，其实它还可以细分成两个独立的 bootloader：</p>
@@ -258,7 +258,7 @@
 </ol>
 
 <p>x86 系统中 Bootloader 加载内核启动的过程，如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/14984058448893.jpg" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984058448893.jpg" alt="" /></p>
 
 <h1 id="linux-kernel-镜像">Linux Kernel 镜像</h1>
 
@@ -292,7 +292,7 @@
 <h2 id="linux-kernel-镜像生成过程">Linux Kernel 镜像生成过程</h2>
 <p>一个可以被<strong>加载启动</strong>的 Linux 内核镜像除了包含上面介绍的最基本的压缩或者未被压缩的编译好的 Linux Kernel 镜像目标文件之外，还包含一个文件头部分和末尾的CRC校验码部分，它的结构如下图所示：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/Linux-kernel-boot-image.png" alt="Linux-kernel-boot-image" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/Linux-kernel-boot-image.png" alt="Linux-kernel-boot-image" /></p>
 
 <p><strong>注意</strong>：如上图所示的内核镜像中，<strong>boot/setup.bin</strong> 是实模式下执行的代码，<strong>boo/vmlinux.bin</strong> 则是保护模式下执行的代码。</p>
 
@@ -316,7 +316,7 @@ Kernel: arch/x86/boot/bzImage is ready  <span class="o">(</span><span class="c">
 
 <p>整个从 vmlinux 内核镜像文件生成一个可被加载启动的内核镜像文件的过程可以用下面这张图来描述：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/14984462874879.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984462874879.jpg" alt="" /></p>
 
 <p>有关 x86 架构 Linux Kernel 启动相关的具体细节可以查看内核源码中的文档：<a href="https://www.kernel.org/doc/Documentation/x86/boot.txt">THE LINUX/x86 BOOT PROTOCOL</a></p>
 
@@ -324,7 +324,7 @@ Kernel: arch/x86/boot/bzImage is ready  <span class="o">(</span><span class="c">
 
 <p>Bootloader 将内核镜像加载到物理内存之后，内存的布局如下所示：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/14984488084415.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984488084415.jpg" alt="" /></p>
 
 <p>整个Linux Kernel 的加载过程就是对 Linux Kernel 镜像分阶段加载，然后在实模式中进行一些基本硬件的设置，建立页表等操作之后，跳转到保护模式下的内核入口开始执行。</p>
 
@@ -516,7 +516,7 @@ SECTIONS
 
 <p>至此，Linux Kernel 的加载过程就分析完毕了，整个过程可以用下面这张图来总结一下：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/14984654332695.jpg" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984654332695.jpg" alt="" /></p>
 
 <h1 id="参考文章">参考文章</h1>
 
@@ -553,7 +553,7 @@ SECTIONS
   
     
     
-      <a href="//twitter.com/share?text=Linux+%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Linux+%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -568,7 +568,7 @@ SECTIONS
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Linux+%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.facebook.com/sharer.php?t=Linux+%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -593,7 +593,7 @@ SECTIONS
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -617,7 +617,7 @@ SECTIONS
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Linux+%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2586%2585%25E6%25A0%25B8%2F2017%2F06%2F26%2FLinux-%25E5%2586%2585%25E6%25A0%25B8%25E5%258A%25A0%25E8%25BD%25BD%25E5%2590%25AF%25E5%258A%25A8%25E8%25BF%2587%25E7%25A8%258B%25E5%2588%2586%25E6%259E%2590.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

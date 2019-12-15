@@ -10,7 +10,7 @@
   <meta name="description" content="1. 提高客户端屏幕显示的帧率作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。1.1 屏幕更新策略屏幕更新策略主要涉及到下面两个问题：  Server 端如何检测出屏幕画面发生了变化并生成显示更新？  Server 端何时将显示更新发送到 Cli...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="1. 提高客户端屏幕显示的帧率作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。1.1 屏幕更新策略屏幕更新策略主要涉及到下面两个问题：  Server 端如何检测出屏幕画面发生了变化并生成显示更新？  Server 端何时将显示更新发送到 Cli..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="VNC 性能提升方法" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="VNC 性能提升方法">
   <meta name="twitter:description" content="1. 提高客户端屏幕显示的帧率作为一款远程做桌面的产品，屏幕画面显示是否卡顿永远都是最重要的用户体验。因此，提高客户端上屏幕显示的帧率就至关重要。1.1 屏幕更新策略屏幕更新策略主要涉及到下面两个问题：  Server 端如何检测出屏幕画面发生了变化并生成显示更新？  Server 端何时将显示更新发送到 Cli...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/linux/2016/05/15/VNC-%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/linux/2016/05/15/VNC-%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -241,7 +241,7 @@
 <p>在 VNC 中实现的屏幕更新策略是<strong>客户端主动拉取式的懒惰更新策略</strong>。由于 VNC 是从 Framebuffer 层截获系统原始的屏幕像素数据，所以这一特点也决定了 VNC 只能采用<strong>懒惰的更新策略</strong>。而在显示更新驱动模式上，VNC 则采用了实现更为简单并能够根据网络状况来修改发送屏幕更新请求频率的<strong>客户端拉取的更新策略</strong>。</p>
 
 <p>但是 Client-Pull 的显示更新驱动模式存在一个明显的缺陷：相邻的显示更新之间存在不可消除的时间间隔，如下图所示。
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/client_pull_before.png" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/client_pull_before.png" alt="" /></p>
 
 <p>从上面的图中我们可以看出，如果在传输延迟比较大的情况下，Screen update time 的值就会变得很大，就会导致客户端屏幕显示的帧率下降出现卡顿的情况，用户体验变得很差。</p>
 
@@ -257,7 +257,7 @@
 <p>通过上面的分析，我们是否可以考虑下面这种方案：
 Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图像编码压缩好，一旦 Server 端接收到 Client 的屏幕更新请求，就马上将上一帧图像发送出去，其过程如下图所示：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/client_pull_after.png" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/client_pull_after.png" alt="" /></p>
 
 <p>其实，这种改进方案的效果就像是给 VNC 加了一个双缓冲，使其能够快速地回复 Client 的屏幕更新请求。</p>
 
@@ -266,7 +266,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
 
 <p>但是，计算屏幕图像修改区域需要花费额外的计算时间，因此，图像修改区域检测算法就是用来缩短这一段计算时间。修改区域检测算法所需要做的事情就是找出当前屏幕图像和上一帧图像之间存在差异的地方，如下图所示：</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/m_r_d.png" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/m_r_d.png" alt="" /></p>
 
 <h2 id="21-传统的基于屏幕扫描顺序的检测算法">2.1 传统的基于屏幕扫描顺序的检测算法</h2>
 <p>传统的图像修改区域检测算法是按照屏幕地扫描更新顺序（从左上角到右下角的顺序），依次对比当前帧图像和上一帧图像图像在同一个坐标位置的像素值，如果像素值不相同，那么则将这个像素点所在的矩形块标记为“脏矩形块”。</p>
@@ -275,7 +275,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
 
 <h2 id="22-分层修改区域检测算法">2.2 分层修改区域检测算法</h2>
 <p>这个算法的核心思想就是使用不同大小的采样矩形来检测采样矩形中是否存在相对于上一帧图像做了修改了的像素点，由于整个算法是按照二维进行展开搜索的，它相对于传统的按照一维顺序扫描检测算法快地多。整个算法可以分为 3 个步骤，相关示意图如下所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/algorithm_1.png" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/algorithm_1.png" alt="" /></p>
 
 <h3 id="step-1">step 1</h3>
 <p>首先，采用矩形的长和宽分别被设置成检测矩形大小的 1/4，然后在这个小的采样矩形块中采用传统的按照屏幕扫描顺序来依次对比其中的像素点是否发生了变化，如果是，那么整个算法停止，当前的检测矩形块就被标记为“脏矩形块”。否则，算法就接着执行下面的 step 2。</p>
@@ -292,7 +292,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
 <p>这种算法的核心思想也非常简单，简单描述一下就是：先按照 1,3,5,7……这样的奇数顺序，按照传统的扫描检测算法来对指定位置的像素点的像素值依次比较，如果发现有像素点相对于上一帧图像发生了变化，那么算法就停止，当前的检测矩形块就被标记为“脏矩形块”。否则的话，下一轮扫描就是按照 2,4,6,8……这样的偶数顺序来进行检测，发现有像素点相对于上一帧图像发生了变化，那么算法就停止，当前的检测矩形块就被标记为“脏矩形块”。如果还是没有发现修改的像素点，那么这个检测矩形就不会被标记为“脏矩形块”，在后续的处理中就会被跳过。</p>
 
 <p>整个算法思想，就是如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/algorithm_2.png" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/algorithm_2.png" alt="" /></p>
 
 <h1 id="3-压缩编码算法">3. 压缩编码算法</h1>
 <p>我们知道 VNC 中传输的数据量最大的就是屏幕数据，当网络带宽有限时，屏幕数据从 Server 端传送到 Client 端就非常容易发生拥塞，导致客户的屏幕更新率降低。因此，减少 VNC 传输的数据量就变得非常重要！而想要减少 VNC 传输的数据量，就要依赖于一个好的压缩编码方法。</p>
@@ -311,7 +311,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
 
 <p>但是，由于上述几种压缩编码算法的压缩率和编码时间可能无法达到非常理想的状态，所以就有许多研究人员采用 Zlib、MPEG2、MPEG4、MJPEG 等库来对传输的图形数据进行压缩编码，下面的实验结果就是摘自参考文章中的第 1 篇文章。</p>
 
-<p><img src="http://7xj51c.com1.z0.glb.clouddn.com/experimental.png" alt="" /></p>
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/experimental.png" alt="" /></p>
 
 <p>从上面的实验结果中，综合压缩率和编码所花费的时间，MJPEG 压缩算法的效果最好。在实际的应用我们中还可以采用 libjpeg-turbo 库来进行压缩编码，因为它的压缩率和编码速度上要优于 libjpeg 库。</p>
 
@@ -352,7 +352,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
   
     
     
-      <a href="//twitter.com/share?text=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -367,7 +367,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html"
+      <a href="//www.facebook.com/sharer.php?t=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&u=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -392,7 +392,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -416,7 +416,7 @@ Server 端在接收到 Client 端的屏幕更新请求前就把上一帧的图�
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=VNC+%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E6%96%B9%E6%B3%95&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F05%2F15%2FVNC-%25E6%2580%25A7%25E8%2583%25BD%25E6%258F%2590%25E5%258D%2587%25E6%2596%25B9%25E6%25B3%2595.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

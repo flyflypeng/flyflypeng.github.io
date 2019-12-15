@@ -10,7 +10,7 @@
   <meta name="description" content="前言以前自己一直使用的是Google的Chrome浏览器，主要是因为Chrome浏览器很简洁并且响应速度快。但是后来当自己想在不同的系统平台下的Chrome浏览器同步自己保存的书签时就遇到了一个很让人蛋疼的问题，Chrome只支持Google账户同步，而在俺们大天朝，Google是黑户，如果不通过某种方法是根本无...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="前言以前自己一直使用的是Google的Chrome浏览器，主要是因为Chrome浏览器很简洁并且响应速度快。但是后来当自己想在不同的系统平台下的Chrome浏览器同步自己保存的书签时就遇到了一个很让人蛋疼的问题，Chrome只支持Google账户同步，而在俺们大天朝，Google是黑户，如果不通过某种方法是根本无..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Ubuntu 14.04下手动安装Firefox的flash插件" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Ubuntu 14.04下手动安装Firefox的flash插件">
   <meta name="twitter:description" content="前言以前自己一直使用的是Google的Chrome浏览器，主要是因为Chrome浏览器很简洁并且响应速度快。但是后来当自己想在不同的系统平台下的Chrome浏览器同步自己保存的书签时就遇到了一个很让人蛋疼的问题，Chrome只支持Google账户同步，而在俺们大天朝，Google是黑户，如果不通过某种方法是根本无...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/%E5%88%A9%E5%99%A8/2015/07/15/Ubuntu-14-04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2015/07/15/Ubuntu-14-04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -201,7 +201,7 @@
 <p>以前自己一直使用的是Google的Chrome浏览器，主要是因为Chrome浏览器很简洁并且响应速度快。但是后来当自己想在不同的系统平台下的Chrome浏览器同步自己保存的书签时就遇到了一个很让人蛋疼的问题，Chrome只支持Google账户同步，而在俺们大天朝，Google是黑户，如果不通过某种方法是根本无法享受到Google的一系列服务，包括Chrome的书签同步功能。山不转水转，我就重新寻找一个可以在多平台进行书签同步的浏览器了，这不，Firefox就出现在我的世界中了。</p>
 
 <p>用了一段时间的Firefox感觉还不错，功能也很全面，还有很多的插件扩展浏览器的功能，关键它也支持不同平台的书签同步功能。但是，但是，但是，直到有一天当我打开Firefox想看视频时，它却给我弹出这个东东。
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/flash_problem.png" alt="flash_problem" />
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/flash_problem.png" alt="flash_problem" />
 好不，不懂只能文度娘了。在度娘上找到了“病因”，原来是Firefox上面的flash插件版本太低不安全了，尼玛，老子在其他浏览器上都没遇到过这种问题啊，没办法，这不得解决嘛。后来的后来，我几乎每个月都能碰见这种情况一会，以前找到的解决方案也忘了，所以今天就把这法子给记下来，以备后用。</p>
 
 <p>在Ubuntu下这种插件也没有apt包可以直接安装，只能自己手动下载安装，下面就详细说明下整个安装过程。</p>
@@ -213,12 +213,12 @@
 <p>flash 插件的官方下载地址为: <a href="https://get.adobe.com/flashplayer/?loc=cn">https://get.adobe.com/flashplayer/?loc=cn</a></p>
 
 <p>然后选择.tar.gz压缩文件格式下载，如下所示:
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/flash_download.png" alt="flash_download_pic" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/flash_download.png" alt="flash_download_pic" /></p>
 
 <h3 id="2-解压文件">2. 解压文件</h3>
 
 <p>将下载好的flash插件压缩包，解压到一个文件夹中，如下所示:
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/解压flash插件.png" alt="flash_decompress" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/解压flash插件.png" alt="flash_decompress" /></p>
 
 <h3 id="3-将解压出来的libflashplayerso拷贝到usrlibmozillaplugins下">3. 将解压出来的libflashplayer.so拷贝到/usr/lib/mozilla/plugins/下</h3>
 <div class="highlighter-rouge"><pre class="highlight"><code>$ sudo cp libflashplayer.so /usr/lib/mozilla/plugins/
@@ -252,7 +252,7 @@
   
     
     
-      <a href="//twitter.com/share?text=Ubuntu+14.04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Ubuntu+14.04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -267,7 +267,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Ubuntu+14.04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html"
+      <a href="//www.facebook.com/sharer.php?t=Ubuntu+14.04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -292,7 +292,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -316,7 +316,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Ubuntu+14.04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Ubuntu+14.04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F15%2FUbuntu-14-04%25E4%25B8%258B%25E6%2589%258B%25E5%258A%25A8%25E5%25AE%2589%25E8%25A3%2585Firefox%25E7%259A%2584flash%25E6%258F%2592%25E4%25BB%25B6.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

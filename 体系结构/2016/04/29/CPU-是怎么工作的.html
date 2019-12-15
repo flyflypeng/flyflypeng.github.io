@@ -10,7 +10,7 @@
   <meta name="description" content="CPU 发展历史20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Inte...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2018">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="CPU 发展历史20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Inte..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="CPU 是如何工作的？" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="CPU 是如何工作的？">
   <meta name="twitter:description" content="CPU 发展历史20 世纪 70 年代微处理器(microprocessor)的发展，深刻地影响了 CPU 的设计与实现。Intel 最早在 1971 年推出了它的第一款微处理器，也是全球第一款微处理器：Intel 4004；而到了 1974 年，Intel 又是第一个推出了全球第一款称得上处理器的芯片：Inte...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/29/CPU-%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/29/CPU-%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -223,7 +223,7 @@
 </ul>
 
 <p>下图是一个 CPU 内部结构的简图：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/cpu_circuit.gif" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/cpu_circuit.gif" alt="" /></p>
 
 <h1 id="cpu-的组成">CPU 的组成</h1>
 
@@ -264,14 +264,14 @@
 </ul>
 
 <p>整个指令的过程，如下图所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/CPU_block_diagram.png" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/CPU_block_diagram.png" alt="" /></p>
 
 <h2 id="fetch获取指令">fetch：获取指令</h2>
 <p>CPU 在一个指令周期第一步需要做的就是获取指令。CPU 会从内存当中存储程序指令的地址开始取出指令(指令在内存中也是通过数字进行表示的，它由操作码和数字共同组成)。那么我们不经要想 CPU 怎么知道程序指令的存放地址呢？其实在 CPU 的内部还有一个叫做程序计数器的寄存器(PC)，它存储了当前指令在内存中的存储地址，并且每当 CPU 取出一条指令后，PC 寄存器中的值就被修改为程序中下一条执行指令的地址。如果 CPU 每次都从内存中进行取指令，由于 CPU 的执行速度远远快于内存的访问速度，所以就会导致 CPU 会出现等待的情况，降低了 CPU 的利用率。为了解决上面这种问题，在现代的 CPU 处理器中引入了 Cache 缓存和流水线技术。</p>
 
 <h2 id="decode指令译码">decode：指令译码</h2>
 <p>CPU 从内存中取出了指令，而这个指令的目的就是告诉 CPU 接下来该做什么操作。在指令译码阶段，每条指令会被分割成操作码和操作数两部分，其结构如下所示：
-<img src="http://7xj51c.com1.z0.glb.clouddn.com/instruction_format.gif" alt="" /></p>
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/instruction_format.gif" alt="" /></p>
 
 <p>CPU 中每条指令所代表的具体含义是由处理器对应的指令集(ISA)进行解析。指令当中的操作码部分表示的含义是该指令将会执行什么样的操作，而剩余的部分则表示指令执行某种操作时所需要的操作数，例如在 add 指令中，指令操作码后面的数据表示的就是加法操作所需要的两个操作数的相关信息。而在指令中的操作数，它可以是一个常数(也叫立即数)，也可以是一个保存有操作数据的寄存器，还可以是一个操作数在内存中的地址，这主要取决于指令中操作数的寻址方式。</p>
 
@@ -320,7 +320,7 @@
   
     
     
-      <a href="//twitter.com/share?text=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -335,7 +335,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&u=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html"
+      <a href="//www.facebook.com/sharer.php?t=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -360,7 +360,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -384,7 +384,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=CPU+%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F04%2F29%2FCPU-%25E6%2598%25AF%25E6%2580%258E%25E4%25B9%2588%25E5%25B7%25A5%25E4%25BD%259C%25E7%259A%2584.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
