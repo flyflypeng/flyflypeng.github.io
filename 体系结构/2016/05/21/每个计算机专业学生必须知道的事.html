@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>每个计算机专业学生必须知道的事</title>
+  <meta name="description" content="本文转载自What every computer science major should knowPrefaceGiven the expansive growth in the field, it’s become challenging to discern what belongs in a modern...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="本文转载自What every computer science major should knowPrefaceGiven the expansive growth in the field, it’s become challenging to discern what belongs in a modern..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="每个计算机专业学生必须知道的事" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="每个计算机专业学生必须知道的事">
+  <meta name="twitter:description" content="本文转载自What every computer science major should knowPrefaceGiven the expansive growth in the field, it’s become challenging to discern what belongs in a modern...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/05/21/%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">每个计算机专业学生必须知道的事</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">May 21, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/体系结构">体系结构</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <p>本文转载自<a href="http://matt.might.net/articles/what-cs-majors-should-know/">What every computer science major should know</a></p>
+
+<h1 id="preface">Preface</h1>
+<p>Given the expansive growth in the field, it’s become challenging to discern what belongs in a modern computer science degree.</p>
+
+<p>My own faculty is engaging in this debate, so I’ve coalesced my thoughts as an answer to the question, “What should every computer science major know?”</p>
+
+<p>I’ve tried to answer this question as the conjunction of four concerns:</p>
+
+<ul>
+  <li>What should every student know to get a good job?</li>
+  <li>What should every student know to maintain lifelong employment?</li>
+  <li>What should every student know to enter graduate school?</li>
+  <li>What should every student know to benefit society?</li>
+</ul>
+
+<p>My thoughts below factor into both general principles and specific recommendations relevant to the modern computing landscape.</p>
+
+<p>Computer science majors: feel free to use this as a self-study guide.</p>
+
+<p>Please email or <a href="http://www.twitter.com/mattmight">tweet</a> with suggestions for addition and deletion.</p>
+
+<p><strong>Update</strong>: Thanks for the suggestions and reminders! I’ll incorporate them as I receive them to keep this a living document.</p>
+
+<!--more-->
+
+<h1 id="portfolio-versus-resume">Portfolio versus resume</h1>
+<p>Having emerged from engineering and mathematics, computer science programs take a resume-based approach to hiring off their graduates.</p>
+
+<p>A <em>resume</em> says nothing of a programmer’s ability.</p>
+
+<p>Every computer science major should build a <em>portfolio</em>.</p>
+
+<p>A portfolio could be as simple as a personal blog, with a post for each project or accomplishment. A better portfolio would include per-project pages, and publicly browsable code (hosted perhaps on github or Google code).</p>
+
+<p>Contributions to open source should be linked and documented.</p>
+
+<p>A code portfolio allows employers to directly judge ability.</p>
+
+<p>GPAs and resumes do not.</p>
+
+<p>Professors should design course projects to impress on portfolios, and students, at the conclusion of each course, should take time to update them.</p>
+
+<h2 id="examples">Examples</h2>
+
+<ul>
+  <li><a href="http://ezyang.com/">Edward Yang’s web site.</a></li>
+  <li><a href="http://www.mjbshaw.com/">Michael Bradshaw’s web site.</a></li>
+  <li><a href="http://pydanny.blogspot.com/2011/08/github-is-my-resume.html">Github is my resume.</a></li>
+</ul>
+
+<h1 id="technical-communication">Technical communication</h1>
+<p>Lone wolves in computer science are an endangered species.</p>
+
+<p>Modern computer scientists must practice persuasively and clearly communicating their ideas to non-programmers.</p>
+
+<p>In smaller companies, whether or not a programmer can communicate her ideas to management may make the difference between the company’s success and failure.</p>
+
+<p>Unfortunately, this is not something fixed with the addition of a single class (although a solid course in technical communication doesn’t hurt).</p>
+
+<p>More classes need to provide students the opportunity to present their work and defend their ideas with oral presentations.</p>
+
+<h2 id="specific-recommendations">Specific recommendations</h2>
+
+<p>I would recommend that students master a presentation tool like PowerPoint or (my favorite) Keynote. (Sorry, as much as I love them, LaTeX-based presentation tools are just too static.)</p>
+
+<p>For producing beautiful mathematical documentation, LaTeX has no equal. All written assignments in technical courses should be submitted in LaTeX.</p>
+
+<h2 id="recommended-reading">Recommended reading</h2>
+
+<ul>
+  <li><a href="https://www.amazon.com/Writing-Computer-Science-Justin-Zobel-ebook/dp/B000SW1HKC?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=B000SW1HKC&amp;linkCode=as2&amp;redirect=true&amp;ref_=as_li_ss_tl&amp;tag=ucmbread-20">Writing for Computer Science</a> by Zobel.</li>
+  <li><a href="http://www.amazon.com/gp/product/0978577604/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0978577604">Even a Geek Can Speak</a> by Asher.</li>
+  <li><a href="http://www.amazon.com/gp/product/0201362996/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0201362996">The LaTeX Companion.</a></li>
+  <li><a href="http://www.amazon.com/gp/product/0201134489/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0201134489">The TeXbook by Knuth.</a> (Warning: Experts only.)</li>
+  <li>Notes on <a href="http://www-cs-faculty.stanford.edu/~uno/klr.html">Mathematical Writing.</a></li>
+  <li>Simon Peyton-Jones’s advice on <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/giving-a-talk/giving-a-talk-html.html">How to Give a Good Research Talk.</a></li>
+  <li>My advice on <a href="http://matt.might.net/articles/how-to-email/">how to send and reply to email.</a></li>
+</ul>
+
+<h1 id="an-engineering-core">An engineering core</h1>
+<p>Computer science is not quite engineering.</p>
+
+<p>But, it’s close enough.</p>
+
+<p>Computer scientists will find themselves working with engineers.</p>
+
+<p>Computer scientists and traditional engineers need to speak the same language–a language rooted in real analysis, linear algebra, probability and physics.</p>
+
+<p>Computer scientists ought to take physics through electromagnetism. But, to do that, they’ll need take up through multivariate calculus, (and differential equations for good measure).</p>
+
+<p>In constructing sound simulations, a command of probability and (often times) linear algebra is invaluable. In interpreting results, there is no substitute for a solid understanding of statistics.</p>
+
+<h2 id="recommended-reading-1">Recommended reading</h2>
+
+<p><a href="http://www.amazon.com/gp/product/0914098918/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399373&amp;creativeASIN=0914098918">Calculus</a> by Spivak.
+<a href="http://www.amazon.com/gp/product/1441923225/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1441923225&amp;linkCode=as2&amp;tag=ucmbread-20">All of Statistics: A Concise Course in Statistical Inference</a> by Wasserman.</p>
+
+<h1 id="the-unix-philosophy">The Unix philosophy</h1>
+<p>Computer scientists should be comfortable with and practiced in the Unix philosophy of computing.</p>
+
+<p>The Unix philosophy (as opposed to Unix itself) is one that emphasizes linguistic abstraction and composition in order to effect computation.</p>
+
+<p>In practice, this means becoming comfortable with the notion of command-line computing, text-file configuration and IDE-less software development.</p>
+
+<h2 id="specific-recommendations-1">Specific recommendations</h2>
+
+<p>Given the prevalence of Unix systems, computer scientists today should be fluent in basic Unix, including the ability to:</p>
+
+<ul>
+  <li>navigate and manipulate the filesystem;</li>
+  <li>compose processes with pipes;</li>
+  <li>comfortably edit a file with emacs and vim;</li>
+  <li>create, modify and execute a Makefile for a software project;</li>
+  <li>write simple shell scripts.</li>
+</ul>
+
+<p>Students will reject the Unix philosophy unless they understand its power. Thus, it’s best to challenge students to complete useful tasks for which Unix has a comparative advantage, such as:</p>
+
+<ul>
+  <li>Find the five folders in a given directory consuming the most space.</li>
+  <li>Report duplicate MP3s (by file contents, not file name) on a computer.</li>
+  <li>Take a list of names whose first and last names have been lower-cased, and properly  recapitalize them.</li>
+  <li>Find all words in English that have x as their second letter, and n as their    second-to-last.</li>
+  <li>Directly route your microphone input over the network to another computer’s speaker.</li>
+  <li>Replace all spaces in a filename with underscore for a given directory.</li>
+  <li>Report the last ten errant accesses to the web server coming from a specific IP address.</li>
+</ul>
+
+<h2 id="recommended-reading-2">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/013937681X/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=013937681X">The Unix Programming Environment</a> by Kernighan and Pike.</li>
+  <li><a href="http://www.amazon.com/gp/product/1593272200/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1593272200&amp;linkCode=as2&amp;tag=ucmbread-20">The Linux Programming Interface: A Linux and UNIX System Programming Handbook</a> by Kerrisk.</li>
+  <li><a href="http://www.amazon.com/gp/product/0596003307/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0596003307&amp;linkCode=as2&amp;tag=ucmbread-20">Unix Power Tools</a> by Powers, Peek, O’Reilly and Loukides.</li>
+  <li><a href="http://www.commandlinefu.com/">commandlinefu.</a></li>
+  <li><a href="http://www.amazon.com/gp/product/0596004613/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0596004613">Linux Server Hacks.</a></li>
+  <li><a href="http://www.unix.org/online.html">The single Unix specification.</a></li>
+</ul>
+
+<h1 id="systems-administration">Systems administration</h1>
+<p>Some computer scientists sneer at systems administration as an “IT” task.</p>
+
+<p>The thinking is that a computer scientist can teach herself how to do anything a technician can do.</p>
+
+<p>This is true. (In theory.)</p>
+
+<p>Yet this attitude is misguided: computer scientists must be able to competently and securely administer their own systems and networks.</p>
+
+<p>Many tasks in software development are most efficiently executed without passing through a systems administrator.</p>
+
+<h2 id="specific-recommendations-2">Specific recommendations</h2>
+
+<p>Every modern computer scientist should be able to:</p>
+
+<ul>
+  <li>Install and administer a Linux distribution.</li>
+  <li>Configure and compile the Linux kernel.</li>
+  <li>Troubleshoot a connection with dig, ping and traceroute.</li>
+  <li>Compile and configure a web server like apache.</li>
+  <li>Compile and configure a DNS daemon like bind.</li>
+  <li>Maintain a web site with a text editor.</li>
+  <li><a href="http://matt.might.net/articles/how-to-make-your-own-cat-5-ethernet-cable/">Cut and crimp a network cable.</a></li>
+</ul>
+
+<h2 id="recommended-reading-3">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0131480057/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0131480057">UNIX and Linux System Administration Handbook</a> by Nemeth, Synder, Hein and Whaley.</li>
+</ul>
+
+<h1 id="programming-languages">Programming languages</h1>
+<p>Programming languages rise and fall with the solar cycle.</p>
+
+<p>A programmer’s career should not.</p>
+
+<p>While it is important to teach languages relevant to employers, it is equally important that students learn how to teach themselves new languages.</p>
+
+<p>The best way to learn how to learn progamming languages is to learn multiple programming languages and programming paradigms.</p>
+
+<p>The difficulty of learning the nth language is half the difficulty of the (n-1)th.</p>
+
+<p>Yet, to truly understand programming languages, one must implement one. Ideally, every computer science major would take a compilers class. At a minimum, every computer science major should implement an interpreter.</p>
+
+<h2 id="specific-languages">Specific languages</h2>
+
+<p>The following languages provide a reasonable mixture of paradigms and practical applications:</p>
+
+<ul>
+  <li>Racket;</li>
+  <li>C;</li>
+  <li>JavaScript;</li>
+  <li>Squeak;</li>
+  <li>Java;</li>
+  <li>Standard ML;</li>
+  <li>Prolog;</li>
+  <li>Scala;</li>
+  <li>Haskell;</li>
+  <li>C++; and</li>
+  <li>Assembly.</li>
+</ul>
+
+<h2 id="racket">Racket</h2>
+
+<p>Racket, as a full-featured dialect of Lisp, has an aggressively simple syntax.</p>
+
+<p>For a small fraction of students, this syntax is an impediment.</p>
+
+<p>To be blunt, if these students have a fundamental mental barrier to accepting an alien syntactic regime even temporarily, they lack the mental dexterity to survive a career in computer science.</p>
+
+<p>Racket’s powerful macro system and facilities for higher-order programming thoroughly erase the line between data and code.</p>
+
+<p>If taught correctly, Lisp liberates.</p>
+
+<h3 id="recommended-reading-4">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.htdp.org/">How to Design Programs</a> by Felleisen, Findler, Flatt and Krishnamurthi.</li>
+  <li><a href="http://docs.racket-lang.org/">The Racket Docs.</a></li>
+</ul>
+
+<h2 id="ansi-c">ANSI C</h2>
+
+<p>C is a terse and unforgiving abstraction of silicon.</p>
+
+<p>C remains without rival in programming embedded systems.</p>
+
+<p>Learning C imparts a deep understanding of the dominant von Neumann architecture in a way that no other language can.</p>
+
+<p>Given the intimate role poor C programming plays in the prevalence of the buffer overflow security vulnerabilities, it is critical that programmers learn how to program C properly.</p>
+
+<h3 id="recommended-reading-5">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0131103628/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0131103628">ANSI C</a> by Kernighan and Ritchie.</li>
+</ul>
+
+<h2 id="javascript">JavaScript</h2>
+
+<p>JavaScript is a good representative of the semantic model popular in dynamic, higher-order languages such as Python, Ruby and Perl.</p>
+
+<p>As the native language of the web, its pragmatic advantages are unique.</p>
+
+<h3 id="recommended-reading-6">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0596805527/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0596805527&amp;linkCode=as2&amp;tag=ucmbread-20">JavaScript: The Definitive Guide</a> by Flanagan.</li>
+  <li><a href="http://www.amazon.com/gp/product/0596517742/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0596517742">JavaScript: The Good Parts</a> by Crockford.</li>
+  <li><a href="http://www.amazon.com/gp/product/0321812182/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0321812182&amp;linkCode=as2&amp;tag=ucmbread-20">Effective JavaScript: 68 Specific Ways to Harness the Power of JavaScript</a> by Herman.</li>
+</ul>
+
+<h2 id="squeak">Squeak</h2>
+
+<p>Squeak is a modern dialect of Smalltalk, purest of object-oriented languages.</p>
+
+<p>It imparts the essence of “object-oriented.”</p>
+
+<h3 id="recommended-reading-7">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://wiki.squeak.org/squeak/377">Introductions to Squeak</a></li>
+</ul>
+
+<h2 id="java">Java</h2>
+
+<p>Java will remain popular for too long to ignore it.</p>
+
+<h3 id="recommended-reading-8">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0321356683/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0321356683">Effective Java</a> by Bloch.</li>
+</ul>
+
+<h2 id="standard-ml">Standard ML</h2>
+
+<p>Standard ML is a clean embodiment of the Hindley-Milner system.</p>
+
+<p>The Hindley-Milner type system is one of the greatest (yet least-known) achievements in modern computing.</p>
+
+<p>Though exponential in complexity, type inference in Hindley-Milner is always fast for programs of human interest.</p>
+
+<p>The type system is rich enough to allow the expression of complex structural invariants. It is so rich, in fact, that well-typed programs are often bug-free.</p>
+
+<h3 id="recommended-reading-9">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/052156543X/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=052156543X">ML for the Working Programmer</a> by Paulson.</li>
+  <li><a href="http://www.amazon.com/gp/product/0262631814/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0262631814">The Definition of Standard ML</a> by Milner, Harper, MacQueen and Tofte.</li>
+</ul>
+
+<h2 id="prolog">Prolog</h2>
+
+<p>Though niche in application, logic programming is an alternate paradigm for computational thinking.</p>
+
+<p>It’s worth understanding logic programming for those instances where a programmer may need to emulate it within another paradigm.</p>
+
+<p>Another logic language worth learning is miniKanren. miniKanren stresses pure (cut not allowed) logic programming. This constraint has evolved an alternate style of logic programming called relational programming, and it grants properties not typically enjoyed by Prolog programs.</p>
+
+<h3 id="recommended-reading-10">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.learnprolognow.org/">Learn Prolog Now!</a></li>
+  <li><a href="http://kti.ms.mff.cuni.cz/~bartak/prolog/contents.html">Another tutorial.</a></li>
+  <li><a href="http://minikanren.org/">miniKanren.</a></li>
+</ul>
+
+<h2 id="scala">Scala</h2>
+
+<p>Scala is a well-designed fusion of functional and object-oriented programming languages. Scala is what Java should have been.</p>
+
+<p>Built atop the Java Virtual Machine, it is compatible with existing Java codebases, and as such, it stands out as the most likely successor to Java.</p>
+
+<h3 id="recommended-reading-11">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0981531644/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0981531644">Programming in Scala</a> by Odersky, Spoon and Venners.</li>
+  <li><a href="http://www.amazon.com/gp/product/1491949856/ref=as_li_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=1491949856&amp;linkCode=as2&amp;tag=ucmbread-20&amp;linkId=FZVN43263MC2KGR5">Programming Scala</a> by Wampler and Payne.</li>
+</ul>
+
+<h2 id="haskell">Haskell</h2>
+
+<p>Haskell is the crown jewel of the Hindley-Milner family of languages.</p>
+
+<p>Fully exploiting laziness, Haskell comes closest to programming in pure mathematics of any major programming language.</p>
+
+<h3 id="recommended-reading-12">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://learnyouahaskell.com/">Learn You a Haskell</a> by Lipovaca.</li>
+  <li><a href="http://www.amazon.com/gp/product/0596514980/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0596514980">Real World Haskell</a> by O’Sullivan, Goerzen and Stewart.</li>
+</ul>
+
+<h2 id="iso-c">ISO C++</h2>
+
+<p>C++ is a necessary evil.</p>
+
+<p>But, since it must be taught, it must be taught in full.</p>
+
+<p>In particular, computer science majors should leave with a grasp of even <a href="http://matt.might.net/articles/c++-template-meta-programming-with-lambda-calculus/">template meta-programming.</a></p>
+
+<h3 id="recommended-reading-13">Recommended reading</h3>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0201700735/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0201700735">The C++ Programming Language</a> by Stroustrup.</li>
+  <li><a href="http://www.amazon.com/gp/product/0201734842/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0201734842">C++ Templates: The Complete Guide</a> by Vandevoorde and Josuttis.</li>
+  <li><a href="http://www.amazon.com/gp/product/0201657880/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0201657880&amp;linkCode=as2&amp;tag=ucmbread-20">Programming Pearls</a> by Bentley.</li>
+</ul>
+
+<h2 id="assembly">Assembly</h2>
+
+<p>Any assembly language will do.</p>
+
+<p>Since x86 is popular, it might as well be that.</p>
+
+<p>Learning compilers is the best way to learn assembly, since it gives the computer scientist an intuitive sense of how high-level code will be transformed.</p>
+
+<h2 id="specific-recommendations-3">Specific recommendations</h2>
+
+<p>Computer scientists should understand generative programming (macros); lexical (and dynamic) scope; closures; continuations; higher-order functions; dynamic dispatch; subtyping; modules and functors; and monads as semantic concepts distinct from any specific syntax.</p>
+
+<h2 id="recommended-reading-14">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://mitpress.mit.edu/sicp/full-text/book/book.html">Structure and Interpretation of Computer Programs</a> by Abelson, Sussman and Sussman.</li>
+  <li><a href="http://www.amazon.com/gp/product/0521545668/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0521545668">Lisp in Small Pieces</a> by Queinnec.</li>
+</ul>
+
+<h1 id="discrete-mathematics">Discrete mathematics</h1>
+<p>Computer scientists must have a solid grasp of formal logic and of proof. Proof by algebraic manipulation and by natural deduction engages the reasoning common to routine programming tasks. Proof by induction engages the reasoning used in the construction of recursive functions.</p>
+
+<p>Computer scientists must be fluent in formal mathematical notation, and in reasoning rigorously about the basic discrete structures: sets, tuples, sequences, functions and power sets.</p>
+
+<h2 id="specific-recommendations-4">Specific recommendations</h2>
+
+<p>For computer scientists, it’s important to cover reasoning about:</p>
+
+<ul>
+  <li>trees;</li>
+  <li>graphs;</li>
+  <li>formal languages; and</li>
+  <li>automata.</li>
+</ul>
+
+<p>Students should learn enough number theory to study and implement common cryptographic protocols.</p>
+
+<h2 id="recommended-reading-15">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0521675995/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0521675995">How to Prove It: A Structured Approach</a> by Velleman.</li>
+  <li><a href="http://www.amazon.com/gp/product/4871878309/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=4871878309">How To Solve It</a> by Polya.</li>
+</ul>
+
+<h1 id="data-structures-and-algorithms">Data structures and algorithms</h1>
+<p>Students should certainly see the common (or rare yet unreasonably effective) data structures and algorithms.</p>
+
+<p>But, more important than knowing a specific algorithm or data structure (which is usually easy enough to look up), computer scientists must understand how to design algorithms (e.g., greedy, dynamic strategies) and how to span the gap between an algorithm in the ideal and the nitty-gritty of its implementation.</p>
+
+<h2 id="specific-recommendations-5">Specific recommendations</h2>
+
+<p>At a minimum, computer scientists seeking stable long-run employment should know all of the following:</p>
+
+<ul>
+  <li>hash tables;</li>
+  <li>linked lists;</li>
+  <li>trees;</li>
+  <li>binary search trees; and</li>
+  <li>directed and undirected graphs.</li>
+</ul>
+
+<p>Computer scientists should be ready to implement or extend an algorithm that operates on these data structures, including the ability to search for an element, to add an element and to remove an element.</p>
+
+<p>For completeness, computer scientists should know both the imperative and functional versions of each algorithm.</p>
+
+<h2 id="recommended-reading-16">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0262033844/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0262033844">CLRS.</a></li>
+  <li>Any of the <a href="http://www.amazon.com/gp/product/0321751043/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399373&amp;creativeASIN=0321751043s">Art of Computer Programming series</a> by Knuth.</li>
+</ul>
+
+<h1 id="theory">Theory</h1>
+<p>A grasp of theory is a prerequisite to research in graduate school.</p>
+
+<p>Theory is invaluable when it provides hard boundaries on a problem (or when it provides a means of circumventing what initially appear to be hard boundaries).</p>
+
+<p>Computational complexity can legitimately claim to be one of the few truly predictive theories in all of computer “science.”</p>
+
+<p>A computer scientist must know where the boundaries of tractability and computability lie. To ignore these limits invites frustration in the best case, and failure in the worst.</p>
+
+<h2 id="specific-recommendations-6">Specific recommendations</h2>
+
+<p>At the undergraduate level, theory should cover at least models of computation and computational complexity.</p>
+
+<p>Models of computation should cover finite-state automata, regular languages (and regular expressions), pushdown automata, context-free languages, formal grammars, Turing machines, the lambda calculus, and undecidability.</p>
+
+<p>At the undergraduate level, students should learn at least enough complexity to understand the difference between P, NP, NP-Hard and NP-Complete.</p>
+
+<p>To avoid leaving the wrong impression, students should solve a few large problems in NP by reduction to SAT and the use of modern SAT solvers.</p>
+
+<h2 id="recommended-reading-17">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0534950973/ref=as_li_ss_tl?ie=UTF8&amp;tag=aboutmatthewm-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0534950973">Introduction to the Theory of Computation</a> by Sipser.</li>
+  <li><a href="http://www.amazon.com/gp/product/0201530821/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0201530821">Computational Complexity</a> by Papadimitriou.</li>
+  <li><a href="http://www.amazon.com/gp/product/032157351X/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=032157351X&amp;linkCode=as2&amp;tag=ucmbread-20">Algorithms by Sedgewick and Wayne</a>.</li>
+  <li><a href="http://www.amazon.com/gp/product/0262033844/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0262033844&amp;linkCode=as2&amp;tag=ucmbread-20">Introduction to Algorithms</a> by Cormen, Leiserson, Rivest and Stein.</li>
+</ul>
+
+<h1 id="architecture">Architecture</h1>
+<p>There is no substitute for a solid understanding of computer architecture.</p>
+
+<p>Computer scientists should understand a computer from the transistors up.</p>
+
+<p>The understanding of architecture should encompass the standard levels of abstraction: transistors, gates, adders, muxes, flip flops, ALUs, control units, caches and RAM.</p>
+
+<p>An understanding of the GPU model of high-performance computing will be important for the foreseeable future.</p>
+
+<h2 id="specific-recommendations-7">Specific recommendations</h2>
+
+<p>A good understanding of caches, buses and hardware memory management is essential to achieving good performance on modern systems.</p>
+
+<p>To get a good grasp of machine architecture, students should design and simulate a small CPU.</p>
+
+<h2 id="recommended-reading-18">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://nand2tetris.org/">nand2tetris</a>, which constructs a computer from the ground up.</li>
+  <li><a href="http://www.amazon.com/gp/product/0123744938/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0123744938">Computer Organization and Design</a> by Patterson and Hennessy.</li>
+  <li><a href="http://lwn.net/Articles/250967/">“What every programmer should know about memory”</a> by Drepper.</li>
+</ul>
+
+<h1 id="operating-systems">Operating systems</h1>
+<p>Any sufficiently large program eventually becomes an operating system.</p>
+
+<p>As such, computer scientists should be aware of how kernels handle system calls, paging, scheduling, context-switching, filesystems and internal resource management.</p>
+
+<p>A good understanding of operating systems is secondary only to an understanding of compilers and architecture for achieving performance.</p>
+
+<p>Understanding operating systems (which I would interpret liberally to include runtime systems) becomes especially important when programming an embedded system without one.</p>
+
+<h2 id="specific-recommendations-8">Specific recommendations</h2>
+
+<p>It’s important for students to get their hands dirty on a real operating system. With Linux and virtualization, this is easier than ever before.</p>
+
+<p>To get a better understanding of the kernel, students could:</p>
+
+<ul>
+  <li>print “hello world” during the boot process;</li>
+  <li>design their own scheduler;</li>
+  <li>modify the page-handling policy; and</li>
+  <li>create their own filesystem.</li>
+</ul>
+
+<h2 id="recommended-reading-19">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0672329468/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0672329468">Linux Kernel Development</a> by Love.</li>
+</ul>
+
+<h1 id="networking">Networking</h1>
+<p>Given the ubiquity of networks, computer scientists should have a firm understanding of the network stack and routing protocols within a network.</p>
+
+<p>The mechanics of building an efficient, reliable transmission protocol (like TCP) on top of an unreliable transmission protocol (like IP) should not be magic to a computer scientist. It should be core knowledge.</p>
+
+<p>Computer scientists must understand the trade-offs involved in protocol design–for example, when to choose TCP and when to choose UDP. (Programmers need to understand the larger social implications for congestion should they use UDP at large scales as well.)</p>
+
+<h2 id="specific-recommendations-9">Specific recommendations</h2>
+
+<p>Given the frequency with which the modern programmer encounters network programming, it’s helpful to know the protocols for existing standards, such as:</p>
+
+<ul>
+  <li>802.3 and 802.11;</li>
+  <li>IPv4 and IPv6; and</li>
+  <li>DNS, SMTP and HTTP.</li>
+</ul>
+
+<p>Computer scientists should understand exponential back off in packet collision resolution and the additive-increase multiplicative-decrease mechanism involved in congestion control.</p>
+
+<p>Every computer scientist should implement the following:</p>
+
+<ul>
+  <li>an HTTP client and daemon;</li>
+  <li>a DNS resolver and server; and</li>
+  <li>a command-line SMTP mailer.</li>
+</ul>
+
+<p>No student should ever pass an intro neworking class without sniffing their instructor’s Google query off <a href="http://www.wireshark.org/">wireshark</a>.</p>
+
+<p>It’s probably going too far to require all students to implement a reliable transmission protocol from scratch atop IP, but I can say that it was a personally transformative experience for me as a student.</p>
+
+<h2 id="recommended-reading-20">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0131411551/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0131411551">Unix Network Programming</a> by Stevens, Fenner and Rudoff.</li>
+</ul>
+
+<h1 id="security">Security</h1>
+<p>The sad truth of security is that the majority of security vulnerabilities come from sloppy programming. The sadder truth is that many schools do a poor job of training programmers to secure their code.</p>
+
+<p>Computer scientists must be aware of the means by which a program can be compromised.</p>
+
+<p>They need to develop a sense of defensive programming–a mind for thinking about how their own code might be attacked.</p>
+
+<p>Security is the kind of training that is best distributed throughout the entire curriculum: each discipline should warn students of its native vulnerabilities.</p>
+
+<h2 id="specific-recommendations-10">Specific recommendations</h2>
+
+<p>At a minimum, every computer scientist needs to understand:</p>
+
+<ul>
+  <li>social engineering;</li>
+  <li>buffer overflows;</li>
+  <li>integer overflow;</li>
+  <li>code injection vulnerabilities;</li>
+  <li>race conditions; and</li>
+  <li>privilege confusion.</li>
+</ul>
+
+<p>A few readers have pointed out that computer scientists also need to be aware of basic IT security measures, such how to choose legitimately good passwords and how to properly configure a firewall with iptables.</p>
+
+<h2 id="recommended-reading-21">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/159327288X/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399373&amp;creativeASIN=159327288X">Metasploit: The Penetration Tester’s Guide</a> by Kennedy, O’Gorman, Kearns and Aharoni.</li>
+  <li><a href="http://www.amazon.com/gp/product/0470068523/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0470068523&amp;linkCode=as2&amp;tag=ucmbread-20">Security Engineering</a> by Anderson.</li>
+</ul>
+
+<h1 id="cryptography">Cryptography</h1>
+<p>Cryptography is what makes much of our digital lives possible.</p>
+
+<p>Computer scientists should understand and be able to implement the following concepts, as well as the common pitfalls in doing so:</p>
+
+<ul>
+  <li>symmetric-key cryptosystems;</li>
+  <li>public-key cryptosystems;</li>
+  <li>secure hash functions;</li>
+  <li>challenge-response authentication;</li>
+  <li>digital signature algorithms; and</li>
+  <li>threshold cryptosystems.</li>
+</ul>
+
+<p>Since it’s a common fault in implementations of cryptosystems, every computer scientist should know how to acquire a sufficiently random number for the task at hand.</p>
+
+<p>At the very least, as nearly every data breach has shown, computer scientists need to know how to salt and hash passwords for storage.</p>
+
+<h2 id="specific-recommendations-11">Specific recommendations</h2>
+
+<p>Every computer scientist should have the pleasure of breaking ciphertext using pre-modern cryptosystems with hand-rolled statistical tools.</p>
+
+<p>RSA is <a href="http://matt.might.net/articles/implementation-of-rsa-public-key-cryptography-algorithm-in-scheme-dialect-of-lisp/">easy enough to implement</a> that everyone should do it.</p>
+
+<p>Every student should create their own digital certificate and set up https in apache. (It’s surprisingly arduous to do this.)</p>
+
+<p>Student should also write a console web client that connects over SSL.</p>
+
+<p>As strictly practical matters, computer scientists should know how to use GPG; how to use public-key authentication for ssh; and how to encrypt a directory or a hard disk.</p>
+
+<h2 id="recommended-reading-22">Recommended reading</h2>
+
+<p><a href="http://www.amazon.com/gp/product/0470474246/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0470474246">Cryptography Engineering</a> by Ferguson, Schneier and Kohno.</p>
+
+<h1 id="software-testing">Software testing</h1>
+<p>Software testing must be distributed throughout the entire curriculum.</p>
+
+<p>A course on software engineering can cover the basic styles of testing, but there’s no substitute for practicing the art.</p>
+
+<p>Students should be graded on the test cases they turn in.</p>
+
+<p>I use test cases turned in by students against all other students.</p>
+
+<p>Students don’t seem to care much about developing defensive test cases, but they unleash hell when it comes to sandbagging their classmates.</p>
+
+<h1 id="user-experience-design">User experience design</h1>
+<p>Programmers too often write software for other programmers, or worse, for themselves.</p>
+
+<p>User interface design (or more broadly, user experience design) might be the most underappreciated aspect of computer science.</p>
+
+<p>There’s a misconception, even among professors, that user experience is a “soft” skill that can’t be taught.</p>
+
+<p>In reality, modern user experience design is anchored in empirically-wrought principles from human factors engineering and industrial design.</p>
+
+<p>If nothing else, computer scientists should know that interfaces need to make the ease of executing any task proportional to the frequency of the task multiplied by its importance.</p>
+
+<p>As a practicality, every programmer should be comfortable with designing usable web interfaces in HTML, CSS and JavaScript.</p>
+
+<h2 id="recommended-reading-23">Recommended reading</h2>
+
+<ul>
+  <li>Paul Graham’s <a href="http://www.paulgraham.com/web20.html">essay on Web 2.0.</a></li>
+  <li><a href="http://www.joelonsoftware.com/articles/Unicode.html">“The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets”</a> by Spolsky.</li>
+  <li><a href="http://www.joelonsoftware.com/articles/Unicode.html">HTML and CSS: Design and Build Websites</a> by Duckett.</li>
+  <li><a href="http://www.amazon.com/gp/product/0596805527/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0596805527&amp;linkCode=as2&amp;tag=ucmbread-20">JavaScript: The Definitive Guide</a> by Flanagan.</li>
+</ul>
+
+<h1 id="visualization">Visualization</h1>
+<p>Good visualization is about rendering data in such a fashion that such that humans perceive it as information. This is not an easy thing to do.</p>
+
+<p>The modern world is a sea of data, and exploiting the local maxima of human perception is key to making sense of it.</p>
+
+<h2 id="recommended-reading-24">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0961392142/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0961392142">The Visual Display of Quantitative Information</a> by Tufte.</li>
+</ul>
+
+<h1 id="parallelism">Parallelism</h1>
+<p>Parallelism is back, and uglier than ever.</p>
+
+<p>The unfortunate truth is that harnessing parallelism requires deep knowledge of architecture: multicore, caches, buses, GPUs, etc.</p>
+
+<p>And, practice. Lots of practice.</p>
+
+<h2 id="specific-recommendations-12">Specific recommendations</h2>
+
+<p>It is not at all clear what the “final” answer on parallel programming is, but a few domain-specific solutions have emerged.</p>
+
+<p>For now, students should learn CUDA and OpenCL.</p>
+
+<p>Threads are a flimsy abstraction for parallelism, particularly when caches and cache coherency are involved. But, threads are popular and tricky, so worth learning. Pthreads is a reasonably portable threads library to learn.</p>
+
+<p>For anyone interested in large-scale parallelism, MPI is a prerequisite.</p>
+
+<p>On the principles side, it does seem that map-reduce is enduring.</p>
+
+<h1 id="software-engineering">Software engineering</h1>
+<p>The principles in software engineering change about as fast as the programming languages do.</p>
+
+<p>A good, hands-on course in the practice of team software construction provides a working knowledge of the pitfalls inherent in the endeavor.</p>
+
+<p>It’s been recommended by several readers that students break up into teams of three, with the role of leader rotating through three different projects.</p>
+
+<p>Learning how to attack and maneuver through a large existing codebase is a skill most programmers will have to master, and it’s one best learned in school instead of on the job.</p>
+
+<h2 id="specific-recommendations-13">Specific recommendations</h2>
+
+<p>All students need to understand centralized version control systems like svn and distributed version control systems like git.</p>
+
+<p>A working knowlege of debugging tools like gdb and valgrind goes a long way when they finally become necessary.</p>
+
+<h2 id="recommended-reading-25">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.ericsink.com/vcbe/">Version Control by Example</a> by Sink.</li>
+</ul>
+
+<h1 id="formal-methods">Formal methods</h1>
+<p>As the demands on secure, reliable software increase, formal methods may one day end up as the only means for delivering it.</p>
+
+<p>At present, formal modeling and verification of software remains challenging, but progress in the field is steady: it gets easier every year.</p>
+
+<p>There may even come a day within the lifetime of today’s computer science majors where formal software construction is an expected skill.</p>
+
+<p>Every computer scientist should be at least moderately comfortable using one theorem prover. (I don’t think it matters which one.)</p>
+
+<p>Learning to use a theorem prover immediately impacts coding style.</p>
+
+<p>For example, one feels instinctively allergic to writing a match or switch statement that doesn’t cover all possibilities.</p>
+
+<p>And, when writing recursive functions, users of theorem provers have a strong urge to eliminate ill-foundedness.</p>
+
+<h2 id="recommended-reading-26">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.cis.upenn.edu/~bcpierce/sf/">Software Foundations.</a></li>
+</ul>
+
+<h1 id="graphics-and-simulation">Graphics and simulation</h1>
+<p>There is no discipline more dominated by “clever” than graphics.</p>
+
+<p>The field is driven toward, even defined by, the “good enough.”</p>
+
+<p>As such, there is no better way to teach clever programming or a solid appreciation of optimizing effort than graphics and simulation.</p>
+
+<p>Over half of the coding hacks I’ve learned came from my study of graphics.</p>
+
+<h2 id="specific-recommendations-14">Specific recommendations</h2>
+
+<p>Simple ray tracers can be constructed in under 100 lines of code.</p>
+
+<p>It’s good mental hygiene to work out the transformations necessary to perform a perspective 3D projection in a wireframe 3D engine.</p>
+
+<p>Data structures like BSP trees and algorithms like z-buffer rendering are great examples of clever design.</p>
+
+<p>In graphics and simulation, there are many more.</p>
+
+<h2 id="recommended-reading-27">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/1435458869/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399373&amp;creativeASIN=1435458869">Mathematics for 3D Game Programming and Computer Graphics</a> by Lengyel.</li>
+</ul>
+
+<h1 id="robotics">Robotics</h1>
+<p>Robotics may be one of the most engaging ways to teach introductory programming.</p>
+
+<p>Moreover, as the cost of robotics continues to fall, thresholds are being passed which will enable a personal robotics revolution.</p>
+
+<p>For those that can program, unimaginable degrees of personal physical automation are on the horizon.</p>
+
+<h2 id="related-posts">Related posts</h2>
+
+<ul>
+  <li><a href="http://matt.might.net/articles/ios-multitouch-robot-control/">Multitouch gesture control for a robot.</a></li>
+</ul>
+
+<h1 id="artificial-intelligence">Artificial intelligence</h1>
+<p>If for no other reason than its outsized impact on the early history of computing, computer scientists should study artificial intelligence.</p>
+
+<p>While the original dream of intelligent machines seems far off, artificial intelligence spurred a number of practical fields, such as machine learning, data mining and natural language processing.</p>
+
+<h2 id="recommended-reading-28">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://matt.might.net/articles/ios-multitouch-robot-control/">Artificial Intelligence</a> by Russell and Norvig.</li>
+</ul>
+
+<h1 id="machine-learning">Machine learning</h1>
+<p>Aside from its outstanding technical merits, the sheer number of job openings for “relevance engineer,” indicates that every computer scientist should grasp the fundamentals of machine learning.</p>
+
+<p>Machine learning doubly emphasizes the need for an understanding of probability and statistics.</p>
+
+<h2 id="specific-recommendations-15">Specific recommendations</h2>
+
+<p>At the undergraduate level, core concepts should include Bayesian networks, clustering and decision-tree learning.</p>
+
+<h2 id="recommended-reading-29">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0070428077/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0070428077">Machine Learning</a> by Mitchell.</li>
+</ul>
+
+<h1 id="databases">Databases</h1>
+<p>Databases are too common and too useful to ignore.</p>
+
+<p>It’s useful to understand the fundamental data structures and algorithms that power a database engine, since programmers often enough reimplement a database system within a larger software system.</p>
+
+<p>Relational algebra and relational calculus stand out as exceptional success stories in sub-Turing models of computation.</p>
+
+<p>Unlike UML modeling, ER modeling seems to be a reasonable mechanism for visualing encoding the design of and constraints upon a software artifact.</p>
+
+<h2 id="specific-recommendations-16">Specific recommendations</h2>
+
+<p>A computer scientist that can set up and operate a LAMP stack is one good idea and a lot of hard work away from running their own company.</p>
+
+<h2 id="recommended-reading-30">Recommended reading</h2>
+
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0596523068/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0596523068">SQL and Relational Theory</a> by Date.</li>
+</ul>
+
+<h1 id="non-specific-reading-recommendations">Non-specific reading recommendations</h1>
+<ul>
+  <li><a href="http://www.amazon.com/gp/product/0465026567/ref=as_li_ss_tl?ie=UTF8&amp;tag=ucmbread-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0465026567">Gödel, Escher, Bach</a> by Hofstadter.</li>
+  <li><a href="http://nick-black.com/dankwiki/images/8/85/Msadvice.pdf">Nick Black’s advice for MS students.</a></li>
+</ul>
+
+<h1 id="what-else">What else?</h1>
+<p>My suggestions are limited by blind spots in my own knowledge.</p>
+
+<p>What have I not listed here that should be included?</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/CS">CS</a>,&nbsp;<a href="/tag/基础">基础</a>,&nbsp;<a href="/tag/计算机">计算机</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F05%2F21%2F%25E6%25AF%258F%25E4%25B8%25AA%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E4%25B8%2593%25E4%25B8%259A%25E5%25AD%25A6%25E7%2594%259F%25E5%25BF%2585%25E9%25A1%25BB%25E7%259F%25A5%25E9%2581%2593%25E7%259A%2584%25E4%25BA%258B.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B&u=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F05%2F21%2F%25E6%25AF%258F%25E4%25B8%25AA%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E4%25B8%2593%25E4%25B8%259A%25E5%25AD%25A6%25E7%2594%259F%25E5%25BF%2585%25E9%25A1%25BB%25E7%259F%25A5%25E9%2581%2593%25E7%259A%2584%25E4%25BA%258B.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F05%2F21%2F%25E6%25AF%258F%25E4%25B8%25AA%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E4%25B8%2593%25E4%25B8%259A%25E5%25AD%25A6%25E7%2594%259F%25E5%25BF%2585%25E9%25A1%25BB%25E7%259F%25A5%25E9%2581%2593%25E7%259A%2584%25E4%25BA%258B.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B&url=http%3A%2F%2Flocalhost%3A4000%2F%25E4%25BD%2593%25E7%25B3%25BB%25E7%25BB%2593%25E6%259E%2584%2F2016%2F05%2F21%2F%25E6%25AF%258F%25E4%25B8%25AA%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E4%25B8%2593%25E4%25B8%259A%25E5%25AD%25A6%25E7%2594%259F%25E5%25BF%2585%25E9%25A1%25BB%25E7%259F%25A5%25E9%2581%2593%25E7%259A%2584%25E4%25BA%258B.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E5%86%85%E6%A0%B8/2016/05/17/Linux-container-of-%E5%AE%8F%E5%92%8C-offsetof-%E5%AE%8F%E5%88%86%E6%9E%90.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Linux 内核源码中的 container_of 宏和 offsetof 宏分析</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E7%94%9F%E6%B4%BB/2016/06/06/%E6%88%91%E7%9A%84%E4%B9%A6%E5%8D%95.html">
+					<span class="page-number">书单</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/05/21/%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html',
+    'title': '每个计算机专业学生必须知道的事'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

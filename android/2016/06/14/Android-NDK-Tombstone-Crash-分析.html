@@ -10,7 +10,7 @@
   <meta name="description" content="前言作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。通常我们调试程序 Bug 的方法主要有下面 3 种：  打印日志信息 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。  ...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="前言作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。通常我们调试程序 Bug 的方法主要有下面 3 种：  打印日志信息 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。  ..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android NDK Tombstone/Crash 分析" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/androidBg.jpg" />
+  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Android NDK Tombstone/Crash 分析">
   <meta name="twitter:description" content="前言作为程序员，调试 Bug 永远是最痛苦的一件事情，而在所有的 Bug当中访问非法内存又是最最让人崩溃和最难发现的一个问题。通常我们调试程序 Bug 的方法主要有下面 3 种：  打印日志信息 这种方法通过在代码中可能出现 Bug 的位置添加一些日志输出语句来跟踪整个程序的执行过程或者查看关键变量的值等等。  ...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/androidBg.jpg">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/android/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -298,15 +298,14 @@
 
 <p>tombstone 文件位于路径 <em>/data/tombstones/</em> 下，</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code>root@x86:/data/tombstones <span class="c"># ls</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@x86:/data/tombstones <span class="c"># ls</span>
 tombstone_00
 tombstone_01
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>它的主要内容如下所示：</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>*** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 Build fingerprint: 'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'
 Revision: '0'
 ABI: 'x86'
@@ -376,8 +375,7 @@ stack:
          bfcfc184  bfcfc1e8  [stack]
          bfcfc188  b6867140  
          bfcfc18c  b7622b87  /system/lib/libsurfaceflinger.so
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="tombstone-文件解析">tombstone 文件解析</h2>
 <p>第一次看到 tombstone 文件时，我也是一头雾水，一脸懵逼，加上调 Bug 时本来就烦躁的心情，简直不想多看它一眼。但是没办法，导致 Crash 的原因只有在这里才能找到，所以我们硬着头皮也要去分析啊（最好还是在心情比较平静时去调 Bug 吧，这样效率可能会更好一点）。</p>
@@ -398,31 +396,28 @@ stack:
 <h3 id="crashed-process-and-pids-信息">Crashed process and PIDs 信息</h3>
 <p>从上面 tombstone 文件中的第 5 行中我们可以看到 Crash 掉进程的基本信息，如下所示：</p>
 
-<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="nl">pid:</span> <span class="mi">1019</span><span class="p">,</span> <span class="n">tid</span><span class="o">:</span> <span class="mi">1019</span><span class="p">,</span> <span class="n">name</span><span class="o">:</span> <span class="n">surfaceflinger</span>  <span class="o">&gt;&gt;&gt;</span> <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">surfaceflinger</span> <span class="o">&lt;&lt;&lt;</span>
-</code></pre>
-</div>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">pid:</span> <span class="mi">1019</span><span class="p">,</span> <span class="n">tid</span><span class="o">:</span> <span class="mi">1019</span><span class="p">,</span> <span class="n">name</span><span class="o">:</span> <span class="n">surfaceflinger</span>  <span class="o">&gt;&gt;&gt;</span> <span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">surfaceflinger</span> <span class="o">&lt;&lt;&lt;</span>
+</code></pre></div></div>
 
 <p>如果 pid 等于 tid ，那么就说明这个程序是在主线程中 Crash 掉的，name 的属性则表示 Crash 进程的名称以及在文件系统中位置。</p>
 
 <h3 id="terminated-signal-and-fault-address-信息">Terminated signal and fault address 信息</h3>
 <p>在上面 tombstone 文件中的第 6 行中我们可以看到程序是因为什么信号导致了 Crash 以及出现错误的地址，如下所示：</p>
 
-<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="n">signal</span> <span class="mi">11</span> <span class="p">(</span><span class="n">SIGSEGV</span><span class="p">),</span> <span class="n">code</span> <span class="mi">1</span> <span class="p">(</span><span class="n">SEGV_MAPERR</span><span class="p">),</span> <span class="n">fault</span> <span class="n">addr</span> <span class="mh">0x4</span>
-</code></pre>
-</div>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">signal</span> <span class="mi">11</span> <span class="p">(</span><span class="n">SIGSEGV</span><span class="p">),</span> <span class="n">code</span> <span class="mi">1</span> <span class="p">(</span><span class="n">SEGV_MAPERR</span><span class="p">),</span> <span class="n">fault</span> <span class="n">addr</span> <span class="mh">0x4</span>
+</code></pre></div></div>
 <p>这里的信息说明出现进程 Crash 的原因是因为程序产生了段错误的信号，访问了非法的内存空间，而访问的非法地址是 0x4。</p>
 
 <h3 id="call-stack-信息">Call Stack 信息</h3>
 <p>调用栈信息是分析程序崩溃的非常重要的一个信息，它主要记录了程序在 Crash 前的函数调用关系以及当前正在执行函数的信息，它对应的是我们 tombstone 文件中 backtrace 符号开始的信息，上面例子中的 backtrace 的信息如下所示：</p>
 
-<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="nl">backtrace:</span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">backtrace:</span>
     <span class="cp">#00 pc 00006639  /system/lib/libui.so (android::Fence::waitForever(char const*)+41)
 </span>    <span class="cp">#01 pc 00034b86  /system/lib/libsurfaceflinger.so
 </span>    <span class="cp">#02 pc 0003229e  /system/lib/libsurfaceflinger.so
 </span>    <span class="cp">#03 pc 0002cb9c  /system/lib/libgui.so (android::BufferQueue::ProxyConsumerListener::onFrameAvailable(android::BufferItem const&amp;)+652)
 </span>    <span class="cp">#04 pc 000342f4  /system/lib/libgui.so (android::BufferQueueProducer::queueBuffer(int, android::IGraphicBufferProducer::QueueBufferInput const&amp;, android::IGraphicBufferProducer::QueueBufferOutput*)+2580)
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>在上面的输出信息中， ##00，#01，#02……等表示的都是函数调用栈中栈帧的编号，其中编号越小的栈帧表示着当前最近调用的函数信息，所以栈帧标号 #00 表示的就是当前正在执行并导致程序 <strong>Crash</strong> 函数的信息。</p>
 
@@ -446,49 +441,45 @@ stack:
 <h3 id="addr2line">addr2line</h3>
 <p>addr2line 是 NDK 中用来获得指定动态链接库文件或者可执行文件中指定地址对应的源代码信息，它位于 NDK 包中的如下位置中：</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="nv">$NDK_HOME</span>/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line
-</code></pre>
-</div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$NDK_HOME</span>/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line
+</code></pre></div></div>
 <p><strong>其中 NDK_HOME 表示你 NDK 的安装路径。</strong>
 虽然在 Linux 中同样有 addr2line 命令了，但是它与 NDK 中提供的 addr2line 指令还是略有差别的，所以我们可以使用 <strong>alias</strong> 来将 shell 中默认的 addr2line 指令链接的 NDK 的上述路径中，命令如下所示：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nb">alias </span><span class="nv">addr2line</span><span class="o">=</span><span class="s1">'$NDK_HOME/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line'</span>
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">alias </span><span class="nv">addr2line</span><span class="o">=</span><span class="s1">'$NDK_HOME/toolchains/x86-4.6/prebuilt/linux-x86/bin/i686-linux-android-addr2line'</span>
+</code></pre></div></div>
 
 <p>这样之后，我们就可以在 Linux 中的 shell 环境中来直接使用 <strong>addr2line</strong> 命令了。
 addr2line 命令的各个参数的含义如下所示：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ </span>addr2line -h
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib<span class="nv">$ </span>addr2line <span class="nt">-h</span>
 Usage: addr2line <span class="o">[</span>option<span class="o">(</span>s<span class="o">)]</span> <span class="o">[</span>addr<span class="o">(</span>s<span class="o">)]</span>
  Convert addresses into line number/file name pairs.
  If no addresses are specified on the <span class="nb">command </span>line, they will be <span class="nb">read </span>from stdin
  The options are:
   @&lt;file&gt;                Read options from &lt;file&gt;
-  -a --addresses         Show addresses
-  -b --target<span class="o">=</span>&lt;bfdname&gt;  Set the binary file format
-  -e --exe<span class="o">=</span>&lt;executable&gt;  Set the input file name <span class="o">(</span>default is a.out<span class="o">)</span>
-  -i --inlines           Unwind inlined functions
-  -j --section<span class="o">=</span>&lt;name&gt;    Read section-relative offsets instead of addresses
-  -p --pretty-print      Make the output easier to <span class="nb">read </span><span class="k">for </span>humans
-  -s --basenames         Strip directory names
-  -f --functions         Show <span class="k">function </span>names
-  -C --demangle[<span class="o">=</span>style]  Demangle <span class="k">function </span>names
-  -h --help              Display this information
-  -v --version           Display the program<span class="s1">'s version
+  <span class="nt">-a</span> <span class="nt">--addresses</span>         Show addresses
+  <span class="nt">-b</span> <span class="nt">--target</span><span class="o">=</span>&lt;bfdname&gt;  Set the binary file format
+  <span class="nt">-e</span> <span class="nt">--exe</span><span class="o">=</span>&lt;executable&gt;  Set the input file name <span class="o">(</span>default is a.out<span class="o">)</span>
+  <span class="nt">-i</span> <span class="nt">--inlines</span>           Unwind inlined functions
+  <span class="nt">-j</span> <span class="nt">--section</span><span class="o">=</span>&lt;name&gt;    Read section-relative offsets instead of addresses
+  <span class="nt">-p</span> <span class="nt">--pretty-print</span>      Make the output easier to <span class="nb">read </span><span class="k">for </span>humans
+  <span class="nt">-s</span> <span class="nt">--basenames</span>         Strip directory names
+  <span class="nt">-f</span> <span class="nt">--functions</span>         Show <span class="k">function </span>names
+  <span class="nt">-C</span> <span class="nt">--demangle</span><span class="o">[=</span>style]  Demangle <span class="k">function </span>names
+  <span class="nt">-h</span> <span class="nt">--help</span>              Display this information
+  <span class="nt">-v</span> <span class="nt">--version</span>           Display the program<span class="s1">'s version
 
 addr2line: supported targets: elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big elf32-little elf32-big pe-x86-64 pe-i386 plugin srec symbolsrec verilog tekhex binary ihex
 Report bugs to &lt;http://www.sourceware.org/bugzilla/&gt;
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>addr2line 的基本用法如下所示：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib$ </span>addr2line -f -e libui.so 00006639
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/newspace/android-x86/out/target/product/x86/symbols/system/lib<span class="nv">$ </span>addr2line <span class="nt">-f</span> <span class="nt">-e</span> libui.so 00006639
 _ZN7android5Fence11waitForeverEPKc
 /home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>哈哈，使用了 addr2line 工具之后，我们终于看到 libui.so 文件中地址 00006639 对应的源码是什么了，它对应的是 Android 系统源码中 <em>/home/woshijpf/newspace/android-x86/frameworks/native/libs/ui/Fence.cpp:59</em> 处代码（因为上面的 tombstone 文件是由于 Android 系统中的 surfaceFlinger 进程崩溃而产生的，所以它对应的源码也是 Android 系统中有关 SurfaceFlinger 部分的源码）。</p>
 
@@ -497,21 +488,19 @@ _ZN7android5Fence11waitForeverEPKc
 
 <p>ndk-stack 工具同样也位于 NDK 包中，它的路径如下所示：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="nv">$NDK_HOME</span>/ndk-stack
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$NDK_HOME</span>/ndk-stack
+</code></pre></div></div>
 
 <p>ndk-stack 的使用说明如下所示：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>Usage:
-   ndk-stack -sym &lt;path&gt; <span class="o">[</span>-dump &lt;path&gt;]
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage:
+   ndk-stack <span class="nt">-sym</span> &lt;path&gt; <span class="o">[</span><span class="nt">-dump</span> &lt;path&gt;]
 
-      -sym  Contains full path to the root directory <span class="k">for </span>symbols.
-      -dump Contains full path to the file containing the crash dump.
+      <span class="nt">-sym</span>  Contains full path to the root directory <span class="k">for </span>symbols.
+      <span class="nt">-dump</span> Contains full path to the file containing the crash dump.
             This is an optional parameter. If ommited, ndk-stack will
             <span class="nb">read </span>input data from stdin
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>其中，</p>
 
@@ -522,8 +511,8 @@ _ZN7android5Fence11waitForeverEPKc
 
 <p>由于 <strong>ndk-stack</strong> 主要是用来分析用 C++ 编写的单独的 NDK 程序，所以下面就以解析一个 NDK 程序运行时 Crash 后产生的 tombstone 为例，tombstone 文件的内容如下所示：</p>
 
-<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="c1">// tombstone_01 文件内容
-</span><span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// tombstone_01 文件内容</span>
+<span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span> <span class="o">***</span>
 <span class="n">Build</span> <span class="n">fingerprint</span><span class="o">:</span> <span class="err">'</span><span class="n">Android</span><span class="o">-</span><span class="n">x86</span><span class="o">/</span><span class="n">android_x86</span><span class="o">/</span><span class="n">x86</span><span class="o">:</span><span class="mi">5</span><span class="p">.</span><span class="mi">1</span><span class="p">.</span><span class="mi">1</span><span class="o">/</span><span class="n">LMY48W</span><span class="o">/</span><span class="n">woshijpf04211939</span><span class="o">:</span><span class="n">eng</span><span class="o">/</span><span class="n">test</span><span class="o">-</span><span class="n">keys</span><span class="err">'</span>
 <span class="n">Revision</span><span class="o">:</span> <span class="sc">'0'</span>
 <span class="n">ABI</span><span class="o">:</span> <span class="err">'</span><span class="n">x86</span><span class="err">'</span>
@@ -619,15 +608,14 @@ _ZN7android5Fence11waitForeverEPKc
          <span class="n">bfa9bf34</span>  <span class="n">bfa9cbdc</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
          <span class="n">bfa9bf38</span>  <span class="n">bfa9cbe7</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
          <span class="n">bfa9bf3c</span>  <span class="n">bfa9cbfd</span>  <span class="p">[</span><span class="n">stack</span><span class="p">]</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>使用 <strong>ndk-stack</strong> 处理之后的结果：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/android_workspace/droidVNCserver-real$ </span>ndk-stack -sym obj/local/x86/ -dump ~/android-x86-debug-log/tombstone_01
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/android_workspace/droidVNCserver-real<span class="nv">$ </span>ndk-stack <span class="nt">-sym</span> obj/local/x86/ <span class="nt">-dump</span> ~/android-x86-debug-log/tombstone_01
 <span class="k">**********</span> Crash dump: <span class="k">**********</span>
 Build fingerprint: <span class="s1">'Android-x86/android_x86/x86:5.1.1/LMY48W/woshijpf04211939:eng/test-keys'</span>
-pid: 2125, tid: 2125, name: androidvncserve  &gt;&gt;&gt; androidvncserver <span class="o">&lt;&lt;&lt;</span>
+pid: 2125, tid: 2125, name: androidvncserve  <span class="o">&gt;&gt;&gt;</span> androidvncserver <span class="o">&lt;&lt;&lt;</span>
 signal 11 <span class="o">(</span>SIGSEGV<span class="o">)</span>, code 1 <span class="o">(</span>SEGV_MAPERR<span class="o">)</span>, fault addr 0x0
 Stack frame <span class="c">#00 pc 0004bec5  /system/bin/androidvncserver: Routine update_screen_16 in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/updateScreen.c:68</span>
 Stack frame <span class="c">#01 pc 0004e3e4  /system/bin/androidvncserver: Routine main in /home/woshijpf/android_workspace/droidVNCserver-real/jni/vnc/droidvncserver.c:805</span>
@@ -646,8 +634,7 @@ Stack frame <span class="c">#02 pc 00022168  /system/lib/libc.so (__pthread_star
 Stack frame <span class="c">#03 pc 0001cc69  /system/lib/libc.so (__start_thread+25)</span>
 Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone+70)</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>经过 <strong>ndk-stack</strong>地这么处理之后，我们就非常直接明了地看到了每个栈帧中调用函数的内存地址和程序源码的关系。是不是感觉很爽啊！</p>
 
@@ -709,7 +696,7 @@ Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone
   
     
     
-      <a href="//twitter.com/share?text=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -724,7 +711,7 @@ Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&u=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -749,7 +736,7 @@ Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -773,7 +760,7 @@ Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html&media=http://woshijpf.github.io/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+NDK+Tombstone%2FCrash+%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F06%2F14%2FAndroid-NDK-Tombstone-Crash-%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -786,7 +773,7 @@ Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/%E7%94%9F%E6%B4%BB/2016/06/05/%E6%88%91%E7%9A%84%E4%B9%A6%E5%8D%95.html">
+				<a href="/%E7%94%9F%E6%B4%BB/2016/06/06/%E6%88%91%E7%9A%84%E4%B9%A6%E5%8D%95.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
@@ -797,7 +784,7 @@ Stack frame <span class="c">#04 pc 000137c6  /system/lib/libc.so (__bionic_clone
 		</span>
 		<span class="next-post">
 			
-				<a href="/linux/2016/07/07/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html">
+				<a href="/linux/2016/07/08/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html">
 					<span class="page-number">Linux 中的 EOF 到底是什么？</span>
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>

@@ -10,7 +10,7 @@
   <meta name="description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/androidBg.jpg" />
+  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程">
   <meta name="twitter:description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/androidBg.jpg">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -235,10 +235,9 @@
 <h3 id="22-opengl-esegl-实现库">2.2 OpenGL ES/EGL 实现库</h3>
 <p>如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以<code class="highlighter-rouge">.so</code>的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：</p>
 
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code>flounder:/vendor/lib64/egl <span class="c"># ls</span>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>flounder:/vendor/lib64/egl <span class="c"># ls</span>
 libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： <code class="highlighter-rouge">/system/lib64/egl/libGLES_android.so</code>。而 <code class="highlighter-rouge">libGLES_android.so</code> 库在 Android 7.1 系统对应的实现源码路径为：<em>/frameworks/native/opengl/libagl/</em> 。</p>
 
@@ -275,7 +274,7 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
   <li>
     <p>首先，<code class="highlighter-rouge">Loader::open()</code> 入口函数会调用 <code class="highlighter-rouge">setEmulatorGlesValue()</code> 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：</p>
 
-    <div class="highlighter-rouge"><pre class="highlight"><code> static void setEmulatorGlesValue(void) {
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static void setEmulatorGlesValue(void) {
      char prop[PROPERTY_VALUE_MAX];
      property_get("ro.kernel.qemu", prop, "0"); //读取 ro.kernel.qemu 属性值，判断Android系统是否运行在 qemu 中
      if (atoi(prop) != 1) return;
@@ -307,13 +306,12 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
          property_set("qemu.gles", "0"); //最后，默认采取的是方案就是调用传统的Android系统自己编译得到软件模拟渲染库
      }
  }
-</code></pre>
-    </div>
+</code></pre></div>    </div>
   </li>
   <li>
     <p>在 <code class="highlighter-rouge">load_system_driver()</code> 函数中，内部类 MatchFile 类中会调用 <code class="highlighter-rouge">checkGlesEmulationStatus()</code> 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：</p>
 
-    <div class="highlighter-rouge"><pre class="highlight"><code> static void* load_system_driver(const char* kind) {
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static void* load_system_driver(const char* kind) {
      ATRACE_CALL();
      class MatchFile {
      public:
@@ -359,10 +357,9 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
      }
         
  }
-</code></pre>
-    </div>
+</code></pre></div>    </div>
 
-    <div class="highlighter-rouge"><pre class="highlight"><code> static int
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static int
  checkGlesEmulationStatus(void)
  {
      /* We're going to check for the following kernel parameters:
@@ -392,8 +389,7 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
      property_get("qemu.gles", prop, "0"); // 如果 Android 系统运行在 qemu 中，就返回 qemu.gles 的值，根据这个值就可以确定加载的是那种 OpenGL ES 库了
      return atoi(prop);
  }
-</code></pre>
-    </div>
+</code></pre></div>    </div>
   </li>
   <li>
     <p>总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 <strong>emulationStatus</strong> 值 来确定是加软件模拟实现的 OpenGL ES API 库 <code class="highlighter-rouge">libGLES_android.so</code>，还是加载 <code class="highlighter-rouge">libGLES_emulation.so</code>库将 OpenGL ES 指令重定向到 Host 系统中去执行。</p>
@@ -425,34 +421,32 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <p>struct egl_connection_t 类型的 gEGLImpl 全局变量是一个非常重要变量，它里面的成员指向了打开的 OpenGL ES/EGL Wrapper 库和 OpenGL ES/EGL 实现库：
 <em>/frameworks/native/opengl/libs/EGL/egl.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">egl_connection_t</span> <span class="n">gEGLImpl</span><span class="p">;</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">egl_connection_t</span> <span class="n">gEGLImpl</span><span class="p">;</span>
 <span class="n">gl_hooks_t</span> <span class="n">gHooks</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 <span class="n">gl_hooks_t</span> <span class="n">gHooksNoContext</span><span class="p">;</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>其中 egl_connection_t 的定义：
 <em>/frameworks/native/opengl/libs/EGL/egldefs.h</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="k">struct</span> <span class="n">egl_connection_t</span> <span class="p">{</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">egl_connection_t</span> <span class="p">{</span>
     <span class="k">enum</span> <span class="p">{</span>
         <span class="n">GLESv1_INDEX</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">GLESv2_INDEX</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="p">};</span>
 
-    <span class="kr">inline</span> <span class="nf">egl_connection_t</span><span class="p">()</span> <span class="o">:</span> <span class="n">dso</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
-    <span class="kt">void</span> <span class="o">*</span>              <span class="n">dso</span><span class="p">;</span> <span class="c1">//指向打开的共享链接库的句柄
-</span>    <span class="n">gl_hooks_t</span> <span class="o">*</span>        <span class="n">hooks</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">//指向打开的 OpenGL ES API 对象
-</span>    <span class="n">EGLint</span>              <span class="n">major</span><span class="p">;</span> <span class="c1">// 主版本好
-</span>    <span class="n">EGLint</span>              <span class="n">minor</span><span class="p">;</span>
-    <span class="n">egl_t</span>               <span class="n">egl</span><span class="p">;</span> <span class="c1">//dui x
-</span>
+    <span class="kr">inline</span> <span class="n">egl_connection_t</span><span class="p">()</span> <span class="o">:</span> <span class="n">dso</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="o">*</span>              <span class="n">dso</span><span class="p">;</span> <span class="c1">//指向打开的共享链接库的句柄</span>
+    <span class="n">gl_hooks_t</span> <span class="o">*</span>        <span class="n">hooks</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">//指向打开的 OpenGL ES API 对象</span>
+    <span class="n">EGLint</span>              <span class="n">major</span><span class="p">;</span> <span class="c1">// 主版本好</span>
+    <span class="n">EGLint</span>              <span class="n">minor</span><span class="p">;</span>
+    <span class="n">egl_t</span>               <span class="n">egl</span><span class="p">;</span> <span class="c1">//dui x</span>
+
     <span class="kt">void</span><span class="o">*</span>               <span class="n">libEgl</span><span class="p">;</span>
     <span class="kt">void</span><span class="o">*</span>               <span class="n">libGles1</span><span class="p">;</span>
     <span class="kt">void</span><span class="o">*</span>               <span class="n">libGles2</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>下面就对其中的主要成员进行一个说明：</p>
 
@@ -466,7 +460,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <p><strong>gl_hook_t</strong> 和 <strong>egl_t</strong> 的定义如下所示：
 <em>/frameworks/native/opengl/libs/hooks.h</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="cp">#define GL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define GL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
 #define EGL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
 </span>
 <span class="k">struct</span> <span class="n">egl_t</span> <span class="p">{</span>
@@ -478,12 +472,11 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
         <span class="cp">#include "entries.in"
 </span>    <span class="p">}</span> <span class="n">gl</span><span class="p">;</span>
     <span class="k">struct</span> <span class="n">gl_ext_t</span> <span class="p">{</span>
-        <span class="c1">// __eglMustCastToProperFunctionPointerType 是一个 typedef 的函数指针类型，它的返回值是void，参数也是void
-</span>        <span class="n">__eglMustCastToProperFunctionPointerType</span> <span class="n">extensions</span><span class="p">[</span><span class="n">MAX_NUMBER_OF_GL_EXTENSIONS</span><span class="p">];</span>
+        <span class="c1">// __eglMustCastToProperFunctionPointerType 是一个 typedef 的函数指针类型，它的返回值是void，参数也是void</span>
+        <span class="n">__eglMustCastToProperFunctionPointerType</span> <span class="n">extensions</span><span class="p">[</span><span class="n">MAX_NUMBER_OF_GL_EXTENSIONS</span><span class="p">];</span>
     <span class="p">}</span> <span class="n">ext</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>从上面的定义中我们发现，egl_t 和 gl_hooks_t 这两个结构体中主要就是一个 include 语句，那么它们包含的是什么呢？</p>
 
@@ -491,50 +484,45 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 包含的文件路径如下所示：
 <em>/frameworks/native/opengl/libs/EGL/egl_entries.in</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLDisplay</span><span class="p">,</span> <span class="n">eglGetDisplay</span><span class="p">,</span> <span class="n">NativeDisplayType</span><span class="p">)</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLDisplay</span><span class="p">,</span> <span class="n">eglGetDisplay</span><span class="p">,</span> <span class="n">NativeDisplayType</span><span class="p">)</span>
 <span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLBoolean</span><span class="p">,</span> <span class="n">eglInitialize</span><span class="p">,</span> <span class="n">EGLDisplay</span><span class="p">,</span> <span class="n">EGLint</span><span class="o">*</span><span class="p">,</span> <span class="n">EGLint</span><span class="o">*</span><span class="p">)</span>
 <span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLBoolean</span><span class="p">,</span> <span class="n">eglTerminate</span><span class="p">,</span> <span class="n">EGLDisplay</span><span class="p">)</span>
 <span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLBoolean</span><span class="p">,</span> <span class="n">eglGetConfigs</span><span class="p">,</span> <span class="n">EGLDisplay</span><span class="p">,</span> <span class="n">EGLConfig</span><span class="o">*</span><span class="p">,</span> <span class="n">EGLint</span><span class="p">,</span> <span class="n">EGLint</span><span class="o">*</span><span class="p">)</span>
 <span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLBoolean</span><span class="p">,</span> <span class="n">eglChooseConfig</span><span class="p">,</span> <span class="n">EGLDisplay</span><span class="p">,</span> <span class="k">const</span> <span class="n">EGLint</span> <span class="o">*</span><span class="p">,</span> <span class="n">EGLConfig</span> <span class="o">*</span><span class="p">,</span> <span class="n">EGLint</span><span class="p">,</span> <span class="n">EGLint</span> <span class="o">*</span><span class="p">)</span>
 <span class="p">...</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在这个文件中，我们可以看到所有的内容都是 EGL_ENTRY 宏定义的，根据 EGL_ENTRY 宏定义：
 <em>/frameworks/native/opengl/libs/EGL/hooks.h</em></p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
 //这些函数变量最后会和具体的 OpenGL 和 EGL API 的实现绑定在一起
 #define GL_ENTRY(_r,_api,...) _r (*_api)(__VA_ARGS__);
 #define EGL_ENTRY(_r,_api,...) _r(*_api)(__VA_ARGS__);
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>我们可以将下面的这个宏定义展开成如下的形式:</p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLDisplay</span><span class="p">,</span> <span class="n">eglGetDisplay</span><span class="p">,</span> <span class="n">NativeDisplayType</span><span class="p">)</span>
-<span class="c1">//展开后的形式如下所示，它实际上就是 EGL API 函数声明
-</span><span class="n">EGLDisplay</span> <span class="n">eglGetDisplay</span><span class="p">(</span><span class="n">NativeDisplayType</span><span class="p">)</span>
-</code></pre>
-</div>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EGL_ENTRY</span><span class="p">(</span><span class="n">EGLDisplay</span><span class="p">,</span> <span class="n">eglGetDisplay</span><span class="p">,</span> <span class="n">NativeDisplayType</span><span class="p">)</span>
+<span class="c1">//展开后的形式如下所示，它实际上就是 EGL API 函数声明</span>
+<span class="n">EGLDisplay</span> <span class="n">eglGetDisplay</span><span class="p">(</span><span class="n">NativeDisplayType</span><span class="p">)</span>
+</code></pre></div></div>
 
 <p><strong>#include “entries.in”</strong>
 包含的文件路径为：
 <em>/frameworks/native/opengl/libs/entries.in</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="p">...</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">...</span>
 <span class="n">GL_ENTRY</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">glReadPixels</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">x</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">y</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">width</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">height</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">format</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">pixels</span><span class="p">)</span>
 <span class="p">...</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>和上面的 EGL_ENTRY 一样，GL_ENTRY 都是通过宏定义的形式来将 OpenGL ES 的 API 函数接口进行声明，例如，上面的宏定义声明可以展开成下面的形式：</p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">GL_ENTRY</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">glReadPixels</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">x</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">y</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">width</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">height</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">format</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">pixels</span><span class="p">)</span>
-<span class="c1">// 展开后的形式如下所示，它实际上就是 OpenGL ES API 函数声明
-</span><span class="kt">void</span> <span class="n">glReadPixels</span><span class="p">(</span><span class="n">GLint</span> <span class="n">x</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">y</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">width</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">height</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">format</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">pixels</span><span class="p">)</span>
-</code></pre>
-</div>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">GL_ENTRY</span><span class="p">(</span><span class="kt">void</span><span class="p">,</span> <span class="n">glReadPixels</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">x</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">y</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">width</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">height</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">format</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">pixels</span><span class="p">)</span>
+<span class="c1">// 展开后的形式如下所示，它实际上就是 OpenGL ES API 函数声明</span>
+<span class="kt">void</span> <span class="n">glReadPixels</span><span class="p">(</span><span class="n">GLint</span> <span class="n">x</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">y</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">width</span><span class="p">,</span> <span class="n">GLsizei</span> <span class="n">height</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">format</span><span class="p">,</span> <span class="n">GLenum</span> <span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">pixels</span><span class="p">)</span>
+</code></pre></div></div>
 
 <p>最后，通过 entries.in 和 egl_entries.in 这两个文件，我们就可以得到 OpenGL ES 和 EGL 中的所有 API 函数接口的说明。</p>
 
@@ -544,94 +532,90 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <p>SurfaceFlinger 中调用 <code class="highlighter-rouge">eglGetDisplay()</code> 初始化 mEGLDisplay 的代码如下：
 <em>/frameworks/native/services/surfaceflinger/SurfaceFlinger.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="kt">void</span> <span class="n">SurfaceFlinger</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">{</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">SurfaceFlinger</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">ALOGI</span><span class="p">(</span>  <span class="s">"SurfaceFlinger's main thread ready to run. "</span>
             <span class="s">"Initializing graphics H/W..."</span><span class="p">);</span>
 
     <span class="n">status_t</span> <span class="n">err</span><span class="p">;</span>
     <span class="n">Mutex</span><span class="o">::</span><span class="n">Autolock</span> <span class="n">_l</span><span class="p">(</span><span class="n">mStateLock</span><span class="p">);</span>
 
-    <span class="c1">// initialize EGL for the default display
-</span>    <span class="c1">// 调用 eglGetDisplay 函数获取默认的显示设备
-</span>    <span class="n">mEGLDisplay</span> <span class="o">=</span> <span class="n">eglGetDisplay</span><span class="p">(</span><span class="n">EGL_DEFAULT_DISPLAY</span><span class="p">);</span> 
+    <span class="c1">// initialize EGL for the default display</span>
+    <span class="c1">// 调用 eglGetDisplay 函数获取默认的显示设备</span>
+    <span class="n">mEGLDisplay</span> <span class="o">=</span> <span class="n">eglGetDisplay</span><span class="p">(</span><span class="n">EGL_DEFAULT_DISPLAY</span><span class="p">);</span> 
     <span class="n">eglInitialize</span><span class="p">(</span><span class="n">mEGLDisplay</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
     <span class="p">...</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>紧接着在 <code class="highlighter-rouge">eglGetDisplay()</code> 中调用 <code class="highlighter-rouge">egl_init_drivers()</code>
 <em>/frameworks/native/opengl/libs/EGL/eglApi.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">EGLDisplay</span> <span class="nf">eglGetDisplay</span><span class="p">(</span><span class="n">EGLNativeDisplayType</span> <span class="n">display</span><span class="p">)</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EGLDisplay</span> <span class="nf">eglGetDisplay</span><span class="p">(</span><span class="n">EGLNativeDisplayType</span> <span class="n">display</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="p">...</span>
-    <span class="c1">// 调用egl_init_drivers() 加载 OpenGL ES 库和 EGL 库
-</span>    <span class="k">if</span> <span class="p">(</span><span class="n">egl_init_drivers</span><span class="p">()</span> <span class="o">==</span> <span class="n">EGL_FALSE</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 调用egl_init_drivers() 加载 OpenGL ES 库和 EGL 库</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">egl_init_drivers</span><span class="p">()</span> <span class="o">==</span> <span class="n">EGL_FALSE</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">setError</span><span class="p">(</span><span class="n">EGL_BAD_PARAMETER</span><span class="p">,</span> <span class="n">EGL_NO_DISPLAY</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="n">EGLDisplay</span> <span class="n">dpy</span> <span class="o">=</span> <span class="n">egl_display_t</span><span class="o">::</span><span class="n">getFromNativeDisplay</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">dpy</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>最后，<code class="highlighter-rouge">egl_init_drivers()</code> 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 <code class="highlighter-rouge">egl_init_drivers_locked()</code> 函数
 <em>/frameworks/native/opengl/libs/EGL/egl.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="n">EGLBoolean</span> <span class="nf">egl_init_drivers</span><span class="p">()</span> <span class="p">{</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EGLBoolean</span> <span class="nf">egl_init_drivers</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">EGLBoolean</span> <span class="n">res</span><span class="p">;</span>
     <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sInitDriverMutex</span><span class="p">);</span>
-    <span class="c1">// 使用了 pthread_mutex_lock 上锁保护，继续调用 egl_init_drivers_locked
-</span>    <span class="n">res</span> <span class="o">=</span> <span class="n">egl_init_drivers_locked</span><span class="p">();</span>
+    <span class="c1">// 使用了 pthread_mutex_lock 上锁保护，继续调用 egl_init_drivers_locked</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">egl_init_drivers_locked</span><span class="p">();</span>
     <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sInitDriverMutex</span><span class="p">);</span>
     <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>下面就是对 <code class="highlighter-rouge">egl_init_drivers_locked()</code> 函数进行一个分析：</p>
 
 <p>egl_init_drivers_locked() 函数代码如下所示：
 <em>/frameworks/native/opengl/libs/EGL/egl.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">//在该文件起始位置定义的全局变量
-</span><span class="n">egl_connection_t</span> <span class="n">gEGLImpl</span><span class="p">;</span> <span class="c1">// 描述EGL实现内容的结构体对象
-</span><span class="n">gl_hooks_t</span> <span class="n">gHooks</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">// gl_hooks_t 是包含 OpenGL ES API 函数声明对应的函数指针结构体
-</span><span class="n">gl_hooks_t</span> <span class="n">gHooksNoContext</span><span class="p">;</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//在该文件起始位置定义的全局变量</span>
+<span class="n">egl_connection_t</span> <span class="n">gEGLImpl</span><span class="p">;</span> <span class="c1">// 描述EGL实现内容的结构体对象</span>
+<span class="n">gl_hooks_t</span> <span class="n">gHooks</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span> <span class="c1">// gl_hooks_t 是包含 OpenGL ES API 函数声明对应的函数指针结构体</span>
+<span class="n">gl_hooks_t</span> <span class="n">gHooksNoContext</span><span class="p">;</span>
 <span class="n">pthread_key_t</span> <span class="n">gGLWrapperKey</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 
 <span class="k">static</span> <span class="n">EGLBoolean</span> <span class="nf">egl_init_drivers_locked</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">sEarlyInitState</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// initialized by static ctor. should be set here.
-</span>        <span class="k">return</span> <span class="n">EGL_FALSE</span><span class="p">;</span>
+        <span class="c1">// initialized by static ctor. should be set here.</span>
+        <span class="k">return</span> <span class="n">EGL_FALSE</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="c1">// 得到 Loader 对象单例
-</span>    <span class="c1">// get our driver loader
-</span>    <span class="n">Loader</span><span class="o">&amp;</span> <span class="n">loader</span><span class="p">(</span><span class="n">Loader</span><span class="o">::</span><span class="n">getInstance</span><span class="p">());</span>
+    <span class="c1">// 得到 Loader 对象单例</span>
+    <span class="c1">// get our driver loader</span>
+    <span class="n">Loader</span><span class="o">&amp;</span> <span class="n">loader</span><span class="p">(</span><span class="n">Loader</span><span class="o">::</span><span class="n">getInstance</span><span class="p">());</span>
 
-    <span class="c1">//  gEGLImple 是一个全局变量，数据类型为 egl_connection_t 结构体类型
-</span>    <span class="c1">// dynamically load our EGL implementation
-</span>    <span class="n">egl_connection_t</span><span class="o">*</span> <span class="n">cnx</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">gEGLImpl</span><span class="p">;</span>
+    <span class="c1">//  gEGLImple 是一个全局变量，数据类型为 egl_connection_t 结构体类型</span>
+    <span class="c1">// dynamically load our EGL implementation</span>
+    <span class="n">egl_connection_t</span><span class="o">*</span> <span class="n">cnx</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">gEGLImpl</span><span class="p">;</span>
 
-    <span class="c1">// cnx-&gt;dso 本质上是一个 (void *)类型的指针，它指向的对象是 EGL 共享库打开之后的句柄
-</span>    <span class="k">if</span> <span class="p">(</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">dso</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> 
-        <span class="c1">// &gt;= 将cnx中的 hooks 数组中指向OpenGL ES API 函数指针结构体指的数组成员，用 gHooks 中的成员的地址去初始化
-</span>        <span class="c1">//也就是说 gEGLImpl 中 hook 数组指向 gHooks 数组，最终指向同一个 OpenGL ES API 函数指针的实现
-</span>        <span class="n">cnx</span><span class="o">-&gt;</span><span class="n">hooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv1_INDEX</span><span class="p">]</span> <span class="o">=</span>
+    <span class="c1">// cnx-&gt;dso 本质上是一个 (void *)类型的指针，它指向的对象是 EGL 共享库打开之后的句柄</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">dso</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="c1">// &gt;= 将cnx中的 hooks 数组中指向OpenGL ES API 函数指针结构体指的数组成员，用 gHooks 中的成员的地址去初始化</span>
+        <span class="c1">//也就是说 gEGLImpl 中 hook 数组指向 gHooks 数组，最终指向同一个 OpenGL ES API 函数指针的实现</span>
+        <span class="n">cnx</span><span class="o">-&gt;</span><span class="n">hooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv1_INDEX</span><span class="p">]</span> <span class="o">=</span>
             <span class="o">&amp;</span><span class="n">gHooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv1_INDEX</span><span class="p">];</span>
         <span class="n">cnx</span><span class="o">-&gt;</span><span class="n">hooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv2_INDEX</span><span class="p">]</span> <span class="o">=</span>
             <span class="o">&amp;</span><span class="n">gHooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv2_INDEX</span><span class="p">];</span>
 
-        <span class="c1">// &gt;= 最后通过loader对象的open函数开始加载 OpenGL ES 和 EGL wrapper 库
-</span>        <span class="n">cnx</span><span class="o">-&gt;</span><span class="n">dso</span> <span class="o">=</span> <span class="n">loader</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">cnx</span><span class="p">);</span>
+        <span class="c1">// &gt;= 最后通过loader对象的open函数开始加载 OpenGL ES 和 EGL wrapper 库</span>
+        <span class="n">cnx</span><span class="o">-&gt;</span><span class="n">dso</span> <span class="o">=</span> <span class="n">loader</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">cnx</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="k">return</span> <span class="n">cnx</span><span class="o">-&gt;</span><span class="n">dso</span> <span class="o">?</span> <span class="n">EGL_TRUE</span> <span class="o">:</span> <span class="n">EGL_FALSE</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在这个函数中，有一个非常关键的 egl_connection_t 指针指向一个全局变量 gEGLImpl，当第一次初始化加载 OpenGL ES 实现库和 EGL 实现库时，还需要将 gEGLImpl 中的 hooks 数组中的两个指针指向一个全局的 gl_hooks_t 数组 gHooks（这就是两个指针钩子，最终初始化完成后将分别勾住 OpenGL ES 1.0 和 OpenGL ES 2.0 的实现库），接着调用 Loader 类的实例的 open() 函数完成从 OpenGL ES 实现库中完成符号解析工作。</p>
 
@@ -640,8 +624,8 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <p>Loader::open() 函数的代码如下所示：
 <em>/frameworks/native/opengl/libs/EGL/Loader.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="c1">// &gt;= Loader 类对象构造完成后，就在 /EGL/egl.cpp 文件中的 egl_init_drivers_locked() 中被调用
-</span><span class="kt">void</span><span class="o">*</span> <span class="n">Loader</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="n">egl_connection_t</span><span class="o">*</span> <span class="n">cnx</span><span class="p">)</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// &gt;= Loader 类对象构造完成后，就在 /EGL/egl.cpp 文件中的 egl_init_drivers_locked() 中被调用</span>
+<span class="kt">void</span><span class="o">*</span> <span class="n">Loader</span><span class="o">::</span><span class="n">open</span><span class="p">(</span><span class="n">egl_connection_t</span><span class="o">*</span> <span class="n">cnx</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">ATRACE_CALL</span><span class="p">();</span>
 
@@ -654,8 +638,8 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
     <span class="k">if</span> <span class="p">(</span><span class="n">dso</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">hnd</span> <span class="o">=</span> <span class="k">new</span> <span class="n">driver_t</span><span class="p">(</span><span class="n">dso</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="c1">// Always load EGL first
-</span>        <span class="n">dso</span> <span class="o">=</span> <span class="n">load_driver</span><span class="p">(</span><span class="s">"EGL"</span><span class="p">,</span> <span class="n">cnx</span><span class="p">,</span> <span class="n">EGL</span><span class="p">);</span>
+        <span class="c1">// Always load EGL first</span>
+        <span class="n">dso</span> <span class="o">=</span> <span class="n">load_driver</span><span class="p">(</span><span class="s">"EGL"</span><span class="p">,</span> <span class="n">cnx</span><span class="p">,</span> <span class="n">EGL</span><span class="p">);</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">dso</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">hnd</span> <span class="o">=</span> <span class="k">new</span> <span class="n">driver_t</span><span class="p">(</span><span class="n">dso</span><span class="p">);</span>
             <span class="n">hnd</span><span class="o">-&gt;</span><span class="n">set</span><span class="p">(</span> <span class="n">load_driver</span><span class="p">(</span><span class="s">"GLESv1_CM"</span><span class="p">,</span> <span class="n">cnx</span><span class="p">,</span> <span class="n">GLESv1_CM</span><span class="p">),</span> <span class="n">GLESv1_CM</span> <span class="p">);</span>
@@ -677,15 +661,14 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 
     <span class="k">return</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="n">hnd</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><code class="highlighter-rouge">open()</code> 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。</p>
 
 <p><code class="highlighter-rouge">Loader::load_driver()</code> 函数代码如下所示：
 <em>/frameworks/native/opengl/libs/EGL/Loader.cpp</em></p>
 
-<div class="language-c++ highlighter-rouge"><pre class="highlight"><code><span class="kt">void</span> <span class="o">*</span><span class="n">Loader</span><span class="o">::</span><span class="n">load_driver</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">kind</span><span class="p">,</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="o">*</span><span class="n">Loader</span><span class="o">::</span><span class="n">load_driver</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">kind</span><span class="p">,</span>
                           <span class="n">egl_connection_t</span><span class="o">*</span> <span class="n">cnx</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">mask</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="n">ATRACE_CALL</span><span class="p">();</span>
@@ -694,8 +677,8 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
     <span class="k">if</span> <span class="p">(</span><span class="n">mGetDriverNamespace</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">android_namespace_t</span><span class="o">*</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">mGetDriverNamespace</span><span class="p">();</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">ns</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">dso</span> <span class="o">=</span> <span class="n">load_updated_driver</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ns</span><span class="p">);</span> <span class="c1">//加载 OpenGL ES 实现库，放回打开的共享链接库的句柄
-</span>        <span class="p">}</span>
+            <span class="n">dso</span> <span class="o">=</span> <span class="n">load_updated_driver</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ns</span><span class="p">);</span> <span class="c1">//加载 OpenGL ES 实现库，放回打开的共享链接库的句柄</span>
+        <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dso</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">dso</span> <span class="o">=</span> <span class="n">load_system_driver</span><span class="p">(</span><span class="n">kind</span><span class="p">);</span>
@@ -703,44 +686,44 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
             <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="c1">// 解析 EGL 库，并将wrapper 库 libEGL.so 中的函数 API 指针和具体的实现绑定在一起
-</span>    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">EGL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 解析 EGL 库，并将wrapper 库 libEGL.so 中的函数 API 指针和具体的实现绑定在一起</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">EGL</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">getProcAddress</span> <span class="o">=</span> <span class="p">(</span><span class="n">getProcAddressType</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dso</span><span class="p">,</span> <span class="s">"eglGetProcAddress"</span><span class="p">);</span>
 
         <span class="n">ALOGE_IF</span><span class="p">(</span><span class="o">!</span><span class="n">getProcAddress</span><span class="p">,</span>
                  <span class="s">"can't find eglGetProcAddress() in EGL driver library"</span><span class="p">);</span>
 
-        <span class="n">egl_t</span><span class="o">*</span> <span class="n">egl</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">egl</span><span class="p">;</span> <span class="c1">//将 egl 指针指向描述当前系统支持 OpenGL ES和 EGL 全局变量的 gEGLImpl
-</span>        <span class="n">__eglMustCastToProperFunctionPointerType</span><span class="o">*</span> <span class="n">curr</span> <span class="o">=</span>
+        <span class="n">egl_t</span><span class="o">*</span> <span class="n">egl</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">egl</span><span class="p">;</span> <span class="c1">//将 egl 指针指向描述当前系统支持 OpenGL ES和 EGL 全局变量的 gEGLImpl</span>
+        <span class="n">__eglMustCastToProperFunctionPointerType</span><span class="o">*</span> <span class="n">curr</span> <span class="o">=</span>
             <span class="p">(</span><span class="n">__eglMustCastToProperFunctionPointerType</span><span class="o">*</span><span class="p">)</span><span class="n">egl</span><span class="p">;</span>
-        <span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="o">*</span> <span class="n">api</span> <span class="o">=</span> <span class="n">egl_names</span><span class="p">;</span> <span class="c1">//egl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 EGL API 函数指针
-</span>        <span class="k">while</span> <span class="p">(</span><span class="o">*</span><span class="n">api</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="o">*</span> <span class="n">api</span> <span class="o">=</span> <span class="n">egl_names</span><span class="p">;</span> <span class="c1">//egl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 EGL API 函数指针</span>
+        <span class="k">while</span> <span class="p">(</span><span class="o">*</span><span class="n">api</span><span class="p">)</span> <span class="p">{</span>
             <span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="n">name</span> <span class="o">=</span> <span class="o">*</span><span class="n">api</span><span class="p">;</span>
             <span class="n">__eglMustCastToProperFunctionPointerType</span> <span class="n">f</span> <span class="o">=</span>
                 <span class="p">(</span><span class="n">__eglMustCastToProperFunctionPointerType</span><span class="p">)</span><span class="n">dlsym</span><span class="p">(</span><span class="n">dso</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">f</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-                <span class="c1">// couldn't find the entry-point, use eglGetProcAddress()
-</span>                <span class="n">f</span> <span class="o">=</span> <span class="n">getProcAddress</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+                <span class="c1">// couldn't find the entry-point, use eglGetProcAddress()</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">getProcAddress</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">f</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
                     <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="n">__eglMustCastToProperFunctionPointerType</span><span class="p">)</span><span class="mi">0</span><span class="p">;</span>
                 <span class="p">}</span>
             <span class="p">}</span>
-            <span class="o">*</span><span class="n">curr</span><span class="o">++</span> <span class="o">=</span> <span class="n">f</span><span class="p">;</span> <span class="c1">//这一步就是最关键的将共享链接库中的 EGL API 的实现和上层调用的 API 函数指针绑定在一起
-</span>            <span class="n">api</span><span class="o">++</span><span class="p">;</span> <span class="c1">//指向下一个需要绑定的 api 函数
-</span>        <span class="p">}</span>
+            <span class="o">*</span><span class="n">curr</span><span class="o">++</span> <span class="o">=</span> <span class="n">f</span><span class="p">;</span> <span class="c1">//这一步就是最关键的将共享链接库中的 EGL API 的实现和上层调用的 API 函数指针绑定在一起</span>
+            <span class="n">api</span><span class="o">++</span><span class="p">;</span> <span class="c1">//指向下一个需要绑定的 api 函数</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 
-    <span class="c1">// 解析 OpenGL ES 库中的 OpenGL ES 1.x API 符号
-</span>    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">GLESv1_CM</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// 调用 init_api 实现 OpenGL API 和对应实现函数的绑定
-</span>        <span class="n">init_api</span><span class="p">(</span><span class="n">dso</span><span class="p">,</span> <span class="n">gl_names</span><span class="p">,</span> <span class="c1">// gl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 OpenGL ES API 函数指针
-</span>                 <span class="p">(</span><span class="n">__eglMustCastToProperFunctionPointerType</span><span class="o">*</span><span class="p">)</span>
-                 <span class="o">&amp;</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">hooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv1_INDEX</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">gl</span><span class="p">,</span> <span class="c1">//gl成员变量是一个结构体变量，结构体中的是 OpenGL ES API 函数指针
-</span>                 <span class="n">getProcAddress</span><span class="p">);</span>
+    <span class="c1">// 解析 OpenGL ES 库中的 OpenGL ES 1.x API 符号</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">GLESv1_CM</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 调用 init_api 实现 OpenGL API 和对应实现函数的绑定</span>
+        <span class="n">init_api</span><span class="p">(</span><span class="n">dso</span><span class="p">,</span> <span class="n">gl_names</span><span class="p">,</span> <span class="c1">// gl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 OpenGL ES API 函数指针</span>
+                 <span class="p">(</span><span class="n">__eglMustCastToProperFunctionPointerType</span><span class="o">*</span><span class="p">)</span>
+                 <span class="o">&amp;</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">hooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv1_INDEX</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">gl</span><span class="p">,</span> <span class="c1">//gl成员变量是一个结构体变量，结构体中的是 OpenGL ES API 函数指针</span>
+                 <span class="n">getProcAddress</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="c1">// 解析 OpenGL ES 库中的 OpenGL ES 2.0 API 符号
-</span>    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">GLESv2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 解析 OpenGL ES 库中的 OpenGL ES 2.0 API 符号</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="n">GLESv2</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">init_api</span><span class="p">(</span><span class="n">dso</span><span class="p">,</span> <span class="n">gl_names</span><span class="p">,</span>
                  <span class="p">(</span><span class="n">__eglMustCastToProperFunctionPointerType</span><span class="o">*</span><span class="p">)</span>
                  <span class="o">&amp;</span><span class="n">cnx</span><span class="o">-&gt;</span><span class="n">hooks</span><span class="p">[</span><span class="n">egl_connection_t</span><span class="o">::</span><span class="n">GLESv2_INDEX</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">gl</span><span class="p">,</span>
@@ -749,8 +732,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 
     <span class="k">return</span> <span class="n">dso</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><code class="highlighter-rouge">Loader::load_driver()</code> 它主要实现了两个功能：</p>
 
@@ -790,7 +772,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
   
     
     
-      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -805,7 +787,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&u=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -830,7 +812,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -854,7 +836,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&media=http://woshijpf.github.io/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&media=http://localhost:4000/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

@@ -11,7 +11,7 @@
 ">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -44,11 +44,11 @@
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Do one thing and do it well.
 " />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Fly Higher's Blog" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/logo.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -60,16 +60,16 @@
   <meta name="twitter:title" content="Fly Higher's Blog">
   <meta name="twitter:description" content="Do one thing and do it well.
 ">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/logo.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/page2/">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/page2/">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -164,6 +164,8 @@
           
         
           
+        
+          
          -->
       </ul>
     </nav>
@@ -185,6 +187,28 @@
 
 <div class="wrapper">
 <ul class="post-list">
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">Linux 内核加载启动过程分析</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>本文是基于 Linux Kernel 4.4.49 版本内核源码中的 x86 32 位体系结构进行分析。 BIOS 传统模式下的 X86 PC 启动过程 什么是 BIOS？ 简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">June 27, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/内核">内核</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
   
   <li>
     <h2>
@@ -210,13 +234,13 @@
   
   <li>
     <h2>
-      <a class="post-link" href="/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">Android HAL 层原理分析</a>
+      <a class="post-link" href="/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">Android HAL 层原理分析</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
       <p>Android HAL 简介 Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。 为什么要添加一个 HAL 层？ Android 在用户空间中新建一个的 HAL...</p>
     </section>
     <section class="post-meta">
-      <div class="post-date">March 25, 2017</div>
+      <div class="post-date">March 26, 2017</div>
       <div class="post-categories">
       in 
         
@@ -265,28 +289,6 @@
       in 
         
         <a href="/category/Linux">Linux</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html">Ubuntu 软件源详解</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>什么是软件源？ Ubuntu 中安装软件的方式 在 Ubuntu 中软件安装的方式和 Windows 系统中双击 exe 文件的傻瓜式软件安装的方式有很大的不同，它主要可以分为下面三种安装方式： 通过 apt 包管理工具从软件源中安装 通过 deb 格式的软件包安装 从软件源码手动编译安装 软件源介绍 Ubuntu 系统中软件源其实本质上就是一个软件仓库，在这个仓库中包含了...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">October 23, 2016</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/利器">利器</a>
         
       
       </div>
@@ -395,6 +397,8 @@
         
         
           <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
         
         
         

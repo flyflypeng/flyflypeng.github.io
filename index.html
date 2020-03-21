@@ -11,7 +11,7 @@
 ">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -44,11 +44,11 @@
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Do one thing and do it well.
 " />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Fly Higher's Blog" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/logo.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -60,16 +60,16 @@
   <meta name="twitter:title" content="Fly Higher's Blog">
   <meta name="twitter:description" content="Do one thing and do it well.
 ">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/logo.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -188,6 +188,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2020/03/21/Mac-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html">Mac 开发环境配置</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>Mac 修改设置环境变量 Mac 中修改环境变量的方法和 Linux 中修改环境变量的方法类似，可以修改的文件主要分为两类： ~/.bash_profile：一般在这个文件中设置用户级的环境变量 /etc/bashrc：一般在这个文件中添加系统级环境变量 ~/.zshrc：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。 添加环境变量的方式就是通过 export 关键字来进行添加。 iTerm2 配置 主题配色 你可以根据你的喜好来选择终端主题颜色的配色方案。 可以从mbadolato/iTerm2-Color-Schemes仓库下载iTerm2的主题配色。 我选择的是==Cobalt Neon==主题，个人觉得非常不错。 配置方法：...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">March 21, 2020</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/利器">利器</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">QEMU/KVM 原理综述</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -254,39 +276,17 @@
   
   <li>
     <h2>
-      <a class="post-link" href="/linux/2017/07/10/Linux-IO%E6%A8%A1%E5%9E%8B.html">Linux I/O 模型详解</a>
+      <a class="post-link" href="/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html">Linux I/O 模型详解</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
       <p>Linux I/O 模型 在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词： Synchronous I/O Asynchronous I/O Blocking I/O Non-blocking I/O 首先，这里讲的 I/O 指的是用户空间的 I/O，并且主要侧重于网络编程中的...</p>
     </section>
     <section class="post-meta">
-      <div class="post-date">July 10, 2017</div>
+      <div class="post-date">July 11, 2017</div>
       <div class="post-categories">
       in 
         
         <a href="/category/linux">Linux</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2017/06/26/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html">Linux 内核加载启动过程分析</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>本文是基于 Linux Kernel 4.4.49 版本内核源码中的 x86 32 位体系结构进行分析。 BIOS 传统模式下的 X86 PC 启动过程 什么是 BIOS？ 简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">June 26, 2017</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/内核">内核</a>
         
       
       </div>

@@ -10,7 +10,7 @@
   <meta name="description" content="Hexo简介 Hexo是一款快速、简洁和高效的一款静态博客框架，它出自于台湾的一名大学生Tommy Chen之手。这款博客框架程序是基于Node.js开发的，它编译上百篇的博文也只仅仅需要几秒就可以了，非常快速。并且，Hexo也是一款非常受程序猿喜欢的博客搭建框架，它使用Markdown解析文章，同时你还可以将你...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Hexo简介 Hexo是一款快速、简洁和高效的一款静态博客框架，它出自于台湾的一名大学生Tommy Chen之手。这款博客框架程序是基于Node.js开发的，它编译上百篇的博文也只仅仅需要几秒就可以了，非常快速。并且，Hexo也是一款非常受程序猿喜欢的博客搭建框架，它使用Markdown解析文章，同时你还可以将你..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Hexo博客搭建与使用" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Hexo博客搭建与使用">
   <meta name="twitter:description" content="Hexo简介 Hexo是一款快速、简洁和高效的一款静态博客框架，它出自于台湾的一名大学生Tommy Chen之手。这款博客框架程序是基于Node.js开发的，它编译上百篇的博文也只仅仅需要几秒就可以了，非常快速。并且，Hexo也是一款非常受程序猿喜欢的博客搭建框架，它使用Markdown解析文章，同时你还可以将你...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2015/07/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/%E5%88%A9%E5%99%A8/2015/07/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -236,23 +236,20 @@
 <h3 id="hexo">Hexo</h3>
 <p>完成Node.js和Git的安装之后，下面就可以通过Node.js自带的包管理器安装Hexo了。
 安装的命令如下:</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>npm install -g hexo-cli
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g hexo-cli
+</code></pre></div></div>
 <p>在安装完成之后，我们可以通过以下命令来查看安装的hexo的版本:</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>hexo version
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo version
+</code></pre></div></div>
 <p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/hexo_version.png" alt="hexo" /></p>
 
 <h2 id="hexo博客网站搭建-">Hexo博客网站搭建 <span id="3"></span></h2>
 
 <p>完成了Hexo安装之后，我们需要在自己的本地磁盘上新建一个文件夹，用来存放Hexo博客网站的相关文件。执行完以下的命令之后，在相应的目录下就会自动生成Hexo博客网站所需的相关文件。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo init &lt;folder&gt;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo init &lt;folder&gt;
 $ cd &lt;folder&gt;
 $ npm install
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>以后，有关hexo的相关命令均在此<folder>目录下进行。</folder></p>
 
 <h3 id="目录结构">目录结构</h3>
@@ -281,14 +278,13 @@ $ npm install
 <h3 id="测试">测试</h3>
 
 <p>在完成上述的安装配置之后，一个默认的Hexo博客网站就搭建好了，我们可以使用以下命令，启动本地服务</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>hexo server
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo server
+</code></pre></div></div>
 <p>在启动完成本地服务之后，我们可以根据命令行窗口中的提示在浏览器中输入 http://0.0.0.0:4000 就能在浏览器中查看到Hexo默认生成的静态网站的页面。以后，我们在自己编写好博文之后，我们也可以通过这种方式首先在本地先预览下静态网页的效果，如果没有问题，则再通过hexo d 命令部署到github网站上。</p>
 
 <h2 id="网站配置-">网站配置 <span id="4"></span></h2>
 <p>下面，我就以自己Hexo博客网站中的_config.yml配置文件来解释各个配置项的意义。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code># Hexo Configuration
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Hexo Configuration
 ## Docs: http://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
@@ -377,26 +373,22 @@ plugins:   #插件，例如生成rss订阅和站点地图
 baidusitemap:
     path: baidusitemap.xml
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="hexo命令使用-">Hexo命令使用 <span id="5"></span></h2>
 <h3 id="init">init</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo init [folder]
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo init [folder]
+</code></pre></div></div>
 <p>新建一个网站。如果没有设置folder，则默认在当前文件夹建立网站。</p>
 
 <h3 id="new">new</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo new [layout] &lt;title&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo new [layout] &lt;title&gt;
+</code></pre></div></div>
 <p>新建一篇文章。如果没有设置 layout 的话，默认使用 _config.yml 中的 default_layout 参数代替。如果标题包含空格的话，请使用引号括起来。</p>
 
 <h3 id="generate">generate</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo generate
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo generate
+</code></pre></div></div>
 <p>生成静态网页文件。</p>
 
 <table>
@@ -419,15 +411,13 @@ baidusitemap:
 </table>
 
 <h3 id="publish">publish</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code># hexo publish [layout] &lt;filename&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># hexo publish [layout] &lt;filename&gt;
+</code></pre></div></div>
 <p>发辫草稿箱目录_drafts下的草稿。</p>
 
 <h3 id="server">server</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo server
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo server
+</code></pre></div></div>
 <p>启动服务器。</p>
 
 <table>
@@ -454,9 +444,8 @@ baidusitemap:
 </table>
 
 <h3 id="deploy">deploy</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo deploy
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo deploy
+</code></pre></div></div>
 <p>部署网站。</p>
 
 <table>
@@ -475,9 +464,8 @@ baidusitemap:
 </table>
 
 <h3 id="render">render</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo render &lt;file&gt; ...
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo render &lt;file&gt; ...
+</code></pre></div></div>
 <p>渲染文件</p>
 
 <table>
@@ -496,66 +484,57 @@ baidusitemap:
 </table>
 
 <h3 id="migrate">migrate</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo migrate &lt;type&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo migrate &lt;type&gt;
+</code></pre></div></div>
 <p>从其他系统迁移内容。</p>
 
 <h3 id="clean">clean</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo clean
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo clean
+</code></pre></div></div>
 <p>清除缓存文件（db.json）和已经生成的静态文件（public）。</p>
 
 <h3 id="list">list</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo list &lt;type&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo list &lt;type&gt;
+</code></pre></div></div>
 <p>列出网站资料。</p>
 
 <h3 id="version">version</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo version
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo version
+</code></pre></div></div>
 <p>显示hexo版本。</p>
 
 <h3 id="常用命令简写">常用命令简写</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>hexo n == hexo new
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo n == hexo new
 hexo g == hexo generate
 hexo s == hexo server
 hexo d == hexo deploy
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="插件安装">插件安装</h3>
 <p>Hexo采用Node.js中的npm包管理器安装插件。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>npm install &lt;plugin-name&gt; --save
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install &lt;plugin-name&gt; --save
 npm update #升级
 npm uninstall &lt;plugin-name&gt; #卸载
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>其中<plugin-name>是插件名称。</plugin-name></p>
 
 <h3 id="主题安装">主题安装</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
+</code></pre></div></div>
 <p>其中，<repository>是主题theme-name在github上的仓库地址，<theme-name>是存放在Hexo博客文件夹下theme文件夹中的主题目录名称。</theme-name></repository></p>
 
 <h2 id="文章编辑及发布-">文章编辑及发布 <span id="6"></span></h2>
 <h3 id="新建文章">新建文章</h3>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo new "标题"
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo new "标题"
+</code></pre></div></div>
 <p>当在命令行窗口中执行上述命令之后，在source/_posts目录下会生成一个文件名”标题.md”的文件。</p>
 
 <h3 id="front-matter">Front Matter</h3>
 <p>Front-matter 是文件最上方以 — 分隔的区域，用于指定个别文件的变量，举例来说：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>title: Hello World
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>title: Hello World
 date: 2013/7/13 20:46:25
 ---
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>以下是预先定义的参数，您可以在模板中使用这些参数值并加以利用。</p>
 
 <table>
@@ -613,18 +592,16 @@ date: 2013/7/13 20:46:25
 <h3 id="发布">发布</h3>
 <p>本文以发布到github上的github pages为例。
 编辑全局配置文件 _config.yml 中的 deploy 部分</p>
-<div class="highlighter-rouge"><pre class="highlight"><code># Deployment  #部署，即将网站部署到github上的配置
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Deployment  #部署，即将网站部署到github上的配置
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git  #表示使用git工具进行部署
   repository: git@github.com:woshijpf/woshijpf.github.io.git  #网站部署到的仓库ssh地地址
   branch: master  #部署到仓库的分支
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>完成上述的网站全局配置文件中的网站部署设置之后，下面只需要执行静态网页生成和网站部署的命令，如下所示:</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>$ hexo generate -d
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo generate -d
+</code></pre></div></div>
 
 <h2 id="主题优化--">主题优化  <span id="7"></span></h2>
 <p>Hexo博客支持个性化的主题定制，用户可以根据自己的喜好来选择自己喜欢的模板，如果想自己动手设计并制作主题也是可以的。
@@ -632,9 +609,8 @@ deploy:
 
 <h3 id="主题下载">主题下载</h3>
 <p>你可以通过git工具从github上下载下主题。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
+</code></pre></div></div>
 <p>当然，你也可以在github相关主题的网页上直接下载压缩文件，然后将主题解压到指定文件夹内即可。</p>
 
 <p>完成主题下载后，只需要在网站全局配置文件_config.yml文件中theme那一行中将你所下载下来的主题名称填写到“theme: “后面即可（此处要注意你所填写的主题名称要与你在themes目录中的主题文件夹的文件夹名相同）。</p>
@@ -651,7 +627,7 @@ deploy:
 </ul>
 
 <p>下面就以我所使用的主题<a href="https://github.com/litten/hexo-theme-yilia">yilia</a>的配置文件为例。</p>
-<div class="highlighter-rouge"><pre class="highlight"><code># Header
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Header
 menu:  #主题主界面左边显示的菜单项设置
   主页: /
   所有文章: /archives
@@ -710,8 +686,7 @@ friends:
 #aboutme: false
 #开启——
 aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。我独自一人，感动了所有的风和日丽。
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h2 id="hexo搭建参考网站链接-">Hexo搭建参考网站链接 <span id="reference_link"></span></h2>
 
@@ -746,7 +721,7 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
   
     
     
-      <a href="//twitter.com/share?text=Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -761,7 +736,7 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html"
+      <a href="//www.facebook.com/sharer.php?t=Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -786,7 +761,7 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -810,7 +785,7 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html&media=http://woshijpf.github.io/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2015%2F07%2F13%2FHexo%25E5%258D%259A%25E5%25AE%25A2%25E6%2590%25AD%25E5%25BB%25BA%25E4%25B8%258E%25E4%25BD%25BF%25E7%2594%25A8.html&media=http://localhost:4000/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -823,7 +798,7 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2015/07/12/%E4%B9%A0%E8%8B%B1%E8%AF%AD%E7%9A%84%E5%BB%BA%E8%AE%AE.html">
+				<a href="/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2015/07/13/%E4%B9%A0%E8%8B%B1%E8%AF%AD%E7%9A%84%E5%BB%BA%E8%AE%AE.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>

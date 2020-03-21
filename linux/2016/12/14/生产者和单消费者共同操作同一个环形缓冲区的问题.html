@@ -10,7 +10,7 @@
   <meta name="description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题">
   <meta name="twitter:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -204,62 +204,57 @@
   <li>本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。</li>
   <li>生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。</li>
   <li>环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 <code class="highlighter-rouge">2^N</code> 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="cp">#define RING_BUFFER_SIZE N
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cp">#define RING_BUFFER_SIZE N
 </span>    
  <span class="k">struct</span> <span class="n">RingBuffer</span><span class="p">{</span>
-     <span class="kt">int</span> <span class="n">w_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区写入位置值
-</span>     <span class="kt">int</span> <span class="n">r_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区读取位置值
-</span>     <span class="n">data_block</span> <span class="n">data</span><span class="p">[(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)];</span> <span class="c1">//data_block 是环形缓冲区中所存放的数据单元的类型
-</span> <span class="p">}</span>
-</code></pre>
-    </div>
+     <span class="kt">int</span> <span class="n">w_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区写入位置值</span>
+     <span class="kt">int</span> <span class="n">r_pos</span><span class="p">;</span> <span class="c1">//环形缓冲区读取位置值</span>
+     <span class="n">data_block</span> <span class="n">data</span><span class="p">[(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)];</span> <span class="c1">//data_block 是环形缓冲区中所存放的数据单元的类型</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
     <p>在创建环形缓冲区之后，RingBuffer 结构体中的成员<code class="highlighter-rouge">w_pos</code>和<code class="highlighter-rouge">r_pos</code>都被初始化为 0。</p>
   </li>
   <li>判断环形缓冲区是否为空的伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-     <span class="c1">//判断语句为真，RingBuffer 为空
-</span></code></pre>
-    </div>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+     <span class="c1">//判断语句为真，RingBuffer 为空</span>
+</code></pre></div>    </div>
   </li>
   <li>判断环形缓冲区是否为满的伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span>
-     <span class="c1">//判断语句为真，RingBuffer 为满
-</span></code></pre>
-    </div>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span>
+     <span class="c1">//判断语句为真，RingBuffer 为满</span>
+</code></pre></div>    </div>
   </li>
   <li>生产者进程中的处理逻辑伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
  <span class="p">{</span>
-     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span> <span class="c1">//缓冲区满了
-</span>     <span class="p">{</span>
+     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">))</span> <span class="c1">//缓冲区满了</span>
+     <span class="p">{</span>
          <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
          <span class="k">continue</span><span class="p">;</span>
      <span class="p">}</span>
     
-     <span class="c1">//否则，则将数据填入到环形缓冲区中空闲的单元中
-</span>     <span class="n">data</span><span class="p">[</span><span class="n">w_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="n">some_data</span><span class="p">;</span> <span class="c1">//将需要写入的数据写入到指定的环形缓冲区单元中
-</span>        
-     <span class="n">w_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将写入位置向前移动
-</span> <span class="p">}</span>
-</code></pre>
-    </div>
+     <span class="c1">//否则，则将数据填入到环形缓冲区中空闲的单元中</span>
+     <span class="n">data</span><span class="p">[</span><span class="n">w_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="n">some_data</span><span class="p">;</span> <span class="c1">//将需要写入的数据写入到指定的环形缓冲区单元中</span>
+        
+     <span class="n">w_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将写入位置向前移动</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
   </li>
   <li>消费者进程中的处理逻辑伪代码：
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
  <span class="p">{</span>
-     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//缓冲区为空
-</span>     <span class="p">{</span>
+     <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">//缓冲区为空</span>
+     <span class="p">{</span>
          <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
          <span class="k">continue</span><span class="p">;</span>
      <span class="p">}</span>
     
-     <span class="c1">//否则，从环形缓冲区中读取数据出来进行处理
-</span>     <span class="n">process</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">r_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]);</span> <span class="c1">//process() 函数只是对读取到的数据进行一个处理
-</span>        
-     <span class="n">r_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将读取位置向前移动
-</span> <span class="p">}</span>
-</code></pre>
-    </div>
+     <span class="c1">//否则，从环形缓冲区中读取数据出来进行处理</span>
+     <span class="n">process</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">r_pos</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)]);</span> <span class="c1">//process() 函数只是对读取到的数据进行一个处理</span>
+        
+     <span class="n">r_pos</span><span class="o">++</span><span class="p">;</span> <span class="c1">//将读取位置向前移动</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
     <h1 id="疑惑">疑惑？</h1>
     <p>如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加<code class="highlighter-rouge">互斥锁</code>，上面代码是否会出现<code class="highlighter-rouge">Bug</code>，或者不确定的状态？</p>
   </li>
@@ -287,7 +282,7 @@
   
     
     
-      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -302,7 +297,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -327,7 +322,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -351,7 +346,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://woshijpf.github.io/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://localhost:4000/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -364,7 +359,7 @@
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/%E5%88%A9%E5%99%A8/2016/10/23/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html">
+				<a href="/%E5%88%A9%E5%99%A8/2016/10/24/Ubuntu%E8%BD%AF%E4%BB%B6%E6%BA%90%E8%AF%A6%E8%A7%A3.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>

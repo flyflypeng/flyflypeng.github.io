@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Android HAL 层原理分析</title>
+  <meta name="description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Android HAL 层原理分析" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Android HAL 层原理分析">
+  <meta name="twitter:description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/androidBg.jpg);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Android HAL 层原理分析</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">March 26, 2017</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/android">Android</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="android-hal-简介">Android HAL 简介</h2>
+<p>Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。</p>
+
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170324149036043728849.png" alt="20170324149036043728849.png" /></p>
+
+<!--more-->
+
+<h2 id="为什么要添加一个-hal-层">为什么要添加一个 HAL 层？</h2>
+<p>Android 在用户空间中新建一个的 HAL 层来支持硬件设备的主要原因还是因为 Android 使用的开源协议是 Apache License，这个协议比较宽松，它允许开发者获取并修改了源码之后，不用把源码公开出来。而 Linux 使用的开源协议 GPL，它的要求限制就比较多，它要求开发者添加或修改了源码之后，必须把添加或修改后的代码公开出来，所以我们在 Linux 内核中的所使用的设备驱动程序都是源码公开的，任何人都可以获取并修改它。</p>
+
+<p>因此，如果 Android 系统像其他 Linux 系统一样，把对硬件的支持完全实现在 Linux 内核的驱动模块中，那么硬件厂商就必须将这些硬件驱动源码公开，这样就可能损害到移动厂商的利益，因为这相当于暴露了硬件的实现细节和参数。</p>
+
+<p>所以，Android 就在用户空间搞了一个 HAL 层，将硬件的一些重要的操作都放在这一层中完成，这些操作都封装在厂商所提供的一个动态链接库中，从而达到了避免源码公开的目的，而底层 Linux 内核空间中的设备驱动模块，现在则只提供一些最基本的硬件设备寄存器操作的功能。</p>
+
+<h2 id="hal-模块是如何实现的">HAL 模块是如何实现的？</h2>
+<p>由于最近一直在做一个 Android-x86 系统相关的项目，其中就有一部分是跟音频 HAL 模块紧密相关，所以我就重新对 HAL 的相关知识进行了一个学习和整理，所以本文中将以音频系统对应的 audio HAL 模块（ 它最终是以 <code class="highlighter-rouge">audio.primary.x86.so</code> 的动态链接库形式存在 ）为例来介绍一个 HAL 模块的定义及实现过程。</p>
+
+<h3 id="hal-层的三个重要结构体">HAL 层的三个重要结构体</h3>
+<p>Android 系统的 HAL 层其实并不复杂，只要你能理解清楚下面这 3 个结构体的含义：</p>
+
+<ul>
+  <li><strong>hw_module_t</strong>：用来描述硬件模块</li>
+  <li><strong>hw_device_t</strong>：用来描述硬件设备</li>
+  <li><strong>hw_module_methods_t</strong>：用来打开硬件模块中包含硬件设备，获得指向硬件设备结构体的指针</li>
+</ul>
+
+<p>Android 系统中 HAL 层是以<strong>模块</strong>的方式来管理各个硬件访问的接口，每一个硬件模块都对应一个动态链接库文件，而这些动态链接库文件需要符号一定的规范，而上述的这 3 种结构体就是用来建立这种规范。并且一个<strong>硬件模块</strong>可以管理多个<strong>硬件设备</strong>，例如 audio HAL 硬件模块中就管理了扬声器、麦克风等多个硬件设备。</p>
+
+<p><strong>注意：这里一定区分 hw_module_t 和 hw_device_t 它们所表示的含义</strong></p>
+
+<h4 id="hw_module_t">hw_module_t</h4>
+<p>结构体 hw_module_t 定义在 <code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Every hardware module must have a data structure named HAL_MODULE_INFO_SYM
+ * and the fields of this data structure must begin with hw_module_t
+ * followed by module specific information.
+ */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">hw_module_t</span> <span class="p">{</span>
+    <span class="cm">/** tag must be initialized to HARDWARE_MODULE_TAG */</span>
+    <span class="kt">uint32_t</span> <span class="n">tag</span><span class="p">;</span>
+
+    <span class="cm">/**
+     * The API version of the implemented module. The module owner is
+     * responsible for updating the version when a module interface has
+     * changed.
+     *
+     * The derived modules such as gralloc and audio own and manage this field.
+     * The module user must interpret the version field to decide whether or
+     * not to inter-operate with the supplied module implementation.
+     * For example, SurfaceFlinger is responsible for making sure that
+     * it knows how to manage different versions of the gralloc-module API,
+     * and AudioFlinger must know how to do the same for audio-module API.
+     *
+     * The module API version should include a major and a minor component.
+     * For example, version 1.0 could be represented as 0x0100. This format
+     * implies that versions 0x0100-0x01ff are all API-compatible.
+     *
+     * In the future, libhardware will expose a hw_get_module_version()
+     * (or equivalent) function that will take minimum/maximum supported
+     * versions as arguments and would be able to reject modules with
+     * versions outside of the supplied range.
+     */</span>
+    <span class="kt">uint16_t</span> <span class="n">module_api_version</span><span class="p">;</span>
+<span class="cp">#define version_major module_api_version
+</span>    <span class="cm">/**
+     * version_major/version_minor defines are supplied here for temporary
+     * source code compatibility. They will be removed in the next version.
+     * ALL clients must convert to the new version format.
+     */</span>
+
+    <span class="cm">/**
+     * The API version of the HAL module interface. This is meant to
+     * version the hw_module_t, hw_module_methods_t, and hw_device_t
+     * structures and definitions.
+     *
+     * The HAL interface owns this field. Module users/implementations
+     * must NOT rely on this value for version information.
+     *
+     * Presently, 0 is the only valid value.
+     */</span>
+    <span class="kt">uint16_t</span> <span class="n">hal_api_version</span><span class="p">;</span>
+<span class="cp">#define version_minor hal_api_version
+</span>
+    <span class="cm">/** Identifier of module */</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">id</span><span class="p">;</span>
+
+    <span class="cm">/** Name of this module */</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+    <span class="cm">/** Author/owner/implementor of the module */</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">author</span><span class="p">;</span>
+
+    <span class="cm">/** Modules methods */</span>
+    <span class="k">struct</span> <span class="n">hw_module_methods_t</span><span class="o">*</span> <span class="n">methods</span><span class="p">;</span>
+
+    <span class="cm">/** module's dso */</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">dso</span><span class="p">;</span>
+
+<span class="cp">#ifdef __LP64__
+</span>    <span class="kt">uint64_t</span> <span class="n">reserved</span><span class="p">[</span><span class="mi">32</span><span class="o">-</span><span class="mi">7</span><span class="p">];</span>
+<span class="cp">#else
+</span>    <span class="cm">/** padding to 128 bytes, reserved for future use */</span>
+    <span class="kt">uint32_t</span> <span class="n">reserved</span><span class="p">[</span><span class="mi">32</span><span class="o">-</span><span class="mi">7</span><span class="p">];</span>
+<span class="cp">#endif
+</span>
+<span class="p">}</span> <span class="n">hw_module_t</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>我们先看下结构体 hw_module_t 定义最前面的一段注释说明，它的意思是：</p>
+
+<blockquote>
+  <p>每个硬件模块中都要定义一个名字叫做 HAL_MODULE_INFO_SYM 结构体变量，而这结构体变量中的第一个成员必须是  hw_module_t 类型。也就是说，每个硬件模块都要自己实现一个结构体，但是这个结构体的第一个成员必须是 hw_module_t 结构体类型。</p>
+</blockquote>
+
+<p><strong>其实这里蕴含着一种面向对象中继承的思想，hw_module_t 就是一个基类，描述所有硬件模块都应该具有的一些属性，然后具体到某个特定的硬件模块实现时，都需要继承自 hw_module_t 结构体。也就是说 hw_module_t 是所有特定硬件模块的父类。</strong></p>
+
+<p>有关结构体 hw_module_t 中各个成员的具体含义，这里就不一一进行说明了，相信大家从它们的注释说明中就能了解到每一个成员所表示的含义，这里就挑一些重要的结构体成员来进一步说明。</p>
+
+<ul>
+  <li>id：这个成员用一个字符串来表示硬件模块的，用来区别于其他硬件模块。</li>
+  <li>methods：这个成员是一个 hw_module_methods_t 指针，它表示硬件模块所包含的方法集（其实里面就一个 open 函数指针，用来打开 hw_device_t 硬件设备，获得指向对应的硬件设备的结构体对象的指针）。</li>
+  <li>dso：我们前面提到，HAL 层中的<strong>硬件模块</strong>是用动态链接库表示的，所以 dso 指针就是系统使用 dlopen() 函数打开共享动态共享链接库之后获得的句柄。</li>
+</ul>
+
+<h4 id="hw_device_t">hw_device_t</h4>
+<p>结构体 hw_device_t 定义在 <code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Every device data structure must begin with hw_device_t
+ * followed by module specific public methods and attributes.
+ */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">hw_device_t</span> <span class="p">{</span>
+    <span class="cm">/** tag must be initialized to HARDWARE_DEVICE_TAG */</span>
+    <span class="kt">uint32_t</span> <span class="n">tag</span><span class="p">;</span>
+
+    <span class="cm">/**
+     * Version of the module-specific device API. This value is used by
+     * the derived-module user to manage different device implementations.
+     *
+     * The module user is responsible for checking the module_api_version
+     * and device version fields to ensure that the user is capable of
+     * communicating with the specific module implementation.
+     *
+     * One module can support multiple devices with different versions. This
+     * can be useful when a device interface changes in an incompatible way
+     * but it is still necessary to support older implementations at the same
+     * time. One such example is the Camera 2.0 API.
+     *
+     * This field is interpreted by the module user and is ignored by the
+     * HAL interface itself.
+     */</span>
+    <span class="kt">uint32_t</span> <span class="n">version</span><span class="p">;</span>
+
+    <span class="cm">/** reference to the module this device belongs to */</span>
+    <span class="k">struct</span> <span class="n">hw_module_t</span><span class="o">*</span> <span class="n">module</span><span class="p">;</span>
+
+    <span class="cm">/** padding reserved for future use */</span>
+<span class="cp">#ifdef __LP64__
+</span>    <span class="kt">uint64_t</span> <span class="n">reserved</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span>
+<span class="cp">#else
+</span>    <span class="kt">uint32_t</span> <span class="n">reserved</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span>
+<span class="cp">#endif
+</span>
+    <span class="cm">/** Close this device */</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">close</span><span class="p">)(</span><span class="k">struct</span> <span class="n">hw_device_t</span><span class="o">*</span> <span class="n">device</span><span class="p">);</span>
+
+<span class="p">}</span> <span class="n">hw_device_t</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p><strong>和 hw_module_t 类似，hw_device_t 也可以看做是一个基类，它描述了所有硬件设备都应该具有的属性，然后具体到某个特定的硬件设备（例如，音频播放时需要的扬声器设备）实现时，都需要继承自 audio_device 结构体。所以，每个 HAL 层中硬件设备对应的结构体中的第一个成员必须是 hw_device_t。</strong></p>
+
+<p>下面还是简单提一下结构体 hw_device_t 比较关键的几个成员：</p>
+
+<ul>
+  <li>module：这个成员是一个 hw_module_t 指针，表示该结构体 hw_device_t 表示的<strong>硬件设备</strong>是由哪个 hw_module_t 表示的<strong>硬件模块</strong>进行管理的。（在这里所以一定要区分清楚==<strong>硬件设备</strong>==和==<strong>硬件模块</strong>==的区别！）</li>
+  <li>close：这是一个函数指针，表示如何关闭打开的硬件设备，通常==打开硬件设备的操作==在 hw_module_t 中包含的 hw_module_methods_t 函数列表中的 <strong>open()</strong> 函数中打开的。</li>
+</ul>
+
+<h4 id="hw_module_methods_t">hw_module_methods_t</h4>
+<p>结构体 hw_module_methods_t 定义在 <code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="n">hw_module_methods_t</span> <span class="p">{</span>
+    <span class="cm">/** Open a specific device */</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">hw_module_t</span><span class="o">*</span> <span class="n">module</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">id</span><span class="p">,</span>
+            <span class="k">struct</span> <span class="n">hw_device_t</span><span class="o">**</span> <span class="n">device</span><span class="p">);</span>
+
+<span class="p">}</span> <span class="n">hw_module_methods_t</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>结构体 hw_module_methods_t 就比较简单了，它里面就只有一个 <strong>open</strong> 函数指针，用来打开 module 硬件模块==所管理==的硬件设备id值为 id 的硬件设备，最后将打开的==硬件设备（用 hw_device_t 结构体来描述）==通过 device 返回。</p>
+
+<p><strong>注意：这个 open 函数明确指出第三个参数的类型为 struct hw_device_t**，这主要是为了统一不同硬件设备向上层提供的硬件接口，然后在具体使用到某中硬件设备时，再转换成特定硬件设备的结构体类型。</strong></p>
+
+<h2 id="audio-hal-模块的实现">Audio HAL 模块的实现</h2>
+
+<h3 id="step-1定义-struct-audio_module-模块">Step 1：定义 struct audio_module 模块</h3>
+<p>我们前面在结构体 hw_module_t 介绍时，有提到具体的<strong>硬件模块</strong>要定义一个新的结构体并且这个结构体的==第一个成员必须是 hw_module_t 类型==，所以根据这个规则，audio_module 的定义如下所示：
+代码路径：<code class="highlighter-rouge">/hardware/libhardware/include/hardware/audio.h</code></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">audio_module</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">hw_module_t</span> <span class="n">common</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h3 id="step-2定义-struct-audio_module-类型的-hal_module_info_sym-变量">step 2：定义 struct audio_module 类型的 HAL_MODULE_INFO_SYM 变量</h3>
+<p>HAL_MODULE_INFO_SYM 其实是一个宏，它定义如下所示：
+代码路径：<code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Name of the hal_module_info
+ */</span>
+<span class="cp">#define HAL_MODULE_INFO_SYM         HMI
+</span>
+<span class="cm">/**
+ * Name of the hal_module_info as a string
+ */</span>
+<span class="cp">#define HAL_MODULE_INFO_SYM_AS_STR  "HMI"
+</span></code></pre></div></div>
+
+<p>而 struct audio_module 类型名为 <code class="highlighter-rouge">HAL_MODULE_INFO_SYM</code> 变量的定义如下所示：
+代码路径：<code class="highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">audio_module</span> <span class="n">HAL_MODULE_INFO_SYM</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">common</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">HARDWARE_MODULE_TAG</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">module_api_version</span> <span class="o">=</span> <span class="n">AUDIO_MODULE_API_VERSION_0_1</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">hal_api_version</span> <span class="o">=</span> <span class="n">HARDWARE_HAL_API_VERSION</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">AUDIO_HARDWARE_MODULE_ID</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">"Generic audio HW HAL"</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">author</span> <span class="o">=</span> <span class="s">"The Android Open Source Project"</span><span class="p">,</span>
+        <span class="p">.</span><span class="n">methods</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">hal_module_methods</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">};</span><span class="err">```</span>
+
+<span class="o">**</span><span class="err">但是我们为什么要在每个硬件模块中都定义一个变量名为</span> <span class="n">HAL_MODULE_INFO_SYM</span> <span class="err">的变量呢？</span><span class="o">**</span>
+
+<span class="err">原因是</span><span class="o">**</span><span class="err">为了统一标准的接口</span><span class="o">**</span><span class="err">。这个硬件模块类型的变量主要是在</span> <span class="n">HAL</span> <span class="err">动态链接库加载时用到，它使得上层的</span> <span class="n">Framework</span> <span class="err">层打开所有的</span> <span class="n">HAL</span> <span class="err">动态链接库时都能找到名为</span> <span class="n">HAL</span><span class="err">\</span><span class="n">_MODULE</span><span class="err">\</span><span class="n">_INFO</span><span class="err">\</span><span class="n">_SYM</span><span class="err">（也就是</span> <span class="n">hmi</span><span class="err">）的硬件模块类型变量，然后通过这个变量再来打开它所管理的硬件设备，从而与之进行交互。这么做的好处就是</span> <span class="n">Framework</span> <span class="err">层中只需要用相同的</span> <span class="n">API</span><span class="err">，就能处理各个厂商所提供的不同的</span> <span class="n">HAL</span> <span class="err">动态链接库。</span>
+
+<span class="cp">### step 3：定义 struct audio\_hw\_device 硬件设备结构体
+</span><span class="err">每个硬件设备都需要通过一个结构体来表示，并且这个结构体的第一个成员必须是</span> <span class="n">hw</span><span class="err">\</span><span class="n">_device</span><span class="err">\</span><span class="n">_t</span> <span class="err">类型。而有关的对底层硬件设备的有关操作的函数指针接口，也是在这个结构体中定义。</span> <span class="k">struct</span> <span class="n">audio</span><span class="err">\</span><span class="n">_hw</span><span class="err">\</span><span class="n">_device</span> <span class="err">硬件设备结构体的定义如下所示：</span>
+<span class="err">代码路径：`</span><span class="o">/</span><span class="n">hardware</span><span class="o">/</span><span class="n">libhardware</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">hardware</span><span class="o">/</span><span class="n">audio</span><span class="p">.</span><span class="n">h</span><span class="err">`</span>
+
+<span class="err">```</span><span class="n">c</span>
+<span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="p">{</span>
+    <span class="cm">/**
+     * Common methods of the audio device.  This *must* be the first member of audio_hw_device
+     * as users of this structure will cast a hw_device_t to audio_hw_device pointer in contexts
+     * where it's known the hw_device_t references an audio_hw_device.
+     */</span>
+    <span class="k">struct</span> <span class="n">hw_device_t</span> <span class="n">common</span><span class="p">;</span>
+
+    <span class="p">......</span>
+
+    <span class="cm">/* Returns audio input buffer size according to parameters passed or
+     * 0 if one of the parameters is not supported.
+     * See also get_buffer_size which is for a particular stream.
+     */</span>
+    <span class="kt">size_t</span> <span class="p">(</span><span class="o">*</span><span class="n">get_input_buffer_size</span><span class="p">)(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="k">struct</span> <span class="n">audio_config</span> <span class="o">*</span><span class="n">config</span><span class="p">);</span>
+
+    <span class="cm">/** This method creates and opens the audio hardware output stream.
+     * The "address" parameter qualifies the "devices" audio device type if needed.
+     * The format format depends on the device type:
+     * - Bluetooth devices use the MAC address of the device in the form "00:11:22:AA:BB:CC"
+     * - USB devices use the ALSA card and device numbers in the form  "card=X;device=Y"
+     * - Other devices may use a number or any other string.
+     */</span>
+
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open_output_stream</span><span class="p">)(</span><span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+                              <span class="n">audio_io_handle_t</span> <span class="n">handle</span><span class="p">,</span>
+                              <span class="n">audio_devices_t</span> <span class="n">devices</span><span class="p">,</span>
+                              <span class="n">audio_output_flags_t</span> <span class="n">flags</span><span class="p">,</span>
+                              <span class="k">struct</span> <span class="n">audio_config</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span>
+                              <span class="k">struct</span> <span class="n">audio_stream_out</span> <span class="o">**</span><span class="n">stream_out</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">address</span><span class="p">);</span>
+
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">close_output_stream</span><span class="p">)(</span><span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+                                <span class="k">struct</span> <span class="n">audio_stream_out</span><span class="o">*</span> <span class="n">stream_out</span><span class="p">);</span>
+
+    <span class="cm">/** This method creates and opens the audio hardware input stream */</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">open_input_stream</span><span class="p">)(</span><span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+                             <span class="n">audio_io_handle_t</span> <span class="n">handle</span><span class="p">,</span>
+                             <span class="n">audio_devices_t</span> <span class="n">devices</span><span class="p">,</span>
+                             <span class="k">struct</span> <span class="n">audio_config</span> <span class="o">*</span><span class="n">config</span><span class="p">,</span>
+                             <span class="k">struct</span> <span class="n">audio_stream_in</span> <span class="o">**</span><span class="n">stream_in</span><span class="p">,</span>
+                             <span class="n">audio_input_flags_t</span> <span class="n">flags</span><span class="p">,</span>
+                             <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">address</span><span class="p">,</span>
+                             <span class="n">audio_source_t</span> <span class="n">source</span><span class="p">);</span>
+
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">close_input_stream</span><span class="p">)(</span><span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+                               <span class="k">struct</span> <span class="n">audio_stream_in</span> <span class="o">*</span><span class="n">stream_in</span><span class="p">);</span>
+
+    <span class="p">......</span>
+
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>在上面音频硬件设备结构体 <code class="highlighter-rouge">audio_hw_device</code> 的定义中，第一个结构体成员就是 <code class="highlighter-rouge">struct hw_device_t</code> 类型的，而其他的结构体成员都是函数指针，例如 <code class="highlighter-rouge">open_output_stream</code> 函数就是用来打开播放音频的扬声器设备，<code class="highlighter-rouge">open_input_stream</code> 函数则是用来打开录音用的麦克风设备。</p>
+
+<h3 id="step-4定义-struct-hw_module_methods_t-函数列表变量">step 4：定义 struct hw_module_methods_t 函数列表变量</h3>
+<p>在前面介绍的结构体 hw_module_t 的定义中就有一个 hw_module_methods_t 函数指针类型的成员<code class="highlighter-rouge">open</code>，该函数的作用就是让<strong>硬件模块</strong>打开<strong>硬件设备</strong>，然后对特定硬件设备（例如上面的 struct audio_device_t结构体）中定义函数指针变量进行赋值绑定，所以在每个<strong>硬件模块</strong>都要实现这样一个变量。</p>
+
+<p>struct audio_module 结构体中 <code class="highlighter-rouge">struct hw_module_t 类型的成员 common </code>中的 hw_module_methods_t 函数指针成员的实现绑定如下所示：
+代码路径：<code class="highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="k">struct</span> <span class="n">hw_module_methods_t</span> <span class="n">hal_module_methods</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">.</span><span class="n">open</span> <span class="o">=</span> <span class="n">adev_open</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>可以看到，在 audio HAL 模块中使用了 <code class="highlighter-rouge">adev_open</code> 函数来初始化了 struct hw_module_methods_t 中的 <code class="highlighter-rouge">open</code> 函数指针成员。我们现在回过头来看 <strong>step 2</strong>中 <strong>struct audio_module HAL_MODULE_INFO_SYM</strong> 变量的定义中，audio_module 中的第一个成员 common中的结构体变量 methods 的指针就是被初始化指向了现在这里定义的 <code class="highlighter-rouge">hal_module_methods</code> 变量。</p>
+
+<h3 id="step-5adev_open-函数的实现">step 5：adev_open 函数的实现</h3>
+<p>最后，我们来看看 <code class="highlighter-rouge">adev_open</code> 函数的实现，看看它是如何通过 audio_module 硬件模块对象来打开 audio_hw_device 硬件设备对象。
+代码路径：<code class="highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">int</span> <span class="nf">adev_open</span><span class="p">(</span><span class="k">const</span> <span class="n">hw_module_t</span><span class="o">*</span> <span class="n">module</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span>
+                     <span class="n">hw_device_t</span><span class="o">**</span> <span class="n">device</span><span class="p">)</span>
+<span class="p">{</span>
+     <span class="k">struct</span> <span class="n">generic_audio_device</span> <span class="o">*</span><span class="n">adev</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">AUDIO_HARDWARE_INTERFACE</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">EINVAL</span><span class="p">;</span>
+
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">AUDIO_DEVICE_NAME</span><span class="p">,</span> <span class="n">O_RDWR</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">ENOSYS</span><span class="p">;</span>
+
+    <span class="n">adev</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">generic_audio_device</span><span class="p">));</span>
+
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">fd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">common</span><span class="p">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">HARDWARE_DEVICE_TAG</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">common</span><span class="p">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">AUDIO_DEVICE_API_VERSION_2_0</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">common</span><span class="p">.</span><span class="n">module</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">hw_module_t</span> <span class="o">*</span><span class="p">)</span> <span class="n">module</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">common</span><span class="p">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">adev_close</span><span class="p">;</span>
+
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">init_check</span> <span class="o">=</span> <span class="n">adev_init_check</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">set_voice_volume</span> <span class="o">=</span> <span class="n">adev_set_voice_volume</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">set_master_volume</span> <span class="o">=</span> <span class="n">adev_set_master_volume</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">get_master_volume</span> <span class="o">=</span> <span class="n">adev_get_master_volume</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">set_master_mute</span> <span class="o">=</span> <span class="n">adev_set_master_mute</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">get_master_mute</span> <span class="o">=</span> <span class="n">adev_get_master_mute</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">set_mode</span> <span class="o">=</span> <span class="n">adev_set_mode</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">set_mic_mute</span> <span class="o">=</span> <span class="n">adev_set_mic_mute</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">get_mic_mute</span> <span class="o">=</span> <span class="n">adev_get_mic_mute</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">set_parameters</span> <span class="o">=</span> <span class="n">adev_set_parameters</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">get_parameters</span> <span class="o">=</span> <span class="n">adev_get_parameters</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">get_input_buffer_size</span> <span class="o">=</span> <span class="n">adev_get_input_buffer_size</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">open_output_stream</span> <span class="o">=</span> <span class="n">adev_open_output_stream</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">close_output_stream</span> <span class="o">=</span> <span class="n">adev_close_output_stream</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">open_input_stream</span> <span class="o">=</span> <span class="n">adev_open_input_stream</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">close_input_stream</span> <span class="o">=</span> <span class="n">adev_close_input_stream</span><span class="p">;</span>
+    <span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">dump</span> <span class="o">=</span> <span class="n">adev_dump</span><span class="p">;</span>
+
+    <span class="o">*</span><span class="n">device</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">adev</span><span class="o">-&gt;</span><span class="n">device</span><span class="p">.</span><span class="n">common</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这里再补充一个小的定义，<code class="highlighter-rouge">struct generic_audio_device</code> 中的第一个成员 <code class="highlighter-rouge">device</code> 就是我们前面提到的 <code class="highlighter-rouge">struct audio_hw_device</code> 结构体，它的定义如下:
+代码路径：<code class="highlighter-rouge">/hardware/libaudio/audio_hw.c</code></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">generic_audio_device</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="n">device</span><span class="p">;</span>
+    <span class="n">pthread_mutex_t</span> <span class="n">lock</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">audio_stream_out</span> <span class="o">*</span><span class="n">output</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">audio_stream_in</span> <span class="o">*</span><span class="n">input</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+    <span class="n">bool</span> <span class="n">mic_mute</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>我们可以从 <code class="highlighter-rouge">adev_open</code> 函数中的实现中看到，它里面的主要工作就是做一些对 <code class="highlighter-rouge">struct audio_hw_device</code> 对象的初始化，将其定义的函数指针指向对应的已经实现好的函数中。例如，这里将<code class="highlighter-rouge">struct audio_hw_device</code>中定义的 <code class="highlighter-rouge">open_output_stream</code> 函数指针成员指向了 <code class="highlighter-rouge">adev_open_output_stream</code> 函数。这样在 Framework 层调用的 <code class="highlighter-rouge">struct audio_hw_device</code> 对象的 <code class="highlighter-rouge">open_output_stream</code> 函数，其实最终调用的是 <code class="highlighter-rouge">adev_open_output_stream</code>函数。</p>
+
+<p><strong>这里，还有一点需要特别注意的就是我们所打开的硬件设备对象是怎么返回的？</strong>
+答案就是它是通过 <code class="highlighter-rouge">open</code> 函数中的第三个参数 <code class="highlighter-rouge">hw_device_t** device</code>返回的。在 open 函数初始化并打开特定的硬件设备之后，它就将硬件设备结构体中的第一个成员 <code class="highlighter-rouge">struct audio_hw_device</code> 类型的 common 对象返回。</p>
+
+<p><strong>那么为什么这里返回的是 hw_device_t** 类型的硬件设备，而是不是audio_hw_device** 类型呢？</strong>
+其实这个问题在前面在介绍 <code class="highlighter-rouge">hw_module_methods_t</code> 中的 <code class="highlighter-rouge">open</code> 函数时已经提到过了。这里主要也蕴含着面向对象编程中的另外一种重要思想<strong>多态</strong>，这使得使用的 hw_device_t 指针就可以访问到子类中继承了父类的属性和方法，如果要获得某个子类所特有的属性，那么只要将其进行类型的强制转换即可。</p>
+
+<h2 id="总结">总结</h2>
+<p>理解 Android HAL 层最关键的还是要弄清楚 hw_module_t 、 hw_device_t、 hw_module_methods_t 这三个结构体的含义即关系，以及如何基于这三个结构体来实现特定硬件的<strong>硬件模块结构体</strong>、<strong>硬件设备结构体</strong>、<strong>硬件模块方法列表结构体</strong>。其实从面向对象编程的角度来考虑，前面三者和后面三者之间的关系，就好比是父类和子类的关系，如下图所示：
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/android_hal_architecture.jpg" alt="" /></p>
+
+<p>后面，我可能会写一片关于 Android 系统加载 HAL 模块的文章。</p>
+
+<h2 id="参考文章">参考文章</h2>
+<ol>
+  <li>罗升阳. Android 系统源代码情景分析作者. 电子工业出版社, 2012: 13-44</li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/HAL">HAL</a>,&nbsp;<a href="/tag/Android">Android</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F26%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F26%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F26%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+HAL+%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F03%2F26%2FAndroid-HAL%25E5%25B1%2582%25E5%258E%259F%25E7%2590%2586%25E5%2588%2586%25E6%259E%2590.html&media=http://localhost:4000/assets/androidBg.jpg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">Android NDK  vs AOSP Build System</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html">
+					<span class="page-number">ramfs, tmpfs, rootfs, initramfs的区别</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html',
+    'title': 'Android HAL 层原理分析'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

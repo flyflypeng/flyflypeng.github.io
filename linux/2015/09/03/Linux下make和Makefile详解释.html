@@ -10,7 +10,7 @@
   <meta name="description" content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Linux make 和 Makefile 详解" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Linux make 和 Makefile 详解">
   <meta name="twitter:description" content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -263,8 +263,8 @@
 
 <p>为了更好地理解Makefile，我们就通过一个简单的例子来进行阐述说明。在这个例子中，我们有总共有三个文件file1.c,file2.c和file2.h，通过这三个文件我们要构造一个可执行的目标程序“helloworld”。</p>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="c1">//file1.c
-</span><span class="cp">#include &lt;stdio.h&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//file1.c</span>
+<span class="cp">#include &lt;stdio.h&gt;
 #include "file2.h"
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
@@ -273,11 +273,10 @@
 	<span class="n">File2Print</span><span class="p">();</span>
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="c1">//file2.h
-</span><span class="cp">#ifndef FILE2_H_
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//file2.h</span>
+<span class="cp">#ifndef FILE2_H_
 #define FILE2_H_
 </span>	<span class="cp">#ifdef __cplusplus
 </span>		<span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
@@ -287,33 +286,30 @@
 </span>		<span class="p">}</span>
 	<span class="cp">#endif
 #endif
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
-<div class="language-cpp highlighter-rouge"><pre class="highlight"><code><span class="c1">//file2.c
-</span><span class="cp">#include &lt;stdio.h&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//file2.c</span>
+<span class="cp">#include &lt;stdio.h&gt;
 #include "file2.h"
 </span>
 <span class="kt">void</span> <span class="nf">File2Print</span><span class="p">()</span>
 <span class="p">{</span>
 	<span class="n">printf</span><span class="p">(</span><span class="s">"Print file2********************</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">helloworld</span><span class="o">:</span><span class="nf">file1.o file2.o</span>
-	gcc file1.o file2.o -o helloworld
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">helloworld</span><span class="o">:</span><span class="nf">file1.o file2.o</span>
+	gcc file1.o file2.o <span class="nt">-o</span> helloworld
 <span class="nl">file1.o</span><span class="o">:</span> <span class="nf">file1.c file2.h</span>
-	gcc -c file1.c -o file1.o
+	gcc <span class="nt">-c</span> file1.c <span class="nt">-o</span> file1.o
 <span class="nl">file2.o</span><span class="o">:</span> <span class="nf">file2.c file2.h</span>
-	gcc -c file2.c -o file2.o
+	gcc <span class="nt">-c</span> file2.c <span class="nt">-o</span> file2.o
 <span class="nl">clean</span><span class="o">:</span>
-	rm -rf <span class="k">*</span>.o helloworld
-</code></pre>
-</div>
+	<span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">*</span>.o helloworld
+</code></pre></div></div>
 
 <p>上面的makefile文件目的就是要编译一个helloworld的可执行文件。让我们一句句来解释:</p>
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">helloworld</span><span class="o">:</span><span class="nf">file1.o file2.o  </span><span class="c">#</span><span class="nf">目标helloworld依赖于file1.o和file2.o两个目标文件。</span>
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">helloworld</span><span class="o">:</span><span class="nf">file1.o file2.o  </span><span class="c">#</span><span class="nf">目标helloworld依赖于file1.o和file2.o两个目标文件。</span>
 
 	<span class="err">gcc</span> <span class="err">file1.o</span> <span class="err">file2.o</span> <span class="err">-o</span> <span class="err">helloworld</span>  <span class="c">#使用gcc编译出helloworld可执行文件。-o 表示执行输出的目标文件名。
 </span>    
@@ -322,14 +318,13 @@
 	<span class="err">gcc</span> <span class="err">-c</span> <span class="err">file1.c</span> <span class="err">-o</span> <span class="err">file1.o</span>  <span class="c">#编译出file1.o文件。-c表示gcc只把源文件编译成目标文件。
 </span>    
 <span class="nl">file2.o</span><span class="o">:</span> <span class="nf">file2.c file2.h</span>
-	gcc -c file2.c -o file2.o
+	gcc <span class="nt">-c</span> file2.c <span class="nt">-o</span> file2.o
 <span class="c">#这两句的含义上面两句的含义相同
 </span>
 <span class="nl">clean</span><span class="o">:</span>
-	rm -rf <span class="k">*</span>.o helloworld
+	<span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">*</span>.o helloworld
 <span class="c">#当用户在shenll终端中输入make clean的命令时，就会删除*.o和helloworld文件。
-</span></code></pre>
-</div>
+</span></code></pre></div></div>
 
 <p>写好Makefile文件之后，只需要简单地在终端命令行中输入make命令，就会开始执行Makefile中的内容了。</p>
 
@@ -337,19 +332,18 @@
 
 <p>如果我们需要编译cpp文件时，只需要把gcc改成g++就可以了。但是如果Makefile中有很多gcc，那不就很麻烦嘛。
 下面我们就使用变量来改写上面的Makefile文件。</p>
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nv">OBJS</span> <span class="o">=</span> file1.o file2.o
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">OBJS</span> <span class="o">=</span> file1.o file2.o
 <span class="nv">CC</span> <span class="o">=</span> gcc
-<span class="nv">CFLAGS</span> <span class="o">=</span> -Wall -O -g
+<span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-O</span> <span class="nt">-g</span>
 <span class="nl">helloworld</span><span class="o">:</span><span class="nf">$(OBJS)</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(OBJS)</span> -o helloworld
+	<span class="nv">$(CC)</span> <span class="nv">$(OBJS)</span> <span class="nt">-o</span> helloworld
 <span class="nl">file1.o</span><span class="o">:</span><span class="nf">file1.c file2.h</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c file1.c -o file1.o
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> file1.c <span class="nt">-o</span> file1.o
 <span class="nl">file2.o</span><span class="o">:</span><span class="nf">file2.c file2.h</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c file2.c -o file2.o
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> file2.c <span class="nt">-o</span> file2.o
 <span class="nl">clean</span><span class="o">:</span>
-	rm -rf <span class="k">*</span>.o helloworld
-</code></pre>
-</div>
+	<span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">*</span>.o helloworld
+</code></pre></div></div>
 
 <p>在上面我们使用到了变量。如果要设定一个变量，你只要在一行的开始写下这个变量的名字，后面跟一个“=”号，后面跟你要设定的这个变量的值。已有你要引用这个变量，写一个“$“符号在变量名前，就表示引用变量的值。</p>
 
@@ -385,24 +379,23 @@
 <p>学到这里，你可能发现在Makefile中既有变量，又有函数，这不就是在编程吗？其实写Makefile就是在编程，只不过使用不同的语言而已。</p>
 
 <p>下面我们就使用函数来继续改写上面的Makefile。</p>
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nv">CC</span> <span class="o">=</span> gcc
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span> <span class="o">=</span> gcc
 <span class="nv">XX</span> <span class="o">=</span> g++
-<span class="nv">CFLAGS</span> <span class="o">=</span> -Wall -O -g
+<span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-O</span> <span class="nt">-g</span>
 <span class="nv">TARGET</span> <span class="o">=</span>  ./helloworld
 <span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
 <span class="nl">%.o</span><span class="o">:</span><span class="nf">%.cpp</span>
-	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
-<span class="nv">SOURCES</span> <span class="o">=</span> <span class="err">$</span><span class="o">(</span>wildcard <span class="k">*</span>.c <span class="k">*</span>.cpp<span class="o">)</span>
-<span class="nv">OBJS</span> <span class="o">=</span> <span class="err">$</span><span class="o">(</span>patsubst %.c,%.o,<span class="err">$</span><span class="o">(</span>patsubst %.cpp,%.o,<span class="nv">$(SOURCES)</span><span class="o">))</span>
+	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
+<span class="nv">SOURCES</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">wildcard</span> <span class="k">*</span>.c <span class="k">*</span>.cpp<span class="nf">)</span>
+<span class="nv">OBJS</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">patsubst</span> %.c,%.o,<span class="nf">$(</span><span class="nb">patsubst</span> %.cpp,%.o,<span class="nv">$(SOURCES)</span><span class="nf">))</span>
 
 <span class="nl">$(TARGET)</span><span class="o">:</span><span class="nf">$(OBJS)</span>
-	<span class="nv">$(XX)</span> <span class="nv">$(OBJS)</span> -o <span class="nv">$(TARGET)</span>
+	<span class="nv">$(XX)</span> <span class="nv">$(OBJS)</span> <span class="nt">-o</span> <span class="nv">$(TARGET)</span>
     <span class="err">chmod</span> <span class="err">a+x</span> <span class="err">$(TARGET)</span>
 <span class="nl">clean</span><span class="o">:</span>
-	rm -rf <span class="k">*</span>.o helloworld
-</code></pre>
-</div>
+	<span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">*</span>.o helloworld
+</code></pre></div></div>
 
 <p>看到上面这个Makefile文件我们的感觉就是要炸了，什么语法啊，看不懂啊，所以我们要一步一步来分析。</p>
 
@@ -414,12 +407,11 @@ SOURCES = $(wildcard *.c *.cpp)  #这句代码表示产生一个所有以.c，.c
 功能: 匹配替换，有三个参数。第一个参数是一个需要匹配的式样，第二个表示用什么来替换它，第三个是一个需要<strong>被处理的由空格分隔的文件列表</strong>
 OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示把文件列表中的所有的.c,.cpp字符变成.o，形成一个新的文件列表，然后存入OBJS变量中。</p>
 
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
+	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
 <span class="nl">%.o</span><span class="o">:</span><span class="nf">%.cpp</span>
-	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> -c <span class="nv">$&lt;</span> -o <span class="nv">$@</span>
-</code></pre>
-</div>
+	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
+</code></pre></div></div>
 <p>这几句命令表示把所有的 .c , .cpp 文件编译成.o文件。
 这里有三个比较有用的内部变量:</p>
 
@@ -472,16 +464,14 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
 
 <p>每个Makefile都应该编写一个清空目标文件(.o和执行文件)的规则，这不仅便于重编译，也很利于保持文件的整洁。
 一般的风格是:</p>
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">clean</span><span class="o">:</span>
-	rm <span class="k">*</span>.o helloworld
-</code></pre>
-</div>
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">clean</span><span class="o">:</span>
+	<span class="nb">rm</span> <span class="k">*</span>.o helloworld
+</code></pre></div></div>
 <p>但是更为稳健的方法是:</p>
-<div class="language-makefile highlighter-rouge"><pre class="highlight"><code><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">clean</span>
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">clean</span>
 <span class="nl">clean</span><span class="o">:</span>
-	<span class="p">-</span>rm <span class="k">*</span>.o helloworld
-</code></pre>
-</div>
+	<span class="p">-</span><span class="nb">rm</span> <span class="k">*</span>.o helloworld
+</code></pre></div></div>
 
 <p>在这里”.PHONY”的意思表示clean是一个“伪目标”，而在rm命令前机上一个小减号”-“表示的意思是:也许莫邪文件出现了问题，但是不要管，继续做后面的事。当然，clean的规则不要放在文件的开头，不然会被make以为是默认的目标。所有有个不成文的规定是——”clean从来都是放在最后面的”。</p>
 
@@ -505,7 +495,7 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
   
     
     
-      <a href="//twitter.com/share?text=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -520,7 +510,7 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&u=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html"
+      <a href="//www.facebook.com/sharer.php?t=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -545,7 +535,7 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -569,7 +559,7 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html&media=http://woshijpf.github.io/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Linux+make+%E5%92%8C+Makefile+%E8%AF%A6%E8%A7%A3&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2015%2F09%2F03%2FLinux%25E4%25B8%258Bmake%25E5%2592%258CMakefile%25E8%25AF%25A6%25E8%25A7%25A3%25E9%2587%258A.html&media=http://localhost:4000/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -582,7 +572,7 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/25/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04.html">
+				<a href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/26/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>

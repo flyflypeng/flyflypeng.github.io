@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Ubuntu 14.04 下安装和配置 Terminator</title>
+  <meta name="description" content="Terminator 介绍Ubuntu 中默认使用的 shell 终端工具是 gnome-terminal，虽然它已经很好用了，但有时还是无法满足我们程序员各种各样的需求，例如在同一个窗口中启动多个终端！但是！但是！但是！Terminator 就可以完美地实现了在 Ubuntu在同一窗口中启动多个终端，并且可以自...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Terminator 介绍Ubuntu 中默认使用的 shell 终端工具是 gnome-terminal，虽然它已经很好用了，但有时还是无法满足我们程序员各种各样的需求，例如在同一个窗口中启动多个终端！但是！但是！但是！Terminator 就可以完美地实现了在 Ubuntu在同一窗口中启动多个终端，并且可以自..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Ubuntu 14.04 下安装和配置 Terminator" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Ubuntu 14.04 下安装和配置 Terminator">
+  <meta name="twitter:description" content="Terminator 介绍Ubuntu 中默认使用的 shell 终端工具是 gnome-terminal，虽然它已经很好用了，但有时还是无法满足我们程序员各种各样的需求，例如在同一个窗口中启动多个终端！但是！但是！但是！Terminator 就可以完美地实现了在 Ubuntu在同一窗口中启动多个终端，并且可以自...">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%88%A9%E5%99%A8/2016/04/19/Ubuntu-Terminator-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/instacode.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Ubuntu 14.04 下安装和配置 Terminator</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">April 19, 2016</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/利器">利器</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="terminator-介绍">Terminator 介绍</h2>
+
+<p>Ubuntu 中默认使用的 shell 终端工具是 <strong>gnome-terminal</strong>，虽然它已经很好用了，但有时还是无法满足我们程序员各种各样的需求，例如在同一个窗口中启动多个终端！</p>
+
+<p>但是！但是！但是！<strong>Terminator</strong> 就可以完美地实现了在 Ubuntu在同一窗口中启动多个终端，并且可以自由的在一个窗口中分割区域建立新终端，还可以通过鼠标拉伸调整每个终端的大小。</p>
+
+<p>效果图如下：
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/terminator.png" alt="terminator" /></p>
+
+<h2 id="terminator-安装">Terminator 安装</h2>
+
+<p>Terminator 的安装非常方便，在 Ubuntu 中只需要用 apt 的包管理工具就能轻松地进行安装：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>terminator
+</code></pre></div></div>
+
+<!--more-->
+
+<h2 id="terminator-美化">Terminator 美化</h2>
+
+<p>Terminator 默认的配色和界面是非常非常不好看的，它默认的标题栏是红色的，就是下面这种很难看的样子：
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/terminator_default.png" alt="terminator_default" /></p>
+
+<p>但是经过我配色后的样子就是本文第一幅图片时的哪种样子</p>
+
+<p>虽然它的功能是如此强大，但是还好我们可以对 <strong>Terminator</strong> 的外观进行配置，我们可以自己自由地进行字体、背景等设置，下面就是我 Ubuntu 14.04 上 Terminator 的配置文件：</p>
+
+<p><strong>有关 terminator 的配置选项可以通过 man terminator_config 命令进行查阅</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>global_config]
+  title_transmit_bg_color <span class="o">=</span> <span class="s2">"#d30102"</span>
+  focus <span class="o">=</span> system
+  suppress_multiple_term_dialog <span class="o">=</span> True
+<span class="o">[</span>keybindings]
+<span class="o">[</span>profiles]
+  <span class="o">[[</span>default]]
+    palette <span class="o">=</span> <span class="s2">"#2d2d2d:#f2777a:#99cc99:#ffcc66:#6699cc:#cc99cc:#66cccc:#d3d0c8:#747369:#f2777a:#99cc99:#ffcc66:#6699cc:#cc99cc:#66cccc:#f2f0ec"</span>
+    background_color <span class="o">=</span> <span class="s2">"#2D2D2D"</span> <span class="c"># 背景颜色</span>
+    background_image <span class="o">=</span> None   
+    background_darkness <span class="o">=</span> 0.85 
+    cursor_color <span class="o">=</span> <span class="s2">"#2D2D2D"</span> <span class="c"># 光标颜色</span>
+    cursor_blink <span class="o">=</span> True <span class="c"># 光标是否闪烁</span>
+    foreground_color <span class="o">=</span> <span class="s2">"#EEE9E9"</span> <span class="c"># 文字的颜色</span>
+    use_system_font <span class="o">=</span> False <span class="c"># 是否启用系统字体</span>
+    font <span class="o">=</span> Ubuntu Mono 13  <span class="c"># 字体设置，后面的数字表示字体大小</span>
+    copy_on_selection <span class="o">=</span> True <span class="c"># 选择文本时同时将数据拷贝到剪切板中</span>
+    show_titlebar <span class="o">=</span> False <span class="c"># 不显示标题栏，也就是 terminator 中那个默认的红色的标题栏</span>
+<span class="o">[</span>layouts]
+  <span class="o">[[</span>default]]
+    <span class="o">[[[</span>child1]]]
+      <span class="nb">type</span> <span class="o">=</span> Terminal
+      parent <span class="o">=</span> window0
+      profile <span class="o">=</span> default
+    <span class="o">[[[</span>window0]]]
+      <span class="nb">type</span> <span class="o">=</span> Window
+      parent <span class="o">=</span> <span class="s2">""</span>
+<span class="o">[</span>plugins]
+</code></pre></div></div>
+
+<h2 id="terminator-常用快捷键">Terminator 常用快捷键</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>命令</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Ctrl+Shift+O</td>
+      <td>水平分割窗口</td>
+    </tr>
+    <tr>
+      <td>Ctrl+Shift+E</td>
+      <td>垂直分割窗口</td>
+    </tr>
+    <tr>
+      <td>F11</td>
+      <td>全屏/退出全屏</td>
+    </tr>
+    <tr>
+      <td>Ctrl+Shift+C</td>
+      <td>复制</td>
+    </tr>
+    <tr>
+      <td>Ctrl+Shift+V</td>
+      <td>粘贴</td>
+    </tr>
+    <tr>
+      <td>Ctrl+Tab</td>
+      <td>在分割的各窗口之间切换</td>
+    </tr>
+    <tr>
+      <td>Ctrl+Shift+X</td>
+      <td>将分割的某一个窗口放大至全屏使用</td>
+    </tr>
+    <tr>
+      <td>Ctrl+Shift+Z</td>
+      <td>从放大至全屏的某一窗口回到多窗格界面</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="更改-ubuntu-默认终端工具">更改 Ubuntu 默认终端工具</h2>
+
+<p>我们前面说到过，在 Ubuntu 系统中默认使用的终端工具是 <strong>gnome-terminal</strong>，而当我们安装完 <strong>Terminator</strong> 之后，Ubuntu 系统中默认采用的终端工具就变成了 <strong>Terminator</strong>，所以如果我们想重新把 gnome-terminal 作为默认的终端工具该怎么办呢？</p>
+
+<p>修改 Ubuntu 默认使用的终端工具，我们就得借助于 <strong>dconf-tools</strong> 工具来进行重新设置。</p>
+
+<p>首先，还是使用 apt 来安装 dconf-tools：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>dconf-tools
+</code></pre></div></div>
+
+<p>安装成功后，就可以在终端中通过命令 “dconf-editor” 来打开这个工具，然后从左边的的菜单栏中按照下面的步骤依次进入指定的菜单项：</p>
+
+<blockquote>
+  <p>org &gt; gnome &gt; desktop &gt; applications &gt; terminal</p>
+</blockquote>
+
+<p>此时，我们可以看到使用 Terminator 作为默认终端工具的配置为：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">exec  </span>x-terminal-emulator
+exec-arg <span class="nt">-e</span>
+</code></pre></div></div>
+
+<p>如果想使用 gnome-terminal 为默认终端工具的话，就将上面的配置更改为：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">exec  </span>gnome-terminal
+exec-arg <span class="nt">-x</span>
+</code></pre></div></div>
+
+<p>保存退出之后，使用快捷键 “Ctrl + Alt + T” 启动一个终端时，这时启动起来的就是 gnome-terminal 工具了！</p>
+
+<h2 id="参考链接">参考链接</h2>
+
+<ol>
+  <li><a href="https://www.douban.com/note/362240898/">Ubuntu 安装terminator 后更改默认终端设置</a></li>
+  <li><a href="http://blog.beginman.cn/blog/91/">terminator使用与配置</a></li>
+  <li><a href="http://blog.csdn.net/chinabhlt/article/details/8766806">ubuntu安装增强版终端Terminator</a></li>
+  <li><a href="http://tool.oschina.net/commons?type=3">RGB参考表</a></li>
+</ol>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Ubuntu">Ubuntu</a>,&nbsp;<a href="/tag/Terminator">Terminator</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Ubuntu+14.04+%E4%B8%8B%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE+Terminator&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F04%2F19%2FUbuntu-Terminator-%25E4%25BD%25BF%25E7%2594%25A8%25E6%2596%25B9%25E6%25B3%2595.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Ubuntu+14.04+%E4%B8%8B%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE+Terminator&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F04%2F19%2FUbuntu-Terminator-%25E4%25BD%25BF%25E7%2594%25A8%25E6%2596%25B9%25E6%25B3%2595.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F04%2F19%2FUbuntu-Terminator-%25E4%25BD%25BF%25E7%2594%25A8%25E6%2596%25B9%25E6%25B3%2595.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Ubuntu+14.04+%E4%B8%8B%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE+Terminator&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F04%2F19%2FUbuntu-Terminator-%25E4%25BD%25BF%25E7%2594%25A8%25E6%2596%25B9%25E6%25B3%2595.html&media=http://localhost:4000/assets/instacode.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/10/%E7%A1%AC%E7%9B%98%E4%BD%A0%E6%89%80%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">硬盘--你所不知道的事</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+				<a href="/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/04/29/CPU-%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84.html">
+					<span class="page-number">CPU 是如何工作的？</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/woshijpf" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">woshijpf</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E5%88%A9%E5%99%A8/2016/04/19/Ubuntu-Terminator-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95.html',
+    'title': 'Ubuntu 14.04 下安装和配置 Terminator'
+  });
+</script>
+
+
+
+  </body>
+
+</html>

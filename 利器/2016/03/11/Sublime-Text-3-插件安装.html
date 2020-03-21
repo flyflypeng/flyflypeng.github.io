@@ -10,7 +10,7 @@
   <meta name="description" content="Package Control 简介Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。Package...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Package Control 简介Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。Package..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Sublime-Text-3-插件安装" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Sublime-Text-3-插件安装">
   <meta name="twitter:description" content="Package Control 简介Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。Package...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -208,9 +208,8 @@
 
 <p>如果是 Sublime Text 3 的话，只需要将下面的内容复制到 Sublime 的控制台中（Sublime 的控制台可以通过快捷键 “Ctrl + `”来打开）</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">urllib.request</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">hashlib</span><span class="p">;</span> <span class="n">h</span> <span class="o">=</span> <span class="s">'2915d1851351e5ee549c20394736b442'</span> <span class="o">+</span> <span class="s">'8bc59f460fa1548d1514676163dafc88'</span><span class="p">;</span> <span class="n">pf</span> <span class="o">=</span> <span class="s">'Package Control.sublime-package'</span><span class="p">;</span> <span class="n">ipp</span> <span class="o">=</span> <span class="n">sublime</span><span class="o">.</span><span class="n">installed_packages_path</span><span class="p">();</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">())</span> <span class="p">);</span> <span class="n">by</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span> <span class="s">'http://packagecontrol.io/'</span> <span class="o">+</span> <span class="n">pf</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'</span><span class="si">%20</span><span class="s">'</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">();</span> <span class="n">dh</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">by</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">();</span> <span class="k">print</span><span class="p">(</span><span class="s">'Error validating download (got </span><span class="si">%</span><span class="s">s instead of </span><span class="si">%</span><span class="s">s), please try manual install'</span> <span class="o">%</span> <span class="p">(</span><span class="n">dh</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span> <span class="k">if</span> <span class="n">dh</span> <span class="o">!=</span> <span class="n">h</span> <span class="k">else</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">ipp</span><span class="p">,</span> <span class="n">pf</span><span class="p">),</span> <span class="s">'wb'</span> <span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
-</code></pre>
-</div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">urllib.request</span><span class="p">,</span><span class="n">os</span><span class="p">,</span><span class="n">hashlib</span><span class="p">;</span> <span class="n">h</span> <span class="o">=</span> <span class="s">'2915d1851351e5ee549c20394736b442'</span> <span class="o">+</span> <span class="s">'8bc59f460fa1548d1514676163dafc88'</span><span class="p">;</span> <span class="n">pf</span> <span class="o">=</span> <span class="s">'Package Control.sublime-package'</span><span class="p">;</span> <span class="n">ipp</span> <span class="o">=</span> <span class="n">sublime</span><span class="o">.</span><span class="n">installed_packages_path</span><span class="p">();</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">())</span> <span class="p">);</span> <span class="n">by</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span> <span class="s">'http://packagecontrol.io/'</span> <span class="o">+</span> <span class="n">pf</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">' '</span><span class="p">,</span> <span class="s">'</span><span class="si">%20</span><span class="s">'</span><span class="p">))</span><span class="o">.</span><span class="n">read</span><span class="p">();</span> <span class="n">dh</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">by</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">();</span> <span class="k">print</span><span class="p">(</span><span class="s">'Error validating download (got </span><span class="si">%</span><span class="s">s instead of </span><span class="si">%</span><span class="s">s), please try manual install'</span> <span class="o">%</span> <span class="p">(</span><span class="n">dh</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span> <span class="k">if</span> <span class="n">dh</span> <span class="o">!=</span> <span class="n">h</span> <span class="k">else</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">ipp</span><span class="p">,</span> <span class="n">pf</span><span class="p">),</span> <span class="s">'wb'</span> <span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
+</code></pre></div></div>
 
 <h2 id="插件安装">插件安装</h2>
 
@@ -265,22 +264,20 @@
 <h3 id="7-cheaders">7. CHeaders</h3>
 <p>该插件可以帮助你自动填充/提示 C/C++ 的头文件。 使用方法：该插件在 Linux 系统中会默认从以下两个路径去寻找头文件：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>/usr/include/
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/usr/include/
 /usr/local/include 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>如果你想再添加一些头文件的查找路径，可以将头文件路径添加到设置文件中的 “PATHS_HEADERS” 参数中</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="o">{</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>
      <span class="s2">"PATHS_HEADERS"</span> : <span class="o">[</span><span class="s2">"~/Desktop/project/include"</span><span class="o">]</span>,
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>为了能够使编写 C++ 代码时，我们还可以添加系统中 gcc-4.8 中有关 C++ 的相关头文件，改完之后的配置文件如下：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code><span class="o">{</span>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">{</span>
     // Path to your c headers files...
     // example linux: 
     //      /home/leoxnidas/include/
@@ -288,7 +285,7 @@
     //      <span class="nv">$HOME</span>/include/
     // example window: 
     //      C:<span class="se">\</span>
-    //      %HOME% &lt;<span class="o">=</span> Same <span class="o">=</span>&gt; C:<span class="se">\</span>
+    //      %HOME% &lt;<span class="o">=</span> Same <span class="o">=&gt;</span> C:<span class="se">\</span>
     <span class="s2">"PATHS_HEADERS"</span> : 
     <span class="o">[</span> 
         <span class="s2">"/usr/include/c++/"</span>,
@@ -297,14 +294,12 @@
         <span class="s2">"/usr/lib/gcc/x86_64-linux-gnu/4.8/include"</span>
     <span class="o">]</span>
 <span class="o">}</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>如果有时插件不能在输入头文件时智能提示相关的头文件，这可能说明插件工作不正常了，所有就需要重新加载插件，我们只需要使用快捷键 “Ctrl + Shift + P” 来打开命令行输入框，并在框中输入以下的命令：</p>
 
-<div class="language-shell highlighter-rouge"><pre class="highlight"><code>CHeaders: Load Plugin
-</code></pre>
-</div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CHeaders: Load Plugin
+</code></pre></div></div>
 
 <p>如下图所示：
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/sublime_CHeaders.png" alt="Sublime_CHeader" /></p>
@@ -367,7 +362,7 @@
   
     
     
-      <a href="//twitter.com/share?text=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -382,7 +377,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html"
+      <a href="//www.facebook.com/sharer.php?t=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -407,7 +402,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -431,7 +426,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html&media=http://woshijpf.github.io/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2016%2F03%2F11%2FSublime-Text-3-%25E6%258F%2592%25E4%25BB%25B6%25E5%25AE%2589%25E8%25A3%2585.html&media=http://localhost:4000/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

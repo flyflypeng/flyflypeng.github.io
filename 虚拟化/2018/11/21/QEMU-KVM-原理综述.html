@@ -10,7 +10,7 @@
   <meta name="description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="QEMU/KVM 原理综述" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
+  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="QEMU/KVM 原理综述">
   <meta name="twitter:description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -233,7 +233,7 @@
   上述流程用下面的代码来简单表示：</p>
     </blockquote>
 
-    <div class="language-c highlighter-rouge"><pre class="highlight"><code>  <span class="n">open</span><span class="p">(</span><span class="s">"/dev/kvm"</span><span class="p">)</span>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">open</span><span class="p">(</span><span class="s">"/dev/kvm"</span><span class="p">)</span>
     
   <span class="n">ioctl</span><span class="p">(</span><span class="n">KVM_CREATE_VM</span><span class="p">)</span>
     
@@ -252,8 +252,7 @@
        <span class="p">}</span>
     
   <span class="p">}</span>
-</code></pre>
-    </div>
+</code></pre></div>    </div>
   </li>
   <li>Host, QEMU, Guest之间的关系图
   <img src="http://97.64.33.222/temp/1811/99149dd24c5fc6b2.jpg" alt="" /></li>
@@ -268,7 +267,7 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en">QEMU深入解析：综述篇</a>&nbsp;<a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en">QEMU深入解析：综述篇</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -292,7 +291,7 @@
   
     
     
-      <a href="//twitter.com/share?text=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&url=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -307,7 +306,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&u=http%3A%2F%2Fwoshijpf.github.io%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html"
+      <a href="//www.facebook.com/sharer.php?t=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&u=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -332,7 +331,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -356,7 +355,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&url=http%3A%2F%2Fwoshijpf.github.io%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html&media=http://woshijpf.github.io/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=QEMU%2FKVM+%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0&url=http%3A%2F%2Flocalhost%3A4000%2F%25E8%2599%259A%25E6%258B%259F%25E5%258C%2596%2F2018%2F11%2F21%2FQEMU-KVM-%25E5%258E%259F%25E7%2590%2586%25E7%25BB%25BC%25E8%25BF%25B0.html&media=http://localhost:4000/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -379,6 +378,14 @@
 			
 		</span>
 		<span class="next-post">
+			
+				<a href="/%E5%88%A9%E5%99%A8/2020/03/21/Mac-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html">
+					<span class="page-number">Mac 开发环境配置</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
 			
 		</span>
 	</section>

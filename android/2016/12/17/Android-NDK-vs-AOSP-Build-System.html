@@ -10,7 +10,7 @@
   <meta name="description" content="前言最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 Android NDK 和 AOSP(Android Open Source Project) Build System 这两个东西，但是由于他们两者都可以将 C/C++ 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2019">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
   
 
   <!-- External libraries -->
@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="前言最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 Android NDK 和 AOSP(Android Open Source Project) Build System 这两个东西，但是由于他们两者都可以将 C/C++ 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所..." />
-  <meta property="og:url" content="http://woshijpf.github.io" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android NDK  vs AOSP Build System" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://woshijpf.github.io/assets/androidBg.jpg" />
+  <meta property="og:image" content="http://localhost:4000/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Android NDK  vs AOSP Build System">
   <meta name="twitter:description" content="前言最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 Android NDK 和 AOSP(Android Open Source Project) Build System 这两个东西，但是由于他们两者都可以将 C/C++ 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所...">
-  <meta name="twitter:image" content="http://woshijpf.github.io/assets/androidBg.jpg">
-  <meta name="twitter:url" content="http://woshijpf.github.io">
+  <meta name="twitter:image" content="http://localhost:4000/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://woshijpf.github.io/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -224,8 +224,8 @@
 <p>Android NDK 编译系统其实本质上就是一系列的<code class="highlighter-rouge">交叉编译工具链</code>，而 NDK 中所使用的编译脚本 <code class="highlighter-rouge">ndk-build</code> 就是根据编译配置文件 <code class="highlighter-rouge">Android.mk</code> 和 <code class="highlighter-rouge">Application.mk</code> 来调用这些交叉编译工具链中的工具编译生成指定 ABI 平台下目标链接库文件或者可执行文件。</p>
 
 <p>这里我觉得还是有必要多费点文字对 Android NDK 包中的文件及目录的内容进行一个说明，以便大家对 NDK 有更加深一步的理解。NDK 包中的文件及目录结构如下所示：</p>
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b$ </span>tree -L 1
-.
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b<span class="nv">$ </span>tree <span class="nt">-L</span> 1
+<span class="nb">.</span>
 |-- build
 |-- CHANGELOG.md
 |-- ndk-build
@@ -239,11 +239,10 @@
 |-- shader-tools
 |-- source.properties
 |-- sources
-<span class="sb">`</span>-- toolchains
+<span class="sb">`</span><span class="nt">--</span> toolchains
 
 7 directories, 7 files
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <ul>
   <li>build：该目录下包含了 ndk-build 编译脚本中所使用到的各种小的脚本文件，例如我们在 Android.mk 中常见的将源码编译成共享链接库文件的语句： <code class="highlighter-rouge">include $(BUILD_SHARED_LIBRARY)</code>中的 <code class="highlighter-rouge">BUILD_SHARED_LIBRARY</code> 对应的就是一个编译脚本文件： <code class="highlighter-rouge">&lt;ndk-home&gt;/build/core/build-shared-library.mk</code>。</li>
@@ -259,42 +258,40 @@
 
 <h2 id="android-ndk-中系统提供的共享链接库">Android NDK 中系统提供的共享链接库</h2>
 <p>有时我们的自己编写的源码中除了实现某种特定的功能之外，可能还会在C/C++代码中使用到日志打印输出函数，而这个日志打印函数就位于 Android NDK 中 Android 系统提供的 <code class="highlighter-rouge">liblog.so</code> 库中。除了 liblog.so 库之外，NDK 还提供了下面这些系统共享链接库供我们自己的源码进行加载调用：</p>
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b/platforms/android-22/arch-x86/usr/lib$ </span>ls -al
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b/platforms/android-22/arch-x86/usr/lib<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-al</span>
 total 10996
-drwxr-xr-x 2 woshijpf woshijpf    4096 Jun 15  2016 .
+drwxr-xr-x 2 woshijpf woshijpf    4096 Jun 15  2016 <span class="nb">.</span>
 drwxr-xr-x 4 woshijpf woshijpf    4096 Jun 15  2016 ..
--rw-r--r-- 1 woshijpf woshijpf    2204 Jun 15  2016 crtbegin_dynamic.o
--rw-r--r-- 1 woshijpf woshijpf    1992 Jun 15  2016 crtbegin_so.o
--rw-r--r-- 1 woshijpf woshijpf    2204 Jun 15  2016 crtbegin_static.o
--rw-r--r-- 1 woshijpf woshijpf     704 Jun 15  2016 crtend_android.o
--rw-r--r-- 1 woshijpf woshijpf     648 Jun 15  2016 crtend_so.o
--rwxr-xr-x 1 woshijpf woshijpf   10772 Jun 15  2016 libEGL.so
--rwxr-xr-x 1 woshijpf woshijpf   34640 Jun 15  2016 libGLESv1_CM.so
--rwxr-xr-x 1 woshijpf woshijpf   28428 Jun 15  2016 libGLESv2.so
--rwxr-xr-x 1 woshijpf woshijpf   46592 Jun 15  2016 libGLESv3.so
--rwxr-xr-x 1 woshijpf woshijpf    6752 Jun 15  2016 libOpenMAXAL.so
--rwxr-xr-x 1 woshijpf woshijpf    7036 Jun 15  2016 libOpenSLES.so
--rwxr-xr-x 1 woshijpf woshijpf   28876 Jun 15  2016 libandroid.so
--rw-r--r-- 1 woshijpf woshijpf 8814206 Jun 15  2016 libc.a
--rwxr-xr-x 1 woshijpf woshijpf  125464 Jun 15  2016 libc.so
--rwxr-xr-x 1 woshijpf woshijpf    5400 Jun 15  2016 libdl.so
--rwxr-xr-x 1 woshijpf woshijpf    5212 Jun 15  2016 libjnigraphics.so
--rwxr-xr-x 1 woshijpf woshijpf    5436 Jun 15  2016 liblog.so
--rw-r--r-- 1 woshijpf woshijpf 1333352 Jun 15  2016 libm.a
--rwxr-xr-x 1 woshijpf woshijpf   26708 Jun 15  2016 libm.so
--rwxr-xr-x 1 woshijpf woshijpf   18184 Jun 15  2016 libmediandk.so
--rw-r--r-- 1 woshijpf woshijpf  105024 Jun 15  2016 libstdc++.a
--rwxr-xr-x 1 woshijpf woshijpf    5536 Jun 15  2016 libstdc++.so
--rw-r--r-- 1 woshijpf woshijpf  575800 Jun 15  2016 libz.a
--rwxr-xr-x 1 woshijpf woshijpf   11768 Jun 15  2016 libz.so
-</code></pre>
-</div>
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf    2204 Jun 15  2016 crtbegin_dynamic.o
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf    1992 Jun 15  2016 crtbegin_so.o
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf    2204 Jun 15  2016 crtbegin_static.o
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf     704 Jun 15  2016 crtend_android.o
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf     648 Jun 15  2016 crtend_so.o
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   10772 Jun 15  2016 libEGL.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   34640 Jun 15  2016 libGLESv1_CM.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   28428 Jun 15  2016 libGLESv2.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   46592 Jun 15  2016 libGLESv3.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf    6752 Jun 15  2016 libOpenMAXAL.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf    7036 Jun 15  2016 libOpenSLES.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   28876 Jun 15  2016 libandroid.so
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf 8814206 Jun 15  2016 libc.a
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf  125464 Jun 15  2016 libc.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf    5400 Jun 15  2016 libdl.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf    5212 Jun 15  2016 libjnigraphics.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf    5436 Jun 15  2016 liblog.so
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf 1333352 Jun 15  2016 libm.a
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   26708 Jun 15  2016 libm.so
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   18184 Jun 15  2016 libmediandk.so
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf  105024 Jun 15  2016 libstdc++.a
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf    5536 Jun 15  2016 libstdc++.so
+<span class="nt">-rw-r--r--</span> 1 woshijpf woshijpf  575800 Jun 15  2016 libz.a
+<span class="nt">-rwxr-xr-x</span> 1 woshijpf woshijpf   11768 Jun 15  2016 libz.so
+</code></pre></div></div>
 
 <p><strong>那么这些系统提供的共享链接库是怎么被加载使用的呢？</strong>
 例如，我现在写了一个 C++ 源文件 <code class="highlighter-rouge">hello.cpp</code>，并且在这个源文件中调用了 <code class="highlighter-rouge">__android_log_print()</code> 函数打印日志，那么我就需要在对应的 <code class="highlighter-rouge">Android.mk</code> 文件中加入下面这条语句来显示地链接 <code class="highlighter-rouge">/system/lib/liblog.so</code> 库：</p>
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code>LOCAL_LDLIBS :<span class="o">=</span> -llog
-</code></pre>
-</div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_LDLIBS :<span class="o">=</span> <span class="nt">-llog</span>
+</code></pre></div></div>
 
 <p><strong>那么这些系统共享链接库是如何编译出来的呢？</strong>
 因为安全性和兼容性问题以及上层应用程序的需求，NDK 提供的只是 Android 系统中一小部分系统共享链接库，并且这些系统共享链接库都是在 <code class="highlighter-rouge">Android 源码</code> 编译时生成的，例如，<code class="highlighter-rouge">liblog.so</code> 库就是由 Android 源码中 <em>/system/core/liblog/</em> 目录下的源码编译而来的。而在 <em>$NDK/platforms/android-22/arch-arm/usr/include/android/log.h</em> 头文件中声明的日志打印函数 <code class="highlighter-rouge">__android_log_write()</code> 的实际代码实现就在 Android 源码的 <code class="highlighter-rouge">/system/core/liblog/logd_write.c</code> 文件中。</p>
@@ -340,7 +337,7 @@ drwxr-xr-x 4 woshijpf woshijpf    4096 Jun 15  2016 ..
 <p>在 <code class="highlighter-rouge">AOSP Build System 是什么？</code> 小节中，我提到了 Android 系统源码中也使用了 <code class="highlighter-rouge">Android.mk</code> 文件来将某个模块编译成库文件或者可执行文件。</p>
 
 <p>例如，Android 系统源码中的 <code class="highlighter-rouge">AudioFlinger</code> 服务对应使用的是系统中的 <code class="highlighter-rouge">libaudioflinge.so</code>共享链接库文件 ，该共享链接库的源码实现位于 <code class="highlighter-rouge">frameworks/av/services/audioflinger</code>，在同一目录下面的 <code class="highlighter-rouge">Android.mk</code> 编译配置文件如下所示：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>LOCAL_SRC_FILES:=               \ # 编译该模块所需要使用到的源文件
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_SRC_FILES:=               \ # 编译该模块所需要使用到的源文件
     AudioFlinger.cpp            \
     Threads.cpp                 \
     Tracks.cpp                  \
@@ -381,34 +378,29 @@ LOCAL_MODULE:= libaudioflinger
 LOCAL_CFLAGS += -fvisibility=hidden #隐藏共享链接库中的符号，使之不被其他共享库所访问
 
 include $(BUILD_SHARED_LIBRARY) # 编译成 libaudioflinger.so 库文件
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在 Android 源码树的根目录下运行下面的命令来配置好 Android 源码编译的环境：</p>
-<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="gp">$ </span><span class="nb">source </span>build/envsetup.sh
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">source </span>build/envsetup.sh
 <span class="nv">$lunch</span> <span class="c"># 选择自己需要编译的 Android 系统版本</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>有了 Android 编译环境之后，只需要在将当前的工作目录切换到 <em>frameworks/av/services/audioflinger</em> 目录下来编译 <code class="highlighter-rouge">AudioFlinger</code> 模块</p>
-<div class="highlighter-rouge"><pre class="highlight"><code># 由于 libaudioflinger.so 所需依赖其他的系统共享链接库文件，所以需要先把整个 Android 源码生成这些共享链接库文件
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 由于 libaudioflinger.so 所需依赖其他的系统共享链接库文件，所以需要先把整个 Android 源码生成这些共享链接库文件
 $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger.so 共享链接库文件
-</code></pre>
-</div>
+</code></pre></div></div>
 <p><strong>注意：</strong>虽然咋一看上去 Android 源码中某个模块的编译配置文件 <code class="highlighter-rouge">Android.mk</code>和 NDK 中所用的编译配置文件 <code class="highlighter-rouge">Android.mk</code> 没有什么不同，但是其实还是有一些细微的区别的，尤其是在<strong>使用共享链接库</strong>方面。</p>
 
 <p>例如，上面 Android 系统中源码编译出来的 <code class="highlighter-rouge">libaudioflinger.so</code> 库文件中链接 <code class="highlighter-rouge">liblog.so</code> 库文件使用的是 <code class="highlighter-rouge">LOCAL_SHARED_LIBRARIES</code> 编译变量：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>LOCAL_SHARED_LIBRARIES := \ # 链接该模块所依赖的共享链接库文件
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_SHARED_LIBRARIES := \ # 链接该模块所依赖的共享链接库文件
     ...
     liblog \
     ...
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>而在 NDK 编译自己使用 C/C++ 编写的模块时，如果要链接 <code class="highlighter-rouge">liblog.so</code> 库文件，<code class="highlighter-rouge">Android.mk</code> 文件中的写法则是：</p>
-<div class="highlighter-rouge"><pre class="highlight"><code>LOCAL_LDLIBS := -llog
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_LDLIBS := -llog
+</code></pre></div></div>
 
 <p><strong>所以，我们可以看出来在 <code class="highlighter-rouge">AOSP</code> 中所有编译出来的系统链接库文件（不管是静态库文件还是共享链接库文件）对 <code class="highlighter-rouge">AOSP</code> 中各个模块都是可见和可以被链接使用的，而对于 NDK 来说它只能通过 <code class="highlighter-rouge">LOCAL_LDLIBS</code> 的变量来链接使用 Android 系统中提供的一小部分系统链接库文件。</strong></p>
 
@@ -469,7 +461,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
   
     
     
-      <a href="//twitter.com/share?text=Android+NDK++vs+AOSP+Build+System&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=Android+NDK++vs+AOSP+Build+System&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -484,7 +476,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=Android+NDK++vs+AOSP+Build+System&u=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html"
+      <a href="//www.facebook.com/sharer.php?t=Android+NDK++vs+AOSP+Build+System&u=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -509,7 +501,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -533,7 +525,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=Android+NDK++vs+AOSP+Build+System&url=http%3A%2F%2Fwoshijpf.github.io%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html&media=http://woshijpf.github.io/assets/androidBg.jpg"
+      <a href="//www.pinterest.com/pin/create/button/?description=Android+NDK++vs+AOSP+Build+System&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2016%2F12%2F17%2FAndroid-NDK-vs-AOSP-Build-System.html&media=http://localhost:4000/assets/androidBg.jpg"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>
@@ -557,7 +549,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 		</span>
 		<span class="next-post">
 			
-				<a href="/android/2017/03/25/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">
+				<a href="/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">
 					<span class="page-number">Android HAL 层原理分析</span>
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
