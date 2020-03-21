@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://woshijpf.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/instacode.png" />
+  <meta property="og:image" content="http://woshijpf.github.io/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题">
   <meta name="twitter:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
-  <meta name="twitter:image" content="http://localhost:4000/assets/instacode.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://woshijpf.github.io/assets/instacode.png">
+  <meta name="twitter:url" content="http://woshijpf.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://woshijpf.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://woshijpf.github.io/feed.xml" />
 </head>
 
 
@@ -282,7 +282,7 @@
   
     
     
-      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -297,7 +297,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -322,7 +322,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -346,7 +346,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://localhost:4000/assets/instacode.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Fwoshijpf.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://woshijpf.github.io/assets/instacode.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

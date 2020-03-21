@@ -4,10 +4,10 @@
     <title>Fly Higher's Blog</title>
     <description>Do one thing and do it well.
 </description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 22 Mar 2020 01:28:00 +0800</pubDate>
-    <lastBuildDate>Sun, 22 Mar 2020 01:28:00 +0800</lastBuildDate>
+    <link>http://woshijpf.github.io/</link>
+    <atom:link href="http://woshijpf.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sun, 22 Mar 2020 01:41:57 +0800</pubDate>
+    <lastBuildDate>Sun, 22 Mar 2020 01:41:57 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -318,7 +318,7 @@ v7.2.1
 &lt;h2 id=&quot;omnigraffle&quot;&gt;OmniGraffle&lt;/h2&gt;
 &lt;p&gt;OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 &lt;code class=&quot;highlighter-rouge&quot;&gt;stencils&lt;/code&gt; 模板，直接导入然后进行修改，得到自己想要的图形。&lt;/p&gt;
 
-&lt;h2 id=&quot;ruby-安装&quot;&gt;Ruby 安装&lt;/h2&gt;
+&lt;h2 id=&quot;jekyll博客环境搭建&quot;&gt;Jekyll博客环境搭建&lt;/h2&gt;
 
 &lt;h3 id=&quot;安装-rvm&quot;&gt;安装 RVM&lt;/h3&gt;
 &lt;p&gt;RVM是Ruby的版本管理工具，我们可以使用它来帮助我们安装Ruby。&lt;/p&gt;
@@ -335,40 +335,44 @@ v7.2.1
 
 &lt;h3 id=&quot;使用rvm安装ruby&quot;&gt;使用RVM安装Ruby&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ rvm install 2.0.0
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ rvm install ruby
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;等一段时间，Ruby，Ruby Gems就安装好了。&lt;/p&gt;
 
 &lt;p&gt;可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;gem -v&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;ruby -v&lt;/code&gt;来检查是否安装成功。&lt;/p&gt;
 
-&lt;h3 id=&quot;替换掉gem的默认源地址&quot;&gt;替换掉Gem的默认源地址&lt;/h3&gt;
-&lt;p&gt;在国内，我们要想使用gem来安装相关的包的话，如果使用gem源地址，一般情况下都会安装失败，所以，我们需要将其替换为国内的网址。&lt;/p&gt;
-
-&lt;p&gt;请尽可能用比较新的 RubyGems 版本，建议 2.6.x 以上。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# 这里请翻墙一下&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
-2.6.3
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem sources &lt;span class=&quot;nt&quot;&gt;--add&lt;/span&gt; https://gems.ruby-china.org/ &lt;span class=&quot;nt&quot;&gt;--remove&lt;/span&gt; https://rubygems.org/
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem sources &lt;span class=&quot;nt&quot;&gt;-l&lt;/span&gt;
-https://gems.ruby-china.org
-&lt;span class=&quot;c&quot;&gt;# 确保只有 gems.ruby-china.org&lt;/span&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 配置好shell环境上的代理&lt;/span&gt;
+gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;避免-gem-安装包时使用-sudo&quot;&gt;避免 gem 安装包时使用 sudo&lt;/h3&gt;
-&lt;p&gt;首先，需要将 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.gem/ruby/2.4.0/bin&lt;/code&gt; 路径添加系统环境变量 &lt;strong&gt;PATH&lt;/strong&gt; 当中。&lt;/p&gt;
+&lt;h3 id=&quot;用-rubygems-安装-jekyll&quot;&gt;用 RubyGems 安装 Jekyll&lt;/h3&gt;
 
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;vim .zshrc
+&lt;p&gt;安装 Jekyll 的最好方式就是使用 RubyGems. 你只需要打开终端输入以下命令就可以安装了：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-archives
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-sitemap
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-paginate
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;所有的 Jekyll 的 gem 依赖包都会被自动安装，所以你完全不用去担心。&lt;/p&gt;
 
-&lt;span class=&quot;c&quot;&gt;# add gem install package path into PATH&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/.gem/ruby/2.4.0/bin:&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PATH&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;h3 id=&quot;jekyll-使用技巧&quot;&gt;Jekyll 使用技巧&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ jekyll build
+# =&amp;gt; 当前文件夹中的内容将会生成到 ./_site 文件夹中。
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;然后我们就可以通过下面的命令(注意带上参数 –user-install)将 ruby 包安装到 &lt;code class=&quot;highlighter-rouge&quot;&gt;$HOME/.gem/ruby/2.4.0/bin&lt;/code&gt; 中&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ jekyll serve
+# =&amp;gt; 一个开发服务器将会运行在 http://localhost:4000/
+# Auto-regeneration（自动再生成文件）: 开启。使用 `--no-watch` 来关闭。
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ gem install &amp;lt;package-name&amp;gt; --user-install
+$ jekyll serve --detach
+# =&amp;gt; 功能和`jekyll serve`命令相同，但是会脱离终端在后台运行。
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;将生成的静态网页所在目录&lt;code class=&quot;highlighter-rouge&quot;&gt;_site&lt;/code&gt;推送到github的个人仓库下：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git add &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git push origin master:master
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;ssh-常用技巧&quot;&gt;ssh 常用技巧&lt;/h2&gt;
@@ -394,6 +398,33 @@ https://gems.ruby-china.org
   &lt;/li&gt;
 &lt;/ol&gt;
 
+&lt;h2 id=&quot;图床&quot;&gt;图床&lt;/h2&gt;
+
+&lt;h3 id=&quot;自己搭建图床服务&quot;&gt;自己搭建图床服务&lt;/h3&gt;
+
+&lt;p&gt;搭建一个图床服务，支持通过命令行的方式上传图片。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/vim-cn/elimage&quot;&gt;Vim-cn/elimage&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;使用obs服务搭建图床&quot;&gt;使用OBS服务搭建图床&lt;/h3&gt;
+
+&lt;p&gt;因为七牛云现在需要通过绑定域名之后才能生成外链访问存储的图片，像我使用github page服务托管博客网站的就非常不方便。
+但是如果直接使用免费的图床，又担心哪天挂了，什么数据都没有了，所以通过网上大家摸索出的路径，找到了一条捷径，又便宜又好用，那就是云计算厂商的对象存储服务，将图片存储在华为云上的OBS桶上，然后生成对象的外链进行访问，一年只要9块钱，非常便宜。&lt;/p&gt;
+
+&lt;h3 id=&quot;如何批量下载七牛云上的图片&quot;&gt;如何批量下载七牛云上的图片&lt;/h3&gt;
+
+&lt;p&gt;看了github上大家都因为图床无法访问弃坑七牛云，我也觉得这次七牛做的真的很不厚道，虽然是免费的空间，但是能用七牛的都是程序员，如果让大家选择云存储平台的话，如果踩过这样一次坑，我觉得七牛云就是第一个出局的。&lt;/p&gt;
+
+&lt;p&gt;将七牛云下载到本地的方法，大家可以参看这个回答：&lt;a href=&quot;https://github.com/qiniu/qshell/issues/188#issuecomment-438566430&quot;&gt;下载七牛云上的图片&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;华为云obs存储批量上传文件&quot;&gt;华为云OBS存储批量上传文件&lt;/h3&gt;
+&lt;p&gt;将本地目录blogPictures下所有文件和子目录下的文件递归地上传到华为OBS存储服务商的&lt;code class=&quot;highlighter-rouge&quot;&gt;picturebed&lt;/code&gt;桶中。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;obsutil &lt;span class=&quot;nb&quot;&gt;cp &lt;/span&gt;blogPictures obs://picturebed &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;具体更详细的obsutil民灵感使用指南，详见：&lt;a href=&quot;https://support.huaweicloud.com/utiltg-obs/obs_11_0001.html&quot;&gt;obsutil简介&lt;/a&gt;&lt;/p&gt;
+
 &lt;div class=&quot;footnotes&quot;&gt;
   &lt;ol&gt;
     &lt;li id=&quot;fn:1&quot;&gt;
@@ -402,9 +433,9 @@ https://gems.ruby-china.org
   &lt;/ol&gt;
 &lt;/div&gt;
 </description>
-        <pubDate>Sat, 21 Mar 2020 09:00:01 +0800</pubDate>
-        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2020/03/21/Mac-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2020/03/21/Mac-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
+        <pubDate>Sat, 21 Mar 2020 20:21:33 +0800</pubDate>
+        <link>http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2020/03/21/Mac-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E5%88%A9%E5%99%A8/2020/03/21/Mac-%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
         
         <category>Mac</category>
         
@@ -498,8 +529,8 @@ https://gems.ruby-china.org
 &lt;/div&gt;
 </description>
         <pubDate>Wed, 21 Nov 2018 08:12:33 +0800</pubDate>
-        <link>http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</guid>
+        <link>http://woshijpf.github.io/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</guid>
         
         <category>虚拟化</category>
         
@@ -1072,8 +1103,8 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
 
 </description>
         <pubDate>Tue, 05 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
+        <link>http://woshijpf.github.io/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
         
         <category>Android</category>
         
@@ -1265,8 +1296,8 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;/div&gt;
 </description>
         <pubDate>Mon, 04 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        <link>http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
         
         <category>Android</category>
         
@@ -1398,8 +1429,8 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 </description>
         <pubDate>Tue, 11 Jul 2017 03:55:24 +0800</pubDate>
-        <link>http://localhost:4000/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html</link>
-        <guid isPermaLink="true">http://localhost:4000/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html</guid>
+        <link>http://woshijpf.github.io/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html</guid>
         
         <category>Linux</category>
         
@@ -1750,8 +1781,8 @@ SECTIONS
 
 </description>
         <pubDate>Tue, 27 Jun 2017 00:35:33 +0800</pubDate>
-        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</guid>
+        <link>http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</guid>
         
         <category>内核</category>
         
@@ -1852,8 +1883,8 @@ SECTIONS
 
 </description>
         <pubDate>Wed, 14 Jun 2017 08:00:51 +0800</pubDate>
-        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</guid>
+        <link>http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</guid>
         
         <category>ramfs</category>
         
@@ -2271,8 +2302,8 @@ SECTIONS
 
 </description>
         <pubDate>Sun, 26 Mar 2017 03:56:24 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</guid>
+        <link>http://woshijpf.github.io/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</guid>
         
         <category>HAL</category>
         
@@ -2532,8 +2563,8 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 
 </description>
         <pubDate>Sat, 17 Dec 2016 18:39:07 +0800</pubDate>
-        <link>http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</guid>
+        <link>http://woshijpf.github.io/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html</guid>
         
         <category>NDK</category>
         
@@ -2616,8 +2647,8 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 
 </description>
         <pubDate>Wed, 14 Dec 2016 08:58:26 +0800</pubDate>
-        <link>http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</link>
-        <guid isPermaLink="true">http://localhost:4000/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</guid>
+        <link>http://woshijpf.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</link>
+        <guid isPermaLink="true">http://woshijpf.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</guid>
         
         <category>同步</category>
         
