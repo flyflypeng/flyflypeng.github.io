@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Kubernetes 集群搭建</title>
+  <meta name="description" content="目标采用 kubernetes.io 官方推荐的 kubeadm 工具安装 kubernetes 集群。  Docker版本：18.06.0-ce  Kubernetes版本：v1.18.0集群规划            角色      主机名      IP地址      系统                 ...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="目标采用 kubernetes.io 官方推荐的 kubeadm 工具安装 kubernetes 集群。  Docker版本：18.06.0-ce  Kubernetes版本：v1.18.0集群规划            角色      主机名      IP地址      系统                 ..." />
+  <meta property="og:url" content="http://flyflypeng.github.io" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="Kubernetes 集群搭建" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://flyflypeng.github.io/assets/k8s.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Kubernetes 集群搭建">
+  <meta name="twitter:description" content="目标采用 kubernetes.io 官方推荐的 kubeadm 工具安装 kubernetes 集群。  Docker版本：18.06.0-ce  Kubernetes版本：v1.18.0集群规划            角色      主机名      IP地址      系统                 ...">
+  <meta name="twitter:image" content="http://flyflypeng.github.io/assets/k8s.png">
+  <meta name="twitter:url" content="http://flyflypeng.github.io">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://flyflypeng.github.io/%E4%BA%91%E5%8E%9F%E7%94%9F/2020/03/29/Kubernetes%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://flyflypeng.github.io/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(/assets/k8s.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">Kubernetes 集群搭建</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">March 29, 2020</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/云原生">云原生</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="目标">目标</h2>
+<p>采用 kubernetes.io 官方推荐的 kubeadm 工具安装 kubernetes 集群。</p>
+
+<ul>
+  <li>Docker版本：18.06.0-ce</li>
+  <li>Kubernetes版本：v1.18.0</li>
+</ul>
+
+<h2 id="集群规划">集群规划</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>角色</th>
+      <th>主机名</th>
+      <th>IP地址</th>
+      <th>系统</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Master</td>
+      <td>flyflypeng-VirtualBox-k8s-master</td>
+      <td>192.168.5.154</td>
+      <td>Ubuntu 16.04.5 LTS (Xenial Xerus)</td>
+    </tr>
+    <tr>
+      <td>Woker</td>
+      <td>flyflypeng-desktop-k8s-worker</td>
+      <td>192.168.5.8</td>
+      <td>Ubuntu 18.04.1 LTS (Bionic Beaver)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="环境配置自检">环境配置自检</h2>
+
+<ul>
+  <li>
+    <p>硬件环境要求</p>
+
+    <ol>
+      <li>One or more machines running Ubuntu 16.04+, CentOS 7 or HypriotOS v1.0.1+</li>
+      <li>1GB or more of RAM per machine (any less will leave little room for your apps)</li>
+      <li>Full network connectivity between all machines in the cluster (public or private network is fine)</li>
+    </ol>
+  </li>
+  <li>
+    <p><strong>关闭系统中的内存 swap 功能</strong></p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  # 查看系统是否启用了 swap
+  cat /proc/swaps
+  Filename				Type		Size	Used	Priority
+  /dev/sda5                               partition	2095100	0	-1
+    
+  # 禁用 swap 功能
+  swapoff -a
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>关闭防火墙</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  systemctl stop firewalld
+  systemctl disable firewalld
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>关闭selinux</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  setenforce 0
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s/SELINUX=enforcing/SELINUX=disabled/g"</span> /etc/selinux/config
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>修改 /etc/sysctl.conf</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c"># 如果有配置，则修改</span>
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.ipv4.ip_forward.*#net.ipv4.ip_forward=1#g"</span>  /etc/sysctl.conf
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.bridge.bridge-nf-call-ip6tables.*#net.bridge.bridge-nf-call-ip6tables=1#g"</span>  /etc/sysctl.conf
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.bridge.bridge-nf-call-iptables.*#net.bridge.bridge-nf-call-iptables=1#g"</span>  /etc/sysctl.conf
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.ipv6.conf.all.disable_ipv6.*#net.ipv6.conf.all.disable_ipv6=1#g"</span>  /etc/sysctl.conf
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.ipv6.conf.default.disable_ipv6.*#net.ipv6.conf.default.disable_ipv6=1#g"</span>  /etc/sysctl.conf
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.ipv6.conf.lo.disable_ipv6.*#net.ipv6.conf.lo.disable_ipv6=1#g"</span>  /etc/sysctl.conf
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s2">"s#^net.ipv6.conf.all.forwarding.*#net.ipv6.conf.all.forwarding=1#g"</span>  /etc/sysctl.conf
+  <span class="c"># 可能没有，追加</span>
+  <span class="nb">echo</span> <span class="s2">"net.ipv4.ip_forward = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="nb">echo</span> <span class="s2">"net.bridge.bridge-nf-call-ip6tables = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="nb">echo</span> <span class="s2">"net.bridge.bridge-nf-call-iptables = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.all.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.default.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.lo.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.all.forwarding = 1"</span>  <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+  <span class="c"># 执行命令以应用</span>
+  sysctl <span class="nt">-p</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="安装docker以及kubeletkubeadmkubectl">安装docker以及kubelet,kubeadm,kubectl</h2>
+
+<h3 id="docker安装">docker安装</h3>
+
+<p>Docker的安装方法详见笔记：《Docker 安装配置》</p>
+
+<p>docker 版本信息：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-desktop-k8s-worker:/home/flyflypeng/Code/scripts# docker version
+Client:
+ Version:           18.06.0-ce
+ API version:       1.38
+ Go version:        go1.10.3
+ Git commit:        0ffa825
+ Built:             Wed Jul 18 19:09:54 2018
+ OS/Arch:           linux/amd64
+ Experimental:      <span class="nb">false
+
+</span>Server:
+ Engine:
+  Version:          18.06.0-ce
+  API version:      1.38 <span class="o">(</span>minimum version 1.12<span class="o">)</span>
+  Go version:       go1.10.3
+  Git commit:       0ffa825
+  Built:            Wed Jul 18 19:07:56 2018
+  OS/Arch:          linux/amd64
+  Experimental:     <span class="nb">false</span>
+</code></pre></div></div>
+
+<h3 id="kubeadm-kubelet-and-kubectl安装">kubeadm, kubelet and kubectl安装</h3>
+
+<p>参考官方文档：<a href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/">安装 kubeadm</a></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 安装kubeadm, kubelet and kubectl</span>
+apt-get update <span class="o">&amp;&amp;</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> apt-transport-https curl
+curl <span class="nt">-s</span> https://packages.cloud.google.com/apt/doc/apt-key.gpg | <span class="nb">sudo </span>apt-key add -
+<span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh"> | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+</span><span class="no">EOF
+</span>apt-get update
+apt-get <span class="nb">install</span> <span class="nt">-y</span> kubelet kubeadm kubectl
+apt-mark hold kubelet kubeadm kubectl
+</code></pre></div></div>
+
+<h3 id="kubectl命令自动补全设置">kubectl命令自动补全设置</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source</span> /usr/share/bash-completion/bash_completion
+<span class="nb">source</span> &lt;<span class="o">(</span>kubectl completion bash<span class="o">)</span>
+<span class="nb">echo</span> <span class="s2">"source &lt;(kubectl completion bash)"</span> <span class="o">&gt;&gt;</span> ~/.bashrc
+</code></pre></div></div>
+
+<h2 id="k8s集群配置">k8s集群配置</h2>
+
+<h3 id="解决k8s镜像被墙问题">解决k8s镜像被墙问题</h3>
+
+<p>由于官方镜像地址被墙，所以我们需要首先获取所需镜像以及它们的版本。然后从国内镜像站获取。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm config images list
+</code></pre></div></div>
+
+<p>获取镜像列表后可以通过下面的脚本从dockerhub上获取镜像并重命名：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="nv">images</span><span class="o">=(</span>kube-apiserver:v1.18.0 <span class="se">\</span>
+	kube-controller-manager:v1.18.0 <span class="se">\</span>
+	kube-scheduler:v1.18.0 <span class="se">\</span>
+	kube-proxy:v1.18.0 <span class="se">\</span>
+	pause:3.2 <span class="se">\</span>
+	etcd:3.4.3-0 <span class="se">\</span>
+	coredns:1.6.7<span class="o">)</span>
+
+<span class="k">for </span>imageName <span class="k">in</span> <span class="k">${</span><span class="nv">images</span><span class="p">[@]</span><span class="k">}</span> <span class="p">;</span> <span class="k">do
+    </span>docker pull aiotceo/<span class="nv">$imageName</span>
+    docker tag aiotceo/<span class="nv">$imageName</span> k8s.gcr.io/<span class="nv">$imageName</span>
+    docker rmi aiotceo/<span class="nv">$imageName</span>
+<span class="k">done</span>
+<span class="o">)</span>
+</code></pre></div></div>
+
+<p>下载 k8s 所需的各个组件的镜像如下所示：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/Code/scripts# docker images
+REPOSITORY                           TAG                 IMAGE ID            CREATED             SIZE
+k8s.gcr.io/kube-proxy                v1.18.0             43940c34f24f        3 days ago          117MB
+k8s.gcr.io/kube-controller-manager   v1.18.0             d3e55153f52f        3 days ago          162MB
+k8s.gcr.io/kube-apiserver            v1.18.0             74060cea7f70        3 days ago          173MB
+k8s.gcr.io/kube-scheduler            v1.18.0             a31f78c7c8ce        3 days ago          95.3MB
+k8s.gcr.io/pause                     3.2                 80d28bedfe5d        6 weeks ago         683kB
+k8s.gcr.io/coredns                   1.6.7               67da37a9a360        8 weeks ago         43.8MB
+k8s.gcr.io/etcd                      3.4.3-0             303ce5db0e90        5 months ago        288MB
+</code></pre></div></div>
+
+<h3 id="master-node配置">Master Node配置</h3>
+
+<h4 id="kubeadm-init初始化环境">kubeadm init初始化环境</h4>
+
+<p>通过<code class="highlighter-rouge">kubeadm init</code>命令来初始化Master节点：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm init <span class="nt">--pod-network-cidr</span><span class="o">=</span>192.168.0.0/16 <span class="nt">--apiserver-advertise-address</span><span class="o">=</span>192.168.5.154
+</code></pre></div></div>
+
+<p>在实际的部署当中需要将 <code class="highlighter-rouge">--apiserver-advertise-address</code> 参数后面的值设置为当前主机的ip地址。</p>
+
+<ul>
+  <li><code class="highlighter-rouge">--apiserver-advertise-address</code>：API 服务器所公布的其正在监听的 IP 地址。如果未设置，则使用默认网络接口。</li>
+  <li><code class="highlighter-rouge">--pod-network-cidr</code>：指明 pod 网络可以使用的 IP 地址段。如果设置了这个参数，控制平面将会为每一个节点自动分配 CIDRs。如果要配置calico网络插件，这个值一定要设置为<code class="highlighter-rouge">192.168.0.0/16</code></li>
+</ul>
+
+<p>初始化成功之后的输出信息如下所示：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/Code/scripts# kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.5.154
+W0329 02:35:23.887370   13950 configset.go:202] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
+[init] Using Kubernetes version: v1.18.0
+[preflight] Running pre-flight checks
+	[WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at https://kubernetes.io/docs/setup/cri/
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Starting the kubelet
+[certs] Using certificateDir folder "/etc/kubernetes/pki"
+[certs] Generating "ca" certificate and key
+[certs] Generating "apiserver" certificate and key
+[certs] apiserver serving cert is signed for DNS names [flyflypeng-virtualbox-k8s-master kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 192.168.5.154]
+[certs] Generating "apiserver-kubelet-client" certificate and key
+[certs] Generating "front-proxy-ca" certificate and key
+[certs] Generating "front-proxy-client" certificate and key
+[certs] Generating "etcd/ca" certificate and key
+[certs] Generating "etcd/server" certificate and key
+[certs] etcd/server serving cert is signed for DNS names [flyflypeng-virtualbox-k8s-master localhost] and IPs [192.168.5.154 127.0.0.1 ::1]
+[certs] Generating "etcd/peer" certificate and key
+[certs] etcd/peer serving cert is signed for DNS names [flyflypeng-virtualbox-k8s-master localhost] and IPs [192.168.5.154 127.0.0.1 ::1]
+[certs] Generating "etcd/healthcheck-client" certificate and key
+[certs] Generating "apiserver-etcd-client" certificate and key
+[certs] Generating "sa" key and public key
+[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+[kubeconfig] Writing "admin.conf" kubeconfig file
+[kubeconfig] Writing "kubelet.conf" kubeconfig file
+[kubeconfig] Writing "controller-manager.conf" kubeconfig file
+[kubeconfig] Writing "scheduler.conf" kubeconfig file
+[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+[control-plane] Creating static Pod manifest for "kube-apiserver"
+[control-plane] Creating static Pod manifest for "kube-controller-manager"
+W0329 02:35:28.725001   13950 manifests.go:225] the default kube-apiserver authorization-mode is "Node,RBAC"; using "Node,RBAC"
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+W0329 02:35:28.726217   13950 manifests.go:225] the default kube-apiserver authorization-mode is "Node,RBAC"; using "Node,RBAC"
+[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+[apiclient] All control plane components are healthy after 28.508549 seconds
+[upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[kubelet] Creating a ConfigMap "kubelet-config-1.18" in namespace kube-system with the configuration for the kubelets in the cluster
+[upload-certs] Skipping phase. Please see --upload-certs
+[mark-control-plane] Marking the node flyflypeng-virtualbox-k8s-master as control-plane by adding the label "node-role.kubernetes.io/master=''"
+[mark-control-plane] Marking the node flyflypeng-virtualbox-k8s-master as control-plane by adding the taints [node-role.kubernetes.io/master:NoSchedule]
+[bootstrap-token] Using token: l09phn.zkiuy0ipc2yp6syq
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to get nodes
+[bootstrap-token] configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstrap-token] configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstrap-token] configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 192.168.5.154:6443 --token l09phn.zkiuy0ipc2yp6syq \
+    --discovery-token-ca-cert-hash sha256:46aba676954319993945204e35e63ad7659475921820f2ca5b430c1f75e2cd7d
+</code></pre></div></div>
+
+<h4 id="配置授权信息">配置授权信息</h4>
+
+<p>所需的命令在init成功后也会有提示，主要是为了保存相关的配置信息在用户目录下，这样不用每次都输入相关的认证信息。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+</code></pre></div></div>
+
+<h3 id="配置网络插件">配置网络插件</h3>
+
+<p>在部署具体的应用之前，首先需要按照好集群中的 Pod 网络插件，而 Pod 网络插件的主要作用就是提供一个 Pod 之间可以通信的虚拟网络层。其中 Pod 网络插件有多种选择，这里选用 Calico 作为例子。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> https://docs.projectcalico.org/v3.11/manifests/calico.yaml
+</code></pre></div></div>
+
+<p>确认calico网络插件是否配置好，只要去检查<code class="highlighter-rouge">CoreDNS Pod</code>是否处于Running状态，检查的方法如下：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubectl get pods <span class="nt">--all-namespaces</span>
+NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
+kube-system   calico-kube-controllers-5b8b769fcd-xxftq                   1/1     Running   1          11m
+kube-system   calico-node-tkswj                                          1/1     Running   0          11m
+kube-system   coredns-66bff467f8-cpxnv                                   1/1     Running   0          4m5s
+kube-system   coredns-66bff467f8-p759z                                   1/1     Running   0          4m6s
+kube-system   etcd-flyflypeng-virtualbox-k8s-master                      1/1     Running   1          9h
+kube-system   kube-apiserver-flyflypeng-virtualbox-k8s-master            1/1     Running   1          9h
+kube-system   kube-controller-manager-flyflypeng-virtualbox-k8s-master   1/1     Running   4          9h
+kube-system   kube-proxy-tb9z4                                           1/1     Running   1          9h
+kube-system   kube-scheduler-flyflypeng-virtualbox-k8s-master            1/1     Running   5          9h
+</code></pre></div></div>
+
+<p>解决coreDNS容器无法启动问题的方法：</p>
+<ul>
+  <li><a href="https://stackoverflow.com/questions/53075796/coredns-pods-have-crashloopbackoff-or-error-state">coredns pods have CrashLoopBackOff or Error state
+</a></li>
+  <li><a href="https://blog.csdn.net/u011663005/article/details/87937800">搭建Kubernetes集群踩坑日志之coreDNS 组件出现CrashLoopBackOff问题的解决</a></li>
+</ul>
+
+<h3 id="调整-master-node-执行-pod-的策略可选">调整 Master Node 执行 Pod 的策略（可选）</h3>
+
+<p>我在前面提到过，默认情况下 Master 节点是不允许运行用户 Pod 的。而 Kubernetes 做到这一点，依靠的是 Kubernetes 的 Taint/Toleration 机制。</p>
+
+<p>它的原理非常简单：一旦某个节点被加上了一个 Taint，即被“打上了污点”，那么所有 Pod 就都不能在这个节点上运行，因为 Kubernetes 的 Pod 都有“洁癖”。
+除非，有个别的 Pod 声明自己能“容忍”这个“污点”，即声明了 Toleration，它才可以在这个节点上运行。</p>
+
+<p>其中，为节点打上“污点”（Taint）的命令是：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl taint nodes <span class="nt">--all</span> node-role.kubernetes.io/master-
+</code></pre></div></div>
+
+<p>我这里就不在Master节点上部署用户的业务容器了，所有的容器都部署在Worker节点上。</p>
+
+<h3 id="worker节点配置">Worker节点配置</h3>
+
+<h4 id="获得-join命令参数">获得 join命令参数</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在 master 节点上执行</span>
+root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubeadm token create <span class="nt">--print-join-command</span>
+W0329 12:09:29.488896   20698 configset.go:202] WARNING: kubeadm cannot validate component configs <span class="k">for </span>API <span class="nb">groups</span> <span class="o">[</span>kubelet.config.k8s.io kubeproxy.config.k8s.io]
+kubeadm <span class="nb">join </span>192.168.5.154:6443 <span class="nt">--token</span> 1xkojk.uuxo8th0njy75d2g     <span class="nt">--discovery-token-ca-cert-hash</span> sha256:cf93dfbf1a653dd82e61220c567a70c1ed725396e740277c29fb49eb966a9677
+</code></pre></div></div>
+
+<h4 id="准备worker上的镜像">准备worker上的镜像</h4>
+
+<p>首先worker节点上也要下载k8s相关的镜像，worker上必备镜像列表：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-desktop-k8s-worker:/home/flyflypeng/k8s# docker images
+REPOSITORY                  TAG                 IMAGE ID            CREATED             SIZE
+k8s.gcr.io/kube-proxy       v1.18.0             43940c34f24f        3 days ago          117MB
+k8s.gcr.io/pause            3.2                 80d28bedfe5d        6 weeks ago         683kB
+</code></pre></div></div>
+
+<h4 id="初始化worker节点">初始化Worker节点</h4>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-desktop-k8s-worker:/home/flyflypeng# kubeadm <span class="nb">join </span>192.168.5.154:6443 <span class="nt">--token</span> 1xkojk.uuxo8th0njy75d2g     <span class="nt">--discovery-token-ca-cert-hash</span> sha256:cf93dfbf1a653dd82e61220c567a70c1ed725396e740277c29fb49eb966a9677
+
+root@flyflypeng-desktop-k8s-worker:/home/flyflypeng# kubeadm <span class="nb">join </span>192.168.5.154:6443 <span class="nt">--token</span> 1xkojk.uuxo8th0njy75d2g     <span class="nt">--discovery-token-ca-cert-hash</span> sha256:cf93dfbf1a653dd82e61220c567a70c1ed725396e740277c29fb49eb966a9677
+W0329 12:10:42.264742     655 join.go:346] <span class="o">[</span>preflight] WARNING: JoinControlPane.controlPlane settings will be ignored when control-plane flag is not set.
+<span class="o">[</span>preflight] Running pre-flight checks
+<span class="o">[</span>preflight] Reading configuration from the cluster...
+<span class="o">[</span>preflight] FYI: You can look at this config file with <span class="s1">'kubectl -n kube-system get cm kubeadm-config -oyaml'</span>
+<span class="o">[</span>kubelet-start] Downloading configuration <span class="k">for </span>the kubelet from the <span class="s2">"kubelet-config-1.18"</span> ConfigMap <span class="k">in </span>the kube-system namespace
+<span class="o">[</span>kubelet-start] Writing kubelet configuration to file <span class="s2">"/var/lib/kubelet/config.yaml"</span>
+<span class="o">[</span>kubelet-start] Writing kubelet environment file with flags to file <span class="s2">"/var/lib/kubelet/kubeadm-flags.env"</span>
+<span class="o">[</span>kubelet-start] Starting the kubelet
+<span class="o">[</span>kubelet-start] Waiting <span class="k">for </span>the kubelet to perform the TLS Bootstrap...
+
+This node has joined the cluster:
+<span class="k">*</span> Certificate signing request was sent to apiserver and a response was received.
+<span class="k">*</span> The Kubelet was informed of the new secure connection details.
+
+Run <span class="s1">'kubectl get nodes'</span> on the control-plane to see this node <span class="nb">join </span>the cluster.
+</code></pre></div></div>
+
+<p>最后我们在Master节点上运行<code class="highlighter-rouge">kubectl get nodes</code>查看Worker节点是否已经加入了：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubectl get nodes <span class="nt">-o</span> wide
+NAME                               STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+flyflypeng-desktop-k8s-worker      Ready    &lt;none&gt;   11m   v1.18.0   192.168.5.8     &lt;none&gt;        Ubuntu 18.04.1 LTS   4.15.0-88-generic   docker://18.6.0
+flyflypeng-virtualbox-k8s-master   Ready    master   9h    v1.18.0   192.168.5.154   &lt;none&gt;        Ubuntu 16.04.5 LTS   4.15.0-36-generic   docker://18.6.0
+</code></pre></div></div>
+
+<p><strong>注意：如果原来已经加入 Cluster 的 Node 重启之后，需要通过 <code class="highlighter-rouge">kubeadm reset</code> 重置当前 Node 的环境，然后重新使用 <code class="highlighter-rouge">kubeadm join</code> 来将当前 Node 加入到 Master Node 管理。</strong></p>
+
+<h3 id="部署其他插件">部署其他插件</h3>
+
+<p>由于很多官方的插件所需镜像也在 http://gcr.io 上，所以遇到这种情况，可以通过下面的方式获取：<a href="https://zhuanlan.zhihu.com/p/46341911">kubernetes安装（国内环境）</a></p>
+
+<p>将yaml文件中镜像地址的<code class="highlighter-rouge">k8s.gcr.io</code>替换成<code class="highlighter-rouge">registry.cn-hangzhou.aliyuncs.com/google_containers</code></p>
+
+<h3 id="在其他机器上访问集群">在其他机器上访问集群</h3>
+
+<p>如果你想通过你的Mac来访问你搭建的集群，你可以将集群的administrator的配置文件拷贝到的你的Mac上，用法如下：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp root@&lt;control-plane-host&gt;:/etc/kubernetes/admin.conf <span class="nb">.</span>
+kubectl <span class="nt">--kubeconfig</span> ./admin.conf get nodes
+</code></pre></div></div>
+
+<p>为了避免每次都敲kubectl命令时都加上配置选项<code class="highlighter-rouge">--kubeconfig</code>，我们可以简单地在shell配置环境中的加个<code class="highlighter-rouge">alias</code>：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># kubectl --kubeconfig alias</span>
+<span class="nb">alias </span><span class="nv">kubectl</span><span class="o">=</span><span class="s1">'kubectl --kubeconfig /Users/woshijpf/k8s/admin.conf'</span>
+</code></pre></div></div>
+
+<h3 id="清理集群">清理集群</h3>
+
+<p>我现在还没这么干过，但是记录一下清理的方法，万一哪天就用到了呢。</p>
+
+<p><a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#tear-down">k8s Clean up</a></p>
+
+<h2 id="使用k8s部署web应用">使用k8s部署Web应用</h2>
+
+<p>到现在为止，我们已经把k8s集群搭建完了，现在我们可以部署一个Node应用来验证我们搭建的k8s集群是否可以正常工作。</p>
+
+<p>这部分我从网站上找了一个例子，部署一个待办事项的Web App，大家直接参考这篇文章吧：<a href="https://zhuanlan.zhihu.com/p/39680577">入门系列之Kubernetes部署</a></p>
+
+<p>部署完成之后，查看Web App服务在Worker节点暴露出来的端口号：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl get services                                                                                                                                  
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>          AGE
+db           ClusterIP   10.106.46.173   &lt;none&gt;        27017/TCP        50m
+kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP          20h
+web          NodePort    10.101.158.14   &lt;none&gt;        3000:32678/TCP   36m
+</code></pre></div></div>
+
+<p>通过浏览器访问Worker节点上<code class="highlighter-rouge">http://192.168.5.8:32678</code>地址：
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/container-web-app.jpg" alt="" /></p>
+
+<p>下面是我kubenetes v1.18.0版本上验证过的yaml文件：</p>
+
+<p>db-pod.yaml</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">db</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+<span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">mongo</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+          <span class="na">containerPort</span><span class="pi">:</span> <span class="m">27017</span>
+        <span class="na">volumeMounts</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">mongo-storage</span>
+            <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/data/db</span>
+      <span class="na">volumes</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">mongo-storage</span>
+            <span class="na">hostPath</span><span class="pi">:</span>
+              <span class="na">path</span><span class="pi">:</span> <span class="s">/data/db</span>
+</code></pre></div></div>
+
+<p>db-service.yaml</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">db</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">todoapp</span>
+
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">ClusterIP</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">db</span>
+      <span class="na">port</span><span class="pi">:</span> <span class="m">27017</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="m">27017</span>
+</code></pre></div></div>
+
+<p>web-pod.yaml</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">todoapp</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">containers</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span> <span class="s">sammy/todo</span>
+      <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">IfNotPresent</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">myweb</span>
+      <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3000</span>
+</code></pre></div></div>
+
+<p>web-service.yaml</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">todoapp</span>
+
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+  <span class="na">ports</span><span class="pi">:</span>
+   <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+     <span class="na">port</span><span class="pi">:</span> <span class="m">3000</span>
+     <span class="na">targetPort</span><span class="pi">:</span> <span class="m">3000</span>
+     <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+</code></pre></div></div>
+
+<p>web-rs.yaml</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ReplicaSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">todoapp</span>
+
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">todoapp</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">todoapp</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">web</span>
+        <span class="na">imagePullPolicy</span><span class="pi">:</span> <span class="s">IfNotPresent</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">sammy/todo</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">3000</span>
+</code></pre></div></div>
+
+<p><strong>注意事项：</strong></p>
+<ul>
+  <li>如果不想将镜像上传到dockerhub上，直接在worker节点上使用编译出来的镜像，则需要在部署web app的<code class="highlighter-rouge">web-pod.yaml</code>文件中添加上镜像拉去的策略<code class="highlighter-rouge">imagePullPolicy: IfNotPresent</code></li>
+  <li>副本集(ReplicaSet)的测试过程中，要将yaml文件中的<code class="highlighter-rouge">apiVersion</code>的值从<code class="highlighter-rouge">extensions/v1beta1</code>替换成<code class="highlighter-rouge">apps/v1</code>，因为<code class="highlighter-rouge">extensions/v1beta1</code>已经被弃用了。</li>
+</ul>
+
+<h2 id="faq">FAQ</h2>
+
+<h3 id="k8s镜像拉取策略配置">k8s镜像拉取策略配置</h3>
+
+<p>k8s的部署配置文件中经常看到有imagePullPolicy属性，这个属性是描述镜像的拉取策略：</p>
+<ul>
+  <li>Always 总是拉取镜像</li>
+  <li>IfNotPresent 本地有则使用本地镜像,不拉取</li>
+  <li>Never 只使用本地镜像，从不拉取，即使本地没有</li>
+</ul>
+
+<p>如果省略imagePullPolicy，镜像tag为 <code class="highlighter-rouge">:latest</code>，策略为always。</p>
+
+<h2 id="参考文章">参考文章</h2>
+
+<ul>
+  <li><a href="https://kuboard.cn/install/install-k8s.html#%E6%96%87%E6%A1%A3%E7%89%B9%E7%82%B9">使用kubeadm安装kubernetes_v1.17.x</a></li>
+  <li><a href="https://kubernetes.io/zh/docs/reference/setup-tools/kubeadm/kubeadm-init/">kubeadm init</a></li>
+</ul>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/kubernetes">kubernetes</a>,&nbsp;<a href="/tag/k8s">k8s</a>,&nbsp;<a href="/tag/cloudnative">cloudnative</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=Kubernetes+%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA&url=http%3A%2F%2Fflyflypeng.github.io%2F%25E4%25BA%2591%25E5%258E%259F%25E7%2594%259F%2F2020%2F03%2F29%2FKubernetes%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=Kubernetes+%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA&u=http%3A%2F%2Fflyflypeng.github.io%2F%25E4%25BA%2591%25E5%258E%259F%25E7%2594%259F%2F2020%2F03%2F29%2FKubernetes%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fflyflypeng.github.io%2F%25E4%25BA%2591%25E5%258E%259F%25E7%2594%259F%2F2020%2F03%2F29%2FKubernetes%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=Kubernetes+%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA&url=http%3A%2F%2Fflyflypeng.github.io%2F%25E4%25BA%2591%25E5%258E%259F%25E7%2594%259F%2F2020%2F03%2F29%2FKubernetes%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA.html&media=http://flyflypeng.github.io/assets/k8s.png"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">QEMU/KVM 原理综述</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/flyflypeng" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">flyflypeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E4%BA%91%E5%8E%9F%E7%94%9F/2020/03/29/Kubernetes%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html',
+    'title': 'Kubernetes 集群搭建'
+  });
+</script>
+
+
+
+  </body>
+
+</html>
