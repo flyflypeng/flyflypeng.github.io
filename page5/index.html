@@ -170,6 +170,8 @@
           
         
           
+        
+          
          -->
       </ul>
     </nav>
@@ -191,6 +193,28 @@
 
 <div class="wrapper">
 <ul class="post-list">
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2016/05/10/Linux-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html">Linux 系统调用内核源码分析</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>什么是系统调用？ 系统调用是应用程序与内核交互的一种方式。系统调用作为一种接口，通过系统调用，应用程序能够进入操作系统内核，从而使用内核提供的各种资源，比如操作硬件，开关中断，改变特权模式等等。首先，系统调用是一个软中断，既然是中断那么一般就具有中断号和中断处理程序两个属性，Linux 使用 0x80 号中断作为系统调用的入口，而中断处理程序的地址放在中断向量表里。 系统调用在内核空间和用户空间之间建立了一个连接的中间层，它主要为系统提供了下面三个主要功能： 第一，系统调用在底层硬件和用户空间之间建立了一个抽象的接口。例如，当用户空间的应用程序想读写一个文件时，程序员只需要通过系统调用接口完成读写操作即可，而不需要知道文件所在的底层磁盘是什么介质类型以及它所使用的是什么文件系统等一系列复杂的底层细节。 第二，系统调用让操作系统变得更加稳定和安全。Linux 中的内核好比就是一个仲裁者，它基于访问权限、用户组、临界区等机制来控制用户空间中应用程序用户空间中应用程序对底层硬件资源的访问，使得应用程序不会非法地使用硬件资源或者窃取其他应用程序所使用的资源以致对系统造成损害。 第三，系统调用便于实现系统虚拟化。系统调用提供的中间层，它屏蔽了许多的底层的细节，使得应用程序和底层系统的耦合性降低，这样系统的虚拟化变得更加简单。 系统调用的处理过程 当我们在用户态应用程序中调用一个系统调用函数时，它背后所隐藏的从用户态到内核态的整个处理过程，如下图所示： 在上图中，应用程序中调用 libc 库中的封装好的 xyz() 系统调用函数，然后 xyz() 就接着执行 libc...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">May 10, 2016</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/内核">内核</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
   
   <li>
     <h2>
@@ -277,28 +301,6 @@
     </section>
   </li>
   
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">Sublime-Text-3-插件安装</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>Package Control 简介 Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。 而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。 Package Control 安装 Package Control 的安装方法也非常简单，官方安装文档：Package...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">March 11, 2016</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/利器">利器</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
   
 </ul>
 
@@ -314,7 +316,7 @@
 			</a>
 			
 		
-		<span class="page-number">Page 5 of 7</span>
+		<span class="page-number">Page 5 of 8</span>
 		
 		<a class="newer-posts" href="/page6">
       <span class="fa-stack fa-lg">
@@ -405,6 +407,8 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
         
         
         

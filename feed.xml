@@ -6,8 +6,8 @@
 </description>
     <link>http://flyflypeng.github.io/</link>
     <atom:link href="http://flyflypeng.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 31 Mar 2020 23:15:41 +0800</pubDate>
-    <lastBuildDate>Tue, 31 Mar 2020 23:15:41 +0800</lastBuildDate>
+    <pubDate>Sat, 11 Apr 2020 00:08:16 +0800</pubDate>
+    <lastBuildDate>Sat, 11 Apr 2020 00:08:16 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -587,6 +587,499 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
         
         
         <category>云原生</category>
+        
+      </item>
+    
+      <item>
+        <title>Mac 开发环境配置</title>
+        <description>&lt;h2 id=&quot;typora&quot;&gt;Typora&lt;/h2&gt;
+
+&lt;p&gt;我先放张我在Mac中我用Typora写这篇文章时的界面吧，你们说香不香吧：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/image-20200411000439442.png&quot; alt=&quot;image-20200411000439442&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Typora绝对是我们这几年中遇到的最好用，最好看，最喜欢的一款软件，没有之一。&lt;/p&gt;
+
+&lt;p&gt;虽然现在还没有发布正式的release版本，但是现在它一直保持着不断迭代更新，修复一些问题，并不断地补齐功能。&lt;/p&gt;
+
+&lt;p&gt;自从6年前入了Markdown的坑，我的笔记文档，博客文章基本都是用Markdown写的，期间也是尝试过各种Markdown软件，玩过在线网页版的Cmd Markdown，也使用过套了一层Electron的蚂蚁笔记，印象笔记中最新内置的Markdown编辑器我也体验过，但是总是觉得他们要么是在线不方便管理笔记和一些重要数据，要么就是渲染出来的样式很丑，要么就是笔记同步功能要收费。直到遇到了Typora，我终于找到了最钟意的Markdown软件，满足了我挑剔的要求，我也是各种安利推荐给我身边的朋友和同事。&lt;/p&gt;
+
+&lt;p&gt;我简单Typora最吸引我的几点特色功能吧：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;简洁美观&lt;/li&gt;
+  &lt;li&gt;所见即所得模式&lt;/li&gt;
+  &lt;li&gt;支持自定义主题，也可从主题商店下载喜欢的主题&lt;/li&gt;
+  &lt;li&gt;富文本自动转换成Markdown格式功能&lt;/li&gt;
+  &lt;li&gt;搜索高亮功能&lt;/li&gt;
+  &lt;li&gt;目录层级管理功能&lt;/li&gt;
+  &lt;li&gt;大纲显示功能&lt;/li&gt;
+  &lt;li&gt;图床功能，支持常用图床和自定义图床配置&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;mac-修改设置环境变量&quot;&gt;Mac 修改设置环境变量&lt;/h2&gt;
+&lt;p&gt;Mac 中修改环境变量的方法和 Linux 中修改环境变量的方法类似，可以修改的文件主要分为两类：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;~/.bash_profile&lt;/code&gt;：一般在这个文件中设置用户级的环境变量&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/bashrc&lt;/code&gt;：一般在这个文件中添加系统级环境变量&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;~/.zshrc&lt;/code&gt;：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;添加环境变量的方式就是通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;export&lt;/code&gt; 关键字来进行添加。&lt;/p&gt;
+
+&lt;h2 id=&quot;iterm2-配置&quot;&gt;iTerm2 配置&lt;/h2&gt;
+
+&lt;h3 id=&quot;主题配色&quot;&gt;主题配色&lt;/h3&gt;
+&lt;p&gt;你可以根据你的喜好来选择终端主题颜色的配色方案。&lt;/p&gt;
+
+&lt;p&gt;可以从&lt;a href=&quot;https://github.com/mbadolato/iTerm2-Color-Schemes&quot;&gt;mbadolato/iTerm2-Color-Schemes&lt;/a&gt;仓库下载iTerm2的主题配色。&lt;/p&gt;
+
+&lt;p&gt;我选择的是==Cobalt Neon==主题，个人觉得非常不错。&lt;/p&gt;
+
+&lt;p&gt;配置方法：
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/import_color_schemes.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;添加背景图片&quot;&gt;添加背景图片&lt;/h3&gt;
+
+&lt;p&gt;更换背景图片方式：&lt;code class=&quot;highlighter-rouge&quot;&gt;iTerm2 -&amp;gt; Preferences -&amp;gt; Profiles -&amp;gt; Window -&amp;gt; BackGround Image&lt;/code&gt;勾选图片即可。&lt;/p&gt;
+
+&lt;p&gt;非常好看的一张背景图，背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
+
+&lt;p&gt;链接: https://pan.baidu.com/s/17zGm…
+提取码: hg67&lt;/p&gt;
+
+&lt;h3 id=&quot;快捷键&quot;&gt;快捷键&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;Preferences -&amp;gt; Keys -&amp;gt; Hotkey -&amp;gt; Show/hide iTerm2 with a system wide hotkey&lt;/code&gt;设置快捷键 &lt;code class=&quot;highlighter-rouge&quot;&gt;command + option + i&lt;/code&gt; 快速显示和隐藏 iTerm。&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;常用快捷键列表&lt;/p&gt;
+
+    &lt;table&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;shortcut key&lt;/th&gt;
+          &lt;th&gt;description&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⌘ + t&lt;/td&gt;
+          &lt;td&gt;新建标签页&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⌘ + n&lt;/td&gt;
+          &lt;td&gt;新建窗口&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⌘ + 数字&lt;/td&gt;
+          &lt;td&gt;切换标签页&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⌘ + enter&lt;/td&gt;
+          &lt;td&gt;切换全屏&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⌘ + d&lt;/td&gt;
+          &lt;td&gt;左右分屏&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⇧⌘ + d&lt;/td&gt;
+          &lt;td&gt;上下分屏&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;⌘ + ;&lt;/td&gt;
+          &lt;td&gt;自动补全历史记录&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;记录命令行操作日志&quot;&gt;记录命令行操作日志&lt;/h3&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Session &amp;gt; Log &amp;gt; Log to File&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;zsh&quot;&gt;zsh&lt;/h2&gt;
+&lt;p&gt;官网：&lt;a href=&quot;http://ohmyz.sh/ß&quot;&gt;zsh&lt;/a&gt;
+使用教程链接：&lt;a href=&quot;http://yijiebuyi.com/blog/b9b5e1ebb719f22475c38c4819ab8151.html&quot;&gt;oh-my-zsh配置你的zsh提高shell逼格终极选择&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;zsh的主题文件存储在 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.oh-my-zsh/thees&lt;/code&gt; 目录下，你可以自己从github上淘到一些非常酷炫的的主题配置，然后下载存放到该目录下。&lt;/p&gt;
+
+&lt;p&gt;推荐一个带PowerBar的非常骚的一个主题配置：&lt;a href=&quot;https://github.com/Powerlevel9k/powerlevel9k&quot;&gt;powerlevel9k&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;字体下载&amp;amp;配置：&lt;a href=&quot;https://github.com/bhilburn/powerlevel9k/wiki/Install-Instructions#step-2-install-a-powerline-font&quot;&gt;Install Powerline Fonts&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;zsh插件推荐&quot;&gt;zsh插件推荐&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zsh-users/zsh-autosuggestions&quot;&gt;zsh-users/zsh-autosuggestions&lt;/a&gt;：基于输入的历史命令，在输入命令时进行补全提示
+&lt;a href=&quot;https://github.com/zsh-users/zsh-syntax-highlighting&quot;&gt;zsh-users/zsh-syntax-highlighting&lt;/a&gt;：高亮你的 zsh 可用命令&lt;/p&gt;
+
+&lt;h2 id=&quot;xcode-command-line-tools&quot;&gt;Xcode command line tools&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Xcode command line tools&lt;/code&gt; 是 Mac 下面一系列重要程序开发工具命令的集合，例如：ake, gcc, g++, clang, perl, svn, git等等。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;安装方法&lt;/strong&gt;
+直接打开命令行终端，通过下面的命令安装即可：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ xcode-select --install
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;卸载方法&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo rm -rf /Library/Developer/CommandLineTools
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;查看 Xcode command line tools 中安装的命令集合的方法&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ls /Library/Developer/CommandLineTools/usr/bin
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;vim-编辑器使用技巧&quot;&gt;vim 编辑器使用技巧&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/vim-key.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://harttle.land/2015/11/07/vim-cursor.html&quot;&gt;Vim中如何快速进行光标移动&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;sublime-text-3&quot;&gt;Sublime Text 3&lt;/h2&gt;
+
+&lt;h3 id=&quot;在命令行终端启动-sublime-text-3-的方法&quot;&gt;在命令行终端启动 sublime text 3 的方法&lt;/h3&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo ln&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl&quot;&lt;/span&gt; /usr/local/bin/subl 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;配置-cc-代码编译环境&quot;&gt;配置 C/C++ 代码编译环境&lt;/h3&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System -&amp;gt; New Buld System&lt;/code&gt; 新建编译系统，在新打开的窗口中替换下面的代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
+	&quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ '${file}' -o '${file_path}/${file_base_name}' &amp;amp;&amp;amp; osascript -e 'tell application \&quot;Terminal\&quot; to activate do script \&quot;clear&amp;amp;&amp;amp;${file_path}/${file_base_name} &amp;amp;&amp;amp; read -p \\\&quot;Press Enter to exit.\\\&quot;&amp;amp;&amp;amp;exit\&quot;'&quot;],
+    &quot;file_regex&quot;: &quot;^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$&quot;,
+    &quot;working_dir&quot;: &quot;${file_path}&quot;,
+    &quot;selector&quot;: &quot;source.c, source.c++&quot;,
+
+    &quot;variants&quot;:
+    [
+        {
+            &quot;name&quot;: &quot;Run&quot;,
+            &quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ '${file}' -o '${file_path}/${file_base_name}' &amp;amp;&amp;amp; '${file_path}/${file_base_name}'&quot;]
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Command + s&lt;/code&gt; 保存，命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;MyC++&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;然后我们在 &lt;code class=&quot;highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System&lt;/code&gt; 选中 &lt;code class=&quot;highlighter-rouge&quot;&gt;MyC++&lt;/code&gt; 作为默认的编译脚本。&lt;/p&gt;
+
+&lt;p&gt;最后，每当我们编写完 C/C++ 代码时，就可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Command + Shift + B&lt;/code&gt; 快捷键编译并运行程序了（&lt;strong&gt;注意选择不带 Run 那个选项&lt;/strong&gt;），它默认会打开并跳转到一个终端界面去执行程序。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;如果不需要从标准输入中读取输入数据，那么我们可以在调用快捷键 Command + Shift + B 之后弹出的选择框中选择加 Run 的选项来直接在 Sublime Text 中运行程序并看到最终程序运行输出的结果。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;让-sublime-记住上一次关闭前打开的文件&quot;&gt;让 Sublime 记住上一次关闭前打开的文件&lt;/h3&gt;
+&lt;p&gt;只需要在 Sublime Text 3 退出时，按 &lt;code class=&quot;highlighter-rouge&quot;&gt;command + q&lt;/code&gt; 键退出即可。&lt;/p&gt;
+
+&lt;h2 id=&quot;brew-包管理工具&quot;&gt;brew 包管理工具&lt;/h2&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 是 Mac 下的第三方包管理工具，它类似于 Ubuntu 系统中自带的 &lt;code class=&quot;highlighter-rouge&quot;&gt;apt&lt;/code&gt; 包管理工具。&lt;/p&gt;
+
+&lt;p&gt;具体的安装方法详见官网：&lt;a href=&quot;http://brew.sh/index_zh-cn.html&quot;&gt;Homebrew&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;在终端中运行以下命令，确保 brew 运行正常：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew doctor
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装命令行工具的方法：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &amp;lt;package_name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;安装完成之后，&lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 默认将命令行工具安装到 &lt;em&gt;/usr/local/bin&lt;/em&gt;
+ 目录下面。&lt;/p&gt;
+
+&lt;h3 id=&quot;brew-常用命令&quot;&gt;brew 常用命令&lt;/h3&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew search &amp;lt;pkg_name&amp;gt;  &lt;span class=&quot;c&quot;&gt;#查找软件包&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &amp;lt;pkg_name&amp;gt;  &lt;span class=&quot;c&quot;&gt;#安装软件包&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew list &lt;span class=&quot;c&quot;&gt;#列出软件包&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew uninstall &amp;lt;pkg_name&amp;gt; &lt;span class=&quot;c&quot;&gt;#卸载软件包&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew update &lt;span class=&quot;c&quot;&gt;#更新&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew info &amp;lt;pkg_name&amp;gt; &lt;span class=&quot;c&quot;&gt;#查看软件包的基本资料&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;nodejs-安装&quot;&gt;Node.js 安装&lt;/h2&gt;
+
+&lt;h3 id=&quot;安装-nvm-node-version-manager&quot;&gt;安装 NVM （Node Version Manager）&lt;/h3&gt;
+
+&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装 nvm&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nvm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;配置 nvm 相关环境变量&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# You should create NVM's working directory if it doesn't exist:&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; ~/.nvm
+
+&lt;span class=&quot;c&quot;&gt;# Add the following to ~/.zshrc or your desired shell&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#configuration file:&lt;/span&gt;
+
+  &lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;NVM_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/.nvm&quot;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/usr/local/opt/nvm/nvm.sh&quot;&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;测试 nvm 是否安装成功&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;➜  ~ nvm
+
+Node Version Manager
+
+Note: &amp;lt;version&amp;gt; refers to any version-like string nvm understands. This includes:
+  - full or partial version numbers, starting with an optional &lt;span class=&quot;s2&quot;&gt;&quot;v&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.10, v0.1.2, v1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  - default &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;built-in&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; aliases: node, stable, unstable, iojs, system
+  - custom aliases you define with &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;nvm &lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;foo&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+
+ Any options that produce colorized output should respect the &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--no-colors&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; option.
+
+Usage:
+  nvm &lt;span class=&quot;nt&quot;&gt;--help&lt;/span&gt;                                Show this message
+  nvm &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;                             Print out the latest released version of nvm
+  nvm &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;version&amp;gt;                Download and &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;a &amp;lt;version&amp;gt;, &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; from source. Uses .nvmrc &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available
+    &lt;span class=&quot;nt&quot;&gt;--reinstall-packages-from&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;version&amp;gt;     When installing, reinstall packages installed &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &amp;lt;node|iojs|node version number&amp;gt;
+    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;                                   When installing, only &lt;span class=&quot;k&quot;&gt;select &lt;/span&gt;from LTS &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long-term support&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; versions
+    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;LTS name&amp;gt;                        When installing, only &lt;span class=&quot;k&quot;&gt;select &lt;/span&gt;from versions &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;a specific LTS line
+  nvm uninstall &amp;lt;version&amp;gt;                   Uninstall a version
+  nvm uninstall &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;                       Uninstall using automatic LTS &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long-term support&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;alias&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;lts/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
+  nvm uninstall &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;LTS name&amp;gt;            Uninstall using automatic &lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;provided LTS line, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
+  nvm use &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--silent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;version&amp;gt;              Modify PATH to use &amp;lt;version&amp;gt;. Uses .nvmrc &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available
+    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;                                   Uses automatic LTS &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long-term support&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;alias&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;lts/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
+    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;LTS name&amp;gt;                        Uses automatic &lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;provided LTS line, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
+    ......
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;使用-nvm-安裝-nodejs&quot;&gt;使用 NVM 安裝 Node.js&lt;/h3&gt;
+&lt;p&gt;找出目前所有可安裝的 Node.js 版本&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvm ls-remote
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;安装当前最新的稳定版本的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Node.js&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvm &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;stable
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;测试安装的 Node.js&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;➜  ~ node &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
+v7.2.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;测试 npm&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;➜  ~ npm &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
+3.10.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;修改-npm-包管理器下载的镜像源&quot;&gt;修改 npm 包管理器下载的镜像源&lt;/h3&gt;
+&lt;p&gt;使用 taobo 定制的 cnpm (gzip 压缩支持) 命令行工具代替默认的 npm：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'\n#alias for cnpm\nalias cnpm=&quot;npm --registry=https://registry.npm.taobao.org \
+  --cache=$HOME/.npm/.cache/cnpm \
+  --disturl=https://npm.taobao.org/dist \
+  --userconfig=$HOME/.cnpmrc&quot;'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ~/.zshrc &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.zshrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;安装模块&lt;/strong&gt;
+从 registry.npm.taobao.org 安装所有模块. 当安装的时候发现安装的模块还没有同步过来, 淘宝 NPM 会自动在后台进行同步, 并且会让你从官方 NPM registry.npmjs.org 进行安装. 下次你再安装这个模块的时候, 就会直接从 淘宝 NPM 安装了.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//使用这种方法安装 node 模块时，在终端一定要取消掉 http_proxy 和 https_proxy 代理·
+
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; Blockquote
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cnpm &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;name]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;同步模块&lt;/strong&gt;
+直接通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync&lt;/code&gt; 命令马上同步一个模块, 只有 &lt;code class=&quot;highlighter-rouge&quot;&gt;cnpm&lt;/code&gt; 命令行才有此功能:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cnpm &lt;span class=&quot;nb&quot;&gt;sync &lt;/span&gt;connect
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;剪贴板管理命令pbcopy-和-pbpaste&quot;&gt;剪贴板管理命令：pbcopy 和 pbpaste&lt;/h2&gt;
+&lt;p&gt;这两个工具可以打通命令行和剪贴板。当然用鼠标操作复制粘贴也可以——但这两个工具的真正威力，发挥在将其用作Unix工具的时候。意思就是说：可以将这两个工具用作管道、IO重定向以及和其他命令的整合。例如：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; ~ | pbcopy
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;可以将主目录的文件列表复制到剪贴板。&lt;/p&gt;
+
+&lt;p&gt;也可以把任意文件的内容复制到剪贴板中：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pbcopy &amp;lt; blogpost.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;将剪贴板中的内容输出保存到一个文件中：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pbpaset &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; test.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;omnigraffle&quot;&gt;OmniGraffle&lt;/h2&gt;
+&lt;p&gt;OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 &lt;code class=&quot;highlighter-rouge&quot;&gt;stencils&lt;/code&gt; 模板，直接导入然后进行修改，得到自己想要的图形。&lt;/p&gt;
+
+&lt;h2 id=&quot;jekyll博客环境搭建&quot;&gt;Jekyll博客环境搭建&lt;/h2&gt;
+
+&lt;h3 id=&quot;安装-rvm&quot;&gt;安装 RVM&lt;/h3&gt;
+&lt;p&gt;RVM是Ruby的版本管理工具，我们可以使用它来帮助我们安装Ruby。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; get.rvm.io | bash &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; stable
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;然后，我们需要再入RVM环境。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.rvm/scripts/rvm
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;rvm -v&lt;/code&gt; 就可以检查RVM是否安装成功了。&lt;/p&gt;
+
+&lt;h3 id=&quot;使用rvm安装ruby&quot;&gt;使用RVM安装Ruby&lt;/h3&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ rvm install ruby
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;等一段时间，Ruby，Ruby Gems就安装好了。&lt;/p&gt;
+
+&lt;p&gt;可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;gem -v&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;ruby -v&lt;/code&gt;来检查是否安装成功。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 配置好shell环境上的代理&lt;/span&gt;
+gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;用-rubygems-安装-jekyll&quot;&gt;用 RubyGems 安装 Jekyll&lt;/h3&gt;
+
+&lt;p&gt;安装 Jekyll 的最好方式就是使用 RubyGems. 你只需要打开终端输入以下命令就可以安装了：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-archives
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-sitemap
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-paginate
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;所有的 Jekyll 的 gem 依赖包都会被自动安装，所以你完全不用去担心。&lt;/p&gt;
+
+&lt;h2 id=&quot;ssh-常用技巧&quot;&gt;ssh 常用技巧&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;免密登录远程主机&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 如果本机公钥还没有生成，那么可以使用命令：ssh-keygen 生成
+ $ ssh-copy-id arclab@10.214.9.170
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;快速登录远程主机&lt;/p&gt;
+
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 为了避免每次 ssh 连接远程主机时输入一长串的 username@host-ip，可以将远程主机用一个简单的字符串来标识，修改方法如下
+ $ vim ~/.ssh/config
+ HOST droidocker
+ User arclab
+ Port 22
+ HostName 10.214.9.170
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;端口转发工具&quot;&gt;端口转发工具&lt;/h2&gt;
+
+&lt;p&gt;一个C语言开发的开源TCP端口转发工具， 将TCP连接从一个IP地址和端口重定向到另一个IP地址和端口。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 下载&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git clone https://github.com/samhocevar/rinetd.git
+
+&lt;span class=&quot;c&quot;&gt;# 编译&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;rinetd
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./bootstrap
++ &lt;span class=&quot;nb&quot;&gt;test &lt;/span&gt;no &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
++ aclocal &lt;span class=&quot;nt&quot;&gt;-I&lt;/span&gt; .auto &lt;span class=&quot;nt&quot;&gt;-I&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
++ autoconf
++ &lt;span class=&quot;nb&quot;&gt;test yes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
++ autoheader
++ &lt;span class=&quot;nb&quot;&gt;test yes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
++ automake &lt;span class=&quot;nt&quot;&gt;--foreign&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--add-missing&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--copy&lt;/span&gt;
+configure.ac:10: installing &lt;span class=&quot;s1&quot;&gt;'.auto/compile'&lt;/span&gt;
+configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;'.auto/install-sh'&lt;/span&gt;
+configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;'.auto/missing'&lt;/span&gt;
+src/Makefile.am: installing &lt;span class=&quot;s1&quot;&gt;'.auto/depcomp'&lt;/span&gt;
++ &lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Rf&lt;/span&gt; autom4te.cache
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./configure
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;make
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;make &lt;span class=&quot;nb&quot;&gt;install
+&lt;/span&gt;Making &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;src
+make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+make  install-am
+make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+make[3]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+ /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/usr/local/sbin'&lt;/span&gt;
+  /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; ../rinetd &lt;span class=&quot;s1&quot;&gt;'/usr/local/sbin'&lt;/span&gt;
+make[3]: Nothing to be &lt;span class=&quot;k&quot;&gt;done for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'install-data-am'&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
+make[3]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
+make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
+ /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/usr/local/etc'&lt;/span&gt;
+ /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.conf &lt;span class=&quot;s1&quot;&gt;'/usr/local/etc'&lt;/span&gt;
+ /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/usr/local/share/man/man8'&lt;/span&gt;
+ /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.8 &lt;span class=&quot;s1&quot;&gt;'/usr/local/share/man/man8'&lt;/span&gt;
+make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
+make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;配置文件路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/etc/rinetd.conf&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim /usr/local/etc/rinetd.conf
+
+&lt;span class=&quot;c&quot;&gt;# 将本机上9000端口转到本机回环地址上的12333端口&lt;/span&gt;
+0.0.0.0 9000 127.0.0.1 12333
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;启动rinetd服务：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;vi /etc/systemd/system/rinetd.service
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Unit]
+&lt;span class=&quot;nv&quot;&gt;Description&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;rinetd
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Service]
+&lt;span class=&quot;nv&quot;&gt;ExecStart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/local/sbin/rinetd &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; /usr/local/etc/rinetd.conf
+&lt;span class=&quot;nv&quot;&gt;Restart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;always
+  
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Install]
+&lt;span class=&quot;nv&quot;&gt;WantedBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;multi-user.target
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;systemctl &lt;span class=&quot;nb&quot;&gt;enable &lt;/span&gt;rinetd.service &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; systemctl start rinetd.service
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000014992947&quot;&gt;iTerm2 + Oh My Zsh 打造舒适终端体验&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 23 Mar 2020 04:00:31 +0800</pubDate>
+        <link>http://flyflypeng.github.io/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
+        <guid isPermaLink="true">http://flyflypeng.github.io/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
+        
+        <category>Mac</category>
+        
+        <category>Jekyll</category>
+        
+        <category>iTerm2</category>
+        
+        <category>zsh</category>
+        
+        
+        <category>利器</category>
         
       </item>
     
@@ -2714,92 +3207,6 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
         
         
         <category>android</category>
-        
-      </item>
-    
-      <item>
-        <title>单生产者和单消费者共同操作同一个环形缓冲区的问题</title>
-        <description>&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/circular_buffer.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;问题描述&quot;&gt;问题描述&lt;/h1&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。&lt;/li&gt;
-  &lt;li&gt;生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。&lt;/li&gt;
-  &lt;li&gt;环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 &lt;code class=&quot;highlighter-rouge&quot;&gt;2^N&lt;/code&gt; 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
-    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;cp&quot;&gt;#define RING_BUFFER_SIZE N
-&lt;/span&gt;    
- &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RingBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-     &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//环形缓冲区写入位置值&lt;/span&gt;
-     &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//环形缓冲区读取位置值&lt;/span&gt;
-     &lt;span class=&quot;n&quot;&gt;data_block&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//data_block 是环形缓冲区中所存放的数据单元的类型&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-    &lt;p&gt;在创建环形缓冲区之后，RingBuffer 结构体中的成员&lt;code class=&quot;highlighter-rouge&quot;&gt;w_pos&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;r_pos&lt;/code&gt;都被初始化为 0。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;判断环形缓冲区是否为空的伪代码：
-    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-     &lt;span class=&quot;c1&quot;&gt;//判断语句为真，RingBuffer 为空&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;判断环形缓冲区是否为满的伪代码：
-    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-     &lt;span class=&quot;c1&quot;&gt;//判断语句为真，RingBuffer 为满&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;生产者进程中的处理逻辑伪代码：
-    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//缓冲区满了&lt;/span&gt;
-     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-         &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    
-     &lt;span class=&quot;c1&quot;&gt;//否则，则将数据填入到环形缓冲区中空闲的单元中&lt;/span&gt;
-     &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;some_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将需要写入的数据写入到指定的环形缓冲区单元中&lt;/span&gt;
-        
-     &lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将写入位置向前移动&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;消费者进程中的处理逻辑伪代码：
-    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//缓冲区为空&lt;/span&gt;
-     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-         &lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-         &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    
-     &lt;span class=&quot;c1&quot;&gt;//否则，从环形缓冲区中读取数据出来进行处理&lt;/span&gt;
-     &lt;span class=&quot;n&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//process() 函数只是对读取到的数据进行一个处理&lt;/span&gt;
-        
-     &lt;span class=&quot;n&quot;&gt;r_pos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将读取位置向前移动&lt;/span&gt;
- &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-    &lt;h1 id=&quot;疑惑&quot;&gt;疑惑？&lt;/h1&gt;
-    &lt;p&gt;如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加&lt;code class=&quot;highlighter-rouge&quot;&gt;互斥锁&lt;/code&gt;，上面代码是否会出现&lt;code class=&quot;highlighter-rouge&quot;&gt;Bug&lt;/code&gt;，或者不确定的状态？&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;而且我想了很多遍生产者和消费者的处理逻辑，他们只会在最后执行语句 &lt;code class=&quot;highlighter-rouge&quot;&gt;w_pos++&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;r_pos++&lt;/code&gt; 时改变两个进程都共享的值，虽然 &lt;code class=&quot;highlighter-rouge&quot;&gt;w_pos++&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;r_pos++&lt;/code&gt; 的操作不是原子操作的，但是好像是不是原子操作都不会对结果产生影响，我就是在这里思考不清楚！不知道大家对此有什么看法呢？能否举出特殊的栗子来描述一下。&lt;/p&gt;
-
-</description>
-        <pubDate>Wed, 14 Dec 2016 08:58:26 +0800</pubDate>
-        <link>http://flyflypeng.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</link>
-        <guid isPermaLink="true">http://flyflypeng.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html</guid>
-        
-        <category>同步</category>
-        
-        <category>生产者消费者</category>
-        
-        <category>环形缓冲区</category>
-        
-        <category>RingBuffer</category>
-        
-        
-        <category>Linux</category>
         
       </item>
     
