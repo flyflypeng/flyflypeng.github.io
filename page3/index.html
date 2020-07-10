@@ -200,6 +200,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">Android HAL 层原理分析</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>Android HAL 简介 Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。 为什么要添加一个 HAL 层？ Android 在用户空间中新建一个的 HAL...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">March 26, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/android">Android</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/android/2016/12/17/Android-NDK-vs-AOSP-Build-System.html">Android NDK  vs AOSP Build System</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -277,28 +299,6 @@
       in 
         
         <a href="/category/利器">利器</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/linux/2016/07/08/Linux%E4%B8%AD%E7%9A%84EOF%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88.html">Linux 中的 EOF 到底是什么？</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>EOF 的定义 EOF 是 end of file 的缩写，表示”文字流”（stream）的结尾。这里的”文字流”，可以是文件（file），也可以是标准输入（stdin）。 以前在学习 C 语言文件操作的时候，一直记得 EOF 就是一个标记，通过它可以判断程序是否读取到文件的末尾了，例如下面的这段代码就是将一个文本文件中的字符输出到标准输出中，并通过 EOF 来判断程序是否读到了文件末尾： #include &lt;stdio.h&gt; #define FILENAME "gdb_test.c"...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">July 8, 2016</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/linux">Linux</a>
         
       
       </div>

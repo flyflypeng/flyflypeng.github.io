@@ -6,9 +6,243 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 25 Apr 2020 00:24:19 +0800</pubDate>
-    <lastBuildDate>Sat, 25 Apr 2020 00:24:19 +0800</lastBuildDate>
+    <pubDate>Fri, 10 Jul 2020 23:49:03 +0800</pubDate>
+    <lastBuildDate>Fri, 10 Jul 2020 23:49:03 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
+    
+      <item>
+        <title>May the force be with you</title>
+        <description>&lt;h2 id=&quot;linux-系统编程&quot;&gt;Linux 系统编程&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/LEON1741/article/details/78142269&quot;&gt;linux下的僵尸进程产生原因和解决方法（含具体代码）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/alantu2018/p/8526916.html&quot;&gt;普通线程和内核线程&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/yasi_xi/article/details/9899599&quot;&gt;libc、glibc和glib的关系&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://cloud.tencent.com/developer/ask/26856&quot;&gt;我从来没有真正明白：什么是POSIX？&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stephanietang.github.io/2020/04/19/how-https-works/&quot;&gt;HTTPS的工作原理&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://chemiandy.lofter.com/post/1d254b22_69a16af&quot;&gt;Linux库文件搜索路径&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;开发环境配置&quot;&gt;开发环境配置&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://itbilu.com/linux/management/V1vdnt9ll.html&quot;&gt;Linux升级安装GCC&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://itbilu.com/linux/management/NymXRUieg.html&quot;&gt;解决类似 /usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.21’ not found 的问题&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;操作系统&quot;&gt;操作系统&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/hi/group/2692269/thread_5335705.html?mapId=6468851&quot;&gt;【操作系统知识大宝库】之内核&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;操作系统发行版&quot;&gt;操作系统发行版&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://tlanyan.me/yum-repos-summary/&quot;&gt;常用yum源整理&lt;/a&gt;：介绍了官方yum源和第三方yum源的区别和常用的yum源镜像地址&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://juejin.im/post/5d0ef5376fb9a07ef63fe74e&quot;&gt;CentOS 7上升级/安装gcc&lt;/a&gt;：这篇文章介绍了如何通过&lt;code class=&quot;highlighter-rouge&quot;&gt;scl&lt;/code&gt;工具更新gcc版本&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/wswind/p/10729610.html&quot;&gt;CentOS 使用第三方软件源 安装最新版本软件 省去编译烦恼 IUS SCL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://linux.cn/article-8509-1.html&quot;&gt;CentOS 上最佳的第三方仓库&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;计算机体系结构&quot;&gt;计算机体系结构&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.zhihu.com/question/23474438&quot;&gt;处理器架构、指令集和汇编语言，三者有何关系？&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;虚拟化&quot;&gt;虚拟化&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://smilejay.com/2012/11/how-to-mount-a-qcow2-image/&quot;&gt;如何挂载QCOW2格式的镜像文件&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/hugetong/p/5903105.html&quot;&gt;挂载qcow2文件，qcow2里边还有个lvm&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.infoq.cn/article/wcSmEKasstv*AdEPZE61&quot;&gt;基于 Kata Containers 与 iSulad 的云容器实践解析&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;云原生&quot;&gt;云原生&lt;/h2&gt;
+
+&lt;h3 id=&quot;serverless&quot;&gt;Serverless&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://liubin.org/blog/2018/05/04/the-world-is-full-managed/&quot;&gt;世界是 container 的，也是 microservice 的，但最终还是 serverless 的&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;k8s&quot;&gt;k8s&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://note.sycki.com/articles/kubernetes/k8s-code-kubelet&quot;&gt;k8s源码分析-kubelet&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/1919fb8a48ea&quot;&gt;Kubelet 对CNI的实现&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000019956620&quot;&gt;彻底理解kubernetes CNI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;容器&quot;&gt;容器&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://tech.meituan.com/2020/03/12/cloud-native-security.html&quot;&gt;云原生之容器安全实践&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000016137548&quot;&gt;Dockerfile多阶段构建原理和使用场景&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;安全容器&quot;&gt;安全容器&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.infoq.cn/article/wcSmEKasstv*AdEPZE61&quot;&gt;基于 Kata Containers 与 iSulad 的云容器实践解析&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://cloud.tencent.com/developer/news/604184&quot;&gt;Kata Containers 创始人带你入门安全容器技术&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;利器&quot;&gt;利器&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/hongdada/p/9776547.html&quot;&gt;Typora快捷键&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/hi/group/9719/wiki_2634081.html&quot;&gt;使用PORTMAP做端口映射&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;vscode&quot;&gt;vscode&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf&quot;&gt;vscode快捷键速记表&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://www.zhihu.com/question/37623310/answer/150017561&quot;&gt;VS Code有哪些常用的快捷键？ - 唐伟的回答 - 知乎&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000017949680&quot;&gt;宇宙最强vscode教程（基础篇）&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;vscode常用快捷键&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;F12&lt;/code&gt;：跳转到定义处&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Shift + F12&lt;/code&gt;：跳转到引用该函数的地方&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Alt + &amp;lt;左/右方向键&amp;gt;&lt;/code&gt;：跳转到上一次光标处/下一次光标处&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl + P&lt;/code&gt;窗口可以执行的操作：
+        &lt;ul&gt;
+          &lt;li&gt;直接输入文件名，快速打开文件&lt;/li&gt;
+          &lt;li&gt;? 列出当前可执行的动作&lt;/li&gt;
+          &lt;li&gt;! 显示Errors或Warnings，也可以Ctrl+Shift+M&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt;跳转到行数，也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+G&lt;/code&gt;直接进入&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;@&lt;/code&gt;跳转到symbol（搜索变量或者函数），也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+Shift+O&lt;/code&gt;直接进入&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;@:&lt;/code&gt;根据分类跳转symbol，查找属性或函数，也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+Shift+O&lt;/code&gt;后输入&lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt;进入&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#&lt;/code&gt; 根据名字查找symbol，也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+T&lt;/code&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl + K , Ctrl + S&lt;/code&gt;：打开VScode绑定的快捷键列表，可以搜索快捷键&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;开发工具&quot;&gt;开发工具&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/zhangpower1993/article/details/52184581&quot;&gt;vim插件管理器：Vundle的介绍及安装（很全）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stedolan.github.io/jq/&quot;&gt;json生成和解析命令行工具-jq&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.b1uew01f.net/learnnotes/linux/304.html&quot;&gt;jq: shell 脚本中JSON创建、解析工具&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://blog.lujun9972.win/blog/2018/03/01/使用jq组装json/index.html&quot;&gt;使用jq组装JSON&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;编译原理&quot;&gt;编译原理&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.infoq.cn/article/t184YFyd_VMEv0dIhpRd&quot;&gt;不想当“螺丝钉”？先搞定编译原理&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.infoq.cn/article/laTWH0UM4ZWWiTSAmrlR&quot;&gt;2019 年最新编译原理学习全攻略&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;linux-内核&quot;&gt;Linux 内核&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.wowotech.net/device_model/uevent.html&quot;&gt;Linux设备模型(3)_Uevent&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.jianshu.com/p/10653d83909d&quot;&gt;Linux 设备模型之 Uevent&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;设备管理&quot;&gt;设备管理&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.ibm.com/developerworks/cn/linux/l-cn-udev/index.html&quot;&gt;使用 udev 高效、动态地管理 Linux 设备文件&lt;/a&gt;：设备文件创建/udev&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://cloud.tencent.com/developer/article/1169495&quot;&gt;udev和devfs的区别&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/longwang155069/article/details/52757592&quot;&gt;devtmpfs文件系统创建设备节点&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;编程语言&quot;&gt;编程语言&lt;/h2&gt;
+
+&lt;h3 id=&quot;rust&quot;&gt;Rust&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.zhihu.com/question/31038569/answer/915365379&quot;&gt;如何开始学习 Rust 语言? - 蒋古申的回答 - 知乎&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/rcore-os/zCore&quot;&gt;zCore-一个用Rust写的RISV的小型操作系统&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/emosenkis/esp-rs/issues/10&quot;&gt;解决rust nightly编译工具链问题-error: toolchain ‘nightly-x86_64-unknown-linux-gnu’ is not installed&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Rust语言的开发迭代发布流程-&lt;a href=&quot;https://kaisery.github.io/trpl-zh-cn/appendix-07-nightly-rust.html#%E9%99%84%E5%BD%95-grust-%E6%98%AF%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E7%9A%84%E4%B8%8E-nightly-rust&quot;&gt;附录-grust-是如何开发的与-nightly-rust&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/km/groups/2842623/home?l=zh-cn#category=5373046&quot;&gt;华为编程语言能力提升项目&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;golang&quot;&gt;Golang&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/42848636/difference-between-golang-org-packages-and-the-standard-library&quot;&gt;Difference between golang.org packages and the standard library&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.bookstack.cn/books/qcrao-Go-Questions&quot;&gt;Go 语言问题集(Go Questions)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;webassembly&quot;&gt;WebAssembly&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://rustwasm.github.io/docs/book/introduction.html#rust--and-webassembly-&quot;&gt;Rust And WebAssembly&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/zh-CN/docs/WebAssembly/Understanding_the_text_format&quot;&gt;理解WebAssembly文本格式&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://rustcc.cn/article?id=b8a26e3a-16f2-4657-acdb-dd64b3a6773c&quot;&gt;【Rust每周一知】Rust, wasm, wasi 试玩儿&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/rustcc/RustPrimer/blob/master/install/rustup.md&quot;&gt;Rust 版本管理工具: rustup&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;调试&quot;&gt;调试&lt;/h2&gt;
+
+&lt;h3 id=&quot;gdb调试方法&quot;&gt;gdb调试方法&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://izualzhy.cn/why-the-code-stack-is-overflow&quot;&gt;追core笔记之五：如何查看一个corrupt stack的core&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/chengliangsheng/p/3597010.html&quot;&gt;Linux中用gdb 查看代码堆栈的信息&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/selfboot/CS_Offer/blob/master/C%2B%2B/GDB_Debug.md&quot;&gt;使用 GDB 调试程序&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://draveness.me/golang/&quot;&gt;Go 语言设计与实现&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;软件开发流程&quot;&gt;软件开发流程&lt;/h2&gt;
+
+&lt;h3 id=&quot;版本管理&quot;&gt;版本管理&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://semver.org/lang/zh-CN/&quot;&gt;语义化版本 2.0.0&lt;/a&gt;：语义化版本管理的方式，版本格式为：主版本号.次版本号.修订号&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;主版本号：当你做了不兼容的 API 修改，&lt;/li&gt;
+  &lt;li&gt;次版本号：当你做了向下兼容的功能性新增，&lt;/li&gt;
+  &lt;li&gt;修订号：当你做了向下兼容的问题修正。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;问题定位&quot;&gt;问题定位&lt;/h2&gt;
+
+&lt;h3 id=&quot;内核&quot;&gt;内核&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/km/blogs/details/6375119&quot;&gt;ARM 1620+Atlas300c 直通发现部分卡无法启动虚拟机的问题&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/xry111/xry111.github.io/blob/master/FixWrongIRQRouting.md&quot;&gt;错误的 IRQ 中断路由及修复&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;优质博客网站&quot;&gt;优质博客网站&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://chenweixiang.github.io/&quot;&gt;Chenweixiang&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Fri, 10 Jul 2020 07:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</guid>
+        
+        <category>Linux</category>
+        
+        <category>笔记</category>
+        
+        <category>内核</category>
+        
+        <category>云原生</category>
+        
+        
+        <category>学习&amp;效率</category>
+        
+      </item>
     
       <item>
         <title>杭州周边露营指南</title>
@@ -2749,417 +2983,6 @@ SECTIONS
         
         
         <category>内核</category>
-        
-      </item>
-    
-      <item>
-        <title>Android HAL 层原理分析</title>
-        <description>&lt;h2 id=&quot;android-hal-简介&quot;&gt;Android HAL 简介&lt;/h2&gt;
-&lt;p&gt;Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Android 系统框架中的位置如下图所示。传统的 Linux 系统则把对硬件的支持和管理全部放在内核空间中,即把对硬件的全部支持都放在硬件驱动模块当中。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170324149036043728849.png&quot; alt=&quot;20170324149036043728849.png&quot; /&gt;&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;为什么要添加一个-hal-层&quot;&gt;为什么要添加一个 HAL 层？&lt;/h2&gt;
-&lt;p&gt;Android 在用户空间中新建一个的 HAL 层来支持硬件设备的主要原因还是因为 Android 使用的开源协议是 Apache License，这个协议比较宽松，它允许开发者获取并修改了源码之后，不用把源码公开出来。而 Linux 使用的开源协议 GPL，它的要求限制就比较多，它要求开发者添加或修改了源码之后，必须把添加或修改后的代码公开出来，所以我们在 Linux 内核中的所使用的设备驱动程序都是源码公开的，任何人都可以获取并修改它。&lt;/p&gt;
-
-&lt;p&gt;因此，如果 Android 系统像其他 Linux 系统一样，把对硬件的支持完全实现在 Linux 内核的驱动模块中，那么硬件厂商就必须将这些硬件驱动源码公开，这样就可能损害到移动厂商的利益，因为这相当于暴露了硬件的实现细节和参数。&lt;/p&gt;
-
-&lt;p&gt;所以，Android 就在用户空间搞了一个 HAL 层，将硬件的一些重要的操作都放在这一层中完成，这些操作都封装在厂商所提供的一个动态链接库中，从而达到了避免源码公开的目的，而底层 Linux 内核空间中的设备驱动模块，现在则只提供一些最基本的硬件设备寄存器操作的功能。&lt;/p&gt;
-
-&lt;h2 id=&quot;hal-模块是如何实现的&quot;&gt;HAL 模块是如何实现的？&lt;/h2&gt;
-&lt;p&gt;由于最近一直在做一个 Android-x86 系统相关的项目，其中就有一部分是跟音频 HAL 模块紧密相关，所以我就重新对 HAL 的相关知识进行了一个学习和整理，所以本文中将以音频系统对应的 audio HAL 模块（ 它最终是以 &lt;code class=&quot;highlighter-rouge&quot;&gt;audio.primary.x86.so&lt;/code&gt; 的动态链接库形式存在 ）为例来介绍一个 HAL 模块的定义及实现过程。&lt;/p&gt;
-
-&lt;h3 id=&quot;hal-层的三个重要结构体&quot;&gt;HAL 层的三个重要结构体&lt;/h3&gt;
-&lt;p&gt;Android 系统的 HAL 层其实并不复杂，只要你能理解清楚下面这 3 个结构体的含义：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;hw_module_t&lt;/strong&gt;：用来描述硬件模块&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;hw_device_t&lt;/strong&gt;：用来描述硬件设备&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;hw_module_methods_t&lt;/strong&gt;：用来打开硬件模块中包含硬件设备，获得指向硬件设备结构体的指针&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Android 系统中 HAL 层是以&lt;strong&gt;模块&lt;/strong&gt;的方式来管理各个硬件访问的接口，每一个硬件模块都对应一个动态链接库文件，而这些动态链接库文件需要符号一定的规范，而上述的这 3 种结构体就是用来建立这种规范。并且一个&lt;strong&gt;硬件模块&lt;/strong&gt;可以管理多个&lt;strong&gt;硬件设备&lt;/strong&gt;，例如 audio HAL 硬件模块中就管理了扬声器、麦克风等多个硬件设备。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;注意：这里一定区分 hw_module_t 和 hw_device_t 它们所表示的含义&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;hw_module_t&quot;&gt;hw_module_t&lt;/h4&gt;
-&lt;p&gt;结构体 hw_module_t 定义在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt; 文件中，其定义如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
- * Every hardware module must have a data structure named HAL_MODULE_INFO_SYM
- * and the fields of this data structure must begin with hw_module_t
- * followed by module specific information.
- */&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/** tag must be initialized to HARDWARE_MODULE_TAG */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/**
-     * The API version of the implemented module. The module owner is
-     * responsible for updating the version when a module interface has
-     * changed.
-     *
-     * The derived modules such as gralloc and audio own and manage this field.
-     * The module user must interpret the version field to decide whether or
-     * not to inter-operate with the supplied module implementation.
-     * For example, SurfaceFlinger is responsible for making sure that
-     * it knows how to manage different versions of the gralloc-module API,
-     * and AudioFlinger must know how to do the same for audio-module API.
-     *
-     * The module API version should include a major and a minor component.
-     * For example, version 1.0 could be represented as 0x0100. This format
-     * implies that versions 0x0100-0x01ff are all API-compatible.
-     *
-     * In the future, libhardware will expose a hw_get_module_version()
-     * (or equivalent) function that will take minimum/maximum supported
-     * versions as arguments and would be able to reject modules with
-     * versions outside of the supplied range.
-     */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;uint16_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module_api_version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#define version_major module_api_version
-&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/**
-     * version_major/version_minor defines are supplied here for temporary
-     * source code compatibility. They will be removed in the next version.
-     * ALL clients must convert to the new version format.
-     */&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/**
-     * The API version of the HAL module interface. This is meant to
-     * version the hw_module_t, hw_module_methods_t, and hw_device_t
-     * structures and definitions.
-     *
-     * The HAL interface owns this field. Module users/implementations
-     * must NOT rely on this value for version information.
-     *
-     * Presently, 0 is the only valid value.
-     */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;uint16_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hal_api_version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#define version_minor hal_api_version
-&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/** Identifier of module */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** Name of this module */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** Author/owner/implementor of the module */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;author&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** Modules methods */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** module's dso */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;cp&quot;&gt;#ifdef __LP64__
-&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;uint64_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#else
-&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/** padding to 128 bytes, reserved for future use */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#endif
-&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;我们先看下结构体 hw_module_t 定义最前面的一段注释说明，它的意思是：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;每个硬件模块中都要定义一个名字叫做 HAL_MODULE_INFO_SYM 结构体变量，而这结构体变量中的第一个成员必须是  hw_module_t 类型。也就是说，每个硬件模块都要自己实现一个结构体，但是这个结构体的第一个成员必须是 hw_module_t 结构体类型。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;strong&gt;其实这里蕴含着一种面向对象中继承的思想，hw_module_t 就是一个基类，描述所有硬件模块都应该具有的一些属性，然后具体到某个特定的硬件模块实现时，都需要继承自 hw_module_t 结构体。也就是说 hw_module_t 是所有特定硬件模块的父类。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;有关结构体 hw_module_t 中各个成员的具体含义，这里就不一一进行说明了，相信大家从它们的注释说明中就能了解到每一个成员所表示的含义，这里就挑一些重要的结构体成员来进一步说明。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;id：这个成员用一个字符串来表示硬件模块的，用来区别于其他硬件模块。&lt;/li&gt;
-  &lt;li&gt;methods：这个成员是一个 hw_module_methods_t 指针，它表示硬件模块所包含的方法集（其实里面就一个 open 函数指针，用来打开 hw_device_t 硬件设备，获得指向对应的硬件设备的结构体对象的指针）。&lt;/li&gt;
-  &lt;li&gt;dso：我们前面提到，HAL 层中的&lt;strong&gt;硬件模块&lt;/strong&gt;是用动态链接库表示的，所以 dso 指针就是系统使用 dlopen() 函数打开共享动态共享链接库之后获得的句柄。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;hw_device_t&quot;&gt;hw_device_t&lt;/h4&gt;
-&lt;p&gt;结构体 hw_device_t 定义在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt; 文件中，其定义如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
- * Every device data structure must begin with hw_device_t
- * followed by module specific public methods and attributes.
- */&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/** tag must be initialized to HARDWARE_DEVICE_TAG */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/**
-     * Version of the module-specific device API. This value is used by
-     * the derived-module user to manage different device implementations.
-     *
-     * The module user is responsible for checking the module_api_version
-     * and device version fields to ensure that the user is capable of
-     * communicating with the specific module implementation.
-     *
-     * One module can support multiple devices with different versions. This
-     * can be useful when a device interface changes in an incompatible way
-     * but it is still necessary to support older implementations at the same
-     * time. One such example is the Camera 2.0 API.
-     *
-     * This field is interpreted by the module user and is ignored by the
-     * HAL interface itself.
-     */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** reference to the module this device belongs to */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** padding reserved for future use */&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#ifdef __LP64__
-&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;uint64_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#else
-&lt;/span&gt;    &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reserved&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#endif
-&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/** Close this device */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;和 hw_module_t 类似，hw_device_t 也可以看做是一个基类，它描述了所有硬件设备都应该具有的属性，然后具体到某个特定的硬件设备（例如，音频播放时需要的扬声器设备）实现时，都需要继承自 audio_device 结构体。所以，每个 HAL 层中硬件设备对应的结构体中的第一个成员必须是 hw_device_t。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;下面还是简单提一下结构体 hw_device_t 比较关键的几个成员：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;module：这个成员是一个 hw_module_t 指针，表示该结构体 hw_device_t 表示的&lt;strong&gt;硬件设备&lt;/strong&gt;是由哪个 hw_module_t 表示的&lt;strong&gt;硬件模块&lt;/strong&gt;进行管理的。（在这里所以一定要区分清楚==&lt;strong&gt;硬件设备&lt;/strong&gt;==和==&lt;strong&gt;硬件模块&lt;/strong&gt;==的区别！）&lt;/li&gt;
-  &lt;li&gt;close：这是一个函数指针，表示如何关闭打开的硬件设备，通常==打开硬件设备的操作==在 hw_module_t 中包含的 hw_module_methods_t 函数列表中的 &lt;strong&gt;open()&lt;/strong&gt; 函数中打开的。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;hw_module_methods_t&quot;&gt;hw_module_methods_t&lt;/h4&gt;
-&lt;p&gt;结构体 hw_module_methods_t 定义在 &lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt; 文件中，其定义如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/** Open a specific device */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;结构体 hw_module_methods_t 就比较简单了，它里面就只有一个 &lt;strong&gt;open&lt;/strong&gt; 函数指针，用来打开 module 硬件模块==所管理==的硬件设备id值为 id 的硬件设备，最后将打开的==硬件设备（用 hw_device_t 结构体来描述）==通过 device 返回。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;注意：这个 open 函数明确指出第三个参数的类型为 struct hw_device_t**，这主要是为了统一不同硬件设备向上层提供的硬件接口，然后在具体使用到某中硬件设备时，再转换成特定硬件设备的结构体类型。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;audio-hal-模块的实现&quot;&gt;Audio HAL 模块的实现&lt;/h2&gt;
-
-&lt;h3 id=&quot;step-1定义-struct-audio_module-模块&quot;&gt;Step 1：定义 struct audio_module 模块&lt;/h3&gt;
-&lt;p&gt;我们前面在结构体 hw_module_t 介绍时，有提到具体的&lt;strong&gt;硬件模块&lt;/strong&gt;要定义一个新的结构体并且这个结构体的==第一个成员必须是 hw_module_t 类型==，所以根据这个规则，audio_module 的定义如下所示：
-代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/audio.h&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_module&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;step-2定义-struct-audio_module-类型的-hal_module_info_sym-变量&quot;&gt;step 2：定义 struct audio_module 类型的 HAL_MODULE_INFO_SYM 变量&lt;/h3&gt;
-&lt;p&gt;HAL_MODULE_INFO_SYM 其实是一个宏，它定义如下所示：
-代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libhardware/include/hardware/hardware.h&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
- * Name of the hal_module_info
- */&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#define HAL_MODULE_INFO_SYM         HMI
-&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;/**
- * Name of the hal_module_info as a string
- */&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#define HAL_MODULE_INFO_SYM_AS_STR  &quot;HMI&quot;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;而 struct audio_module 类型名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;HAL_MODULE_INFO_SYM&lt;/code&gt; 变量的定义如下所示：
-代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;aosp&amp;gt;/generic/goldfish/audio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_module&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL_MODULE_INFO_SYM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HARDWARE_MODULE_TAG&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module_api_version&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_MODULE_API_VERSION_0_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hal_api_version&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HARDWARE_HAL_API_VERSION&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_HARDWARE_MODULE_ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Generic audio HW HAL&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;author&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;The Android Open Source Project&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hal_module_methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;```&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;但是我们为什么要在每个硬件模块中都定义一个变量名为&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL_MODULE_INFO_SYM&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;的变量呢？&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;
-
-&lt;span class=&quot;err&quot;&gt;原因是&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;为了统一标准的接口&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;。这个硬件模块类型的变量主要是在&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;动态链接库加载时用到，它使得上层的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Framework&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;层打开所有的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;动态链接库时都能找到名为&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_MODULE&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_INFO&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_SYM&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;（也就是&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hmi&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;）的硬件模块类型变量，然后通过这个变量再来打开它所管理的硬件设备，从而与之进行交互。这么做的好处就是&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Framework&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;层中只需要用相同的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;API&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;，就能处理各个厂商所提供的不同的&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HAL&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;动态链接库。&lt;/span&gt;
-
-&lt;span class=&quot;cp&quot;&gt;### step 3：定义 struct audio\_hw\_device 硬件设备结构体
-&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;每个硬件设备都需要通过一个结构体来表示，并且这个结构体的第一个成员必须是&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_device&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_t&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;类型。而有关的对底层硬件设备的有关操作的函数指针接口，也是在这个结构体中定义。&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_hw&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;\&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_device&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;硬件设备结构体的定义如下所示：&lt;/span&gt;
-&lt;span class=&quot;err&quot;&gt;代码路径：`&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hardware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libhardware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;include&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hardware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;audio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;`&lt;/span&gt;
-
-&lt;span class=&quot;err&quot;&gt;```&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/**
-     * Common methods of the audio device.  This *must* be the first member of audio_hw_device
-     * as users of this structure will cast a hw_device_t to audio_hw_device pointer in contexts
-     * where it's known the hw_device_t references an audio_hw_device.
-     */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;p&quot;&gt;......&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/* Returns audio input buffer size according to parameters passed or
-     * 0 if one of the parameters is not supported.
-     * See also get_buffer_size which is for a particular stream.
-     */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_input_buffer_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                                    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** This method creates and opens the audio hardware output stream.
-     * The &quot;address&quot; parameter qualifies the &quot;devices&quot; audio device type if needed.
-     * The format format depends on the device type:
-     * - Bluetooth devices use the MAC address of the device in the form &quot;00:11:22:AA:BB:CC&quot;
-     * - USB devices use the ALSA card and device numbers in the form  &quot;card=X;device=Y&quot;
-     * - Other devices may use a number or any other string.
-     */&lt;/span&gt;
-
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                              &lt;span class=&quot;n&quot;&gt;audio_io_handle_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                              &lt;span class=&quot;n&quot;&gt;audio_devices_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;devices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                              &lt;span class=&quot;n&quot;&gt;audio_output_flags_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                              &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                              &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                              &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                                &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stream_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/** This method creates and opens the audio hardware input stream */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;n&quot;&gt;audio_io_handle_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;n&quot;&gt;audio_devices_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;devices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_config&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;n&quot;&gt;audio_input_flags_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                             &lt;span class=&quot;n&quot;&gt;audio_source_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                               &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stream_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;p&quot;&gt;......&lt;/span&gt;
-
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在上面音频硬件设备结构体 &lt;code class=&quot;highlighter-rouge&quot;&gt;audio_hw_device&lt;/code&gt; 的定义中，第一个结构体成员就是 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct hw_device_t&lt;/code&gt; 类型的，而其他的结构体成员都是函数指针，例如 &lt;code class=&quot;highlighter-rouge&quot;&gt;open_output_stream&lt;/code&gt; 函数就是用来打开播放音频的扬声器设备，&lt;code class=&quot;highlighter-rouge&quot;&gt;open_input_stream&lt;/code&gt; 函数则是用来打开录音用的麦克风设备。&lt;/p&gt;
-
-&lt;h3 id=&quot;step-4定义-struct-hw_module_methods_t-函数列表变量&quot;&gt;step 4：定义 struct hw_module_methods_t 函数列表变量&lt;/h3&gt;
-&lt;p&gt;在前面介绍的结构体 hw_module_t 的定义中就有一个 hw_module_methods_t 函数指针类型的成员&lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt;，该函数的作用就是让&lt;strong&gt;硬件模块&lt;/strong&gt;打开&lt;strong&gt;硬件设备&lt;/strong&gt;，然后对特定硬件设备（例如上面的 struct audio_device_t结构体）中定义函数指针变量进行赋值绑定，所以在每个&lt;strong&gt;硬件模块&lt;/strong&gt;都要实现这样一个变量。&lt;/p&gt;
-
-&lt;p&gt;struct audio_module 结构体中 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct hw_module_t 类型的成员 common &lt;/code&gt;中的 hw_module_methods_t 函数指针成员的实现绑定如下所示：
-代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;aosp&amp;gt;/generic/goldfish/audio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_methods_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hal_module_methods&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;可以看到，在 audio HAL 模块中使用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open&lt;/code&gt; 函数来初始化了 struct hw_module_methods_t 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数指针成员。我们现在回过头来看 &lt;strong&gt;step 2&lt;/strong&gt;中 &lt;strong&gt;struct audio_module HAL_MODULE_INFO_SYM&lt;/strong&gt; 变量的定义中，audio_module 中的第一个成员 common中的结构体变量 methods 的指针就是被初始化指向了现在这里定义的 &lt;code class=&quot;highlighter-rouge&quot;&gt;hal_module_methods&lt;/code&gt; 变量。&lt;/p&gt;
-
-&lt;h3 id=&quot;step-5adev_open-函数的实现&quot;&gt;step 5：adev_open 函数的实现&lt;/h3&gt;
-&lt;p&gt;最后，我们来看看 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open&lt;/code&gt; 函数的实现，看看它是如何通过 audio_module 硬件模块对象来打开 audio_hw_device 硬件设备对象。
-代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;aosp&amp;gt;/generic/goldfish/audio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;adev_open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                     &lt;span class=&quot;n&quot;&gt;hw_device_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;generic_audio_device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;strcmp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_HARDWARE_INTERFACE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EINVAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AUDIO_DEVICE_NAME&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;O_RDWR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ENOSYS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;generic_audio_device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HARDWARE_DEVICE_TAG&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AUDIO_DEVICE_API_VERSION_2_0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hw_module_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init_check&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_init_check&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_voice_volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_voice_volume&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_master_volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_master_volume&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_master_volume&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_master_volume&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_master_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_master_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_master_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_master_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_mode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_mic_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_mic_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_mic_mute&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_mic_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_parameters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_set_parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_parameters&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_parameters&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_input_buffer_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_get_input_buffer_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_output_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_open_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_output_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_close_output_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open_input_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_open_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;close_input_stream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_close_input_stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dump&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adev_dump&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;adev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;common&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这里再补充一个小的定义，&lt;code class=&quot;highlighter-rouge&quot;&gt;struct generic_audio_device&lt;/code&gt; 中的第一个成员 &lt;code class=&quot;highlighter-rouge&quot;&gt;device&lt;/code&gt; 就是我们前面提到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 结构体，它的定义如下:
-代码路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/hardware/libaudio/audio_hw.c&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;generic_audio_device&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_hw_device&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;device&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;pthread_mutex_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;audio_stream_in&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mic_mute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;我们可以从 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open&lt;/code&gt; 函数中的实现中看到，它里面的主要工作就是做一些对 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 对象的初始化，将其定义的函数指针指向对应的已经实现好的函数中。例如，这里将&lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt;中定义的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open_output_stream&lt;/code&gt; 函数指针成员指向了 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open_output_stream&lt;/code&gt; 函数。这样在 Framework 层调用的 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 对象的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open_output_stream&lt;/code&gt; 函数，其实最终调用的是 &lt;code class=&quot;highlighter-rouge&quot;&gt;adev_open_output_stream&lt;/code&gt;函数。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;这里，还有一点需要特别注意的就是我们所打开的硬件设备对象是怎么返回的？&lt;/strong&gt;
-答案就是它是通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数中的第三个参数 &lt;code class=&quot;highlighter-rouge&quot;&gt;hw_device_t** device&lt;/code&gt;返回的。在 open 函数初始化并打开特定的硬件设备之后，它就将硬件设备结构体中的第一个成员 &lt;code class=&quot;highlighter-rouge&quot;&gt;struct audio_hw_device&lt;/code&gt; 类型的 common 对象返回。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;那么为什么这里返回的是 hw_device_t** 类型的硬件设备，而是不是audio_hw_device** 类型呢？&lt;/strong&gt;
-其实这个问题在前面在介绍 &lt;code class=&quot;highlighter-rouge&quot;&gt;hw_module_methods_t&lt;/code&gt; 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数时已经提到过了。这里主要也蕴含着面向对象编程中的另外一种重要思想&lt;strong&gt;多态&lt;/strong&gt;，这使得使用的 hw_device_t 指针就可以访问到子类中继承了父类的属性和方法，如果要获得某个子类所特有的属性，那么只要将其进行类型的强制转换即可。&lt;/p&gt;
-
-&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
-&lt;p&gt;理解 Android HAL 层最关键的还是要弄清楚 hw_module_t 、 hw_device_t、 hw_module_methods_t 这三个结构体的含义即关系，以及如何基于这三个结构体来实现特定硬件的&lt;strong&gt;硬件模块结构体&lt;/strong&gt;、&lt;strong&gt;硬件设备结构体&lt;/strong&gt;、&lt;strong&gt;硬件模块方法列表结构体&lt;/strong&gt;。其实从面向对象编程的角度来考虑，前面三者和后面三者之间的关系，就好比是父类和子类的关系，如下图所示：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/android_hal_architecture.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;后面，我可能会写一片关于 Android 系统加载 HAL 模块的文章。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
-&lt;ol&gt;
-  &lt;li&gt;罗升阳. Android 系统源代码情景分析作者. 电子工业出版社, 2012: 13-44&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Sun, 26 Mar 2017 03:56:24 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html</guid>
-        
-        <category>HAL</category>
-        
-        <category>Android</category>
-        
-        
-        <category>android</category>
         
       </item>
     

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>May the force be with you</title>
+  <meta name="description" content="Linux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  HTTPS的工作原理  Linux库文件搜索路径开发环境配置  Linux升级安装GCC  解决类似 /usr/lib64/li...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <link rel="manifest" href="/assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description" content="Linux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  HTTPS的工作原理  Linux库文件搜索路径开发环境配置  Linux升级安装GCC  解决类似 /usr/lib64/li..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="May the force be with you" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="May the force be with you">
+  <meta name="twitter:description" content="Linux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  HTTPS的工作原理  Linux库文件搜索路径开发环境配置  Linux升级安装GCC  解决类似 /usr/lib64/li...">
+  <meta name="twitter:image" content="http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">May the force be with you</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">July 10, 2020</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/学习&效率">学习&效率</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="linux-系统编程">Linux 系统编程</h2>
+
+<ul>
+  <li><a href="https://blog.csdn.net/LEON1741/article/details/78142269">linux下的僵尸进程产生原因和解决方法（含具体代码）</a></li>
+  <li><a href="https://www.cnblogs.com/alantu2018/p/8526916.html">普通线程和内核线程</a></li>
+  <li><a href="https://blog.csdn.net/yasi_xi/article/details/9899599">libc、glibc和glib的关系</a></li>
+  <li><a href="https://cloud.tencent.com/developer/ask/26856">我从来没有真正明白：什么是POSIX？</a></li>
+  <li><a href="https://stephanietang.github.io/2020/04/19/how-https-works/">HTTPS的工作原理</a></li>
+  <li><a href="http://chemiandy.lofter.com/post/1d254b22_69a16af">Linux库文件搜索路径</a></li>
+</ul>
+
+<h3 id="开发环境配置">开发环境配置</h3>
+
+<ul>
+  <li><a href="https://itbilu.com/linux/management/V1vdnt9ll.html">Linux升级安装GCC</a></li>
+  <li><a href="https://itbilu.com/linux/management/NymXRUieg.html">解决类似 /usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.21’ not found 的问题</a></li>
+</ul>
+
+<h2 id="操作系统">操作系统</h2>
+
+<ul>
+  <li><a href="http://3ms.huawei.com/hi/group/2692269/thread_5335705.html?mapId=6468851">【操作系统知识大宝库】之内核</a></li>
+</ul>
+
+<h3 id="操作系统发行版">操作系统发行版</h3>
+
+<ul>
+  <li><a href="https://tlanyan.me/yum-repos-summary/">常用yum源整理</a>：介绍了官方yum源和第三方yum源的区别和常用的yum源镜像地址</li>
+  <li><a href="https://juejin.im/post/5d0ef5376fb9a07ef63fe74e">CentOS 7上升级/安装gcc</a>：这篇文章介绍了如何通过<code class="highlighter-rouge">scl</code>工具更新gcc版本</li>
+  <li><a href="https://www.cnblogs.com/wswind/p/10729610.html">CentOS 使用第三方软件源 安装最新版本软件 省去编译烦恼 IUS SCL</a></li>
+  <li><a href="https://linux.cn/article-8509-1.html">CentOS 上最佳的第三方仓库</a></li>
+</ul>
+
+<h2 id="计算机体系结构">计算机体系结构</h2>
+
+<ul>
+  <li><a href="https://www.zhihu.com/question/23474438">处理器架构、指令集和汇编语言，三者有何关系？</a></li>
+</ul>
+
+<h2 id="虚拟化">虚拟化</h2>
+
+<ul>
+  <li><a href="http://smilejay.com/2012/11/how-to-mount-a-qcow2-image/">如何挂载QCOW2格式的镜像文件</a></li>
+  <li><a href="https://www.cnblogs.com/hugetong/p/5903105.html">挂载qcow2文件，qcow2里边还有个lvm</a></li>
+  <li><a href="https://www.infoq.cn/article/wcSmEKasstv*AdEPZE61">基于 Kata Containers 与 iSulad 的云容器实践解析</a></li>
+</ul>
+
+<h2 id="云原生">云原生</h2>
+
+<h3 id="serverless">Serverless</h3>
+
+<p><a href="http://liubin.org/blog/2018/05/04/the-world-is-full-managed/">世界是 container 的，也是 microservice 的，但最终还是 serverless 的</a></p>
+
+<h3 id="k8s">k8s</h3>
+
+<ul>
+  <li><a href="https://note.sycki.com/articles/kubernetes/k8s-code-kubelet">k8s源码分析-kubelet</a></li>
+  <li><a href="https://www.jianshu.com/p/1919fb8a48ea">Kubelet 对CNI的实现</a></li>
+  <li><a href="https://segmentfault.com/a/1190000019956620">彻底理解kubernetes CNI</a></li>
+</ul>
+
+<h3 id="容器">容器</h3>
+
+<ul>
+  <li><a href="https://tech.meituan.com/2020/03/12/cloud-native-security.html">云原生之容器安全实践</a></li>
+  <li><a href="https://segmentfault.com/a/1190000016137548">Dockerfile多阶段构建原理和使用场景</a></li>
+</ul>
+
+<h3 id="安全容器">安全容器</h3>
+
+<ul>
+  <li><a href="https://www.infoq.cn/article/wcSmEKasstv*AdEPZE61">基于 Kata Containers 与 iSulad 的云容器实践解析</a></li>
+  <li><a href="https://cloud.tencent.com/developer/news/604184">Kata Containers 创始人带你入门安全容器技术</a></li>
+</ul>
+
+<h2 id="利器">利器</h2>
+
+<ul>
+  <li><a href="https://www.cnblogs.com/hongdada/p/9776547.html">Typora快捷键</a></li>
+  <li><a href="http://3ms.huawei.com/hi/group/9719/wiki_2634081.html">使用PORTMAP做端口映射</a></li>
+</ul>
+
+<h3 id="vscode">vscode</h3>
+
+<ul>
+  <li>
+    <p><a href="https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf">vscode快捷键速记表</a></p>
+  </li>
+  <li>
+    <p><a href="https://www.zhihu.com/question/37623310/answer/150017561">VS Code有哪些常用的快捷键？ - 唐伟的回答 - 知乎</a></p>
+  </li>
+  <li>
+    <p><a href="https://segmentfault.com/a/1190000017949680">宇宙最强vscode教程（基础篇）</a></p>
+  </li>
+  <li>
+    <p><strong>vscode常用快捷键</strong></p>
+
+    <ul>
+      <li><code class="highlighter-rouge">F12</code>：跳转到定义处</li>
+      <li><code class="highlighter-rouge">Shift + F12</code>：跳转到引用该函数的地方</li>
+      <li><code class="highlighter-rouge">Alt + &lt;左/右方向键&gt;</code>：跳转到上一次光标处/下一次光标处</li>
+      <li><code class="highlighter-rouge">Ctrl + P</code>窗口可以执行的操作：
+        <ul>
+          <li>直接输入文件名，快速打开文件</li>
+          <li>? 列出当前可执行的动作</li>
+          <li>! 显示Errors或Warnings，也可以Ctrl+Shift+M</li>
+          <li><code class="highlighter-rouge">:</code>跳转到行数，也可以<code class="highlighter-rouge">Ctrl+G</code>直接进入</li>
+          <li><code class="highlighter-rouge">@</code>跳转到symbol（搜索变量或者函数），也可以<code class="highlighter-rouge">Ctrl+Shift+O</code>直接进入</li>
+          <li><code class="highlighter-rouge">@:</code>根据分类跳转symbol，查找属性或函数，也可以<code class="highlighter-rouge">Ctrl+Shift+O</code>后输入<code class="highlighter-rouge">:</code>进入</li>
+          <li><code class="highlighter-rouge">#</code> 根据名字查找symbol，也可以<code class="highlighter-rouge">Ctrl+T</code></li>
+        </ul>
+      </li>
+      <li><code class="highlighter-rouge">Ctrl + K , Ctrl + S</code>：打开VScode绑定的快捷键列表，可以搜索快捷键</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="开发工具">开发工具</h3>
+
+<ul>
+  <li><a href="https://blog.csdn.net/zhangpower1993/article/details/52184581">vim插件管理器：Vundle的介绍及安装（很全）</a></li>
+  <li><a href="https://stedolan.github.io/jq/">json生成和解析命令行工具-jq</a></li>
+  <li><a href="https://blog.b1uew01f.net/learnnotes/linux/304.html">jq: shell 脚本中JSON创建、解析工具</a></li>
+  <li><a href="http://blog.lujun9972.win/blog/2018/03/01/使用jq组装json/index.html">使用jq组装JSON</a></li>
+</ul>
+
+<h2 id="编译原理">编译原理</h2>
+
+<ul>
+  <li><a href="https://www.infoq.cn/article/t184YFyd_VMEv0dIhpRd">不想当“螺丝钉”？先搞定编译原理</a></li>
+  <li><a href="https://www.infoq.cn/article/laTWH0UM4ZWWiTSAmrlR">2019 年最新编译原理学习全攻略</a></li>
+</ul>
+
+<h2 id="linux-内核">Linux 内核</h2>
+
+<ul>
+  <li><a href="http://www.wowotech.net/device_model/uevent.html">Linux设备模型(3)_Uevent</a></li>
+  <li><a href="https://www.jianshu.com/p/10653d83909d">Linux 设备模型之 Uevent</a></li>
+</ul>
+
+<h3 id="设备管理">设备管理</h3>
+
+<ul>
+  <li><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-udev/index.html">使用 udev 高效、动态地管理 Linux 设备文件</a>：设备文件创建/udev</li>
+  <li><a href="https://cloud.tencent.com/developer/article/1169495">udev和devfs的区别</a></li>
+  <li><a href="https://blog.csdn.net/longwang155069/article/details/52757592">devtmpfs文件系统创建设备节点</a></li>
+</ul>
+
+<h2 id="编程语言">编程语言</h2>
+
+<h3 id="rust">Rust</h3>
+
+<ul>
+  <li><a href="https://www.zhihu.com/question/31038569/answer/915365379">如何开始学习 Rust 语言? - 蒋古申的回答 - 知乎</a></li>
+  <li><a href="https://github.com/rcore-os/zCore">zCore-一个用Rust写的RISV的小型操作系统</a></li>
+  <li><a href="https://github.com/emosenkis/esp-rs/issues/10">解决rust nightly编译工具链问题-error: toolchain ‘nightly-x86_64-unknown-linux-gnu’ is not installed</a></li>
+  <li>Rust语言的开发迭代发布流程-<a href="https://kaisery.github.io/trpl-zh-cn/appendix-07-nightly-rust.html#%E9%99%84%E5%BD%95-grust-%E6%98%AF%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E7%9A%84%E4%B8%8E-nightly-rust">附录-grust-是如何开发的与-nightly-rust</a></li>
+  <li><a href="http://3ms.huawei.com/km/groups/2842623/home?l=zh-cn#category=5373046">华为编程语言能力提升项目</a></li>
+</ul>
+
+<h3 id="golang">Golang</h3>
+
+<ul>
+  <li><a href="https://stackoverflow.com/questions/42848636/difference-between-golang-org-packages-and-the-standard-library">Difference between golang.org packages and the standard library</a></li>
+  <li><a href="https://www.bookstack.cn/books/qcrao-Go-Questions">Go 语言问题集(Go Questions)</a></li>
+</ul>
+
+<h3 id="webassembly">WebAssembly</h3>
+
+<ul>
+  <li><a href="https://rustwasm.github.io/docs/book/introduction.html#rust--and-webassembly-">Rust And WebAssembly</a></li>
+  <li><a href="https://developer.mozilla.org/zh-CN/docs/WebAssembly/Understanding_the_text_format">理解WebAssembly文本格式</a></li>
+  <li><a href="https://rustcc.cn/article?id=b8a26e3a-16f2-4657-acdb-dd64b3a6773c">【Rust每周一知】Rust, wasm, wasi 试玩儿</a></li>
+  <li><a href="https://github.com/rustcc/RustPrimer/blob/master/install/rustup.md">Rust 版本管理工具: rustup</a></li>
+</ul>
+
+<h2 id="调试">调试</h2>
+
+<h3 id="gdb调试方法">gdb调试方法</h3>
+
+<ul>
+  <li><a href="https://izualzhy.cn/why-the-code-stack-is-overflow">追core笔记之五：如何查看一个corrupt stack的core</a></li>
+  <li><a href="https://www.cnblogs.com/chengliangsheng/p/3597010.html">Linux中用gdb 查看代码堆栈的信息</a></li>
+  <li><a href="https://github.com/selfboot/CS_Offer/blob/master/C%2B%2B/GDB_Debug.md">使用 GDB 调试程序</a></li>
+  <li><a href="https://draveness.me/golang/">Go 语言设计与实现</a></li>
+</ul>
+
+<h2 id="软件开发流程">软件开发流程</h2>
+
+<h3 id="版本管理">版本管理</h3>
+
+<p><a href="https://semver.org/lang/zh-CN/">语义化版本 2.0.0</a>：语义化版本管理的方式，版本格式为：主版本号.次版本号.修订号</p>
+
+<ol>
+  <li>主版本号：当你做了不兼容的 API 修改，</li>
+  <li>次版本号：当你做了向下兼容的功能性新增，</li>
+  <li>修订号：当你做了向下兼容的问题修正。</li>
+</ol>
+
+<h2 id="问题定位">问题定位</h2>
+
+<h3 id="内核">内核</h3>
+
+<ul>
+  <li><a href="http://3ms.huawei.com/km/blogs/details/6375119">ARM 1620+Atlas300c 直通发现部分卡无法启动虚拟机的问题</a></li>
+  <li><a href="https://github.com/xry111/xry111.github.io/blob/master/FixWrongIRQRouting.md">错误的 IRQ 中断路由及修复</a></li>
+</ul>
+
+<h2 id="优质博客网站">优质博客网站</h2>
+
+<ul>
+  <li><a href="http://chenweixiang.github.io/">Chenweixiang</a></li>
+</ul>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Linux">Linux</a>,&nbsp;<a href="/tag/笔记">笔记</a>,&nbsp;<a href="/tag/内核">内核</a>,&nbsp;<a href="/tag/云原生">云原生</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=May+the+force+be+with+you&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%25AD%25A6%25E4%25B9%25A0%26%25E6%2595%2588%25E7%258E%2587%2F2020%2F07%2F10%2FMay-the-force-be-with-you.html&via=FlyFlyPeng"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+      <a href="//www.facebook.com/sharer.php?t=May+the+force+be+with+you&u=http%3A%2F%2Flocalhost%3A4000%2F%25E5%25AD%25A6%25E4%25B9%25A0%26%25E6%2595%2588%25E7%258E%2587%2F2020%2F07%2F10%2FMay-the-force-be-with-you.html"
+        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
+        <i class="fa fa-facebook-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%25AD%25A6%25E4%25B9%25A0%26%25E6%2595%2588%25E7%258E%2587%2F2020%2F07%2F10%2FMay-the-force-be-with-you.html"
+        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
+        <i class="fa fa-linkedin-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+      <a href="//www.pinterest.com/pin/create/button/?description=May+the+force+be+with+you&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%25AD%25A6%25E4%25B9%25A0%26%25E6%2595%2588%25E7%258E%2587%2F2020%2F07%2F10%2FMay-the-force-be-with-you.html&media=http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg"
+        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
+        <i class="fa fa-pinterest-square fa-lg"></i>
+      </a>
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E6%88%B7%E5%A4%96/2020/04/24/%E9%9C%B2%E8%90%A5%E6%8C%87%E5%8D%97.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">杭州周边露营指南</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:woshijpf@zju.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">woshijpf@zju.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+        
+          
+          <li>
+            <a href="https://github.com/flyflypeng" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">flyflypeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
+              <i class="fa fa-linkedin"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
+              <i class="fa fa-pinterest"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-63075912-1', 'auto');
+  ga('send', 'pageview', {
+    'page': '/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html',
+    'title': 'May the force be with you'
+  });
+</script>
+
+
+
+  </body>
+
+</html>
