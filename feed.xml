@@ -6,8 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 10 Jul 2020 23:49:03 +0800</pubDate>
-    <lastBuildDate>Fri, 10 Jul 2020 23:49:03 +0800</lastBuildDate>
+    <pubDate>Sat, 11 Jul 2020 22:42:47 +0800</pubDate>
+    <lastBuildDate>Sat, 11 Jul 2020 22:42:47 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
@@ -31,10 +31,6 @@
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;操作系统&quot;&gt;操作系统&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/hi/group/2692269/thread_5335705.html?mapId=6468851&quot;&gt;【操作系统知识大宝库】之内核&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 
 &lt;h3 id=&quot;操作系统发行版&quot;&gt;操作系统发行版&lt;/h3&gt;
 
@@ -91,7 +87,6 @@
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/hongdada/p/9776547.html&quot;&gt;Typora快捷键&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/hi/group/9719/wiki_2634081.html&quot;&gt;使用PORTMAP做端口映射&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;vscode&quot;&gt;vscode&lt;/h3&gt;
@@ -169,7 +164,6 @@
   &lt;li&gt;&lt;a href=&quot;https://github.com/rcore-os/zCore&quot;&gt;zCore-一个用Rust写的RISV的小型操作系统&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/emosenkis/esp-rs/issues/10&quot;&gt;解决rust nightly编译工具链问题-error: toolchain ‘nightly-x86_64-unknown-linux-gnu’ is not installed&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Rust语言的开发迭代发布流程-&lt;a href=&quot;https://kaisery.github.io/trpl-zh-cn/appendix-07-nightly-rust.html#%E9%99%84%E5%BD%95-grust-%E6%98%AF%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E7%9A%84%E4%B8%8E-nightly-rust&quot;&gt;附录-grust-是如何开发的与-nightly-rust&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/km/groups/2842623/home?l=zh-cn#category=5373046&quot;&gt;华为编程语言能力提升项目&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;golang&quot;&gt;Golang&lt;/h3&gt;
@@ -216,7 +210,6 @@
 &lt;h3 id=&quot;内核&quot;&gt;内核&lt;/h3&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;http://3ms.huawei.com/km/blogs/details/6375119&quot;&gt;ARM 1620+Atlas300c 直通发现部分卡无法启动虚拟机的问题&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/xry111/xry111.github.io/blob/master/FixWrongIRQRouting.md&quot;&gt;错误的 IRQ 中断路由及修复&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
