@@ -6,28 +6,39 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 11 Jul 2020 22:42:47 +0800</pubDate>
-    <lastBuildDate>Sat, 11 Jul 2020 22:42:47 +0800</lastBuildDate>
+    <pubDate>Tue, 01 Sep 2020 19:29:03 +0800</pubDate>
+    <lastBuildDate>Tue, 01 Sep 2020 19:29:03 +0800</lastBuildDate>
     <generator>Jekyll v4.0.0</generator>
     
       <item>
         <title>May the force be with you</title>
-        <description>&lt;h2 id=&quot;linux-系统编程&quot;&gt;Linux 系统编程&lt;/h2&gt;
+        <description>&lt;h1 id=&quot;may-the-force-be-with-you&quot;&gt;May the force be with you&lt;/h1&gt;
+
+&lt;h2 id=&quot;linux-系统编程&quot;&gt;Linux 系统编程&lt;/h2&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/LEON1741/article/details/78142269&quot;&gt;linux下的僵尸进程产生原因和解决方法（含具体代码）&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/alantu2018/p/8526916.html&quot;&gt;普通线程和内核线程&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/yasi_xi/article/details/9899599&quot;&gt;libc、glibc和glib的关系&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://cloud.tencent.com/developer/ask/26856&quot;&gt;我从来没有真正明白：什么是POSIX？&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://stephanietang.github.io/2020/04/19/how-https-works/&quot;&gt;HTTPS的工作原理&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://chemiandy.lofter.com/post/1d254b22_69a16af&quot;&gt;Linux库文件搜索路径&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://insujang.github.io/2018-11-27/udev-device-manager-for-the-linux-kernel-in-userspace/&quot;&gt;udev: Device Manager for the Linux Kernel in Userspace&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&quot;开发环境配置&quot;&gt;开发环境配置&lt;/h3&gt;
+&lt;h3 id=&quot;编译--链接&quot;&gt;编译 &amp;amp; 链接&lt;/h3&gt;
 
 &lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://chemiandy.lofter.com/post/1d254b22_69a16af&quot;&gt;Linux库文件搜索路径&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://tech.meituan.com/2015/01/22/linker.html&quot;&gt;高级语言的编译：链接及装载过程介绍&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://itbilu.com/linux/management/V1vdnt9ll.html&quot;&gt;Linux升级安装GCC&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://itbilu.com/linux/management/NymXRUieg.html&quot;&gt;解决类似 /usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.21’ not found 的问题&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;网络&quot;&gt;网络&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/zqjflash/tcp-ip-protocol&quot;&gt;TCP（传输控制协议）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://e-mailky.github.io/2017-02-14-netlink-user-kernel1&quot;&gt;用户空间和内核空间通讯–netlink&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://stephanietang.github.io/2020/04/19/how-https-works/&quot;&gt;HTTPS的工作原理&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;操作系统&quot;&gt;操作系统&lt;/h2&gt;
@@ -193,6 +204,12 @@
   &lt;li&gt;&lt;a href=&quot;https://draveness.me/golang/&quot;&gt;Go 语言设计与实现&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;h3 id=&quot;debuginfo包&quot;&gt;debuginfo包&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;[https://github.com/kulong0105/kulong0105.github.io/blob/master/documents/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3debuginfo.pdf](https://github.com/kulong0105/kulong0105.github.io/blob/master/documents/深入理解debuginfo.pdf)&quot;&gt;深入理解debuginfo&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&quot;软件开发流程&quot;&gt;软件开发流程&lt;/h2&gt;
 
 &lt;h3 id=&quot;版本管理&quot;&gt;版本管理&lt;/h3&gt;
@@ -217,6 +234,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;http://chenweixiang.github.io/&quot;&gt;Chenweixiang&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://insujang.github.io/&quot;&gt;insujang&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 </description>
