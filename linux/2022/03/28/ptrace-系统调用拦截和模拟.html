@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="背景在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式：  KVM模式  ptrace模式另外，在Safe and Secure Subprocess Virtualization in Userspace中也提到了采用ptrace实现系统调用拦截。以前对于ptrace的概念还停留在它是实现s..." />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://flyflypeng.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="ptrace 系统调用拦截和模拟" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220328234850.png" />
+  <meta property="og:image" content="http://flyflypeng.github.iohttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220328234850.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="ptrace 系统调用拦截和模拟">
   <meta name="twitter:description" content="背景在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式：  KVM模式  ptrace模式另外，在Safe and Secure Subprocess Virtualization in Userspace中也提到了采用ptrace实现系统调用拦截。以前对于ptrace的概念还停留在它是实现s...">
-  <meta name="twitter:image" content="http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220328234850.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://flyflypeng.github.iohttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220328234850.png">
+  <meta name="twitter:url" content="http://flyflypeng.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://flyflypeng.github.io/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://flyflypeng.github.io/feed.xml" />
 </head>
 
 
@@ -522,7 +522,7 @@
 
 <p><code class="language-plaintext highlighter-rouge">ptrace(2)</code> (“process trace”)是Linux系统中的一个系统调用（syscall），它通常用于实现进程debugging功能。</p>
 
-<p>通过<code class="language-plaintext highlighter-rouge">ptrace</code>系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置traced的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。</p>
+<p>通过<code class="language-plaintext highlighter-rouge">ptrace</code>系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置tracee的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。</p>
 
 <p>ptrace系统调用函数的定义：</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">long</span> <span class="nf">ptrace</span><span class="p">(</span><span class="kt">int</span> <span class="n">request</span><span class="p">,</span> <span class="n">pid_t</span> <span class="n">pid</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">);</span>
@@ -695,7 +695,7 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>所以，相比于<code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code>实现系统调用拦截和模拟的方法，基于<code class="language-plaintext highlighter-rouge">PTRACE_SYSEMU</code>实现系统调用和拦截的方法，<strong>减少了2个ptrace系统调用</strong>，整体性能也有所提高。</p>
+<p>所以，相比于<code class="language-plaintext highlighter-rouge">PTRACE_SYSCALL</code>，基于<code class="language-plaintext highlighter-rouge">PTRACE_SYSEMU</code>实现系统调用拦截和模拟的方法，<strong>减少了2个ptrace系统调用</strong>，整体系统调用模拟的性能也有所提高。</p>
 
 <h2 id="参考">参考</h2>
 
@@ -723,7 +723,7 @@
   
     
     
-      <a href="//twitter.com/share?text=ptrace+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=ptrace+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F&url=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html&via=FlyFlyPeng"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -738,7 +738,7 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=ptrace+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F&u=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html"
+      <a href="//www.facebook.com/sharer.php?t=ptrace+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F&u=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html"
         onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
         <i class="fa fa-facebook-square fa-lg"></i>
       </a>
@@ -763,7 +763,7 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html"
+      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html"
         onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
         <i class="fa fa-linkedin-square fa-lg"></i>
       </a>
@@ -787,7 +787,7 @@
     
     
     
-      <a href="//www.pinterest.com/pin/create/button/?description=ptrace+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F&url=http%3A%2F%2Flocalhost%3A4000%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html&media=http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220328234850.png"
+      <a href="//www.pinterest.com/pin/create/button/?description=ptrace+%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F&url=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2022%2F03%2F28%2Fptrace-%25E7%25B3%25BB%25E7%25BB%259F%25E8%25B0%2583%25E7%2594%25A8%25E6%258B%25A6%25E6%2588%25AA%25E5%2592%258C%25E6%25A8%25A1%25E6%258B%259F.html&media=http://flyflypeng.github.iohttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220328234850.png"
         onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
         <i class="fa fa-pinterest-square fa-lg"></i>
       </a>

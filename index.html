@@ -44,11 +44,11 @@
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="Do one thing and do it well.
 " />
-  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:url" content="http://flyflypeng.github.io" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Fly Higher's Blog" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://localhost:4000/assets/logo.png" />
+  <meta property="og:image" content="http://flyflypeng.github.io/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -60,16 +60,16 @@
   <meta name="twitter:title" content="Fly Higher's Blog">
   <meta name="twitter:description" content="Do one thing and do it well.
 ">
-  <meta name="twitter:image" content="http://localhost:4000/assets/logo.png">
-  <meta name="twitter:url" content="http://localhost:4000">
+  <meta name="twitter:image" content="http://flyflypeng.github.io/assets/logo.png">
+  <meta name="twitter:url" content="http://flyflypeng.github.io">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://localhost:4000/">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000/feed.xml" />
+  <link rel="canonical" href="http://flyflypeng.github.io/">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://flyflypeng.github.io/feed.xml" />
 </head>
 
 
@@ -501,7 +501,7 @@
       <a class="post-link" href="/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">ptrace 系统调用拦截和模拟</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
-      <p>背景 在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式： KVM模式 ptrace模式 另外，在Safe and Secure Subprocess Virtualization in Userspace中也提到了采用ptrace实现系统调用拦截。 以前对于ptrace的概念还停留在它是实现strace命令的基础，具体底层的实现原理就一无所知了，因此这篇笔记主要事项记录一下ptrace是如何实现系统调用拦截。 ptrace 定义 ptrace(2) (“process trace”)是Linux系统中的一个系统调用（syscall），它通常用于实现进程debugging功能。 通过ptrace系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置traced的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。 ptrace系统调用函数的定义： long...</p>
+      <p>背景 在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式： KVM模式 ptrace模式 另外，在Safe and Secure Subprocess Virtualization in Userspace中也提到了采用ptrace实现系统调用拦截。 以前对于ptrace的概念还停留在它是实现strace命令的基础，具体底层的实现原理就一无所知了，因此这篇笔记主要事项记录一下ptrace是如何实现系统调用拦截。 ptrace 定义 ptrace(2) (“process trace”)是Linux系统中的一个系统调用（syscall），它通常用于实现进程debugging功能。 通过ptrace系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置tracee的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。 ptrace系统调用函数的定义： long...</p>
     </section>
     <section class="post-meta">
       <div class="post-date">March 28, 2022</div>
