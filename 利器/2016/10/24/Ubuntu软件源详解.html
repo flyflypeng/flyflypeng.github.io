@@ -10,7 +10,7 @@
   <meta name="description" content="什么是软件源？Ubuntu 中安装软件的方式在 Ubuntu 中软件安装的方式和 Windows 系统中双击 exe 文件的傻瓜式软件安装的方式有很大的不同，它主要可以分为下面三种安装方式：  通过 apt 包管理工具从软件源中安装  通过 deb 格式的软件包安装  从软件源码手动编译安装软件源介绍Ubuntu...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -514,9 +518,9 @@
 </ul>
 
 <h2 id="软件源介绍">软件源介绍</h2>
-<p>Ubuntu 系统中软件源其实本质上就是一个软件仓库，在这个仓库中包含了 Ubuntu 系统中各种软件，需要什么软件，只要记得正确的软件名，就可以非常简单地通过 <code class="highlighter-rouge">sudo apt-get install &lt;package-name&gt;</code> 命令进行安装，而卸载软件也非常方便，只需要运行 <code class="highlighter-rouge">sudo apt-get remove &lt;package-name&gt;</code> 的命令即可。而在平时的使用过程中，我们使用最多的软件安装方式就是<strong>软件源</strong>的方式。</p>
+<p>Ubuntu 系统中软件源其实本质上就是一个软件仓库，在这个仓库中包含了 Ubuntu 系统中各种软件，需要什么软件，只要记得正确的软件名，就可以非常简单地通过 <code class="language-plaintext highlighter-rouge">sudo apt-get install &lt;package-name&gt;</code> 命令进行安装，而卸载软件也非常方便，只需要运行 <code class="language-plaintext highlighter-rouge">sudo apt-get remove &lt;package-name&gt;</code> 的命令即可。而在平时的使用过程中，我们使用最多的软件安装方式就是<strong>软件源</strong>的方式。</p>
 
-<p>其实通过软件源安装软件的原理非常简单，Ubuntu 系统中自带了一个名为 <code class="highlighter-rouge">apt</code> 的软件包管理工具，它的主要功能就是负责 Ubuntu 系统中所有软件包的管理，包括从软件源中下载软件，卸载系统中已经安装的软件等。而每当我们通过 <code class="highlighter-rouge">sudo apt-get install &lt;package-name&gt;</code> 命令去安装一个软件时，apt 包管理工具就会从系统中一个叫做<code class="highlighter-rouge">源列表</code>的文件中去读取软件源的网址信息，查找可以包含该软件的软件源的网址，然后就从这个网址上把指定的软件给下载下来，然后由 apt 包管理工具在本地进行一些解压和安装的其他操作。</p>
+<p>其实通过软件源安装软件的原理非常简单，Ubuntu 系统中自带了一个名为 <code class="language-plaintext highlighter-rouge">apt</code> 的软件包管理工具，它的主要功能就是负责 Ubuntu 系统中所有软件包的管理，包括从软件源中下载软件，卸载系统中已经安装的软件等。而每当我们通过 <code class="language-plaintext highlighter-rouge">sudo apt-get install &lt;package-name&gt;</code> 命令去安装一个软件时，apt 包管理工具就会从系统中一个叫做<code class="language-plaintext highlighter-rouge">源列表</code>的文件中去读取软件源的网址信息，查找可以包含该软件的软件源的网址，然后就从这个网址上把指定的软件给下载下来，然后由 apt 包管理工具在本地进行一些解压和安装的其他操作。</p>
 
 <!--more-->
 
@@ -529,8 +533,8 @@
 </ul>
 
 <h3 id="ubuntu-官方软件源">Ubuntu 官方软件源</h3>
-<p>Ubuntu 官方软件源中包含了 Ubuntu 系统中所用到的绝大部分的软件，它对应的<code class="highlighter-rouge">源列表</code>是 <em>/etc/apt/sources.list</em>。在这个文件中，记录了 Ubuntu 官方源的地址，基本格式内容如下所示：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
+<p>Ubuntu 官方软件源中包含了 Ubuntu 系统中所用到的绝大部分的软件，它对应的<code class="language-plaintext highlighter-rouge">源列表</code>是 <em>/etc/apt/sources.list</em>。在这个文件中，记录了 Ubuntu 官方源的地址，基本格式内容如下所示：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
 deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main universe restricted multiverse
 deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
 deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted multiverse
@@ -539,7 +543,7 @@ deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main unive
 deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
 deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted multiverse
 </code></pre></div></div>
-<p>这里我使用了 <code class="highlighter-rouge">http://mirrors.zju.edu.cn</code> 镜像地址，它其实和 Ubuntu 官方的镜像是相同的，我这里做了替换主要是为了加快 apt 安装和更新软件源的速度，毕竟学校里的内网速度还是相当不错的。</p>
+<p>这里我使用了 <code class="language-plaintext highlighter-rouge">http://mirrors.zju.edu.cn</code> 镜像地址，它其实和 Ubuntu 官方的镜像是相同的，我这里做了替换主要是为了加快 apt 安装和更新软件源的速度，毕竟学校里的内网速度还是相当不错的。</p>
 
 <h3 id="ppa-软件源">PPA 软件源</h3>
 <p>以前我一直不明白既然有了官方的软件源，为什么还多出了一个 PPA 软件源，统一用 Ubuntu 官方源不是挺好吗？
@@ -547,7 +551,7 @@ deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main univ
 
 <p>PPA 源出现的背景是因为<strong>系统自带的源是很有限的</strong>，我们肯定需要一些其他的软件包然而如果是直接下载deb格式的文件的话，又不能获取到更新和维护，所以这就用到了十分重要的 PPA 源了。</p>
 
-<p>所谓 PPA 源，就是指 <code class="highlighter-rouge">“Personal Package Archives”</code> ，也就是个人软件包集。这其实是一个网站，即－<code class="highlighter-rouge">launchpad.net</code>。Launchpad 是 Ubuntu 母公司 Canonical 有限公司所架设的网站，是一个提供维护、支援或联络 Ubuntu 开发者的平台。由于不是所有的软件都能进入 Ubuntu 的官方的软件库，launchpad.net 提供了 PPA，允许开发者建立自己的软件仓库，自由的上传软件。供用户安装和查看更新。</p>
+<p>所谓 PPA 源，就是指 <code class="language-plaintext highlighter-rouge">“Personal Package Archives”</code> ，也就是个人软件包集。这其实是一个网站，即－<code class="language-plaintext highlighter-rouge">launchpad.net</code>。Launchpad 是 Ubuntu 母公司 Canonical 有限公司所架设的网站，是一个提供维护、支援或联络 Ubuntu 开发者的平台。由于不是所有的软件都能进入 Ubuntu 的官方的软件库，launchpad.net 提供了 PPA，允许开发者建立自己的软件仓库，自由的上传软件。供用户安装和查看更新。</p>
 
 <h1 id="软件源替换和添加">软件源替换和添加</h1>
 
@@ -561,8 +565,8 @@ deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main univ
 <h2 id="如何替换系统默认的官方软件源">如何替换系统默认的官方软件源？</h2>
 <p>为了解决上面提到的这个问题，在我们国内有许多学校和公司的镜像网站都对 Ubuntu 的官方软件源进行了镜像备份，并且定期地进行同步更新，而国内访问这些镜像网站的速度都要比直接访问 Ubuntu 官方镜像源要快地多，所以我们只要将 Ubuntu 官方软件源的网址替换成国内的 Ubuntu 软件源镜像网站的网址就可以达到加速的目的了。</p>
 
-<p>前面我已经介绍过 Ubuntu 官方软件源对应的<code class="highlighter-rouge">源列表</code>是 <em>/etc/apt/sources.list</em>，我们只要对这个文件中内容进行替换就可以了，例如我自己电脑上使用就是浙江大学开源镜像网站上的软件源，如下所示：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
+<p>前面我已经介绍过 Ubuntu 官方软件源对应的<code class="language-plaintext highlighter-rouge">源列表</code>是 <em>/etc/apt/sources.list</em>，我们只要对这个文件中内容进行替换就可以了，例如我自己电脑上使用就是浙江大学开源镜像网站上的软件源，如下所示：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty main universe restricted multiverse
 deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-security main universe restricted multiverse
 deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-updates main universe restricted multiverse
 deb [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main universe restricted multiverse
@@ -578,11 +582,11 @@ deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main univ
 
 <h2 id="如何添加-ppa-软件源">如何添加 PPA 软件源</h2>
 <ul>
-  <li><strong>添加 PPA 软件源的命令</strong>：<code class="highlighter-rouge">sudo add-apt-repository ppa:user/ppa-name</code></li>
-  <li><strong>删除 PPA 软件源的命令</strong>：<code class="highlighter-rouge">sudo add-apt-repository --remove ppa:user/ppa-name</code></li>
+  <li><strong>添加 PPA 软件源的命令</strong>：<code class="language-plaintext highlighter-rouge">sudo add-apt-repository ppa:user/ppa-name</code></li>
+  <li><strong>删除 PPA 软件源的命令</strong>：<code class="language-plaintext highlighter-rouge">sudo add-apt-repository --remove ppa:user/ppa-name</code></li>
 </ul>
 
-<p>例如，我们想要添加一个 <code class="highlighter-rouge">Wireshark</code> 软件的 PPA 源，我们可以根据它官网上提供的命令来进行添加，如下图所示：
+<p>例如，我们想要添加一个 <code class="language-plaintext highlighter-rouge">Wireshark</code> 软件的 PPA 源，我们可以根据它官网上提供的命令来进行添加，如下图所示：
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/test.png" alt="" /></p>
 
 <p>当我们添加完 PPA 源之后，系统就会在 <em>/etc/apt/sources.list.d/</em> 文件夹里创建了两个文件：</p>
@@ -592,8 +596,8 @@ deb-src [arch=amd64] http://mirrors.zju.edu.cn/ubuntu trusty-backports main univ
 wireshark-dev-stable-trusty.list
 wireshark-dev-stable-trusty.list.save
 </code></pre></div></div>
-<p>我们再来打开一下 <code class="highlighter-rouge">wireshark-dev-stable-trusty.list</code> 文件看看里面的内容是什么：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb http://ppa.launchpad.net/wireshark-dev/stable/ubuntu trusty main
+<p>我们再来打开一下 <code class="language-plaintext highlighter-rouge">wireshark-dev-stable-trusty.list</code> 文件看看里面的内容是什么：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>deb http://ppa.launchpad.net/wireshark-dev/stable/ubuntu trusty main
 # deb-src http://ppa.launchpad.net/wireshark-dev/stable/ubuntu trusty main
 </code></pre></div></div>
 
@@ -1073,6 +1077,14 @@ wireshark-dev-stable-trusty.list.save
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1098,10 +1110,6 @@ wireshark-dev-stable-trusty.list.save
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

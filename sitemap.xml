@@ -33,10 +33,6 @@
 <lastmod>2015-07-24T00:34:35+08:00</lastmod>
 </url>
 <url>
-<loc>http://localhost:4000/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/26/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04.html</loc>
-<lastmod>2015-07-26T03:04:23+08:00</lastmod>
-</url>
-<url>
 <loc>http://localhost:4000/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html</loc>
 <lastmod>2015-09-03T22:03:00+08:00</lastmod>
 </url>
@@ -151,6 +147,10 @@
 <url>
 <loc>http://localhost:4000/%E5%AD%A6%E4%B9%A0&amp;%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</loc>
 <lastmod>2020-07-10T07:00:00+08:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</loc>
+<lastmod>2022-03-28T18:40:00+08:00</lastmod>
 </url>
 <url>
 <loc>http://localhost:4000/about/</loc>
@@ -387,6 +387,12 @@
 <loc>http://localhost:4000/tag/%E4%BA%91%E5%8E%9F%E7%94%9F/</loc>
 </url>
 <url>
+<loc>http://localhost:4000/tag/ptrace/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/tag/sandbox/</loc>
+</url>
+<url>
 <loc>http://localhost:4000/category/android/</loc>
 </url>
 <url>
@@ -406,9 +412,6 @@
 </url>
 <url>
 <loc>http://localhost:4000/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</loc>
-</url>
-<url>
-<loc>http://localhost:4000/category/linux/</loc>
 </url>
 <url>
 <loc>http://localhost:4000/category/%E7%94%9F%E6%B4%BB/</loc>

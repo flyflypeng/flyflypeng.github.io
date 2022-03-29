@@ -10,7 +10,7 @@
   <meta name="description" content="1. 模块 为了编写可维护的代码，我们把很多函数分组，分别放到不同的文件里，这样，每个文件包含的代码就相对较少，很多编程语言都采用这种组织代码的方式。在Python中，一个.py文件就称之为一个模块（Module）。使用模块的好处？最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模块编写完...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -548,11 +552,11 @@ mycompany.web模块对应的文件就是mycompany.web目录下的__init__.py文�
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
-	<span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+	<span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="p">.</span><span class="n">argv</span>
 	<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
 		<span class="k">print</span> <span class="s">'Hello World!'</span>
 	<span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-		<span class="k">print</span> <span class="s">'Hello </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+		<span class="k">print</span> <span class="s">'Hello %s'</span> <span class="o">%</span> <span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 	<span class="k">else</span><span class="p">:</span>
 		<span class="k">print</span> <span class="s">'Too many arguments!'</span>
 
@@ -596,7 +600,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 &gt;&gt;&gt; import hello
 </code></pre>
 <p>倒入时，没有打印‘Hello World’，这是因为导入hello模块时，并没有执行test()函数，当执行hello中的test模块时 ，就能够打印处‘Hello World！’</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">hello</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">hello</span><span class="p">.</span><span class="n">test</span><span class="p">()</span>
 <span class="n">Hello</span> <span class="n">World</span><span class="err">!</span>
 </code></pre></div></div>
 
@@ -620,10 +624,10 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 <p>private函数或变量不应该被别人引用，那它们有什么用呢？请看例子:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_private_1</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s">'Hello, </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="s">'Hello, %s'</span> <span class="o">%</span> <span class="n">name</span>
 
 <span class="k">def</span> <span class="nf">_private_2</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s">'Hi, </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="s">'Hi, %s'</span> <span class="o">%</span> <span class="n">name</span>
 
 <span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
@@ -666,10 +670,10 @@ Python 2.7.6</p>
 
 <p>有了PIL之后，处理图像就变得非常简单，下面就以一个缩小图片为例子来介绍一下PIL的用法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">Image</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'test.png'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">im</span><span class="o">.</span><span class="nb">format</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">mode</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'test.png'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">im</span><span class="p">.</span><span class="nb">format</span><span class="p">,</span> <span class="n">im</span><span class="p">.</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="p">.</span><span class="n">mode</span>
 <span class="n">PNG</span> <span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span> <span class="n">RGB</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="p">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">IOError</span><span class="p">:</span> <span class="n">decoder</span> <span class="n">jpeg</span> <span class="ow">not</span> <span class="n">available</span>
 </code></pre></div></div>
 <p>但是当执行到”im.thumbnail((200,100))”时就出现了错误“IOError: decoder jpeg not available”，通过Google之后，找到了原因是因为PIL在不同的linux系统中可能存在一些bug，而且现在Python的图像处理库更多人选择使用<strong>pillow</strong>。pillow图像处理库是基于PIL而实现的一个图像处理库，是现在Python环境中流行的图像处理库。</p>
@@ -685,11 +689,11 @@ Python 2.7.6</p>
 
 <p>然后，我们在调用Image模块来进行图像处理:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">Image</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'robot_cat.jpg'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">im</span><span class="o">.</span><span class="nb">format</span><span class="p">,</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="n">im</span><span class="o">.</span><span class="n">mode</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="s">'robot_cat.jpg'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">im</span><span class="p">.</span><span class="nb">format</span><span class="p">,</span><span class="n">im</span><span class="p">.</span><span class="n">size</span><span class="p">,</span><span class="n">im</span><span class="p">.</span><span class="n">mode</span>
 <span class="n">JPEG</span> <span class="p">(</span><span class="mi">550</span><span class="p">,</span> <span class="mi">550</span><span class="p">)</span> <span class="n">RGB</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">))</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'thumb.jpg'</span><span class="p">,</span><span class="s">'JPEG'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="p">.</span><span class="n">thumbnail</span><span class="p">((</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">))</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">im</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="s">'thumb.jpg'</span><span class="p">,</span><span class="s">'JPEG'</span><span class="p">)</span>
 </code></pre></div></div>
 <p>最后，我们进入文件夹中，可以查看一下是否生成了”thumb.jpg”的压缩后的图片:
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/pillow_execute_result.png" alt="thumb_jpg" /></p>
@@ -709,14 +713,14 @@ Python 2.7.6</p>
 
 <p>默认情况下，Python会搜索当前工作目录、所有已安装的内置模块和第三方模块，搜索路径存放在sys模块中的path变量中:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="p">.</span><span class="n">path</span>
 <span class="p">[</span><span class="s">''</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/plat-x86_64-linux-gnu'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-tk'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-old'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-dynload'</span><span class="p">,</span> <span class="s">'/usr/local/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/PILcompat'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/gtk-2.0'</span><span class="p">,</span> <span class="s">'/usr/lib/pymodules/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/ubuntu-sso-client'</span><span class="p">]</span>
 </code></pre></div></div>
 <p>如果我们要添加自己的模块搜索目录，我们可以有以下两种方法:</p>
 
 <p>第一种，直接些该sys.path变量，添加要搜索的目录:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'/Users/michael/my_py_scripts'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'/Users/michael/my_py_scripts'</span><span class="p">)</span>
 </code></pre></div></div>
 <p>但是这种方法是在运行时修改，运行完之后就失效了。</p>
 
@@ -727,14 +731,14 @@ Python 2.7.6</p>
 <span class="nb">sudo </span>gedit /etc/profile
 </code></pre></div></div>
 <p>然后在<strong>/etc/profile</strong>文件末尾添加上如下的语句:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PYTHONPATH=/home/woshijpf/python_module
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PYTHONPATH=/home/woshijpf/python_module
 </code></pre></div></div>
 <p>保存后退出，接着就在命令行中输入下面的语句:</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">source</span> /etc/profile
 </code></pre></div></div>
 <p>最后，我们进入Python的交互环境，导入sys模块，查看sys模块中的path变量是否发生了变化:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sys</span><span class="p">.</span><span class="n">path</span>
 <span class="p">[</span><span class="s">''</span><span class="p">,</span> <span class="s">'/home/woshijpf/python_module'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/plat-x86_64-linux-gnu'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-tk'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-old'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/lib-dynload'</span><span class="p">,</span> <span class="s">'/usr/local/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/PILcompat'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/gtk-2.0'</span><span class="p">,</span> <span class="s">'/usr/lib/pymodules/python2.7'</span><span class="p">,</span> <span class="s">'/usr/lib/python2.7/dist-packages/ubuntu-sso-client'</span><span class="p">]</span>
 </code></pre></div></div>
 <p>从上面的结果我们可以看到，我们手动添加的Python模块目录的确被添加到了sys模块中的path变量中了。</p>
@@ -752,9 +756,9 @@ Python 2.7.6</p>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
 
 <span class="k">print</span> <span class="s">'</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is unicode?'</span><span class="p">,</span><span class="nb">isinstance</span><span class="p">(</span><span class="s">'xxx'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
-<span class="k">print</span> <span class="s">'u</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is unicode?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">u'xxx'</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">'u</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is unicode?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="sa">u</span><span class="s">'xxx'</span><span class="p">,</span> <span class="nb">unicode</span><span class="p">)</span>
 <span class="k">print</span> <span class="s">'</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is str?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">'xxx'</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-<span class="k">print</span> <span class="s">'b</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is str?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="s">'xxx'</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">'b</span><span class="se">\'</span><span class="s">xxx</span><span class="se">\'</span><span class="s"> is str?'</span><span class="p">,</span> <span class="nb">isinstance</span><span class="p">(</span><span class="sa">b</span><span class="s">'xxx'</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>注意到上面的代码仍在Python2.7的运行，但结果显示去掉前缀u的’a string’仍是一个unicode，而加上前缀b的b’a string’才变成了str:</p>
@@ -790,9 +794,9 @@ b<span class="s1">'xxx'</span> is str? True
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
-<span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f0871045890</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">__main__</span><span class="p">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f0871045890</span><span class="o">&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">Student</span>
-<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">__main__</span><span class="o">.</span><span class="n">Student</span><span class="s">'&gt;</span><span class="err">
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">__main__</span><span class="p">.</span><span class="n">Student</span><span class="s">'&gt;
 </span></code></pre></div></div>
 <p>可以看到变量s是一个指向类Student的对象，后面的’0x7f0871045890‘表示的是对象在内存中的地址。</p>
 
@@ -800,18 +804,18 @@ b<span class="s1">'xxx'</span> is str? True
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
 </code></pre></div></div>
 
 <p>注意到__init__方法的第一个参数永远都是self，表示创建的实例本身（这个self类似与Java中的this指针），因此，在__init__方法内部，就可以把各种属性绑定到self上，因为self就是指向创建的实例本身。</p>
 
 <p>有了__init__方法，在创建实例的时候，就不能传入空的参数了，必须传入与__init__方法匹配的参数，但self不用传，Python解释器会将实例变量传进去。</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">student_class</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">student_class</span><span class="o">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">,</span><span class="s">'60'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">student_class</span><span class="p">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">,</span><span class="s">'60'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span>
 <span class="s">'Tom'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span>
 <span class="s">'60'</span>
 </code></pre></div></div>
 
@@ -821,8 +825,8 @@ b<span class="s1">'xxx'</span> is str? True
 
 <p>面向对象编程的一个重要特点就是数据封装。在上面的Student类中，每个实例就拥有各种的name和score这些数据。我们可以通过函数来访问这些数据，比如打印一个学生的成绩:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">print_score</span><span class="p">(</span><span class="n">std</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s:</span><span class="si">%</span><span class="s">s'</span><span class="o">%</span><span class="p">(</span><span class="n">std</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">std</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">print</span> <span class="s">'%s:%s'</span><span class="o">%</span><span class="p">(</span><span class="n">std</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="n">std</span><span class="p">.</span><span class="n">score</span><span class="p">)</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">print_score</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="n">Tom</span><span class="p">:</span><span class="mi">60</span>
 </code></pre></div></div>
@@ -830,17 +834,17 @@ b<span class="s1">'xxx'</span> is str? True
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
 
 	<span class="k">def</span> <span class="nf">print_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s:</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+		<span class="k">print</span> <span class="s">'%s:%s'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="p">.</span><span class="n">score</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>要定义一个方法，除了第一个参数是self外，其他和普通函数一样。要调用一个方法，只需要在实例变量上直接调用，除了self不用传递，其他参数正常传入:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">student_class</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">student_class</span><span class="o">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">,</span><span class="s">'60'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">print_score</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">student_class</span><span class="p">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">,</span><span class="s">'60'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">print_score</span><span class="p">()</span>
 <span class="n">Tom</span><span class="p">:</span><span class="mi">60</span>
 </code></pre></div></div>
 
@@ -848,10 +852,10 @@ b<span class="s1">'xxx'</span> is str? True
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">student_class</span> <span class="kn">import</span> <span class="n">Student</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Peter'</span><span class="p">,</span><span class="mi">90</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">59</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">.</span><span class="n">age</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">age</span>
 <span class="mi">20</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">age</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">age</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'age'</span>
@@ -871,16 +875,16 @@ b<span class="s1">'xxx'</span> is str? True
 
 <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">name</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">score</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">name</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">score</span>
 
 	<span class="k">def</span> <span class="nf">print_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s:</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__score</span><span class="p">)</span>
+		<span class="k">print</span> <span class="s">'%s:%s'</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">__name</span><span class="p">,</span><span class="bp">self</span><span class="p">.</span><span class="n">__score</span><span class="p">)</span>
 </code></pre></div></div>
 <p>改完之后，对于外部的函数，我们就无法再访问到Student实例变量__name和实例的__score。</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">student_class_private</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">student_class_private</span><span class="o">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">student_class_private</span><span class="p">.</span><span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">__name</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'__name'</span>
@@ -889,15 +893,15 @@ b<span class="s1">'xxx'</span> is str? True
 
 <p>如果外部代码要获取name和score，那么可以给Student类增加get_name和get_score的方法来获取:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__name</span>
 
 	<span class="k">def</span> <span class="nf">get_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__name</span>
 </code></pre></div></div>
 <p>如果又要允许外部修改score，那么可以给Student类增加set_score方法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	<span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
 		<span class="k">if</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">score</span> <span class="o">&lt;=</span><span class="mi">100</span><span class="p">:</span>
-			<span class="bp">self</span><span class="o">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">score</span>
+			<span class="bp">self</span><span class="p">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">score</span>
 		<span class="k">else</span><span class="p">:</span>
 			<span class="k">raise</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'bad score'</span><span class="p">)</span>
 </code></pre></div></div>
@@ -906,16 +910,16 @@ b<span class="s1">'xxx'</span> is str? True
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">student_class_private</span> <span class="kn">import</span> <span class="n">Student</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">__name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">__name</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'__name'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">get_name</span><span class="p">()</span>
 <span class="s">'Bob'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">get_score</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">get_score</span><span class="p">()</span>
 <span class="mi">40</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">get_score</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">get_score</span><span class="p">()</span>
 <span class="mi">100</span>
 </code></pre></div></div>
 
@@ -924,7 +928,7 @@ b<span class="s1">'xxx'</span> is str? True
 <p>有些时候，你会看到以一个下划线开头的实例变量名，比如_name，这样的实例变量外部是可以访问的，但是，按照约定俗成的规定，当你看到这样的变量时，意思就是，“虽然我可以被访问，但是，请把我视为私有变量，不要随意访问”。</p>
 
 <p>双下划线开头的实例变量是不是一定不能从外部访问呢？其实也不是。不能直接访问__name是因为Python解释器对外把__name变量改成了_Student__name，所以，仍然可以通过_Student__name来访问__name变量:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">_Student__name</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">_Student__name</span>
 <span class="s">'Bob'</span>
 </code></pre></div></div>
 <p>但是强烈建议你不要这么干，因为不同版本的Python解释器可能会把__name改成不同的变量名。</p>
@@ -946,10 +950,10 @@ b<span class="s1">'xxx'</span> is str? True
 </code></pre></div></div>
 <p>继承有什么好处？最大的好处就是子类能够获得父类的全部功能。由于Animal实现了run()方法，因此，Dog和Cat作为它的子类，什么事也不干就自动获得了run()方法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dog</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">()</span>
-<span class="n">dog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">dog</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
 
 <span class="n">cat</span> <span class="o">=</span> <span class="n">Cat</span><span class="p">()</span>
-<span class="n">cat</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">cat</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div></div>
 <p>运行的结果如下:</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Animal is running...
@@ -982,18 +986,18 @@ Cat is runnning...
 </code></pre></div></div>
 <p>要理解多态的好处，我们还需要编写一个函数，这个函数接受一个Animal类型的变量:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">run_twice</span><span class="p">(</span><span class="n">animal</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">animal</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-<span class="o">...</span>     <span class="n">animal</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="p">...</span>     <span class="n">animal</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
+<span class="p">...</span>     <span class="n">animal</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div></div>
 <p>当我们传入Animal的实例时，run_twice()就打印出:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">run_twice</span><span class="p">(</span><span class="n">Animal</span><span class="p">())</span>
-<span class="n">Animal</span> <span class="ow">is</span> <span class="n">running</span><span class="o">...</span>
-<span class="n">Animal</span> <span class="ow">is</span> <span class="n">running</span><span class="o">...</span>
+<span class="n">Animal</span> <span class="ow">is</span> <span class="n">running</span><span class="p">...</span>
+<span class="n">Animal</span> <span class="ow">is</span> <span class="n">running</span><span class="p">...</span>
 </code></pre></div></div>
 <p>当我们传入Dog的实例是，run_twice()就打印出:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">run_twice</span><span class="p">(</span><span class="n">Dog</span><span class="p">())</span>
-<span class="n">Dog</span> <span class="ow">is</span> <span class="n">runnning</span><span class="o">...</span>
-<span class="n">Dog</span> <span class="ow">is</span> <span class="n">runnning</span><span class="o">...</span>
+<span class="n">Dog</span> <span class="ow">is</span> <span class="n">runnning</span><span class="p">...</span>
+<span class="n">Dog</span> <span class="ow">is</span> <span class="n">runnning</span><span class="p">...</span>
 </code></pre></div></div>
 
 <p>多态的好处就是，当我们需要传入Dog、Cat……时，我们只需要接收Animal类型就可以了，因为Dog、Cat……都是Animal类型，然后，按照Animal类型进行操作即可。由于Animal类型有run()方法，因此，传入的任意类型，只要是Animal类或者子类，就会自动调用实际类型的run()方法，这就是多态的意思。</p>
@@ -1022,25 +1026,25 @@ Cat is runnning...
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">abs</span><span class="p">)</span>
 <span class="o">&lt;</span><span class="nb">type</span> <span class="s">'builtin_function_or_method'</span><span class="o">&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">inherit_polymorphic_example</span><span class="o">.</span><span class="n">Animal</span><span class="s">'&gt;</span><span class="err">
-</span><span class="s">&gt;&gt;&gt; type(b)</span><span class="err">
-</span><span class="s">&lt;class '</span><span class="n">inherit_polymorphic_example</span><span class="o">.</span><span class="n">Dog</span><span class="s">'&gt;</span><span class="err">
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">inherit_polymorphic_example</span><span class="p">.</span><span class="n">Animal</span><span class="s">'&gt;
+&gt;&gt;&gt; type(b)
+&lt;class '</span><span class="n">inherit_polymorphic_example</span><span class="p">.</span><span class="n">Dog</span><span class="s">'&gt;
 </span></code></pre></div></div>
 <p>但是type()函数返回值是什么类型呢？</p>
 
 <p>type()函数返回的是函数参数的类型值常量，Python把每种type类型都定义好了常量，放在type模块里，使用之前需要导入:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">types</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="s">'abc'</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">StringType</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="s">'abc'</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="p">.</span><span class="n">StringType</span>
 <span class="bp">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">IntType</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="p">.</span><span class="n">IntType</span>
 <span class="bp">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="s">u'abc'</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">UnicodeType</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="sa">u</span><span class="s">'abc'</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="p">.</span><span class="n">UnicodeType</span>
 <span class="bp">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">TypeType</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="p">.</span><span class="n">TypeType</span>
 <span class="bp">True</span>
 </code></pre></div></div>
 <p>最后，注意到有一种类型叫做”TypeType”，所有类型本身的类型就是TypeType，比如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">TypeType</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="p">.</span><span class="n">TypeType</span>
 <span class="bp">True</span>
 </code></pre></div></div>
 
@@ -1067,7 +1071,7 @@ Cat is runnning...
 <p>而且能用type()判断的基本类型也能够通过isinstance()判断:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span>
 <span class="bp">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">u'a'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="sa">u</span><span class="s">'a'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
 <span class="bp">True</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">isinstance</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span>
 <span class="bp">False</span>
@@ -1089,31 +1093,31 @@ Cat is runnning...
 <p>类似__xxx__的属性和方法在Python中都是有特殊用途的，比如__len__方法返回长度。在Python中，如果你调用len（)函数试图获取一个对象的长度，实际上，在len()函数内部，它自动取调用该对象的__len__()方法，所以，下面的代码是等价的:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="s">'ABC'</span><span class="p">)</span>
 <span class="mi">3</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s">'ABC'</span><span class="o">.</span><span class="n">__len__</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s">'ABC'</span><span class="p">.</span><span class="n">__len__</span><span class="p">()</span>
 <span class="mi">3</span>
 </code></pre></div></div>
 <p>我们自己写的类，如果也想用len(object)的话，那么就得在类中自己实现一个__len__()方法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">return</span> <span class="mi">100</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="mi">100</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 <span class="mi">100</span>
 </code></pre></div></div>
 <p>仅仅把属性和方法列出来是不够的，配合getattr()、setattr()以及hasattr()，我们可以直接操作一个对象的状态:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">MyObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">9</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>         <span class="bp">self</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">x</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">MyObject</span><span class="p">()</span>
 </code></pre></div></div>
 <p>紧接着就可以测试该对象的属性:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'x'</span><span class="p">)</span>
 <span class="bp">True</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">x</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="p">.</span><span class="n">x</span>
 <span class="mi">9</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'y'</span><span class="p">)</span>
 <span class="bp">False</span>
@@ -1122,14 +1126,14 @@ Cat is runnning...
 <span class="bp">True</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'y'</span><span class="p">)</span>
 <span class="mi">19</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="o">.</span><span class="n">y</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">obj</span><span class="p">.</span><span class="n">y</span>
 <span class="mi">19</span>
 </code></pre></div></div>
 <p>也可以获得对象的方法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'power'</span><span class="p">)</span>
 <span class="bp">True</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'power'</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">MyObject</span><span class="o">.</span><span class="n">power</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">MyObject</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f4c398a4e10</span><span class="o">&gt;&gt;</span>
+<span class="o">&lt;</span><span class="n">bound</span> <span class="n">method</span> <span class="n">MyObject</span><span class="p">.</span><span class="n">power</span> <span class="n">of</span> <span class="o">&lt;</span><span class="n">__main__</span><span class="p">.</span><span class="n">MyObject</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f4c398a4e10</span><span class="o">&gt;&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="s">'power'</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">fn</span><span class="p">()</span>
 <span class="mi">81</span>
@@ -1151,44 +1155,44 @@ Cat is runnning...
 
 <p>正常情况下，当我们定义了一个class，创建一个class的实例后，我们就可以给该实例绑定任何属性和方法，这就是动态语言的灵活性。先定义class:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">pass</span>
+<span class="p">...</span>     <span class="k">pass</span>
 </code></pre></div></div>
 <p>然后，尝试给实例绑定一个属性:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="s">'Michael'</span>  <span class="c1">#动态地给实例绑定一个属性
-</span><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span><span class="o">=</span><span class="s">'Michael'</span>  <span class="c1">#动态地给实例绑定一个属性
+</span><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span>
 <span class="n">Michael</span>
 </code></pre></div></div>
 <p>同样，我们也可以给实例绑定一个方法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">set_age</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">age</span><span class="p">):</span>  <span class="c1">#定义一个函数作为实例方法
-</span><span class="o">...</span>     <span class="bp">self</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">age</span>
-<span class="o">...</span> 
+</span><span class="p">...</span>     <span class="bp">self</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="n">age</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">set_age</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">set_age</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">Student</span><span class="p">)</span>  <span class="c1">#给实例绑定一个方法
-</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>  <span class="c1">#调用实例方法
-</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">age</span> <span class="c1">#测试结果
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">set_age</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">set_age</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">Student</span><span class="p">)</span>  <span class="c1">#给实例绑定一个方法
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>  <span class="c1">#调用实例方法
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">age</span> <span class="c1">#测试结果
 </span><span class="mi">25</span>
 </code></pre></div></div>
 <p>但是，给一个实例绑定的方法，对另外一个实例是不起作用的:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="o">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="p">.</span><span class="n">set_age</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'set_age'</span>
 </code></pre></div></div>
 <p>为了给所有的实例都绑定该方法，可以给class绑定方法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">score</span><span class="p">):</span>
-<span class="o">...</span>     <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
-<span class="o">...</span> 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">Student</span><span class="o">.</span><span class="n">set_score</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">set_score</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">Student</span><span class="p">)</span>
+<span class="p">...</span>     <span class="bp">self</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+<span class="p">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">Student</span><span class="p">.</span><span class="n">set_score</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">set_score</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">Student</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> 
 </code></pre></div></div>
 <p>给class绑定方法后，所有实例均可调用:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span>
 <span class="mi">100</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">59</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="o">.</span><span class="n">score</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="p">.</span><span class="n">set_score</span><span class="p">(</span><span class="mi">59</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s2</span><span class="p">.</span><span class="n">score</span>
 <span class="mi">59</span>
 </code></pre></div></div>
 
@@ -1199,14 +1203,14 @@ Cat is runnning...
 
 <p>为了达到限制的目的，Python允许在定义class的时候，定义一个特殊的__slots__变量，来限制该class能添加的属性:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s">'name'</span><span class="p">,</span><span class="s">'age'</span><span class="p">)</span>  <span class="c1">#使用tuple来定义允许绑定的属性名称
-</span><span class="o">...</span> 
+<span class="p">...</span>     <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s">'name'</span><span class="p">,</span><span class="s">'age'</span><span class="p">)</span>  <span class="c1">#使用tuple来定义允许绑定的属性名称
+</span><span class="p">...</span> 
 </code></pre></div></div>
 <p>现在，我们就来测试一下:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>    <span class="c1">#新建一个Student类的实例
-</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Tom'</span>   <span class="c1">#绑定属性name
-</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">20</span>       <span class="c1">#绑定属性age
-</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">99</span>     <span class="c1">#绑定属性score
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Tom'</span>   <span class="c1">#绑定属性name
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">20</span>       <span class="c1">#绑定属性age
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">99</span>     <span class="c1">#绑定属性score
 </span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'score'</span>
@@ -1215,11 +1219,11 @@ Cat is runnning...
 __slots__
 使用__slots__时一定要注意，__slots__只对当前类起作用，对继承类是不起作用的:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">GraduateStudent</span><span class="p">(</span><span class="n">Student</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">pass</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">pass</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">GraduateStudent</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">score</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="n">score</span>
 <span class="mi">100</span>
 </code></pre></div></div>
 <p>除非在子类中也定义__slots__，这样，子类允许定义的属性就是自身的__slots__加上父类的__slots__。</p>
@@ -1228,7 +1232,7 @@ __slots__
 
 <p>在绑定属性时，如果我们直接把属性暴露出去，虽然写起来很简单，但是，没办法检查参数，导致可以把成绩随便改:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
-<span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
+<span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
 </code></pre></div></div>
 <p>这显然不合逻辑。为了限制score的范围，可以通过在class的定义中一个set_score()方法来设置成绩，再通过一个get_score()来获取成绩，这样，在set_score()方法里，就可以检查参数了。</p>
 
@@ -1238,26 +1242,26 @@ __slots__
 
 <p>Python中内置的@property装饰器就是负责把一个方法变成属性调用:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="o">@</span><span class="nb">property</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__score</span>
-<span class="o">...</span>     <span class="o">@</span><span class="n">score</span><span class="o">.</span><span class="n">setter</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
-<span class="o">...</span>             <span class="k">raise</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'Score must be an integer!'</span><span class="p">)</span>
-<span class="o">...</span>         <span class="k">if</span> <span class="n">vaule</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
-<span class="o">...</span>				<span class="n">raisr</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'score must between 0 ~ 100!'</span><span class="p">)</span>
-<span class="o">...</span>         <span class="bp">self</span><span class="o">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">value</span>
+<span class="p">...</span>     <span class="o">@</span><span class="nb">property</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">__score</span>
+<span class="p">...</span>     <span class="o">@</span><span class="n">score</span><span class="p">.</span><span class="n">setter</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+<span class="p">...</span>         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+<span class="p">...</span>             <span class="k">raise</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'Score must be an integer!'</span><span class="p">)</span>
+<span class="p">...</span>         <span class="k">if</span> <span class="n">vaule</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+<span class="p">...</span>				<span class="n">raisr</span> <span class="n">VauleError</span><span class="p">(</span><span class="s">'score must between 0 ~ 100!'</span><span class="p">)</span>
+<span class="p">...</span>         <span class="bp">self</span><span class="p">.</span><span class="n">__score</span> <span class="o">=</span> <span class="n">value</span>
 
 </code></pre></div></div>
 <p>@property的实现比较复杂，我们先考察如何使用。把一个getter方法变成属性，只需要加上@property就可以了，此时，@property本身又创建了另一个装饰器@score.setter，负责把一个setter方法变成属性赋值，于是，我们就拥有一个可控的属性操作:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">60</span>   <span class="c1">#实际转换为s.set_score(60)
-</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>        <span class="c1">#实际转换为s.get_score()
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">60</span>   <span class="c1">#实际转换为s.set_score(60)
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span>        <span class="c1">#实际转换为s.get_score()
 </span><span class="mi">60</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">9999</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-  <span class="o">...</span>
+  <span class="p">...</span>
 <span class="nb">ValueError</span><span class="p">:</span> <span class="n">score</span> <span class="n">must</span> <span class="n">between</span> <span class="mi">0</span> <span class="o">~</span> <span class="mi">100</span><span class="err">!</span>
 </code></pre></div></div>
 <p>注意到这个神奇的@property，我们在对实例属性操作的时候，就知道该属性很可能不是直接暴露的，而是通过getter和setter方法来实现的。</p>
@@ -1267,15 +1271,15 @@ __slots__
 
     <span class="o">@</span><span class="nb">property</span>
     <span class="k">def</span> <span class="nf">birth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_birth</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">_birth</span>
 
-    <span class="o">@</span><span class="n">birth</span><span class="o">.</span><span class="n">setter</span>
+    <span class="o">@</span><span class="n">birth</span><span class="p">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">birth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_birth</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">_birth</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="o">@</span><span class="nb">property</span>
     <span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="mi">2014</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_birth</span>
+        <span class="k">return</span> <span class="mi">2014</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">_birth</span>
 </code></pre></div></div>
 <p>上面的属性中birth属性是一个可读可写的属性，而age就是一个只读属性。</p>
 
@@ -1364,21 +1368,21 @@ __slots__
 <h4 id="__str__">__str__</h4>
 <p>我们先定义一个Student类，打印一个实例:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="o">...</span>         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-<span class="o">...</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="p">...</span>         <span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="p">...</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Michael'</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x109afb190</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">__main__</span><span class="p">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x109afb190</span><span class="o">&gt;</span>
 </code></pre></div></div>
 <p>打印出一堆&lt;<strong>main</strong>.Student object at 0x109afb190&gt;，不好看。</p>
 
 <p>怎么才能打印好看呢？只需要定义好__str__()方法，返回一个好看的字符串就可以了:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
-<span class="o">...</span>             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>             <span class="k">return</span> <span class="s">'student object (name:</span><span class="si">%</span><span class="s">s)'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+<span class="p">...</span>             <span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>             <span class="k">return</span> <span class="s">'student object (name:%s)'</span> <span class="o">%</span> <span class="bp">self</span><span class="p">.</span><span class="n">name</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">)</span>
 <span class="n">student</span> <span class="nb">object</span> <span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="n">Tom</span><span class="p">)</span>
 </code></pre></div></div>
@@ -1386,7 +1390,7 @@ __slots__
 <p>如果我们直接输入变量而不用print，打印出来的实例还是不好看:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">(</span><span class="s">'Tom'</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
-<span class="o">&lt;</span><span class="n">__main__</span><span class="o">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f4c398b3550</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">__main__</span><span class="p">.</span><span class="n">Student</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7f4c398b3550</span><span class="o">&gt;</span>
 </code></pre></div></div>
 
 <p>这是因为直接显示变量的不是__str__()，而是__repr__()，两者的区别就是__str__()返回用户看到的字符串，而__repr__()返回程序开发者看到的字符串，也就是说，__repr__()是为调试服务的。</p>
@@ -1394,9 +1398,9 @@ __slots__
 <p>解决方法就是在类中定义一个__repr__()。但是通常__str__()和__repr__()的代码是一样的，所以这里可以有一个偷懒的写法:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">'Student object (name=</span><span class="si">%</span><span class="s">s)'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="s">'Student object (name=%s)'</span> <span class="o">%</span> <span class="bp">self</span><span class="p">.</span><span class="n">name</span>
     <span class="n">__repr__</span> <span class="o">=</span> <span class="n">__str__</span>
 </code></pre></div></div>
 
@@ -1407,24 +1411,24 @@ __slots__
 <p>我们以斐波那契数列为例，写一个Fib类，可以作用于for循环:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fib</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c1">#c初始化两个初值a,b
-</span>		<span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c1">#c初始化两个初值a,b
+</span>		<span class="bp">self</span><span class="p">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span>
 
 	<span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 		<span class="k">return</span> <span class="bp">self</span>     <span class="c1">#实例本省就是迭代对象，所以就返回了自己
 </span>
 	<span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-		<span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>   <span class="c1">#计算下一个值
-</span>		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>			   <span class="c1">#退出循环的条件
+		<span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">a</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">b</span>
+		<span class="bp">self</span><span class="p">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">+</span> <span class="bp">self</span><span class="p">.</span><span class="n">b</span>   <span class="c1">#计算下一个值
+</span>		<span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">a</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>			   <span class="c1">#退出循环的条件
 </span>			<span class="k">raise</span> <span class="nb">StopIteration</span><span class="p">()</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>      <span class="c1">#返回下一个值
+		<span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">a</span>      <span class="c1">#返回下一个值
 </span></code></pre></div></div>
 <p>现在，我们就把Fib实例作用于for循环:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">Fib</span><span class="p">():</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="n">n</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">print</span> <span class="n">n</span>
+<span class="p">...</span> 
 <span class="mi">1</span>
 <span class="mi">1</span>
 <span class="mi">2</span>
@@ -1472,13 +1476,13 @@ __slots__
 				<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">b</span>
 			<span class="k">return</span> <span class="n">a</span>
 		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="nb">slice</span><span class="p">):</span>
-			<span class="n">start</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">start</span>
-			<span class="n">stop</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">stop</span>
+			<span class="n">start</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">start</span>
+			<span class="n">stop</span> <span class="o">=</span> <span class="n">n</span><span class="p">.</span><span class="n">stop</span>
 			<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span><span class="mi">1</span>
 			<span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
 			<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">stop</span><span class="p">):</span>
 				<span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">:</span>
-					<span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+					<span class="n">L</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 				<span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">b</span>
 			<span class="k">return</span> <span class="n">L</span>
 </code></pre></div></div>
@@ -1510,15 +1514,15 @@ __slots__
 <h4 id="__getattr__">__getattr__</h4>
 <p>正常情况下，当我们调用类的方法或者属性时，如果不存在，就会报错，例如定义学生类(Student):</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Michael'</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>             <span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Michael'</span>
+<span class="p">...</span> 
 </code></pre></div></div>
 <p>调用name属性，没有问题，但是当调用不存在的属性score属性时，就存在问题了:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span>
 <span class="n">Michael</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'Student'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'score'</span>
@@ -1527,17 +1531,17 @@ __slots__
 
 <p>要避免这个错误，除了可以加上一个score属性之外，Python还有另外一个机制，那就是写一个__getattr__()方法，动态地方茴一个属性。修改如下:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">Student</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="o">...</span>             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Michael'</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">attr</span><span class="p">):</span>
-<span class="o">...</span>             <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s">'score'</span><span class="p">:</span>
-<span class="o">...</span>                     <span class="k">return</span> <span class="mi">99</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="p">...</span>             <span class="bp">self</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">'Michael'</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">attr</span><span class="p">):</span>
+<span class="p">...</span>             <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s">'score'</span><span class="p">:</span>
+<span class="p">...</span>                     <span class="k">return</span> <span class="mi">99</span>
 </code></pre></div></div>
 <p>当调用不存在的属性时，比如score，Python解释器试图调用__getattyr__(self,’score’)来尝试获得属性，这样，我们就有机会返回score属性的值:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Student</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">name</span>
 <span class="s">'Michael'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">score</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">score</span>
 <span class="mi">99</span>
 </code></pre></div></div>
 <p><strong>注意，只有在没有找到属性的情况下，才调用__getattr__，已有的属性，比如name，不会在__getattr__()</strong>中查找。</p>
@@ -1652,8 +1656,8 @@ __slots__
 		</span>
 		<span class="next-post">
 			
-				<a href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/26/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B04.html">
-					<span class="page-number">Python 学习笔记（4）</span>
+				<a href="/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">
+					<span class="page-number">Linux make 和 Makefile 详解</span>
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
@@ -2018,6 +2022,14 @@ __slots__
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -2043,10 +2055,6 @@ __slots__
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

@@ -11,7 +11,7 @@
 ">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -406,6 +406,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -431,10 +439,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -491,6 +495,28 @@
 
 <div class="wrapper">
 <ul class="post-list">
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">ptrace 系统调用拦截和模拟</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>背景 在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式： KVM模式 ptrace模式 另外，在Safe and Secure Subprocess Virtualization in Userspace中也提到了采用ptrace实现系统调用拦截。 以前对于ptrace的概念还停留在它是实现strace命令的基础，具体底层的实现原理就一无所知了，因此这篇笔记主要事项记录一下ptrace是如何实现系统调用拦截。 ptrace 定义 ptrace(2) (“process trace”)是Linux系统中的一个系统调用（syscall），它通常用于实现进程debugging功能。 通过ptrace系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置traced的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。 ptrace系统调用函数的定义： long...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">March 28, 2022</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/linux">Linux</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
   
   <li>
     <h2>
@@ -571,28 +597,6 @@
       in 
         
         <a href="/category/利器">利器</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">QEMU/KVM 原理综述</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>QEMU 工作原理简介 QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用： 作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。 作为虚拟机监视器：模拟全系统，利用其它VMM（Xen，KVM等等）来使用硬件提供的虚拟化支持，创建接近于主机性能的虚拟机。 QEMU虚拟化的主要原理 系统虚拟化最重要的就是虚拟化出计算机系统中最重要的三大组件：CPU、内存和IO设备。QEMU虚拟出来的CPU成为vCPU，为了提升vCPU执行Guest OS中指令的效率，通过KVM、Xen等虚拟化技术，直接利用CPU硬件虚拟化的支持，在主机上安全地执行虚拟机代码（需要BIOS中CPU开启对应的硬件虚拟化支持）。 在x86平台上最常见的虚拟化组合就是QEMU/KVM的组合了，其中利用QEMU来模拟IO外设，通过KVM来捕获Guest OS中运行的指令并将其中非特权指令在物理CPU上直接运行，达到硬件加速的目的。 KVM内核模块对用户空间只暴露出一个/dev/kvm的设备文件，然后通过ioctl命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。 KVM 虚拟化原理简介 KVM是Linux内核的一个虚拟化特性，由一组内核模块文件组成，它可以让QEMU中运行的Guest OS的指令直接在Host OS上的CPU中执行，前提是Guest OS和Host...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">November 21, 2018</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/虚拟化">虚拟化</a>
         
       
       </div>
@@ -956,6 +960,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -981,10 +993,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

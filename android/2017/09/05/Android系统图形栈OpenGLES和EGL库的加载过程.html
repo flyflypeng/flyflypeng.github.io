@@ -10,7 +10,7 @@
   <meta name="description" content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -531,21 +535,21 @@
 <p>前面我们已经介绍过 OpenGL ES/EGL Wrapper 库是一个将 OpenGL ES API 和 OpenGL ES API 具体实现绑定在一起的库，它对应的源码路径是：<em>/frameworks/native/opengl/libs/</em>，其中:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">libGLESv1_CM.so</code>：OpenGL ES 1.x API 的 Wrapper 库</li>
-  <li><code class="highlighter-rouge">libGLESv2.so</code>：OpenGL ES 2.0 的 Wrapper 库</li>
-  <li><code class="highlighter-rouge">libGLESv3.so</code>：OpenGL ES 3.0 的 Wrapper 库</li>
+  <li><code class="language-plaintext highlighter-rouge">libGLESv1_CM.so</code>：OpenGL ES 1.x API 的 Wrapper 库</li>
+  <li><code class="language-plaintext highlighter-rouge">libGLESv2.so</code>：OpenGL ES 2.0 的 Wrapper 库</li>
+  <li><code class="language-plaintext highlighter-rouge">libGLESv3.so</code>：OpenGL ES 3.0 的 Wrapper 库</li>
 </ul>
 
-<p>其中因为 OpenGL ES 3.0 API 是兼容 OpenGL ES 2.0 API 的，所以 <code class="highlighter-rouge">libGLESv2.so</code> 库本质上和 <code class="highlighter-rouge">libGLESv3.so</code> 库是一样的。</p>
+<p>其中因为 OpenGL ES 3.0 API 是兼容 OpenGL ES 2.0 API 的，所以 <code class="language-plaintext highlighter-rouge">libGLESv2.so</code> 库本质上和 <code class="language-plaintext highlighter-rouge">libGLESv3.so</code> 库是一样的。</p>
 
 <h3 id="22-opengl-esegl-实现库">2.2 OpenGL ES/EGL 实现库</h3>
-<p>如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以<code class="highlighter-rouge">.so</code>的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：</p>
+<p>如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以<code class="language-plaintext highlighter-rouge">.so</code>的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>flounder:/vendor/lib64/egl <span class="c"># ls</span>
 libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 </code></pre></div></div>
 
-<p>如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： <code class="highlighter-rouge">/system/lib64/egl/libGLES_android.so</code>。而 <code class="highlighter-rouge">libGLES_android.so</code> 库在 Android 7.1 系统对应的实现源码路径为：<em>/frameworks/native/opengl/libagl/</em> 。</p>
+<p>如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： <code class="language-plaintext highlighter-rouge">/system/lib64/egl/libGLES_android.so</code>。而 <code class="language-plaintext highlighter-rouge">libGLES_android.so</code> 库在 Android 7.1 系统对应的实现源码路径为：<em>/frameworks/native/opengl/libagl/</em> 。</p>
 
 <h2 id="3-android-71-中加载-opengl-es-库的过程">3. Android 7.1 中加载 OpenGL ES 库的过程</h2>
 <p>Android 中图形渲染所采用的方式（硬件 or 软件）是在系统启动之后动态确定的，而确定渲染方式的这个源码文件就是 <em>/frameworks/native/opengl/libs/EGL/Loader.cpp</em> 。</p>
@@ -578,9 +582,9 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 
 <ol>
   <li>
-    <p>首先，<code class="highlighter-rouge">Loader::open()</code> 入口函数会调用 <code class="highlighter-rouge">setEmulatorGlesValue()</code> 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：</p>
+    <p>首先，<code class="language-plaintext highlighter-rouge">Loader::open()</code> 入口函数会调用 <code class="language-plaintext highlighter-rouge">setEmulatorGlesValue()</code> 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static void setEmulatorGlesValue(void) {
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static void setEmulatorGlesValue(void) {
      char prop[PROPERTY_VALUE_MAX];
      property_get("ro.kernel.qemu", prop, "0"); //读取 ro.kernel.qemu 属性值，判断Android系统是否运行在 qemu 中
      if (atoi(prop) != 1) return;
@@ -615,9 +619,9 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 </code></pre></div>    </div>
   </li>
   <li>
-    <p>在 <code class="highlighter-rouge">load_system_driver()</code> 函数中，内部类 MatchFile 类中会调用 <code class="highlighter-rouge">checkGlesEmulationStatus()</code> 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：</p>
+    <p>在 <code class="language-plaintext highlighter-rouge">load_system_driver()</code> 函数中，内部类 MatchFile 类中会调用 <code class="language-plaintext highlighter-rouge">checkGlesEmulationStatus()</code> 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static void* load_system_driver(const char* kind) {
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static void* load_system_driver(const char* kind) {
      ATRACE_CALL();
      class MatchFile {
      public:
@@ -665,7 +669,7 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
  }
 </code></pre></div>    </div>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static int
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> static int
  checkGlesEmulationStatus(void)
  {
      /* We're going to check for the following kernel parameters:
@@ -698,12 +702,12 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 </code></pre></div>    </div>
   </li>
   <li>
-    <p>总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 <strong>emulationStatus</strong> 值 来确定是加软件模拟实现的 OpenGL ES API 库 <code class="highlighter-rouge">libGLES_android.so</code>，还是加载 <code class="highlighter-rouge">libGLES_emulation.so</code>库将 OpenGL ES 指令重定向到 Host 系统中去执行。</p>
+    <p>总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 <strong>emulationStatus</strong> 值 来确定是加软件模拟实现的 OpenGL ES API 库 <code class="language-plaintext highlighter-rouge">libGLES_android.so</code>，还是加载 <code class="language-plaintext highlighter-rouge">libGLES_emulation.so</code>库将 OpenGL ES 指令重定向到 Host 系统中去执行。</p>
   </li>
 </ol>
 
 <h3 id="33-opengl-esegl-库加载和解析过程">3.3 OpenGL ES/EGL 库加载和解析过程</h3>
-<p>正如<a href="http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html">Android 系统图形栈: OpenGL ES 和 EGL 介绍</a>这篇文章中分析的那样，在进行 OpenGL 编程时，最先开始需要获取 Display，这将调用 <code class="highlighter-rouge">eglgGetDisplay()</code> 函数被调用。在 eglGetDisplay() 里则会调用 <code class="highlighter-rouge">egl_init_drivers()</code> 初始化驱动：装载各个库进行解析，将 OpenGL ES/EGL API 函数接口和具体的实现绑定在一起，并将结果保存在 <strong>egl_connection_t</strong> 类型的全局变量 <strong>gEGLImpl</strong> 的结构体的成员变量中。</p>
+<p>正如<a href="http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html">Android 系统图形栈: OpenGL ES 和 EGL 介绍</a>这篇文章中分析的那样，在进行 OpenGL 编程时，最先开始需要获取 Display，这将调用 <code class="language-plaintext highlighter-rouge">eglgGetDisplay()</code> 函数被调用。在 eglGetDisplay() 里则会调用 <code class="language-plaintext highlighter-rouge">egl_init_drivers()</code> 初始化驱动：装载各个库进行解析，将 OpenGL ES/EGL API 函数接口和具体的实现绑定在一起，并将结果保存在 <strong>egl_connection_t</strong> 类型的全局变量 <strong>gEGLImpl</strong> 的结构体的成员变量中。</p>
 
 <p>下面以 SurfaceFlinger 进程为例进行分析，整个 OpenGL ES/EGL 库的加载和解析流程如下所示：</p>
 
@@ -735,7 +739,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <p>其中 egl_connection_t 的定义：
 <em>/frameworks/native/opengl/libs/EGL/egldefs.h</em></p>
 
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">egl_connection_t</span> <span class="p">{</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">egl_connection_t</span> <span class="p">{</span>
     <span class="k">enum</span> <span class="p">{</span>
         <span class="n">GLESv1_INDEX</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">GLESv2_INDEX</span> <span class="o">=</span> <span class="mi">1</span>
@@ -769,15 +773,15 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define GL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
 #define EGL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
 </span>
-<span class="k">struct</span> <span class="n">egl_t</span> <span class="p">{</span>
-    <span class="cp">#include "EGL/egl_entries.in"
+<span class="k">struct</span> <span class="nc">egl_t</span> <span class="p">{</span>
+    <span class="cp">#include</span> <span class="cpf">"EGL/egl_entries.in"</span><span class="cp">
 </span><span class="p">};</span>
 
-<span class="k">struct</span> <span class="n">gl_hooks_t</span> <span class="p">{</span>
-    <span class="k">struct</span> <span class="n">gl_t</span> <span class="p">{</span>
-        <span class="cp">#include "entries.in"
+<span class="k">struct</span> <span class="nc">gl_hooks_t</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="nc">gl_t</span> <span class="p">{</span>
+        <span class="cp">#include</span> <span class="cpf">"entries.in"</span><span class="cp">
 </span>    <span class="p">}</span> <span class="n">gl</span><span class="p">;</span>
-    <span class="k">struct</span> <span class="n">gl_ext_t</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="nc">gl_ext_t</span> <span class="p">{</span>
         <span class="c1">// __eglMustCastToProperFunctionPointerType 是一个 typedef 的函数指针类型，它的返回值是void，参数也是void</span>
         <span class="n">__eglMustCastToProperFunctionPointerType</span> <span class="n">extensions</span><span class="p">[</span><span class="n">MAX_NUMBER_OF_GL_EXTENSIONS</span><span class="p">];</span>
     <span class="p">}</span> <span class="n">ext</span><span class="p">;</span>
@@ -801,7 +805,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <p>在这个文件中，我们可以看到所有的内容都是 EGL_ENTRY 宏定义的，根据 EGL_ENTRY 宏定义：
 <em>/frameworks/native/opengl/libs/EGL/hooks.h</em></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
 //这些函数变量最后会和具体的 OpenGL 和 EGL API 的实现绑定在一起
 #define GL_ENTRY(_r,_api,...) _r (*_api)(__VA_ARGS__);
 #define EGL_ENTRY(_r,_api,...) _r(*_api)(__VA_ARGS__);
@@ -835,7 +839,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <h4 id="332-surfaceflinger-初始化成员变量-megldisplay">3.3.2 SurfaceFlinger 初始化成员变量 mEGLDisplay</h4>
 <p>在 SurfaceFlinger 类中有一个 EGLDisplay 类型的成员变量 mEGLDisplay，它是 EGL 中用来构建 OpenGL ES 渲染环境所需的参数。</p>
 
-<p>SurfaceFlinger 中调用 <code class="highlighter-rouge">eglGetDisplay()</code> 初始化 mEGLDisplay 的代码如下：
+<p>SurfaceFlinger 中调用 <code class="language-plaintext highlighter-rouge">eglGetDisplay()</code> 初始化 mEGLDisplay 的代码如下：
 <em>/frameworks/native/services/surfaceflinger/SurfaceFlinger.cpp</em></p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="n">SurfaceFlinger</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">{</span>
@@ -852,7 +856,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
     <span class="p">...</span>
 </code></pre></div></div>
 
-<p>紧接着在 <code class="highlighter-rouge">eglGetDisplay()</code> 中调用 <code class="highlighter-rouge">egl_init_drivers()</code>
+<p>紧接着在 <code class="language-plaintext highlighter-rouge">eglGetDisplay()</code> 中调用 <code class="language-plaintext highlighter-rouge">egl_init_drivers()</code>
 <em>/frameworks/native/opengl/libs/EGL/eglApi.cpp</em></p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EGLDisplay</span> <span class="nf">eglGetDisplay</span><span class="p">(</span><span class="n">EGLNativeDisplayType</span> <span class="n">display</span><span class="p">)</span>
@@ -868,7 +872,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>最后，<code class="highlighter-rouge">egl_init_drivers()</code> 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 <code class="highlighter-rouge">egl_init_drivers_locked()</code> 函数
+<p>最后，<code class="language-plaintext highlighter-rouge">egl_init_drivers()</code> 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 <code class="language-plaintext highlighter-rouge">egl_init_drivers_locked()</code> 函数
 <em>/frameworks/native/opengl/libs/EGL/egl.cpp</em></p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">EGLBoolean</span> <span class="nf">egl_init_drivers</span><span class="p">()</span> <span class="p">{</span>
@@ -881,7 +885,7 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>下面就是对 <code class="highlighter-rouge">egl_init_drivers_locked()</code> 函数进行一个分析：</p>
+<p>下面就是对 <code class="language-plaintext highlighter-rouge">egl_init_drivers_locked()</code> 函数进行一个分析：</p>
 
 <p>egl_init_drivers_locked() 函数代码如下所示：
 <em>/frameworks/native/opengl/libs/EGL/egl.cpp</em></p>
@@ -969,9 +973,9 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">open()</code> 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。</p>
+<p><code class="language-plaintext highlighter-rouge">open()</code> 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。</p>
 
-<p><code class="highlighter-rouge">Loader::load_driver()</code> 函数代码如下所示：
+<p><code class="language-plaintext highlighter-rouge">Loader::load_driver()</code> 函数代码如下所示：
 <em>/frameworks/native/opengl/libs/EGL/Loader.cpp</em></p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="o">*</span><span class="n">Loader</span><span class="o">::</span><span class="n">load_driver</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">kind</span><span class="p">,</span>
@@ -1040,14 +1044,14 @@ st-&gt;op1-&gt;op2-&gt;op3-&gt;op4-&gt;op5-&gt;op6-&gt;op7-&gt;op8-&gt;e
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">Loader::load_driver()</code> 它主要实现了两个功能：</p>
+<p><code class="language-plaintext highlighter-rouge">Loader::load_driver()</code> 它主要实现了两个功能：</p>
 
 <ul>
-  <li>通过 <code class="highlighter-rouge">load_system_driver() </code> 函数查找 OpenGL ES/EGL 实现库，并在指定的存放路径中找到共享链接库文件并打开它。</li>
-  <li>调用 <code class="highlighter-rouge">init_api()</code>解析打开的 OpenGL ES/EGL 共享链接库，将 OpenGL ES/EGL API 函数指针和共享链接库中实现的对应的函数符号绑定在一起，这样调用 OpenGL ES/EGL API 就会调用到具体实现的OpenGL ES/EGL 共享链接库中对应函数。</li>
+  <li>通过 <code class="language-plaintext highlighter-rouge">load_system_driver() </code> 函数查找 OpenGL ES/EGL 实现库，并在指定的存放路径中找到共享链接库文件并打开它。</li>
+  <li>调用 <code class="language-plaintext highlighter-rouge">init_api()</code>解析打开的 OpenGL ES/EGL 共享链接库，将 OpenGL ES/EGL API 函数指针和共享链接库中实现的对应的函数符号绑定在一起，这样调用 OpenGL ES/EGL API 就会调用到具体实现的OpenGL ES/EGL 共享链接库中对应函数。</li>
 </ul>
 
-<p>具体 <code class="highlighter-rouge">load_system_driver()</code> 函数和 <code class="highlighter-rouge">init_api()</code> 函数的实现就不一一展开了，大家可以到 <em>/frameworks/native/opengl/libs/EGL/Loader.cpp</em> 文件中查看，应该写得非常直接清楚了。</p>
+<p>具体 <code class="language-plaintext highlighter-rouge">load_system_driver()</code> 函数和 <code class="language-plaintext highlighter-rouge">init_api()</code> 函数的实现就不一一展开了，大家可以到 <em>/frameworks/native/opengl/libs/EGL/Loader.cpp</em> 文件中查看，应该写得非常直接清楚了。</p>
 
 <h3 id="34-小结">3.4 <strong>小结</strong></h3>
 <p>至此，有关 OpenGL ES/EGL 库的加载和解析过程就分析完了，<strong>整个加载和解析的目的就是将 OpenGL ES/EGL API 和具体实现函数绑定在一起</strong>，这样当程序调用 OpenGL ES/EGL API 时，就会调用到实际的实现函数了。然后，在硬件平台上的 Android 系统加载的是硬件厂商提供的 OpenGL ES/EGL 实现库，而在 qemu 模拟器中运行的 Android 系统中加载的则是软件模拟实现的 
@@ -1532,6 +1536,14 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1557,10 +1569,6 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

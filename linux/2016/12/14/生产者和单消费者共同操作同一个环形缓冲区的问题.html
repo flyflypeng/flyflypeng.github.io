@@ -10,7 +10,7 @@
   <meta name="description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -495,7 +499,7 @@
   <div class="post-categories">
   in 
     
-    <a href="/category/Linux">Linux</a>
+    <a href="/category/linux">Linux</a>
     
   
   </div>
@@ -509,7 +513,7 @@
 <ol>
   <li>本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。</li>
   <li>生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。</li>
-  <li>环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 <code class="highlighter-rouge">2^N</code> 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
+  <li>环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 <code class="language-plaintext highlighter-rouge">2^N</code> 个（N为大于1的正整数），环形缓冲区的数据结构定义为：
     <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cp">#define RING_BUFFER_SIZE N
 </span>    
  <span class="k">struct</span> <span class="n">RingBuffer</span><span class="p">{</span>
@@ -518,7 +522,7 @@
      <span class="n">data_block</span> <span class="n">data</span><span class="p">[(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">N</span><span class="p">)];</span> <span class="c1">//data_block 是环形缓冲区中所存放的数据单元的类型</span>
  <span class="p">}</span>
 </code></pre></div>    </div>
-    <p>在创建环形缓冲区之后，RingBuffer 结构体中的成员<code class="highlighter-rouge">w_pos</code>和<code class="highlighter-rouge">r_pos</code>都被初始化为 0。</p>
+    <p>在创建环形缓冲区之后，RingBuffer 结构体中的成员<code class="language-plaintext highlighter-rouge">w_pos</code>和<code class="language-plaintext highlighter-rouge">r_pos</code>都被初始化为 0。</p>
   </li>
   <li>判断环形缓冲区是否为空的伪代码：
     <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">if</span><span class="p">((</span><span class="n">w_pos</span> <span class="o">-</span> <span class="n">r_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
@@ -562,11 +566,11 @@
  <span class="p">}</span>
 </code></pre></div>    </div>
     <h1 id="疑惑">疑惑？</h1>
-    <p>如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加<code class="highlighter-rouge">互斥锁</code>，上面代码是否会出现<code class="highlighter-rouge">Bug</code>，或者不确定的状态？</p>
+    <p>如果按照上面提出的条件和处理逻辑，当生产者进程和消费者进程同时运行时，如果不加<code class="language-plaintext highlighter-rouge">互斥锁</code>，上面代码是否会出现<code class="language-plaintext highlighter-rouge">Bug</code>，或者不确定的状态？</p>
   </li>
 </ol>
 
-<p>而且我想了很多遍生产者和消费者的处理逻辑，他们只会在最后执行语句 <code class="highlighter-rouge">w_pos++</code> 和 <code class="highlighter-rouge">r_pos++</code> 时改变两个进程都共享的值，虽然 <code class="highlighter-rouge">w_pos++</code> 和 <code class="highlighter-rouge">r_pos++</code> 的操作不是原子操作的，但是好像是不是原子操作都不会对结果产生影响，我就是在这里思考不清楚！不知道大家对此有什么看法呢？能否举出特殊的栗子来描述一下。</p>
+<p>而且我想了很多遍生产者和消费者的处理逻辑，他们只会在最后执行语句 <code class="language-plaintext highlighter-rouge">w_pos++</code> 和 <code class="language-plaintext highlighter-rouge">r_pos++</code> 时改变两个进程都共享的值，虽然 <code class="language-plaintext highlighter-rouge">w_pos++</code> 和 <code class="language-plaintext highlighter-rouge">r_pos++</code> 的操作不是原子操作的，但是好像是不是原子操作都不会对结果产生影响，我就是在这里思考不清楚！不知道大家对此有什么看法呢？能否举出特殊的栗子来描述一下。</p>
 
 
 </article>
@@ -1042,6 +1046,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1067,10 +1079,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

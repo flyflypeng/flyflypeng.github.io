@@ -10,7 +10,7 @@
   <meta name="description" content="1. 概要上周我在网易云课堂上学习了孟宁老师的《Linux 内核分析》第二周的课程内容：操作系统是如何工作的？课程的重点内容就是介绍了函数调用堆栈的过程、Linux 中内联汇编的使用方法，以及一个基于 Linux 3.9.4 内核自己实现的时间片轮转多道程序内核。本文就主要对最后一个重点内容：一个简单的时间片轮转...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -539,7 +543,7 @@
 #define KERNEL_STACK_SIZE 4*1024
 </span>
 <span class="c1">// 定义一个进程中主线程执行时，CPU 中 eip 和 esp 寄存器中的值</span>
-<span class="k">struct</span> <span class="n">Thread</span>
+<span class="k">struct</span> <span class="nc">Thread</span>
 <span class="p">{</span>
     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">ip</span><span class="p">;</span>
     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">sp</span><span class="p">;</span>
@@ -547,16 +551,16 @@
 
 
 <span class="c1">// 进程控制块定义</span>
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">PCB</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">PCB</span>
 <span class="p">{</span>
     <span class="kt">int</span> <span class="n">pid</span><span class="p">;</span>   <span class="c1">// 进程号</span>
     <span class="k">volatile</span> <span class="kt">long</span> <span class="n">state</span><span class="p">;</span>   <span class="c1">// 表示当前进程的状态， -1: 不可运行，0: 运行中，&gt;0: 停止</span>
     <span class="kt">char</span> <span class="n">stack</span><span class="p">[</span><span class="n">KERNEL_STACK_SIZE</span><span class="p">];</span>  <span class="c1">// 内核堆栈空间</span>
     <span class="c1">// 进程执行时的 CPU 中关键寄存器的状态</span>
-    <span class="k">struct</span> <span class="n">Thread</span> <span class="kr">thread</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">Thread</span> <span class="kr">thread</span><span class="p">;</span>
     <span class="c1">// 进程中主程序的入口地址</span>
     <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">task_entry</span><span class="p">;</span>
-    <span class="k">struct</span> <span class="n">PCB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>   <span class="c1">// 指向下一个进程控制块</span>
+    <span class="k">struct</span> <span class="nc">PCB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>   <span class="c1">// 指向下一个进程控制块</span>
 <span class="p">}</span> <span class="n">tPCB</span><span class="p">;</span>
 </code></pre></div></div>
 
@@ -1297,6 +1301,14 @@ movl %1,%%ebp\n\t //在内联汇编的第一行中加上这句
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1322,10 +1334,6 @@ movl %1,%%ebp\n\t //在内联汇编的第一行中加上这句
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

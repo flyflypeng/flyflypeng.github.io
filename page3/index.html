@@ -11,7 +11,7 @@
 ">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -406,6 +406,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -431,10 +439,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -496,6 +500,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html">ramfs, tmpfs, rootfs, initramfs的区别</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>什么是文件系统？ 如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什么东西呢？ 下面是引用自Wikipedia上关于文件系统的介绍： 在计算机系统中，文件系统（file system）是一种存储和组织数据的一种方法，它使得对数据发访问和查找变得更加容易。 文件系统使用文件和树形目录的抽象逻辑概念代替了硬盘和光盘等物理存储设备所用的数据块的概念，用户使用文件系统来保存数据而不必关系数据实际保存在物理存储设备的地址为多少的数据块中，用户只需要记住这个文件的所属目录和文件名即可。在写入数据之前，用户也不必关心硬盘上哪个数据块没有被使用，所有的物理存储设备的存储空间的分配和释放功能都是由文件系统自动完成，用户只需要记住数据被写入到了哪个文件中。 文件系统可以用来在不同的物理存储介质上存储和组织数据，通常最常见的物理存储设备是硬盘，光盘以及Flash，磁带等等。但是，在某些情况下文件系统也可以使用内存（random-access memory，RAM）作为文件的存储介质，例如tmpfs，当文件存储在这种存储介质上时，一旦计算机掉电之后，该介质上面的所有文件就都消失了。甚至有的文件系统可能根本没有对应的文件，例如如proc文件系统。 什么是...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">June 14, 2017</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/内核">内核</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/android/2017/03/26/Android-HAL%E5%B1%82%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90.html">Android HAL 层原理分析</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -550,7 +576,7 @@
       <div class="post-categories">
       in 
         
-        <a href="/category/Linux">Linux</a>
+        <a href="/category/linux">Linux</a>
         
       
       </div>
@@ -569,28 +595,6 @@
     </section>
     <section class="post-meta">
       <div class="post-date">October 24, 2016</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/利器">利器</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2016/10/18/Git-Command.html">Git 常用命令</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>1. 我为什么要做这个 Cheat Sheet？ 从接触 Git 到现在已经快两年多了，虽然以前入门学习 Git 时刷过一遍 《Pro Git》（这本书就像是 Git 的红宝书，非常值得你全部通读一遍），但是因为那时并没有什么机会去使用 Git，所以曾经看过的许多 Git 命令也就慢慢淡忘了，感觉自己的 Git 水平还仅仅停留在 add, commit,...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">October 18, 2016</div>
       <div class="post-categories">
       in 
         
@@ -962,6 +966,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -987,10 +999,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

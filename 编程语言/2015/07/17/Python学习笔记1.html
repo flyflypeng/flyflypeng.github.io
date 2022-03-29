@@ -10,7 +10,7 @@
   <meta name="description" content="1. Python简介 Python是著名的“龟叔”Guido van Rossum在1989年圣诞节期间，为了打发无聊的圣诞节而编写的一个编程语言[1]。Python就为我们提供了非常完善的基础代码库，覆盖了网络、文件、GUI、数据库、文本等大量内容，被形象地称作“内置电池（batteries included...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -708,7 +712,7 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 </blockquote>
 
 <p>但是如果换成下面的形式，输出结果则又不同了。</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span> <span class="s">r'\\\t\\'</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span> <span class="sa">r</span><span class="s">'\\\t\\'</span>
 </code></pre></div></div>
 <p>输出的结果为:</p>
 <blockquote>
@@ -835,48 +839,48 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 <span class="n">a</span>
 </code></pre></div></div>
 <p>Python在后来添加了对Unicode的支持，以Unicode表示的字符串以u’…‘来表示:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="s">u'中国'</span>
-<span class="err">中国</span>
-<span class="o">&gt;&gt;&gt;</span><span class="s">u'中'</span>
-<span class="s">u'</span><span class="se">\u4e2d</span><span class="s">'</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="sa">u</span><span class="s">'中国'</span>
+<span class="n">中国</span>
+<span class="o">&gt;&gt;&gt;</span><span class="sa">u</span><span class="s">'中'</span>
+<span class="sa">u</span><span class="s">'</span><span class="se">\u4e2d</span><span class="s">'</span>
 </code></pre></div></div>
 <p>因此，写u’中‘和写u’\u4e2d’是一样的，在’\u’后面是16进制表示的Unicode编码值。</p>
 
 <p>字符串’xxx’虽然是ASCII编码，但也可以看成是UTF-8编码，而u’xxx’则只能是Unicode编码。</p>
 
 <h4 id="unicode字符串uxxx转换为utf-8编码的xxx用encodeutf-8方法">Unicode字符串u’xxx’转换为UTF-8编码的’xxx’用encode(‘utf-8’)方法</h4>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">u'ABC'</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="sa">u</span><span class="s">'ABC'</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
 <span class="s">'ABC'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s">u'中国'</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="sa">u</span><span class="s">'中国'</span><span class="p">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
 <span class="s">'</span><span class="se">\xe4\xb8\xad\xe5\x9b\xbd</span><span class="s">'</span>
 </code></pre></div></div>
 <p>英文字符转换后表示的UTF-8的值和Unicode值相等（但占用的存储空间不同），而中文字符转换后1个Unicode字符将变为3个UTF-8字符，你看到的\xe4就是其中一个字节，因为它的值是228，没有对应的字母可以显示，所以以十六进制显示字节的数值。len()函数可以返回<strong>字符串的长度</strong>:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="s">u'ABC'</span><span class="p">)</span>  <span class="c1">#占用6个字节的存储空间
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="sa">u</span><span class="s">'ABC'</span><span class="p">)</span>  <span class="c1">#占用6个字节的存储空间
 </span><span class="mi">3</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="s">'ABC'</span><span class="p">)</span>   <span class="c1">#占用3个字节的存储空间
 </span><span class="mi">3</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="s">u'中国'</span><span class="p">)</span>  <span class="c1">#占用4个字节的存储空间
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="sa">u</span><span class="s">'中国'</span><span class="p">)</span>  <span class="c1">#占用4个字节的存储空间
 </span><span class="mi">2</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="s">'</span><span class="se">\xe4\xb8\xad\xe5\x9b\xbd</span><span class="s">'</span><span class="p">)</span>  <span class="c1">#占用6个字节的存储空间
 </span><span class="mi">6</span>
 </code></pre></div></div>
 
 <h4 id="utf-8编码表示的字符串xxx转换为unicode字符串uxxx用decodeutf-8方法">UTF-8编码表示的字符串’xxx’转换为Unicode字符串u’xxx’用decode(‘utf-8’)方法</h4>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'ABC'</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
-<span class="s">u'ABC'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s">'中国'</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
-<span class="s">u'</span><span class="se">\u4e2d\u56fd</span><span class="s">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s">'</span><span class="se">\xe4\xb8\xad\xe5\x9b\xbd</span><span class="s">'</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
-<span class="s">u'</span><span class="se">\u4e2d\u56fd</span><span class="s">'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="s">'</span><span class="se">\xe4\xb8\xad\xe5\x9b\xbd</span><span class="s">'</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
-<span class="err">中国</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'ABC'</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+<span class="sa">u</span><span class="s">'ABC'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s">'中国'</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+<span class="sa">u</span><span class="s">'</span><span class="se">\u4e2d\u56fd</span><span class="s">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s">'</span><span class="se">\xe4\xb8\xad\xe5\x9b\xbd</span><span class="s">'</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+<span class="sa">u</span><span class="s">'</span><span class="se">\u4e2d\u56fd</span><span class="s">'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="s">'</span><span class="se">\xe4\xb8\xad\xe5\x9b\xbd</span><span class="s">'</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf-8'</span><span class="p">)</span>
+<span class="n">中国</span>
 </code></pre></div></div>
 
 <h4 id="python脚本文件中一定要在代码前面指定编码格式">python脚本文件中一定要在代码前面指定编码格式</h4>
 <p>由于Python源代码也是一个文本文件，所以，当你的源代码中包含中文的时候，在保存源代码时，就需要务必指定保存为UTF-8编码。当Python解释器读取源代码时，为了让它按UTF-8编码读取，我们通常在文件开头写上这两行:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-</span></code></pre></div></div>
+</code></pre></div></div>
 <p>第一行注释是为了告诉Linux/OS X系统，这是一个Python可执行程序，Windows系统会忽略这个注释；</p>
 
 <p>第二行注释是为了告诉Python解释器，按照UTF-8编码读取源代码，否则，你在源代码中写的中文输出可能会有乱码。</p>
@@ -885,9 +889,9 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 
 <h3 id="53-格式化-">5.3 格式化 <span id="5.3"></span></h3>
 <p>在Python中，格式化的方法和C语言一样都是采用百分号%实现的，例如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">"Hello,</span><span class="si">%</span><span class="s">s"</span> <span class="o">%</span> <span class="s">'world'</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">"Hello,%s"</span> <span class="o">%</span> <span class="s">'world'</span>
 <span class="s">'Hello,world'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s">'Hi,</span><span class="si">%</span><span class="s">s,you have $</span><span class="si">%</span><span class="s">d'</span> <span class="o">%</span> <span class="p">(</span><span class="s">'Peter'</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s">'Hi,%s,you have $%d'</span> <span class="o">%</span> <span class="p">(</span><span class="s">'Peter'</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
 <span class="s">'Hi,Peter,you have $10000'</span>
 </code></pre></div></div>
 <p>%运算符就是用来格式化字符串的。在字符串内部，%s表示用字符串替换，%d表示用整数替换，有几个%?占位符，后面就跟几个变量或者值，顺序要对应好。如果只有一个%?，括号可以省略。</p>
@@ -901,19 +905,19 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 </ul>
 
 <p>其中，格式化整数和浮点数还可以指定是否补0和整数与小数的位数:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'</span><span class="si">%2</span><span class="s">d - </span><span class="si">%02</span><span class="s">d'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'%2d - %02d'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 <span class="s">' 1 - 02'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="s">'</span><span class="si">%.2</span><span class="s">f'</span> <span class="o">%</span> <span class="p">(</span><span class="mf">3.1415916</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="s">'%.2f'</span> <span class="o">%</span> <span class="p">(</span><span class="mf">3.1415916</span><span class="p">)</span>
 <span class="s">'3.14'</span>
 </code></pre></div></div>
 <p>如果你不太确定应该用什么，%s永远起作用，它会把任何数据类型转换为字符串：</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'Age = </span><span class="si">%</span><span class="s">s , Gender = </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="s">'Male'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'Age = %s , Gender = %s'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="s">'Male'</span><span class="p">)</span>
 <span class="s">'Age = 23 , Gender = Male'</span>
 </code></pre></div></div>
 
 <p>有些时候，字符串里面的%是一个普通字符怎么办？这个时候就需要转义，用%%来表示一个%</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'growth rate: </span><span class="si">%</span><span class="s">d </span><span class="si">%%</span><span class="s">'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-<span class="s">'growth rate: 20 </span><span class="si">%</span><span class="s">'</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="s">'growth rate: %d %%'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="s">'growth rate: 20 %'</span>
 </code></pre></div></div>
 <h3 id="54-使用list和tuple-">5.4 使用list和tuple <span id="5.4"></span></h3>
 
@@ -967,7 +971,7 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 <p>函数原型: append(待插入数据元素)
 函数功能: 将数据元素参数插入到list的末尾。
 例子:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Adam'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Adam'</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span>
 <span class="p">[</span><span class="s">'Bob'</span><span class="p">,</span> <span class="s">'Michael'</span><span class="p">,</span> <span class="s">'Tracy'</span><span class="p">,</span> <span class="s">'Adam'</span><span class="p">]</span>
 </code></pre></div></div>
@@ -975,7 +979,7 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 <p>函数原型: insert(待插入位置索引,待插入数据元素)
 函数功能: 在索引指定位置插入待插入的数据元素
 例子:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s">'Tom'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s">'Tom'</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span>
 <span class="p">[</span><span class="s">'Bob'</span><span class="p">,</span> <span class="s">'Tom'</span><span class="p">,</span> <span class="s">'Michael'</span><span class="p">,</span> <span class="s">'Tracy'</span><span class="p">,</span> <span class="s">'Adam'</span><span class="p">]</span>
 </code></pre></div></div>
@@ -983,11 +987,11 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 <p>函数原型: pop(待删除元素的索引),pop()
 函数功能: 如果括号内有参数，则删除索引指定位置数据元素，否则就删除list中的最后一个元素。
 例子:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="s">'Tom'</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span>
 <span class="p">[</span><span class="s">'Bob'</span><span class="p">,</span> <span class="s">'Michael'</span><span class="p">,</span> <span class="s">'Tracy'</span><span class="p">,</span> <span class="s">'Adam'</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span><span class="p">.</span><span class="n">pop</span><span class="p">()</span>
 <span class="s">'Adam'</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">classmates</span>
 <span class="p">[</span><span class="s">'Bob'</span><span class="p">,</span> <span class="s">'Michael'</span><span class="p">,</span> <span class="s">'Tracy'</span><span class="p">]</span>
@@ -1068,14 +1072,14 @@ raw_input()读取的内容永远以字符串的形式返回，但是我们可以
 
 <h3 id="55-条件判断-">5.5 条件判断 <span id="5.5"></span></h3>
 <p>Python中判断语句的格式为:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">&lt;</span><span class="err">条件判断</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">:</span>
-    <span class="o">&lt;</span><span class="err">执行</span><span class="mi">1</span><span class="o">&gt;</span>
-<span class="k">elif</span> <span class="o">&lt;</span><span class="err">条件判断</span><span class="mi">2</span><span class="o">&gt;</span><span class="p">:</span>
-    <span class="o">&lt;</span><span class="err">执行</span><span class="mi">2</span><span class="o">&gt;</span>
-<span class="k">elif</span> <span class="o">&lt;</span><span class="err">条件判断</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">:</span>
-    <span class="o">&lt;</span><span class="err">执行</span><span class="mi">3</span><span class="o">&gt;</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">&lt;</span><span class="n">条件判断1</span><span class="o">&gt;</span><span class="p">:</span>
+    <span class="o">&lt;</span><span class="n">执行1</span><span class="o">&gt;</span>
+<span class="k">elif</span> <span class="o">&lt;</span><span class="n">条件判断2</span><span class="o">&gt;</span><span class="p">:</span>
+    <span class="o">&lt;</span><span class="n">执行2</span><span class="o">&gt;</span>
+<span class="k">elif</span> <span class="o">&lt;</span><span class="n">条件判断3</span><span class="o">&gt;</span><span class="p">:</span>
+    <span class="o">&lt;</span><span class="n">执行3</span><span class="o">&gt;</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="o">&lt;</span><span class="err">执行</span><span class="mi">4</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">执行4</span><span class="o">&gt;</span>
 </code></pre></div></div>
 <h3 id="56-循环语句-">5.6 循环语句 <span id="5.6"></span></h3>
 <p>Python中有两种循环语句格式</p>
@@ -1128,13 +1132,13 @@ Woshijpfgg</p>
 </code></pre></div></div>
 
 <p>第二种方法就是使用dict提供的get方法，如果key不存在，则会返回一个None(空值)，否则就会返回key对应的value值，例如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'Thomas'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'Thomas'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'Bob'</span><span class="p">)</span>
 <span class="mi">100</span>
 </code></pre></div></div>
 
 <p>如果我们想从字典中删除一个key-value对，我们可以采用dict提供的pop(key)的方法进行删除，例如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">'Tracy'</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">d</span><span class="p">.</span><span class="n">pop</span><span class="p">(</span><span class="s">'Tracy'</span><span class="p">)</span>
 <span class="mi">60</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">d</span>
 <span class="p">{</span><span class="s">'Bob'</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s">'Michael'</span><span class="p">:</span> <span class="mi">95</span><span class="p">}</span>
@@ -1174,16 +1178,16 @@ Woshijpfgg</p>
 <p>注意，传入的参数[1, 2, 3]是一个list，而显示的set([1, 2, 3])只是告诉你这个set内部有1，2，3这3个元素，显示的[]不表示这是一个list。</p>
 
 <p>可以通过add(key)的方法将元素添加到set中，但是重复添加不会有效果，例如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
 <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
 <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 </code></pre></div></div>
 
 <p>也可以通过remove(key)的方法将元素从set中删除，例如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">s</span>
 <span class="nb">set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </code></pre></div></div>
@@ -1198,7 +1202,7 @@ Woshijpfgg</p>
 <p>set和dict的唯一区别仅在于没有存储对应的value，但是，set的原理和dict一样，所以，<strong>同样不可以放入可变对象</strong>，因为无法判断两个可变对象是否相等，也就无法保证set内部“不会有重复元素”。
 如果将可变对象list放入set，则会报错，如下所示:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">TypeError</span><span class="p">:</span> <span class="n">unhashable</span> <span class="nb">type</span><span class="p">:</span> <span class="s">'list'</span>
@@ -1211,7 +1215,7 @@ Woshijpfgg</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l</span>
 <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">l</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">l</span>
 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 </code></pre></div></div>
@@ -1219,7 +1223,7 @@ Woshijpfgg</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="s">"abc"</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span>
 <span class="s">'abc'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="s">'A'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="s">'A'</span><span class="p">)</span>
 <span class="s">'Abc'</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span>
 <span class="s">'abc'</span>
@@ -1229,7 +1233,7 @@ Woshijpfgg</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="s">"abc"</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span>
 <span class="s">'ABC'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="s">'A'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">replace</span><span class="p">(</span><span class="s">'a'</span><span class="p">,</span><span class="s">'A'</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">b</span>
 <span class="s">'Abc'</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">a</span>
@@ -1723,6 +1727,14 @@ Woshijpfgg</p>
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1748,10 +1760,6 @@ Woshijpfgg</p>
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

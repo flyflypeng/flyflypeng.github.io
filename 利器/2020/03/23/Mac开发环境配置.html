@@ -10,7 +10,7 @@
   <meta name="description" content="Typora我先放张我在Mac中我用Typora写这篇文章时的界面吧，你们说香不香吧：Typora绝对是我这几年中遇到的最好用，最好看，最喜欢的一款软件，没有之一。虽然Typora还没有发布正式的release版本，但是现在它一直在不断迭代更新，修复一些问题和补齐功能。自从6年前入了Markdown的坑，我的笔记...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -531,12 +535,12 @@
 <p>Mac 中修改环境变量的方法和 Linux 中修改环境变量的方法类似，可以修改的文件主要分为两类：</p>
 
 <ul>
-  <li><code class="highlighter-rouge">~/.bash_profile</code>：一般在这个文件中设置用户级的环境变量</li>
-  <li><code class="highlighter-rouge">/etc/bashrc</code>：一般在这个文件中添加系统级环境变量</li>
-  <li><code class="highlighter-rouge">~/.zshrc</code>：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。</li>
+  <li><code class="language-plaintext highlighter-rouge">~/.bash_profile</code>：一般在这个文件中设置用户级的环境变量</li>
+  <li><code class="language-plaintext highlighter-rouge">/etc/bashrc</code>：一般在这个文件中添加系统级环境变量</li>
+  <li><code class="language-plaintext highlighter-rouge">~/.zshrc</code>：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。</li>
 </ul>
 
-<p>添加环境变量的方式就是通过 <code class="highlighter-rouge">export</code> 关键字来进行添加。</p>
+<p>添加环境变量的方式就是通过 <code class="language-plaintext highlighter-rouge">export</code> 关键字来进行添加。</p>
 
 <h2 id="iterm2-配置">iTerm2 配置</h2>
 
@@ -552,16 +556,16 @@
 
 <h3 id="添加背景图片">添加背景图片</h3>
 
-<p>更换背景图片方式：<code class="highlighter-rouge">iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Window -&gt; BackGround Image</code>勾选图片即可。</p>
+<p>更换背景图片方式：<code class="language-plaintext highlighter-rouge">iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Window -&gt; BackGround Image</code>勾选图片即可。</p>
 
-<p>非常好看的一张背景图，背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>：</p>
+<p>非常好看的一张背景图，背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>：</p>
 
 <p>链接: https://pan.baidu.com/s/17zGm…
 提取码: hg67</p>
 
 <h3 id="快捷键">快捷键</h3>
 <ul>
-  <li>在 <code class="highlighter-rouge">Preferences -&gt; Keys -&gt; Hotkey -&gt; Show/hide iTerm2 with a system wide hotkey</code>设置快捷键 <code class="highlighter-rouge">command + option + i</code> 快速显示和隐藏 iTerm。</li>
+  <li>在 <code class="language-plaintext highlighter-rouge">Preferences -&gt; Keys -&gt; Hotkey -&gt; Show/hide iTerm2 with a system wide hotkey</code>设置快捷键 <code class="language-plaintext highlighter-rouge">command + option + i</code> 快速显示和隐藏 iTerm。</li>
   <li>
     <p>常用快捷键列表</p>
 
@@ -608,13 +612,13 @@
 
 <h3 id="记录命令行操作日志">记录命令行操作日志</h3>
 
-<p><code class="highlighter-rouge">Session &gt; Log &gt; Log to File</code></p>
+<p><code class="language-plaintext highlighter-rouge">Session &gt; Log &gt; Log to File</code></p>
 
 <h2 id="zsh">zsh</h2>
 <p>官网：<a href="http://ohmyz.sh/ß">zsh</a>
 使用教程链接：<a href="http://yijiebuyi.com/blog/b9b5e1ebb719f22475c38c4819ab8151.html">oh-my-zsh配置你的zsh提高shell逼格终极选择</a></p>
 
-<p>zsh的主题文件存储在 <code class="highlighter-rouge">~/.oh-my-zsh/thees</code> 目录下，你可以自己从github上淘到一些非常酷炫的的主题配置，然后下载存放到该目录下。</p>
+<p>zsh的主题文件存储在 <code class="language-plaintext highlighter-rouge">~/.oh-my-zsh/thees</code> 目录下，你可以自己从github上淘到一些非常酷炫的的主题配置，然后下载存放到该目录下。</p>
 
 <p>推荐一个带PowerBar的非常骚的一个主题配置：<a href="https://github.com/Powerlevel9k/powerlevel9k">powerlevel9k</a></p>
 
@@ -626,22 +630,22 @@
 <a href="https://github.com/zsh-users/zsh-syntax-highlighting">zsh-users/zsh-syntax-highlighting</a>：高亮你的 zsh 可用命令</p>
 
 <h2 id="xcode-command-line-tools">Xcode command line tools</h2>
-<p><code class="highlighter-rouge">Xcode command line tools</code> 是 Mac 下面一系列重要程序开发工具命令的集合，例如：ake, gcc, g++, clang, perl, svn, git等等。</p>
+<p><code class="language-plaintext highlighter-rouge">Xcode command line tools</code> 是 Mac 下面一系列重要程序开发工具命令的集合，例如：ake, gcc, g++, clang, perl, svn, git等等。</p>
 
 <p><strong>安装方法</strong>
 直接打开命令行终端，通过下面的命令安装即可：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ xcode-select --install
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ xcode-select --install
 </code></pre></div></div>
 
 <p><strong>卸载方法</strong></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo rm -rf /Library/Developer/CommandLineTools
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo rm -rf /Library/Developer/CommandLineTools
 </code></pre></div></div>
 
 <p><strong>查看 Xcode command line tools 中安装的命令集合的方法</strong></p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ls /Library/Developer/CommandLineTools/usr/bin
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ls /Library/Developer/CommandLineTools/usr/bin
 </code></pre></div></div>
 
 <h2 id="vim-编辑器使用技巧">vim 编辑器使用技巧</h2>
@@ -658,9 +662,9 @@
 </code></pre></div></div>
 
 <h3 id="配置-cc-代码编译环境">配置 C/C++ 代码编译环境</h3>
-<p><code class="highlighter-rouge">Tools -&gt; Build System -&gt; New Buld System</code> 新建编译系统，在新打开的窗口中替换下面的代码：</p>
+<p><code class="language-plaintext highlighter-rouge">Tools -&gt; Build System -&gt; New Buld System</code> 新建编译系统，在新打开的窗口中替换下面的代码：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
 	"cmd": ["bash", "-c", "g++ '${file}' -o '${file_path}/${file_base_name}' &amp;&amp; osascript -e 'tell application \"Terminal\" to activate do script \"clear&amp;&amp;${file_path}/${file_base_name} &amp;&amp; read -p \\\"Press Enter to exit.\\\"&amp;&amp;exit\"'"],
     "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
     "working_dir": "${file_path}",
@@ -676,19 +680,19 @@
 }
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">Command + s</code> 保存，命名为 <code class="highlighter-rouge">MyC++</code>。</p>
+<p><code class="language-plaintext highlighter-rouge">Command + s</code> 保存，命名为 <code class="language-plaintext highlighter-rouge">MyC++</code>。</p>
 
-<p>然后我们在 <code class="highlighter-rouge">Tools -&gt; Build System</code> 选中 <code class="highlighter-rouge">MyC++</code> 作为默认的编译脚本。</p>
+<p>然后我们在 <code class="language-plaintext highlighter-rouge">Tools -&gt; Build System</code> 选中 <code class="language-plaintext highlighter-rouge">MyC++</code> 作为默认的编译脚本。</p>
 
-<p>最后，每当我们编写完 C/C++ 代码时，就可以使用 <code class="highlighter-rouge">Command + Shift + B</code> 快捷键编译并运行程序了（<strong>注意选择不带 Run 那个选项</strong>），它默认会打开并跳转到一个终端界面去执行程序。</p>
+<p>最后，每当我们编写完 C/C++ 代码时，就可以使用 <code class="language-plaintext highlighter-rouge">Command + Shift + B</code> 快捷键编译并运行程序了（<strong>注意选择不带 Run 那个选项</strong>），它默认会打开并跳转到一个终端界面去执行程序。</p>
 
 <p><strong>如果不需要从标准输入中读取输入数据，那么我们可以在调用快捷键 Command + Shift + B 之后弹出的选择框中选择加 Run 的选项来直接在 Sublime Text 中运行程序并看到最终程序运行输出的结果。</strong></p>
 
 <h3 id="让-sublime-记住上一次关闭前打开的文件">让 Sublime 记住上一次关闭前打开的文件</h3>
-<p>只需要在 Sublime Text 3 退出时，按 <code class="highlighter-rouge">command + q</code> 键退出即可。</p>
+<p>只需要在 Sublime Text 3 退出时，按 <code class="language-plaintext highlighter-rouge">command + q</code> 键退出即可。</p>
 
 <h2 id="brew-包管理工具">brew 包管理工具</h2>
-<p><code class="highlighter-rouge">brew</code> 是 Mac 下的第三方包管理工具，它类似于 Ubuntu 系统中自带的 <code class="highlighter-rouge">apt</code> 包管理工具。</p>
+<p><code class="language-plaintext highlighter-rouge">brew</code> 是 Mac 下的第三方包管理工具，它类似于 Ubuntu 系统中自带的 <code class="language-plaintext highlighter-rouge">apt</code> 包管理工具。</p>
 
 <p>具体的安装方法详见官网：<a href="http://brew.sh/index_zh-cn.html">Homebrew</a></p>
 
@@ -697,12 +701,12 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew doctor
 </code></pre></div></div>
 
-<p>通过 <code class="highlighter-rouge">brew</code> 安装命令行工具的方法：</p>
+<p>通过 <code class="language-plaintext highlighter-rouge">brew</code> 安装命令行工具的方法：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install</span> &lt;package_name&gt;
 </code></pre></div></div>
 
-<p>安装完成之后，<code class="highlighter-rouge">brew</code> 默认将命令行工具安装到 <em>/usr/local/bin</em>
+<p>安装完成之后，<code class="language-plaintext highlighter-rouge">brew</code> 默认将命令行工具安装到 <em>/usr/local/bin</em>
  目录下面。</p>
 
 <h3 id="brew-常用命令">brew 常用命令</h3>
@@ -719,7 +723,7 @@
 
 <h3 id="安装-nvm-node-version-manager">安装 NVM （Node Version Manager）</h3>
 
-<p>使用 <code class="highlighter-rouge">brew</code> 安装 nvm</p>
+<p>使用 <code class="language-plaintext highlighter-rouge">brew</code> 安装 nvm</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>nvm
 </code></pre></div></div>
@@ -772,7 +776,7 @@ Usage:
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nvm ls-remote
 </code></pre></div></div>
 
-<p>安装当前最新的稳定版本的 <code class="highlighter-rouge">Node.js</code></p>
+<p>安装当前最新的稳定版本的 <code class="language-plaintext highlighter-rouge">Node.js</code></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nvm <span class="nb">install </span>stable
 </code></pre></div></div>
@@ -809,7 +813,7 @@ v7.2.1
 </code></pre></div></div>
 
 <p><strong>同步模块</strong>
-直接通过 <code class="highlighter-rouge">sync</code> 命令马上同步一个模块, 只有 <code class="highlighter-rouge">cnpm</code> 命令行才有此功能:</p>
+直接通过 <code class="language-plaintext highlighter-rouge">sync</code> 命令马上同步一个模块, 只有 <code class="language-plaintext highlighter-rouge">cnpm</code> 命令行才有此功能:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cnpm <span class="nb">sync </span>connect
 </code></pre></div></div>
@@ -832,7 +836,7 @@ v7.2.1
 </code></pre></div></div>
 
 <h2 id="omnigraffle">OmniGraffle</h2>
-<p>OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 <code class="highlighter-rouge">stencils</code> 模板，直接导入然后进行修改，得到自己想要的图形。</p>
+<p>OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 <code class="language-plaintext highlighter-rouge">stencils</code> 模板，直接导入然后进行修改，得到自己想要的图形。</p>
 
 <h2 id="jekyll博客环境搭建">Jekyll博客环境搭建</h2>
 
@@ -847,16 +851,16 @@ v7.2.1
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">source</span> ~/.rvm/scripts/rvm
 </code></pre></div></div>
 
-<p>使用 <code class="highlighter-rouge">rvm -v</code> 就可以检查RVM是否安装成功了。</p>
+<p>使用 <code class="language-plaintext highlighter-rouge">rvm -v</code> 就可以检查RVM是否安装成功了。</p>
 
 <h3 id="使用rvm安装ruby">使用RVM安装Ruby</h3>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ rvm install ruby
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ rvm install ruby
 </code></pre></div></div>
 
 <p>等一段时间，Ruby，Ruby Gems就安装好了。</p>
 
-<p>可以使用<code class="highlighter-rouge">gem -v</code>和<code class="highlighter-rouge">ruby -v</code>来检查是否安装成功。</p>
+<p>可以使用<code class="language-plaintext highlighter-rouge">gem -v</code>和<code class="language-plaintext highlighter-rouge">ruby -v</code>来检查是否安装成功。</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 配置好shell环境上的代理</span>
 gem update <span class="nt">--system</span>
@@ -878,14 +882,14 @@ gem update <span class="nt">--system</span>
   <li>
     <p>免密登录远程主机</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # 如果本机公钥还没有生成，那么可以使用命令：ssh-keygen 生成
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # 如果本机公钥还没有生成，那么可以使用命令：ssh-keygen 生成
  $ ssh-copy-id arclab@10.214.9.170
 </code></pre></div>    </div>
   </li>
   <li>
     <p>快速登录远程主机</p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # 为了避免每次 ssh 连接远程主机时输入一长串的 username@host-ip，可以将远程主机用一个简单的字符串来标识，修改方法如下
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # 为了避免每次 ssh 连接远程主机时输入一长串的 username@host-ip，可以将远程主机用一个简单的字符串来标识，修改方法如下
  $ vim ~/.ssh/config
  HOST droidocker
  User arclab
@@ -942,7 +946,7 @@ make[2]: Leaving directory <span class="s1">'/home/flyflypeng/OpenSourceProject/
 make[1]: Leaving directory <span class="s1">'/home/flyflypeng/OpenSourceProject/rinetd'</span>
 </code></pre></div></div>
 
-<p>配置文件路径：<code class="highlighter-rouge">/usr/local/etc/rinetd.conf</code></p>
+<p>配置文件路径：<code class="language-plaintext highlighter-rouge">/usr/local/etc/rinetd.conf</code></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vim /usr/local/etc/rinetd.conf
 
@@ -966,10 +970,10 @@ make[1]: Leaving directory <span class="s1">'/home/flyflypeng/OpenSourceProject/
 <span class="nv">$ </span>systemctl <span class="nb">enable </span>rinetd.service <span class="o">&amp;&amp;</span> systemctl start rinetd.service
 </code></pre></div></div>
 
-<div class="footnotes">
+<div class="footnotes" role="doc-endnotes">
   <ol>
-    <li id="fn:1">
-      <p><a href="https://segmentfault.com/a/1190000014992947">iTerm2 + Oh My Zsh 打造舒适终端体验</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://segmentfault.com/a/1190000014992947">iTerm2 + Oh My Zsh 打造舒适终端体验</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -1447,6 +1451,14 @@ make[1]: Leaving directory <span class="s1">'/home/flyflypeng/OpenSourceProject/
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1472,10 +1484,6 @@ make[1]: Leaving directory <span class="s1">'/home/flyflypeng/OpenSourceProject/
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

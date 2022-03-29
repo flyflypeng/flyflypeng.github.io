@@ -1,18 +1,239 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Fly Higher's Blog</title>
+    <title>Fly Higher&apos;s Blog</title>
     <description>Do one thing and do it well.
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 01 Sep 2020 19:29:03 +0800</pubDate>
-    <lastBuildDate>Tue, 01 Sep 2020 19:29:03 +0800</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Tue, 29 Mar 2022 00:26:10 +0800</pubDate>
+    <lastBuildDate>Tue, 29 Mar 2022 00:26:10 +0800</lastBuildDate>
+    <generator>Jekyll v4.2.2</generator>
+    
+      <item>
+        <title>ptrace 系统调用拦截和模拟</title>
+        <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;KVM模式&lt;/li&gt;
+  &lt;li&gt;ptrace模式&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;另外，在&lt;a href=&quot;https://arxiv.org/pdf/2108.03705.pdf&quot;&gt;Safe and Secure Subprocess Virtualization in Userspace&lt;/a&gt;中也提到了采用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace&lt;/code&gt;实现系统调用拦截。&lt;/p&gt;
+
+&lt;p&gt;以前对于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace&lt;/code&gt;的概念还停留在它是实现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;strace&lt;/code&gt;命令的基础，具体底层的实现原理就一无所知了，因此这篇笔记主要事项记录一下&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace&lt;/code&gt;是如何实现系统调用拦截。&lt;/p&gt;
+
+&lt;h2 id=&quot;ptrace-定义&quot;&gt;ptrace 定义&lt;/h2&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace(2)&lt;/code&gt; (“process trace”)是Linux系统中的一个系统调用（syscall），它通常用于实现进程debugging功能。&lt;/p&gt;
+
+&lt;p&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace&lt;/code&gt;系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置traced的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。&lt;/p&gt;
+
+&lt;p&gt;ptrace系统调用函数的定义：&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;request：表示需要执行什么样的ptrace操作，通常有下面几种常用的取值
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_TRACEME&lt;/code&gt;：表示当前进程将被它的parent进程进行跟踪&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSCALL&lt;/code&gt;：表示遇到下一个待执行的系统调用入口时停止tracee进程或系统调用在内核态执行完毕返回后停止，以便tracer获取系统调用的返回值&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_GETREGS&lt;/code&gt;：获取tracee进程中当前的寄存器中的值&lt;/li&gt;
+      &lt;li&gt;其他的request的取值，详见&lt;a href=&quot;https://man7.org/linux/man-pages/man2/ptrace.2.html&quot;&gt;ptrace(2) — Linux manual page&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;pid：表示被跟踪者的PID进程ID&lt;/li&gt;
+  &lt;li&gt;addr和data：这两个是ptrace函数中通用参数，例如在读取tracee的寄存器值时，data参数就会传入保存寄存器内容变量的地址；而在一些场景下，这两个参数没有任何意义，通常默认传入0值&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;基于ptrace实现strace命令流程分析&quot;&gt;基于ptrace实现strace命令流程分析&lt;/h2&gt;
+
+&lt;p&gt;基于ptrace系统调用实现的一个简化版本&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;strace&lt;/code&gt;命令的代码如下所示：&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;too few arguments: %d&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;pid_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;switch&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* error */&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* child */&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_TRACEME&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;cm&quot;&gt;/* Because we&apos;re now a tracee, execvp will block until the parent
+             * attaches and allows us to continue. */&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;execvp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* parent */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;waitpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// sync with execvp&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SETOPTIONS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PTRACE_O_EXITKILL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(;;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;cm&quot;&gt;/* Enter next system call */&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SYSCALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;waitpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+        &lt;span class=&quot;cm&quot;&gt;/* Gather system call arguments */&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_regs_struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_GETREGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;syscall&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;orig_rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;cm&quot;&gt;/* Print a representation of the system call */&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;%ld(%ld, %ld, %ld, %ld, %ld, %ld)&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;syscall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rdi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rsi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;cm&quot;&gt;/* Run system call and stop on exit */&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SYSCALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;waitpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+        &lt;span class=&quot;cm&quot;&gt;/* Get system call result */&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_GETREGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;fputs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot; = ?&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ESRCH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rdi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// system call was _exit(2) or similar&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;FATAL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;strerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;cm&quot;&gt;/* Print system call result */&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot; = %ld&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上述代码流程简单总结一下就是：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fork()&lt;/code&gt;系统调用创建出待跟踪的tracee进程，这里使用到了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt; ptrace(PTRACE_TRACEME, 0, 0, 0)&lt;/code&gt;函数&lt;/li&gt;
+  &lt;li&gt;设置父进程strace进程退出后，杀死tracee进程，这里使用到了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace(PTRACE_SETOPTIONS, pid, 0, PTRACE_O_EXITKILL)&lt;/code&gt;函数&lt;/li&gt;
+  &lt;li&gt;接下来就是一个死循环，不断地重复执行以下的流程：执行到tracee进程的系统调用入口处停止-&amp;gt;获取系统调用参数信息-&amp;gt;执行系统调用并等待返回后停止-&amp;gt;获取系统调用执行返回结果
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;执行到tracee进程的系统调用入口处停止&lt;/strong&gt;：这里使用到了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace(PTRACE_SYSCALL, pid, 0, 0)&lt;/code&gt;函数，在调用系统调用的入口处停止&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;获取系统调用参数信息&lt;/strong&gt;：这里使用到了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace(PTRACE_GETREGS, pid, 0, &amp;amp;regs)&lt;/code&gt;函数，获取当前tracee进程中寄存器的值&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;执行系统调用并等待返回后停止&lt;/strong&gt;：这里再次使用到了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace(PTRACE_SYSCALL, pid, 0, 0)&lt;/code&gt;函数，表示恢复tracee进程的系统调用执行，并等系统调用执行完毕返回后停止执行tracee进程&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;获取系统调用执行返回结果&lt;/strong&gt;：这里再次使用到了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace(PTRACE_GETREGS, pid, 0, &amp;amp;regs)&lt;/code&gt;函数，获取系统调用的返回结果&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;拦截并模拟系统调用&quot;&gt;拦截并模拟系统调用&lt;/h2&gt;
+
+&lt;p&gt;从上面的例子可知，通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSCALL&lt;/code&gt;可以实现系统调用的拦截和恢复系统调用继续执行，如果要想实现系统调用的模拟，就需要在tracer跟踪器代码中增加一些关于系统调用的模拟操作，避免进入到内核中执行真实的系统调用。&lt;/p&gt;
+
+&lt;p&gt;一个简单地拦截过滤系统调用的例子：&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(;;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* Enter next system call */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SYSCALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;waitpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user_regs_struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_GETREGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* Is this system call permitted? */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;blocked&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;is_syscall_blocked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;orig_rax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;blocked&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;orig_rax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// set to invalid syscall&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SETREGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/* Run system call and stop on exit */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SYSCALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;waitpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;blocked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;cm&quot;&gt;/* errno = EPERM */&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EPERM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Operation not permitted&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ptrace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PTRACE_SETREGS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;系统调用拦截并模拟的操作可以通过下面的方法实现：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSCALL&lt;/code&gt;拦截系统调用&lt;/li&gt;
+  &lt;li&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_GETREGS&lt;/code&gt;获取实际调用的系统调用信息（包括系统调用号和参数）&lt;/li&gt;
+  &lt;li&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SETREGS&lt;/code&gt;选项，修改系统调用的调用号信息，将其设置为一个非法的系统调用号，&lt;/li&gt;
+  &lt;li&gt;最后，通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSCALL&lt;/code&gt;重新恢复系统系统调用执行，触发异常；在tracer代码中处理上述的异常，在用户空间代码中模拟系统调用的执行，返回模拟执行的结果&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;但是，上述这种拦截并模拟系统调用的方式非常低效，总共需要4次&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace&lt;/code&gt;系统调用（也就触发了4次用户态和内核态的上下文切换）。&lt;/p&gt;
+
+&lt;p&gt;从2005年之后，Linux内核中引入了一个新的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ptrace&lt;/code&gt;的request类型：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSEMU&lt;/code&gt;来模拟系统调用，减少模拟系统调用带来的额外内核上下文开销。基于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSEMU&lt;/code&gt;实现系统调用拦截和模拟的步骤如下：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSEMU&lt;/code&gt;在系统调用入口处拦截系统调用&lt;/li&gt;
+  &lt;li&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_GETREGS&lt;/code&gt;获取实际调用的系统调用信息（包括系统调用号和参数）&lt;/li&gt;
+  &lt;li&gt;然后由tracer来模拟系统调用的实现，返回模拟的系统调用执行结果&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;一个简单基于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSEMU&lt;/code&gt;实现系统调用和拦截的关键代码逻辑，如下所示：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    ptrace&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;PTRACE_SYSEMU, pid, 0, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    waitpid&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;pid, 0, 0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    struct user_regs_struct regs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    ptrace&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;PTRACE_GETREGS, pid, 0, &amp;amp;regs&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    switch &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;regs.orig_rax&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; OS_read:
+            /&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ... &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;/
+
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; OS_write:
+            /&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ... &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;/
+
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; OS_open:
+            /&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ... &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;/
+
+        &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; OS_exit:
+            /&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ... &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;/
+
+        /&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ... and so on ... &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;/
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;所以，相比于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSCALL&lt;/code&gt;实现系统调用拦截和模拟的方法，基于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PTRACE_SYSEMU&lt;/code&gt;实现系统调用和拦截的方法，&lt;strong&gt;减少了2个ptrace系统调用&lt;/strong&gt;，整体性能也有所提高。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://nullprogram.com/blog/2018/06/23/&quot;&gt;Intercepting and Emulating Linux System Calls with Ptrace&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://man7.org/linux/man-pages/man2/ptrace.2.html&quot;&gt;ptrace(2) — Linux manual page&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Mon, 28 Mar 2022 18:40:00 +0800</pubDate>
+        <link>http://localhost:4000/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</link>
+        <guid isPermaLink="true">http://localhost:4000/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</guid>
+        
+        <category>笔记</category>
+        
+        <category>内核</category>
+        
+        <category>云原生</category>
+        
+        <category>ptrace</category>
+        
+        <category>sandbox</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
     
       <item>
         <title>May the force be with you</title>
         <description>&lt;h1 id=&quot;may-the-force-be-with-you&quot;&gt;May the force be with you&lt;/h1&gt;
+
+&lt;iframe src=&quot;https://www.xmind.net/embed/ckdwBg/&quot; width=&quot;750&quot; height=&quot;630&quot; frameborder=&quot;0&quot; scrolling=&quot;no&quot; allowfullscreen=&quot;true&quot;&gt;&lt;/iframe&gt;
 
 &lt;h2 id=&quot;linux-系统编程&quot;&gt;Linux 系统编程&lt;/h2&gt;
 
@@ -47,7 +268,7 @@
 
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://tlanyan.me/yum-repos-summary/&quot;&gt;常用yum源整理&lt;/a&gt;：介绍了官方yum源和第三方yum源的区别和常用的yum源镜像地址&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://juejin.im/post/5d0ef5376fb9a07ef63fe74e&quot;&gt;CentOS 7上升级/安装gcc&lt;/a&gt;：这篇文章介绍了如何通过&lt;code class=&quot;highlighter-rouge&quot;&gt;scl&lt;/code&gt;工具更新gcc版本&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://juejin.im/post/5d0ef5376fb9a07ef63fe74e&quot;&gt;CentOS 7上升级/安装gcc&lt;/a&gt;：这篇文章介绍了如何通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scl&lt;/code&gt;工具更新gcc版本&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/wswind/p/10729610.html&quot;&gt;CentOS 使用第三方软件源 安装最新版本软件 省去编译烦恼 IUS SCL&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://linux.cn/article-8509-1.html&quot;&gt;CentOS 上最佳的第三方仓库&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -116,21 +337,21 @@
     &lt;p&gt;&lt;strong&gt;vscode常用快捷键&lt;/strong&gt;&lt;/p&gt;
 
     &lt;ul&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;F12&lt;/code&gt;：跳转到定义处&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Shift + F12&lt;/code&gt;：跳转到引用该函数的地方&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Alt + &amp;lt;左/右方向键&amp;gt;&lt;/code&gt;：跳转到上一次光标处/下一次光标处&lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl + P&lt;/code&gt;窗口可以执行的操作：
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;F12&lt;/code&gt;：跳转到定义处&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Shift + F12&lt;/code&gt;：跳转到引用该函数的地方&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Alt + &amp;lt;左/右方向键&amp;gt;&lt;/code&gt;：跳转到上一次光标处/下一次光标处&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + P&lt;/code&gt;窗口可以执行的操作：
         &lt;ul&gt;
           &lt;li&gt;直接输入文件名，快速打开文件&lt;/li&gt;
           &lt;li&gt;? 列出当前可执行的动作&lt;/li&gt;
           &lt;li&gt;! 显示Errors或Warnings，也可以Ctrl+Shift+M&lt;/li&gt;
-          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt;跳转到行数，也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+G&lt;/code&gt;直接进入&lt;/li&gt;
-          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;@&lt;/code&gt;跳转到symbol（搜索变量或者函数），也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+Shift+O&lt;/code&gt;直接进入&lt;/li&gt;
-          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;@:&lt;/code&gt;根据分类跳转symbol，查找属性或函数，也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+Shift+O&lt;/code&gt;后输入&lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt;进入&lt;/li&gt;
-          &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#&lt;/code&gt; 根据名字查找symbol，也可以&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl+T&lt;/code&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:&lt;/code&gt;跳转到行数，也可以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl+G&lt;/code&gt;直接进入&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@&lt;/code&gt;跳转到symbol（搜索变量或者函数），也可以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl+Shift+O&lt;/code&gt;直接进入&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;@:&lt;/code&gt;根据分类跳转symbol，查找属性或函数，也可以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl+Shift+O&lt;/code&gt;后输入&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:&lt;/code&gt;进入&lt;/li&gt;
+          &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;#&lt;/code&gt; 根据名字查找symbol，也可以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl+T&lt;/code&gt;&lt;/li&gt;
         &lt;/ul&gt;
       &lt;/li&gt;
-      &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Ctrl + K , Ctrl + S&lt;/code&gt;：打开VScode绑定的快捷键列表，可以搜索快捷键&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + K , Ctrl + S&lt;/code&gt;：打开VScode绑定的快捷键列表，可以搜索快捷键&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -525,7 +746,7 @@
   &lt;li&gt;
     &lt;p&gt;&lt;strong&gt;关闭系统中的内存 swap 功能&lt;/strong&gt;&lt;/p&gt;
 
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  # 查看系统是否启用了 swap
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  # 查看系统是否启用了 swap
   cat /proc/swaps
   Filename				Type		Size	Used	Priority
   /dev/sda5                               partition	2095100	0	-1
@@ -635,22 +856,22 @@ apt-mark hold kubelet kubeadm kubectl
 
 &lt;p&gt;获取镜像列表后可以通过下面的脚本从dockerhub上获取镜像并重命名：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#!/bin/bash
 
-&lt;span class=&quot;nv&quot;&gt;images&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=(&lt;/span&gt;kube-apiserver:v1.18.0 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-	kube-controller-manager:v1.18.0 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-	kube-scheduler:v1.18.0 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-	kube-proxy:v1.18.0 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-	pause:3.2 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-	etcd:3.4.3-0 &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
-	coredns:1.6.7&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+images=(kube-apiserver:v1.18.0 \
+	kube-controller-manager:v1.18.0 \
+	kube-scheduler:v1.18.0 \
+	kube-proxy:v1.18.0 \
+	pause:3.2 \
+	etcd:3.4.3-0 \
+	coredns:1.6.7)
 
-&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;imageName &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;images&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[@]&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do
-    &lt;/span&gt;docker pull aiotceo/&lt;span class=&quot;nv&quot;&gt;$imageName&lt;/span&gt;
-    docker tag aiotceo/&lt;span class=&quot;nv&quot;&gt;$imageName&lt;/span&gt; k8s.gcr.io/&lt;span class=&quot;nv&quot;&gt;$imageName&lt;/span&gt;
-    docker rmi aiotceo/&lt;span class=&quot;nv&quot;&gt;$imageName&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;done&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+for imageName in ${images[@]} ; do
+    docker pull aiotceo/$imageName
+    docker tag aiotceo/$imageName k8s.gcr.io/$imageName
+    docker rmi aiotceo/$imageName
+done
+)
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;下载 k8s 所需的各个组件的镜像如下所示：&lt;/p&gt;
@@ -670,27 +891,27 @@ k8s.gcr.io/etcd                      3.4.3-0             303ce5db0e90        5 m
 
 &lt;h4 id=&quot;kubeadm-init初始化环境&quot;&gt;kubeadm init初始化环境&lt;/h4&gt;
 
-&lt;p&gt;通过&lt;code class=&quot;highlighter-rouge&quot;&gt;kubeadm init&lt;/code&gt;命令来初始化Master节点：&lt;/p&gt;
+&lt;p&gt;通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kubeadm init&lt;/code&gt;命令来初始化Master节点：&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubeadm init &lt;span class=&quot;nt&quot;&gt;--pod-network-cidr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;192.168.0.0/16 &lt;span class=&quot;nt&quot;&gt;--apiserver-advertise-address&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;192.168.5.154
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;在实际的部署当中需要将 &lt;code class=&quot;highlighter-rouge&quot;&gt;--apiserver-advertise-address&lt;/code&gt; 参数后面的值设置为当前主机的ip地址。&lt;/p&gt;
+&lt;p&gt;在实际的部署当中需要将 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--apiserver-advertise-address&lt;/code&gt; 参数后面的值设置为当前主机的ip地址。&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--apiserver-advertise-address&lt;/code&gt;：API 服务器所公布的其正在监听的 IP 地址。如果未设置，则使用默认网络接口。&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;--pod-network-cidr&lt;/code&gt;：指明 pod 网络可以使用的 IP 地址段。如果设置了这个参数，控制平面将会为每一个节点自动分配 CIDRs。如果要配置calico网络插件，这个值一定要设置为&lt;code class=&quot;highlighter-rouge&quot;&gt;192.168.0.0/16&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--apiserver-advertise-address&lt;/code&gt;：API 服务器所公布的其正在监听的 IP 地址。如果未设置，则使用默认网络接口。&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--pod-network-cidr&lt;/code&gt;：指明 pod 网络可以使用的 IP 地址段。如果设置了这个参数，控制平面将会为每一个节点自动分配 CIDRs。如果要配置calico网络插件，这个值一定要设置为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;192.168.0.0/16&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;初始化成功之后的输出信息如下所示：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/Code/scripts# kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.5.154
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/Code/scripts# kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.5.154
 W0329 02:35:23.887370   13950 configset.go:202] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
 [init] Using Kubernetes version: v1.18.0
 [preflight] Running pre-flight checks
 	[WARNING IsDockerSystemdCheck]: detected &quot;cgroupfs&quot; as the Docker cgroup driver. The recommended driver is &quot;systemd&quot;. Please follow the guide at https://kubernetes.io/docs/setup/cri/
 [preflight] Pulling images required for setting up a Kubernetes cluster
 [preflight] This might take a minute or two, depending on the speed of your internet connection
-[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'
+[preflight] You can also perform this action in beforehand using &apos;kubeadm config images pull&apos;
 [kubelet-start] Writing kubelet environment file with flags to file &quot;/var/lib/kubelet/kubeadm-flags.env&quot;
 [kubelet-start] Writing kubelet configuration to file &quot;/var/lib/kubelet/config.yaml&quot;
 [kubelet-start] Starting the kubelet
@@ -726,7 +947,7 @@ W0329 02:35:28.726217   13950 manifests.go:225] the default kube-apiserver autho
 [upload-config] Storing the configuration used in ConfigMap &quot;kubeadm-config&quot; in the &quot;kube-system&quot; Namespace
 [kubelet] Creating a ConfigMap &quot;kubelet-config-1.18&quot; in namespace kube-system with the configuration for the kubelets in the cluster
 [upload-certs] Skipping phase. Please see --upload-certs
-[mark-control-plane] Marking the node flyflypeng-virtualbox-k8s-master as control-plane by adding the label &quot;node-role.kubernetes.io/master=''&quot;
+[mark-control-plane] Marking the node flyflypeng-virtualbox-k8s-master as control-plane by adding the label &quot;node-role.kubernetes.io/master=&apos;&apos;&quot;
 [mark-control-plane] Marking the node flyflypeng-virtualbox-k8s-master as control-plane by adding the taints [node-role.kubernetes.io/master:NoSchedule]
 [bootstrap-token] Using token: l09phn.zkiuy0ipc2yp6syq
 [bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
@@ -761,7 +982,7 @@ kubeadm join 192.168.5.154:6443 --token l09phn.zkiuy0ipc2yp6syq \
 
 &lt;p&gt;所需的命令在init成功后也会有提示，主要是为了保存相关的配置信息在用户目录下，这样不用每次都输入相关的认证信息。&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; mkdir -p $HOME/.kube
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -773,7 +994,7 @@ chown $(id -u):$(id -g) $HOME/.kube/config
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;kubectl apply &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; https://docs.projectcalico.org/v3.11/manifests/calico.yaml
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;确认calico网络插件是否配置好，只要去检查&lt;code class=&quot;highlighter-rouge&quot;&gt;CoreDNS Pod&lt;/code&gt;是否处于Running状态，检查的方法如下：&lt;/p&gt;
+&lt;p&gt;确认calico网络插件是否配置好，只要去检查&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CoreDNS Pod&lt;/code&gt;是否处于Running状态，检查的方法如下：&lt;/p&gt;
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubectl get pods &lt;span class=&quot;nt&quot;&gt;--all-namespaces&lt;/span&gt;
 NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
 kube-system   calico-kube-controllers-5b8b769fcd-xxftq                   1/1     Running   1          11m
@@ -835,7 +1056,7 @@ root@flyflypeng-desktop-k8s-worker:/home/flyflypeng# kubeadm &lt;span class=&quo
 W0329 12:10:42.264742     655 join.go:346] &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;preflight] WARNING: JoinControlPane.controlPlane settings will be ignored when control-plane flag is not set.
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;preflight] Running pre-flight checks
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;preflight] Reading configuration from the cluster...
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;preflight] FYI: You can look at this config file with &lt;span class=&quot;s1&quot;&gt;'kubectl -n kube-system get cm kubeadm-config -oyaml'&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;preflight] FYI: You can look at this config file with &lt;span class=&quot;s1&quot;&gt;&apos;kubectl -n kube-system get cm kubeadm-config -oyaml&apos;&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;kubelet-start] Downloading configuration &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;the kubelet from the &lt;span class=&quot;s2&quot;&gt;&quot;kubelet-config-1.18&quot;&lt;/span&gt; ConfigMap &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;the kube-system namespace
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;kubelet-start] Writing kubelet configuration to file &lt;span class=&quot;s2&quot;&gt;&quot;/var/lib/kubelet/config.yaml&quot;&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;kubelet-start] Writing kubelet environment file with flags to file &lt;span class=&quot;s2&quot;&gt;&quot;/var/lib/kubelet/kubeadm-flags.env&quot;&lt;/span&gt;
@@ -846,10 +1067,10 @@ This node has joined the cluster:
 &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; Certificate signing request was sent to apiserver and a response was received.
 &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; The Kubelet was informed of the new secure connection details.
 
-Run &lt;span class=&quot;s1&quot;&gt;'kubectl get nodes'&lt;/span&gt; on the control-plane to see this node &lt;span class=&quot;nb&quot;&gt;join &lt;/span&gt;the cluster.
+Run &lt;span class=&quot;s1&quot;&gt;&apos;kubectl get nodes&apos;&lt;/span&gt; on the control-plane to see this node &lt;span class=&quot;nb&quot;&gt;join &lt;/span&gt;the cluster.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;最后我们在Master节点上运行&lt;code class=&quot;highlighter-rouge&quot;&gt;kubectl get nodes&lt;/code&gt;查看Worker节点是否已经加入了：&lt;/p&gt;
+&lt;p&gt;最后我们在Master节点上运行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kubectl get nodes&lt;/code&gt;查看Worker节点是否已经加入了：&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubectl get nodes &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; wide
 NAME                               STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
@@ -857,13 +1078,13 @@ flyflypeng-desktop-k8s-worker      Ready    &amp;lt;none&amp;gt;   11m   v1.18.0
 flyflypeng-virtualbox-k8s-master   Ready    master   9h    v1.18.0   192.168.5.154   &amp;lt;none&amp;gt;        Ubuntu 16.04.5 LTS   4.15.0-36-generic   docker://18.6.0
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;strong&gt;注意：如果原来已经加入 Cluster 的 Node 重启之后，需要通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;kubeadm reset&lt;/code&gt; 重置当前 Node 的环境，然后重新使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;kubeadm join&lt;/code&gt; 来将当前 Node 加入到 Master Node 管理。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：如果原来已经加入 Cluster 的 Node 重启之后，需要通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kubeadm reset&lt;/code&gt; 重置当前 Node 的环境，然后重新使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kubeadm join&lt;/code&gt; 来将当前 Node 加入到 Master Node 管理。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;部署其他插件&quot;&gt;部署其他插件&lt;/h3&gt;
 
 &lt;p&gt;由于很多官方的插件所需镜像也在 http://gcr.io 上，所以遇到这种情况，可以通过下面的方式获取：&lt;a href=&quot;https://zhuanlan.zhihu.com/p/46341911&quot;&gt;kubernetes安装（国内环境）&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;将yaml文件中镜像地址的&lt;code class=&quot;highlighter-rouge&quot;&gt;k8s.gcr.io&lt;/code&gt;替换成&lt;code class=&quot;highlighter-rouge&quot;&gt;registry.cn-hangzhou.aliyuncs.com/google_containers&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;将yaml文件中镜像地址的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;k8s.gcr.io&lt;/code&gt;替换成&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;registry.cn-hangzhou.aliyuncs.com/google_containers&lt;/code&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;在其他机器上访问集群&quot;&gt;在其他机器上访问集群&lt;/h3&gt;
 
@@ -873,10 +1094,10 @@ flyflypeng-virtualbox-k8s-master   Ready    master   9h    v1.18.0   192.168.5.1
 kubectl &lt;span class=&quot;nt&quot;&gt;--kubeconfig&lt;/span&gt; ./admin.conf get nodes
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;为了避免每次都敲kubectl命令时都加上配置选项&lt;code class=&quot;highlighter-rouge&quot;&gt;--kubeconfig&lt;/code&gt;，我们可以简单地在shell配置环境中的加个&lt;code class=&quot;highlighter-rouge&quot;&gt;alias&lt;/code&gt;：&lt;/p&gt;
+&lt;p&gt;为了避免每次都敲kubectl命令时都加上配置选项&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--kubeconfig&lt;/code&gt;，我们可以简单地在shell配置环境中的加个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;alias&lt;/code&gt;：&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# kubectl --kubeconfig alias&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kubectl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'kubectl --kubeconfig /Users/woshijpf/k8s/admin.conf'&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kubectl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&apos;kubectl --kubeconfig /Users/woshijpf/k8s/admin.conf&apos;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h3 id=&quot;清理集群&quot;&gt;清理集群&lt;/h3&gt;
@@ -899,7 +1120,7 @@ kubernetes   ClusterIP   10.96.0.1       &amp;lt;none&amp;gt;        443/TCP    
 web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/TCP   36m
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;通过浏览器访问Worker节点上&lt;code class=&quot;highlighter-rouge&quot;&gt;http://192.168.5.8:32678&lt;/code&gt;地址：
+&lt;p&gt;通过浏览器访问Worker节点上&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http://192.168.5.8:32678&lt;/code&gt;地址：
 &lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/container-web-app.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;下面是我kubenetes v1.18.0版本上验证过的yaml文件：&lt;/p&gt;
@@ -1013,8 +1234,8 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 
 &lt;p&gt;&lt;strong&gt;注意事项：&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-  &lt;li&gt;如果不想将镜像上传到dockerhub上，直接在worker节点上使用编译出来的镜像，则需要在部署web app的&lt;code class=&quot;highlighter-rouge&quot;&gt;web-pod.yaml&lt;/code&gt;文件中添加上镜像拉去的策略&lt;code class=&quot;highlighter-rouge&quot;&gt;imagePullPolicy: IfNotPresent&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;副本集(ReplicaSet)的测试过程中，要将yaml文件中的&lt;code class=&quot;highlighter-rouge&quot;&gt;apiVersion&lt;/code&gt;的值从&lt;code class=&quot;highlighter-rouge&quot;&gt;extensions/v1beta1&lt;/code&gt;替换成&lt;code class=&quot;highlighter-rouge&quot;&gt;apps/v1&lt;/code&gt;，因为&lt;code class=&quot;highlighter-rouge&quot;&gt;extensions/v1beta1&lt;/code&gt;已经被弃用了。&lt;/li&gt;
+  &lt;li&gt;如果不想将镜像上传到dockerhub上，直接在worker节点上使用编译出来的镜像，则需要在部署web app的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;web-pod.yaml&lt;/code&gt;文件中添加上镜像拉去的策略&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;imagePullPolicy: IfNotPresent&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;副本集(ReplicaSet)的测试过程中，要将yaml文件中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apiVersion&lt;/code&gt;的值从&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;extensions/v1beta1&lt;/code&gt;替换成&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apps/v1&lt;/code&gt;，因为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;extensions/v1beta1&lt;/code&gt;已经被弃用了。&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&quot;faq&quot;&gt;FAQ&lt;/h2&gt;
@@ -1028,7 +1249,7 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
   &lt;li&gt;Never 只使用本地镜像，从不拉取，即使本地没有&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;如果省略imagePullPolicy，镜像tag为 &lt;code class=&quot;highlighter-rouge&quot;&gt;:latest&lt;/code&gt;，策略为always。&lt;/p&gt;
+&lt;p&gt;如果省略imagePullPolicy，镜像tag为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:latest&lt;/code&gt;，策略为always。&lt;/p&gt;
 
 &lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
 
@@ -1084,12 +1305,12 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 &lt;p&gt;Mac 中修改环境变量的方法和 Linux 中修改环境变量的方法类似，可以修改的文件主要分为两类：&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;~/.bash_profile&lt;/code&gt;：一般在这个文件中设置用户级的环境变量&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/bashrc&lt;/code&gt;：一般在这个文件中添加系统级环境变量&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;~/.zshrc&lt;/code&gt;：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.bash_profile&lt;/code&gt;：一般在这个文件中设置用户级的环境变量&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/bashrc&lt;/code&gt;：一般在这个文件中添加系统级环境变量&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.zshrc&lt;/code&gt;：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;添加环境变量的方式就是通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;export&lt;/code&gt; 关键字来进行添加。&lt;/p&gt;
+&lt;p&gt;添加环境变量的方式就是通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;export&lt;/code&gt; 关键字来进行添加。&lt;/p&gt;
 
 &lt;h2 id=&quot;iterm2-配置&quot;&gt;iTerm2 配置&lt;/h2&gt;
 
@@ -1105,16 +1326,16 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 
 &lt;h3 id=&quot;添加背景图片&quot;&gt;添加背景图片&lt;/h3&gt;
 
-&lt;p&gt;更换背景图片方式：&lt;code class=&quot;highlighter-rouge&quot;&gt;iTerm2 -&amp;gt; Preferences -&amp;gt; Profiles -&amp;gt; Window -&amp;gt; BackGround Image&lt;/code&gt;勾选图片即可。&lt;/p&gt;
+&lt;p&gt;更换背景图片方式：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iTerm2 -&amp;gt; Preferences -&amp;gt; Profiles -&amp;gt; Window -&amp;gt; BackGround Image&lt;/code&gt;勾选图片即可。&lt;/p&gt;
 
-&lt;p&gt;非常好看的一张背景图，背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
+&lt;p&gt;非常好看的一张背景图，背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
 
 &lt;p&gt;链接: https://pan.baidu.com/s/17zGm…
 提取码: hg67&lt;/p&gt;
 
 &lt;h3 id=&quot;快捷键&quot;&gt;快捷键&lt;/h3&gt;
 &lt;ul&gt;
-  &lt;li&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;Preferences -&amp;gt; Keys -&amp;gt; Hotkey -&amp;gt; Show/hide iTerm2 with a system wide hotkey&lt;/code&gt;设置快捷键 &lt;code class=&quot;highlighter-rouge&quot;&gt;command + option + i&lt;/code&gt; 快速显示和隐藏 iTerm。&lt;/li&gt;
+  &lt;li&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Preferences -&amp;gt; Keys -&amp;gt; Hotkey -&amp;gt; Show/hide iTerm2 with a system wide hotkey&lt;/code&gt;设置快捷键 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;command + option + i&lt;/code&gt; 快速显示和隐藏 iTerm。&lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;常用快捷键列表&lt;/p&gt;
 
@@ -1161,13 +1382,13 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 
 &lt;h3 id=&quot;记录命令行操作日志&quot;&gt;记录命令行操作日志&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Session &amp;gt; Log &amp;gt; Log to File&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Session &amp;gt; Log &amp;gt; Log to File&lt;/code&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;zsh&quot;&gt;zsh&lt;/h2&gt;
 &lt;p&gt;官网：&lt;a href=&quot;http://ohmyz.sh/ß&quot;&gt;zsh&lt;/a&gt;
 使用教程链接：&lt;a href=&quot;http://yijiebuyi.com/blog/b9b5e1ebb719f22475c38c4819ab8151.html&quot;&gt;oh-my-zsh配置你的zsh提高shell逼格终极选择&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;zsh的主题文件存储在 &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.oh-my-zsh/thees&lt;/code&gt; 目录下，你可以自己从github上淘到一些非常酷炫的的主题配置，然后下载存放到该目录下。&lt;/p&gt;
+&lt;p&gt;zsh的主题文件存储在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.oh-my-zsh/thees&lt;/code&gt; 目录下，你可以自己从github上淘到一些非常酷炫的的主题配置，然后下载存放到该目录下。&lt;/p&gt;
 
 &lt;p&gt;推荐一个带PowerBar的非常骚的一个主题配置：&lt;a href=&quot;https://github.com/Powerlevel9k/powerlevel9k&quot;&gt;powerlevel9k&lt;/a&gt;&lt;/p&gt;
 
@@ -1179,22 +1400,22 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 &lt;a href=&quot;https://github.com/zsh-users/zsh-syntax-highlighting&quot;&gt;zsh-users/zsh-syntax-highlighting&lt;/a&gt;：高亮你的 zsh 可用命令&lt;/p&gt;
 
 &lt;h2 id=&quot;xcode-command-line-tools&quot;&gt;Xcode command line tools&lt;/h2&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Xcode command line tools&lt;/code&gt; 是 Mac 下面一系列重要程序开发工具命令的集合，例如：ake, gcc, g++, clang, perl, svn, git等等。&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Xcode command line tools&lt;/code&gt; 是 Mac 下面一系列重要程序开发工具命令的集合，例如：ake, gcc, g++, clang, perl, svn, git等等。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;安装方法&lt;/strong&gt;
 直接打开命令行终端，通过下面的命令安装即可：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ xcode-select --install
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ xcode-select --install
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;卸载方法&lt;/strong&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo rm -rf /Library/Developer/CommandLineTools
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo rm -rf /Library/Developer/CommandLineTools
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;查看 Xcode command line tools 中安装的命令集合的方法&lt;/strong&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ls /Library/Developer/CommandLineTools/usr/bin
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ls /Library/Developer/CommandLineTools/usr/bin
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;vim-编辑器使用技巧&quot;&gt;vim 编辑器使用技巧&lt;/h2&gt;
@@ -1211,10 +1432,10 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h3 id=&quot;配置-cc-代码编译环境&quot;&gt;配置 C/C++ 代码编译环境&lt;/h3&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System -&amp;gt; New Buld System&lt;/code&gt; 新建编译系统，在新打开的窗口中替换下面的代码：&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System -&amp;gt; New Buld System&lt;/code&gt; 新建编译系统，在新打开的窗口中替换下面的代码：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
-	&quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ '${file}' -o '${file_path}/${file_base_name}' &amp;amp;&amp;amp; osascript -e 'tell application \&quot;Terminal\&quot; to activate do script \&quot;clear&amp;amp;&amp;amp;${file_path}/${file_base_name} &amp;amp;&amp;amp; read -p \\\&quot;Press Enter to exit.\\\&quot;&amp;amp;&amp;amp;exit\&quot;'&quot;],
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
+	&quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ &apos;${file}&apos; -o &apos;${file_path}/${file_base_name}&apos; &amp;amp;&amp;amp; osascript -e &apos;tell application \&quot;Terminal\&quot; to activate do script \&quot;clear&amp;amp;&amp;amp;${file_path}/${file_base_name} &amp;amp;&amp;amp; read -p \\\&quot;Press Enter to exit.\\\&quot;&amp;amp;&amp;amp;exit\&quot;&apos;&quot;],
     &quot;file_regex&quot;: &quot;^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$&quot;,
     &quot;working_dir&quot;: &quot;${file_path}&quot;,
     &quot;selector&quot;: &quot;source.c, source.c++&quot;,
@@ -1223,25 +1444,25 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
     [
         {
             &quot;name&quot;: &quot;Run&quot;,
-            &quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ '${file}' -o '${file_path}/${file_base_name}' &amp;amp;&amp;amp; '${file_path}/${file_base_name}'&quot;]
+            &quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ &apos;${file}&apos; -o &apos;${file_path}/${file_base_name}&apos; &amp;amp;&amp;amp; &apos;${file_path}/${file_base_name}&apos;&quot;]
         }
     ]
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Command + s&lt;/code&gt; 保存，命名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;MyC++&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Command + s&lt;/code&gt; 保存，命名为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyC++&lt;/code&gt;。&lt;/p&gt;
 
-&lt;p&gt;然后我们在 &lt;code class=&quot;highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System&lt;/code&gt; 选中 &lt;code class=&quot;highlighter-rouge&quot;&gt;MyC++&lt;/code&gt; 作为默认的编译脚本。&lt;/p&gt;
+&lt;p&gt;然后我们在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System&lt;/code&gt; 选中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyC++&lt;/code&gt; 作为默认的编译脚本。&lt;/p&gt;
 
-&lt;p&gt;最后，每当我们编写完 C/C++ 代码时，就可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Command + Shift + B&lt;/code&gt; 快捷键编译并运行程序了（&lt;strong&gt;注意选择不带 Run 那个选项&lt;/strong&gt;），它默认会打开并跳转到一个终端界面去执行程序。&lt;/p&gt;
+&lt;p&gt;最后，每当我们编写完 C/C++ 代码时，就可以使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Command + Shift + B&lt;/code&gt; 快捷键编译并运行程序了（&lt;strong&gt;注意选择不带 Run 那个选项&lt;/strong&gt;），它默认会打开并跳转到一个终端界面去执行程序。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;如果不需要从标准输入中读取输入数据，那么我们可以在调用快捷键 Command + Shift + B 之后弹出的选择框中选择加 Run 的选项来直接在 Sublime Text 中运行程序并看到最终程序运行输出的结果。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;让-sublime-记住上一次关闭前打开的文件&quot;&gt;让 Sublime 记住上一次关闭前打开的文件&lt;/h3&gt;
-&lt;p&gt;只需要在 Sublime Text 3 退出时，按 &lt;code class=&quot;highlighter-rouge&quot;&gt;command + q&lt;/code&gt; 键退出即可。&lt;/p&gt;
+&lt;p&gt;只需要在 Sublime Text 3 退出时，按 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;command + q&lt;/code&gt; 键退出即可。&lt;/p&gt;
 
 &lt;h2 id=&quot;brew-包管理工具&quot;&gt;brew 包管理工具&lt;/h2&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 是 Mac 下的第三方包管理工具，它类似于 Ubuntu 系统中自带的 &lt;code class=&quot;highlighter-rouge&quot;&gt;apt&lt;/code&gt; 包管理工具。&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 是 Mac 下的第三方包管理工具，它类似于 Ubuntu 系统中自带的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apt&lt;/code&gt; 包管理工具。&lt;/p&gt;
 
 &lt;p&gt;具体的安装方法详见官网：&lt;a href=&quot;http://brew.sh/index_zh-cn.html&quot;&gt;Homebrew&lt;/a&gt;&lt;/p&gt;
 
@@ -1250,12 +1471,12 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew doctor
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装命令行工具的方法：&lt;/p&gt;
+&lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装命令行工具的方法：&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &amp;lt;package_name&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;安装完成之后，&lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 默认将命令行工具安装到 &lt;em&gt;/usr/local/bin&lt;/em&gt;
+&lt;p&gt;安装完成之后，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 默认将命令行工具安装到 &lt;em&gt;/usr/local/bin&lt;/em&gt;
  目录下面。&lt;/p&gt;
 
 &lt;h3 id=&quot;brew-常用命令&quot;&gt;brew 常用命令&lt;/h3&gt;
@@ -1272,14 +1493,14 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 
 &lt;h3 id=&quot;安装-nvm-node-version-manager&quot;&gt;安装 NVM （Node Version Manager）&lt;/h3&gt;
 
-&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装 nvm&lt;/p&gt;
+&lt;p&gt;使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装 nvm&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nvm
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;配置 nvm 相关环境变量&lt;/p&gt;
 
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# You should create NVM's working directory if it doesn't exist:&lt;/span&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# You should create NVM&apos;s working directory if it doesn&apos;t exist:&lt;/span&gt;
 &lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; ~/.nvm
 
 &lt;span class=&quot;c&quot;&gt;# Add the following to ~/.zshrc or your desired shell&lt;/span&gt;
@@ -1325,7 +1546,7 @@ Usage:
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvm ls-remote
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;安装当前最新的稳定版本的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Node.js&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;安装当前最新的稳定版本的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Node.js&lt;/code&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvm &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;stable
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1345,10 +1566,10 @@ v7.2.1
 &lt;h3 id=&quot;修改-npm-包管理器下载的镜像源&quot;&gt;修改 npm 包管理器下载的镜像源&lt;/h3&gt;
 &lt;p&gt;使用 taobo 定制的 cnpm (gzip 压缩支持) 命令行工具代替默认的 npm：&lt;/p&gt;
 
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'\n#alias for cnpm\nalias cnpm=&quot;npm --registry=https://registry.npm.taobao.org \
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;\n#alias for cnpm\nalias cnpm=&quot;npm --registry=https://registry.npm.taobao.org \
   --cache=$HOME/.npm/.cache/cnpm \
   --disturl=https://npm.taobao.org/dist \
-  --userconfig=$HOME/.cnpmrc&quot;'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ~/.zshrc &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.zshrc
+  --userconfig=$HOME/.cnpmrc&quot;&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ~/.zshrc &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.zshrc
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;安装模块&lt;/strong&gt;
@@ -1362,7 +1583,7 @@ v7.2.1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;strong&gt;同步模块&lt;/strong&gt;
-直接通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;sync&lt;/code&gt; 命令马上同步一个模块, 只有 &lt;code class=&quot;highlighter-rouge&quot;&gt;cnpm&lt;/code&gt; 命令行才有此功能:&lt;/p&gt;
+直接通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sync&lt;/code&gt; 命令马上同步一个模块, 只有 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cnpm&lt;/code&gt; 命令行才有此功能:&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cnpm &lt;span class=&quot;nb&quot;&gt;sync &lt;/span&gt;connect
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -1385,7 +1606,7 @@ v7.2.1
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h2 id=&quot;omnigraffle&quot;&gt;OmniGraffle&lt;/h2&gt;
-&lt;p&gt;OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 &lt;code class=&quot;highlighter-rouge&quot;&gt;stencils&lt;/code&gt; 模板，直接导入然后进行修改，得到自己想要的图形。&lt;/p&gt;
+&lt;p&gt;OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;stencils&lt;/code&gt; 模板，直接导入然后进行修改，得到自己想要的图形。&lt;/p&gt;
 
 &lt;h2 id=&quot;jekyll博客环境搭建&quot;&gt;Jekyll博客环境搭建&lt;/h2&gt;
 
@@ -1400,16 +1621,16 @@ v7.2.1
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.rvm/scripts/rvm
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;rvm -v&lt;/code&gt; 就可以检查RVM是否安装成功了。&lt;/p&gt;
+&lt;p&gt;使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rvm -v&lt;/code&gt; 就可以检查RVM是否安装成功了。&lt;/p&gt;
 
 &lt;h3 id=&quot;使用rvm安装ruby&quot;&gt;使用RVM安装Ruby&lt;/h3&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ rvm install ruby
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ rvm install ruby
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;等一段时间，Ruby，Ruby Gems就安装好了。&lt;/p&gt;
 
-&lt;p&gt;可以使用&lt;code class=&quot;highlighter-rouge&quot;&gt;gem -v&lt;/code&gt;和&lt;code class=&quot;highlighter-rouge&quot;&gt;ruby -v&lt;/code&gt;来检查是否安装成功。&lt;/p&gt;
+&lt;p&gt;可以使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gem -v&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ruby -v&lt;/code&gt;来检查是否安装成功。&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 配置好shell环境上的代理&lt;/span&gt;
 gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt;
@@ -1431,14 +1652,14 @@ gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt;
   &lt;li&gt;
     &lt;p&gt;免密登录远程主机&lt;/p&gt;
 
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 如果本机公钥还没有生成，那么可以使用命令：ssh-keygen 生成
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 如果本机公钥还没有生成，那么可以使用命令：ssh-keygen 生成
  $ ssh-copy-id arclab@10.214.9.170
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;快速登录远程主机&lt;/p&gt;
 
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 为了避免每次 ssh 连接远程主机时输入一长串的 username@host-ip，可以将远程主机用一个简单的字符串来标识，修改方法如下
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 为了避免每次 ssh 连接远程主机时输入一长串的 username@host-ip，可以将远程主机用一个简单的字符串来标识，修改方法如下
  $ vim ~/.ssh/config
  HOST droidocker
  User arclab
@@ -1465,37 +1686,37 @@ gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt;
 + autoheader
 + &lt;span class=&quot;nb&quot;&gt;test yes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
 + automake &lt;span class=&quot;nt&quot;&gt;--foreign&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--add-missing&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--copy&lt;/span&gt;
-configure.ac:10: installing &lt;span class=&quot;s1&quot;&gt;'.auto/compile'&lt;/span&gt;
-configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;'.auto/install-sh'&lt;/span&gt;
-configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;'.auto/missing'&lt;/span&gt;
-src/Makefile.am: installing &lt;span class=&quot;s1&quot;&gt;'.auto/depcomp'&lt;/span&gt;
+configure.ac:10: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/compile&apos;&lt;/span&gt;
+configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/install-sh&apos;&lt;/span&gt;
+configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/missing&apos;&lt;/span&gt;
+src/Makefile.am: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/depcomp&apos;&lt;/span&gt;
 + &lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Rf&lt;/span&gt; autom4te.cache
 
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./configure
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;make
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;make &lt;span class=&quot;nb&quot;&gt;install
 &lt;/span&gt;Making &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;src
-make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
+make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
 make  install-am
-make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
-make[3]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
- /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/usr/local/sbin'&lt;/span&gt;
-  /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; ../rinetd &lt;span class=&quot;s1&quot;&gt;'/usr/local/sbin'&lt;/span&gt;
-make[3]: Nothing to be &lt;span class=&quot;k&quot;&gt;done for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'install-data-am'&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
-make[3]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
-make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
-make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd/src'&lt;/span&gt;
-make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
-make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
- /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/usr/local/etc'&lt;/span&gt;
- /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.conf &lt;span class=&quot;s1&quot;&gt;'/usr/local/etc'&lt;/span&gt;
- /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'/usr/local/share/man/man8'&lt;/span&gt;
- /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.8 &lt;span class=&quot;s1&quot;&gt;'/usr/local/share/man/man8'&lt;/span&gt;
-make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
-make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/OpenSourceProject/rinetd'&lt;/span&gt;
+make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
+make[3]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
+ /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/sbin&apos;&lt;/span&gt;
+  /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; ../rinetd &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/sbin&apos;&lt;/span&gt;
+make[3]: Nothing to be &lt;span class=&quot;k&quot;&gt;done for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;install-data-am&apos;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
+make[3]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
+make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
+make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
+make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
+make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
+ /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/etc&apos;&lt;/span&gt;
+ /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.conf &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/etc&apos;&lt;/span&gt;
+ /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/share/man/man8&apos;&lt;/span&gt;
+ /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.8 &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/share/man/man8&apos;&lt;/span&gt;
+make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
+make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;配置文件路径：&lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/etc/rinetd.conf&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;配置文件路径：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/local/etc/rinetd.conf&lt;/code&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim /usr/local/etc/rinetd.conf
 
@@ -1519,10 +1740,10 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/Op
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;systemctl &lt;span class=&quot;nb&quot;&gt;enable &lt;/span&gt;rinetd.service &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; systemctl start rinetd.service
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;footnotes&quot;&gt;
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
   &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000014992947&quot;&gt;iTerm2 + Oh My Zsh 打造舒适终端体验&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000014992947&quot;&gt;iTerm2 + Oh My Zsh 打造舒适终端体验&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
   &lt;/ol&gt;
 &lt;/div&gt;
@@ -1562,7 +1783,7 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/Op
 
 &lt;p&gt;在x86平台上最常见的虚拟化组合就是QEMU/KVM的组合了，其中利用QEMU来模拟IO外设，通过KVM来捕获Guest OS中运行的指令并将其中非特权指令在物理CPU上直接运行，达到硬件加速的目的。&lt;/p&gt;
 
-&lt;p&gt;KVM内核模块对用户空间只暴露出一个&lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/kvm&lt;/code&gt;的设备文件，然后通过&lt;code class=&quot;highlighter-rouge&quot;&gt;ioctl&lt;/code&gt;命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。&lt;/p&gt;
+&lt;p&gt;KVM内核模块对用户空间只暴露出一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/dev/kvm&lt;/code&gt;的设备文件，然后通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ioctl&lt;/code&gt;命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。&lt;/p&gt;
 
 &lt;h2 id=&quot;kvm-虚拟化原理简介&quot;&gt;KVM 虚拟化原理简介&lt;/h2&gt;
 
@@ -1577,7 +1798,7 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/Op
   如果QEMU中运行的Guest OS和Host OS的硬件架构相同，那么Guest OS中的指令可以直接在Host OS上的物理CPU上执行，而不需要通过QEMU软件模拟的方式去执行Guest OS中的指令，大大提高了Guest虚拟机的性能。&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
-  &lt;li&gt;QEMU结合KVM执行Guest OS指令的步骤简要描述&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;：
+  &lt;li&gt;QEMU结合KVM执行Guest OS指令的步骤简要描述&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;：
     &lt;blockquote&gt;
       &lt;p&gt;打开/dev/kvm设备文件、创建虚拟机、创建vCPU、向KVM模块发送KVM_RUN的ioctl调用，接下来KVM模块利用CPU上的硬件虚拟化扩展功能来直接执行guest的运行。当guest在执行过程中遇到读取硬件设备寄存器等I/O操作、暂停guest CPU或其他特殊指令等KVM无法执行的操作时，会退出当前KVM并交由Qemu处理。Qemu模拟器判断退出原因并执行相应的操作：如果是遇到I/O操作或特殊指令，Qemu会去模拟执行这些操作；如果是暂停guest CPU操作，Qemu停止并等待下一次guest中断。
   上述流程用下面的代码来简单表示：&lt;/p&gt;
@@ -1614,10 +1835,10 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/Op
   &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/xiongwenwu/article/details/58586013&quot;&gt;KVM/Qemu 工作原理系列目录&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;div class=&quot;footnotes&quot;&gt;
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
   &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en&quot;&gt;QEMU深入解析：综述篇&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en&quot;&gt;QEMU深入解析：综述篇&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
   &lt;/ol&gt;
 &lt;/div&gt;
@@ -1668,21 +1889,21 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;'/home/flyflypeng/Op
 &lt;p&gt;前面我们已经介绍过 OpenGL ES/EGL Wrapper 库是一个将 OpenGL ES API 和 OpenGL ES API 具体实现绑定在一起的库，它对应的源码路径是：&lt;em&gt;/frameworks/native/opengl/libs/&lt;/em&gt;，其中:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv1_CM.so&lt;/code&gt;：OpenGL ES 1.x API 的 Wrapper 库&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt;：OpenGL ES 2.0 的 Wrapper 库&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt;：OpenGL ES 3.0 的 Wrapper 库&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv1_CM.so&lt;/code&gt;：OpenGL ES 1.x API 的 Wrapper 库&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt;：OpenGL ES 2.0 的 Wrapper 库&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt;：OpenGL ES 3.0 的 Wrapper 库&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;其中因为 OpenGL ES 3.0 API 是兼容 OpenGL ES 2.0 API 的，所以 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt; 库本质上和 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt; 库是一样的。&lt;/p&gt;
+&lt;p&gt;其中因为 OpenGL ES 3.0 API 是兼容 OpenGL ES 2.0 API 的，所以 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt; 库本质上和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt; 库是一样的。&lt;/p&gt;
 
 &lt;h3 id=&quot;22-opengl-esegl-实现库&quot;&gt;2.2 OpenGL ES/EGL 实现库&lt;/h3&gt;
-&lt;p&gt;如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以&lt;code class=&quot;highlighter-rouge&quot;&gt;.so&lt;/code&gt;的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：&lt;/p&gt;
+&lt;p&gt;如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.so&lt;/code&gt;的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：&lt;/p&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;flounder:/vendor/lib64/egl &lt;span class=&quot;c&quot;&gt;# ls&lt;/span&gt;
 libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： &lt;code class=&quot;highlighter-rouge&quot;&gt;/system/lib64/egl/libGLES_android.so&lt;/code&gt;。而 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt; 库在 Android 7.1 系统对应的实现源码路径为：&lt;em&gt;/frameworks/native/opengl/libagl/&lt;/em&gt; 。&lt;/p&gt;
+&lt;p&gt;如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/system/lib64/egl/libGLES_android.so&lt;/code&gt;。而 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt; 库在 Android 7.1 系统对应的实现源码路径为：&lt;em&gt;/frameworks/native/opengl/libagl/&lt;/em&gt; 。&lt;/p&gt;
 
 &lt;h2 id=&quot;3-android-71-中加载-opengl-es-库的过程&quot;&gt;3. Android 7.1 中加载 OpenGL ES 库的过程&lt;/h2&gt;
 &lt;p&gt;Android 中图形渲染所采用的方式（硬件 or 软件）是在系统启动之后动态确定的，而确定渲染方式的这个源码文件就是 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 。&lt;/p&gt;
@@ -1715,9 +1936,9 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 
 &lt;ol&gt;
   &lt;li&gt;
-    &lt;p&gt;首先，&lt;code class=&quot;highlighter-rouge&quot;&gt;Loader::open()&lt;/code&gt; 入口函数会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;setEmulatorGlesValue()&lt;/code&gt; 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：&lt;/p&gt;
+    &lt;p&gt;首先，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Loader::open()&lt;/code&gt; 入口函数会调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setEmulatorGlesValue()&lt;/code&gt; 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：&lt;/p&gt;
 
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void setEmulatorGlesValue(void) {
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void setEmulatorGlesValue(void) {
      char prop[PROPERTY_VALUE_MAX];
      property_get(&quot;ro.kernel.qemu&quot;, prop, &quot;0&quot;); //读取 ro.kernel.qemu 属性值，判断Android系统是否运行在 qemu 中
      if (atoi(prop) != 1) return;
@@ -1752,9 +1973,9 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数中，内部类 MatchFile 类中会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;checkGlesEmulationStatus()&lt;/code&gt; 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：&lt;/p&gt;
+    &lt;p&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数中，内部类 MatchFile 类中会调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checkGlesEmulationStatus()&lt;/code&gt; 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：&lt;/p&gt;
 
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void* load_system_driver(const char* kind) {
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void* load_system_driver(const char* kind) {
      ATRACE_CALL();
      class MatchFile {
      public:
@@ -1802,10 +2023,10 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
  }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
 
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static int
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static int
  checkGlesEmulationStatus(void)
  {
-     /* We're going to check for the following kernel parameters:
+     /* We&apos;re going to check for the following kernel parameters:
       *
       *    qemu=1                      -&amp;gt; tells us that we run inside the emulator
       *    android.qemu.gles=&amp;lt;number&amp;gt;  -&amp;gt; tells us the GLES GPU emulation status
@@ -1835,12 +2056,12 @@ libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 &lt;strong&gt;emulationStatus&lt;/strong&gt; 值 来确定是加软件模拟实现的 OpenGL ES API 库 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt;，还是加载 &lt;code class=&quot;highlighter-rouge&quot;&gt;libGLES_emulation.so&lt;/code&gt;库将 OpenGL ES 指令重定向到 Host 系统中去执行。&lt;/p&gt;
+    &lt;p&gt;总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 &lt;strong&gt;emulationStatus&lt;/strong&gt; 值 来确定是加软件模拟实现的 OpenGL ES API 库 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt;，还是加载 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLES_emulation.so&lt;/code&gt;库将 OpenGL ES 指令重定向到 Host 系统中去执行。&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3 id=&quot;33-opengl-esegl-库加载和解析过程&quot;&gt;3.3 OpenGL ES/EGL 库加载和解析过程&lt;/h3&gt;
-&lt;p&gt;正如&lt;a href=&quot;http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html&quot;&gt;Android 系统图形栈: OpenGL ES 和 EGL 介绍&lt;/a&gt;这篇文章中分析的那样，在进行 OpenGL 编程时，最先开始需要获取 Display，这将调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;eglgGetDisplay()&lt;/code&gt; 函数被调用。在 eglGetDisplay() 里则会调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 初始化驱动：装载各个库进行解析，将 OpenGL ES/EGL API 函数接口和具体的实现绑定在一起，并将结果保存在 &lt;strong&gt;egl_connection_t&lt;/strong&gt; 类型的全局变量 &lt;strong&gt;gEGLImpl&lt;/strong&gt; 的结构体的成员变量中。&lt;/p&gt;
+&lt;p&gt;正如&lt;a href=&quot;http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html&quot;&gt;Android 系统图形栈: OpenGL ES 和 EGL 介绍&lt;/a&gt;这篇文章中分析的那样，在进行 OpenGL 编程时，最先开始需要获取 Display，这将调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eglgGetDisplay()&lt;/code&gt; 函数被调用。在 eglGetDisplay() 里则会调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 初始化驱动：装载各个库进行解析，将 OpenGL ES/EGL API 函数接口和具体的实现绑定在一起，并将结果保存在 &lt;strong&gt;egl_connection_t&lt;/strong&gt; 类型的全局变量 &lt;strong&gt;gEGLImpl&lt;/strong&gt; 的结构体的成员变量中。&lt;/p&gt;
 
 &lt;p&gt;下面以 SurfaceFlinger 进程为例进行分析，整个 OpenGL ES/EGL 库的加载和解析流程如下所示：&lt;/p&gt;
 
@@ -1872,7 +2093,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;p&gt;其中 egl_connection_t 的定义：
 &lt;em&gt;/frameworks/native/opengl/libs/EGL/egldefs.h&lt;/em&gt;&lt;/p&gt;
 
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
@@ -1906,15 +2127,15 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define GL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
 #define EGL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
 &lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#include &quot;EGL/egl_entries.in&quot;
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;egl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&quot;EGL/egl_entries.in&quot;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
 
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;cp&quot;&gt;#include &quot;entries.in&quot;
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;gl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&quot;entries.in&quot;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
 &lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_ext_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;gl_ext_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// __eglMustCastToProperFunctionPointerType 是一个 typedef 的函数指针类型，它的返回值是void，参数也是void&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MAX_NUMBER_OF_GL_EXTENSIONS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -1938,7 +2159,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;p&gt;在这个文件中，我们可以看到所有的内容都是 EGL_ENTRY 宏定义的，根据 EGL_ENTRY 宏定义：
 &lt;em&gt;/frameworks/native/opengl/libs/EGL/hooks.h&lt;/em&gt;&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
 //这些函数变量最后会和具体的 OpenGL 和 EGL API 的实现绑定在一起
 #define GL_ENTRY(_r,_api,...) _r (*_api)(__VA_ARGS__);
 #define EGL_ENTRY(_r,_api,...) _r(*_api)(__VA_ARGS__);
@@ -1972,11 +2193,11 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;h4 id=&quot;332-surfaceflinger-初始化成员变量-megldisplay&quot;&gt;3.3.2 SurfaceFlinger 初始化成员变量 mEGLDisplay&lt;/h4&gt;
 &lt;p&gt;在 SurfaceFlinger 类中有一个 EGLDisplay 类型的成员变量 mEGLDisplay，它是 EGL 中用来构建 OpenGL ES 渲染环境所需的参数。&lt;/p&gt;
 
-&lt;p&gt;SurfaceFlinger 中调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 初始化 mEGLDisplay 的代码如下：
+&lt;p&gt;SurfaceFlinger 中调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 初始化 mEGLDisplay 的代码如下：
 &lt;em&gt;/frameworks/native/services/surfaceflinger/SurfaceFlinger.cpp&lt;/em&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SurfaceFlinger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ALOGI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;&quot;SurfaceFlinger's main thread ready to run. &quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ALOGI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;&quot;SurfaceFlinger&apos;s main thread ready to run. &quot;&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&quot;Initializing graphics H/W...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
     &lt;span class=&quot;n&quot;&gt;status_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -1989,7 +2210,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;紧接着在 &lt;code class=&quot;highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 中调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt;
+&lt;p&gt;紧接着在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 中调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt;
 &lt;em&gt;/frameworks/native/opengl/libs/EGL/eglApi.cpp&lt;/em&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLNativeDisplayType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -2005,7 +2226,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;最后，&lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数
+&lt;p&gt;最后，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数
 &lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;egl_init_drivers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -2018,7 +2239,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;下面就是对 &lt;code class=&quot;highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数进行一个分析：&lt;/p&gt;
+&lt;p&gt;下面就是对 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数进行一个分析：&lt;/p&gt;
 
 &lt;p&gt;egl_init_drivers_locked() 函数代码如下所示：
 &lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
@@ -2090,25 +2311,25 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 
-    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;couldn't find an OpenGL ES implementation&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;couldn&apos;t find an OpenGL ES implementation&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
     &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libEGL.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libGLESv2.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libGLESv1_CM.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
     &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;couldn't load system EGL wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;couldn&apos;t load system EGL wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
     &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;couldn't load system OpenGL ES wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&quot;couldn&apos;t load system OpenGL ES wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;open()&lt;/code&gt; 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;open()&lt;/code&gt; 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。&lt;/p&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 函数代码如下所示：
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 函数代码如下所示：
 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt;&lt;/p&gt;
 
 &lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
@@ -2134,7 +2355,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
         &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProcAddressType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;eglGetProcAddress&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
         &lt;span class=&quot;n&quot;&gt;ALOGE_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                 &lt;span class=&quot;s&quot;&gt;&quot;can't find eglGetProcAddress() in EGL driver library&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                 &lt;span class=&quot;s&quot;&gt;&quot;can&apos;t find eglGetProcAddress() in EGL driver library&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
         &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将 egl 指针指向描述当前系统支持 OpenGL ES和 EGL 全局变量的 gEGLImpl&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
@@ -2145,7 +2366,7 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
             &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
             &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;c1&quot;&gt;// couldn't find the entry-point, use eglGetProcAddress()&lt;/span&gt;
+                &lt;span class=&quot;c1&quot;&gt;// couldn&apos;t find the entry-point, use eglGetProcAddress()&lt;/span&gt;
                 &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
                 &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
                     &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -2177,14 +2398,14 @@ st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 它主要实现了两个功能：&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 它主要实现了两个功能：&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;load_system_driver() &lt;/code&gt; 函数查找 OpenGL ES/EGL 实现库，并在指定的存放路径中找到共享链接库文件并打开它。&lt;/li&gt;
-  &lt;li&gt;调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;init_api()&lt;/code&gt;解析打开的 OpenGL ES/EGL 共享链接库，将 OpenGL ES/EGL API 函数指针和共享链接库中实现的对应的函数符号绑定在一起，这样调用 OpenGL ES/EGL API 就会调用到具体实现的OpenGL ES/EGL 共享链接库中对应函数。&lt;/li&gt;
+  &lt;li&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;load_system_driver() &lt;/code&gt; 函数查找 OpenGL ES/EGL 实现库，并在指定的存放路径中找到共享链接库文件并打开它。&lt;/li&gt;
+  &lt;li&gt;调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init_api()&lt;/code&gt;解析打开的 OpenGL ES/EGL 共享链接库，将 OpenGL ES/EGL API 函数指针和共享链接库中实现的对应的函数符号绑定在一起，这样调用 OpenGL ES/EGL API 就会调用到具体实现的OpenGL ES/EGL 共享链接库中对应函数。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;具体 &lt;code class=&quot;highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数和 &lt;code class=&quot;highlighter-rouge&quot;&gt;init_api()&lt;/code&gt; 函数的实现就不一一展开了，大家可以到 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 文件中查看，应该写得非常直接清楚了。&lt;/p&gt;
+&lt;p&gt;具体 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init_api()&lt;/code&gt; 函数的实现就不一一展开了，大家可以到 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 文件中查看，应该写得非常直接清楚了。&lt;/p&gt;
 
 &lt;h3 id=&quot;34-小结&quot;&gt;3.4 &lt;strong&gt;小结&lt;/strong&gt;&lt;/h3&gt;
 &lt;p&gt;至此，有关 OpenGL ES/EGL 库的加载和解析过程就分析完了，&lt;strong&gt;整个加载和解析的目的就是将 OpenGL ES/EGL API 和具体实现函数绑定在一起&lt;/strong&gt;，这样当程序调用 OpenGL ES/EGL API 时，就会调用到实际的实现函数了。然后，在硬件平台上的 Android 系统加载的是硬件厂商提供的 OpenGL ES/EGL 实现库，而在 qemu 模拟器中运行的 Android 系统中加载的则是软件模拟实现的 
@@ -2220,7 +2441,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
 &lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。&lt;sup id=&quot;fnref:footnote_1&quot;&gt;&lt;a href=&quot;#fn:footnote_1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+  &lt;p&gt;OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。&lt;sup id=&quot;fnref:footnote_1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:footnote_1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;!--more--&gt;
@@ -2381,10 +2602,10 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
   &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-3/&quot;&gt;All about OpenGL ES 2.x - (part 3/3)&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://wiki.jikexueyuan.com/project/opengl-es-guide/about-egl.html&quot;&gt;关于EGL&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
-&lt;div class=&quot;footnotes&quot;&gt;
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
   &lt;ol&gt;
-    &lt;li id=&quot;fn:footnote_1&quot;&gt;
-      &lt;p&gt;https://zh.wikipedia.org/wiki/OpenGL_ES &lt;a href=&quot;#fnref:footnote_1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;li id=&quot;fn:footnote_1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;https://zh.wikipedia.org/wiki/OpenGL_ES &lt;a href=&quot;#fnref:footnote_1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
     &lt;/li&gt;
   &lt;/ol&gt;
 &lt;/div&gt;
@@ -2449,7 +2670,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;&lt;strong&gt;blocking I/O 的特点是用户进程在 I/O 操作的两个阶段都被 block 了。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;non-blocking-io&quot;&gt;Non-blocking I/O&lt;/h1&gt;
-&lt;p&gt;Linux 系统中可以在调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数打开 socket 文件时或者调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;fcntl&lt;/code&gt; 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：&lt;/p&gt;
+&lt;p&gt;Linux 系统中可以在调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数打开 socket 文件时或者调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fcntl&lt;/code&gt; 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003788703867.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
@@ -2462,30 +2683,30 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;&lt;strong&gt;non-blocking I/O 的特点就是用户进程需要不断地询问 kernel 数据是否准备好了。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h1 id=&quot;io-multiplexing&quot;&gt;I/O Multiplexing&lt;/h1&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 就是我们经常说的 &lt;strong&gt;select&lt;/strong&gt;、&lt;strong&gt;poll&lt;/strong&gt;和&lt;strong&gt;epoll&lt;/strong&gt;，有些地方也称这种 I/O 方式为 &lt;code class=&quot;highlighter-rouge&quot;&gt;event driven I/O&lt;/code&gt;。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 就是我们经常说的 &lt;strong&gt;select&lt;/strong&gt;、&lt;strong&gt;poll&lt;/strong&gt;和&lt;strong&gt;epoll&lt;/strong&gt;，有些地方也称这种 I/O 方式为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;event driven I/O&lt;/code&gt;。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003804947449.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;I/O multiplexing 的特点是通过一种机制让一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入可读的就绪状态，select/poll/epoll函数就可以立即返回。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;这个图和 &lt;code class=&quot;highlighter-rouge&quot;&gt;blocking I/O&lt;/code&gt; 的图其实并没有太大的不同，事实上，开销还会更大一点。因为这里需要使用两个 system call (select 和 read)，而 blocking I/O 只调用了一个system call (read)。但是，&lt;strong&gt;用 select 的优势在于它可以同时处理多个connection&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;这个图和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blocking I/O&lt;/code&gt; 的图其实并没有太大的不同，事实上，开销还会更大一点。因为这里需要使用两个 system call (select 和 read)，而 blocking I/O 只调用了一个system call (read)。但是，&lt;strong&gt;用 select 的优势在于它可以同时处理多个connection&lt;/strong&gt;。&lt;/p&gt;
 
 &lt;p&gt;所以，如果处理的连接数不是很高的话，使用 &lt;strong&gt;select/epoll&lt;/strong&gt; 的 web server 不一定比使用 &lt;strong&gt;multi-threading + blocking I/O&lt;/strong&gt; 的 web server 性能更好，可能延迟还更大。&lt;strong&gt;select/epoll&lt;/strong&gt;的优势并不是对于单个连接能处理得更快，而是在于能处理更多的连接。&lt;/p&gt;
 
-&lt;p&gt;在 &lt;code class=&quot;highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。&lt;/p&gt;
+&lt;p&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。&lt;/p&gt;
 
 &lt;h1 id=&quot;signal-driven-io&quot;&gt;Signal Driven I/O&lt;/h1&gt;
 &lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003812004927.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。&lt;/p&gt;
 
-&lt;p&gt;但是这种 I/O 模型存在一个非常重大的&lt;strong&gt;缺陷问题&lt;/strong&gt;：&lt;code class=&quot;highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 这种信号对于每个进程来说只有一个！如果使该信号对进程中的两个描述符（这两个文件描述符都等待着 I/O 操作）都起作用，那么进程在接到此信号后就无法判别是哪一个文件描述符准备好了。所以 &lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 模型在现实中用的非常少。&lt;/p&gt;
+&lt;p&gt;但是这种 I/O 模型存在一个非常重大的&lt;strong&gt;缺陷问题&lt;/strong&gt;：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 这种信号对于每个进程来说只有一个！如果使该信号对进程中的两个描述符（这两个文件描述符都等待着 I/O 操作）都起作用，那么进程在接到此信号后就无法判别是哪一个文件描述符准备好了。所以 &lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 模型在现实中用的非常少。&lt;/p&gt;
 
 &lt;h1 id=&quot;asynchronous-io&quot;&gt;Asynchronous I/O&lt;/h1&gt;
 &lt;p&gt;Linux 系统中 Asynchronous I/O 的操作流程如下图所示：
 &lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003826926363.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;用户进程通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;aio_read()&lt;/code&gt; 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 &lt;strong&gt;asynchronous read&lt;/strong&gt;  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。&lt;/p&gt;
+&lt;p&gt;用户进程通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aio_read()&lt;/code&gt; 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 &lt;strong&gt;asynchronous read&lt;/strong&gt;  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Asynchronous I/O 操作最大的特点就是整个 I/O 操作流程中，用户进程始终没有被 block。&lt;/strong&gt;&lt;/p&gt;
 
@@ -2513,11 +2734,11 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
   &lt;li&gt;An asynchronous I/O operation does not cause the requesting process to be blocked;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;strong&gt;两者的区别就在于 Synchronous I/O 做 &lt;code class=&quot;highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 的时候会将用户空间的进程阻塞。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;两者的区别就在于 Synchronous I/O 做 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 的时候会将用户空间的进程阻塞。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;按照这个定义，之前所说的 &lt;code class=&quot;highlighter-rouge&quot;&gt;Blocking I/O&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt;，&lt;code class=&quot;highlighter-rouge&quot;&gt;IO multiplexing&lt;/code&gt;都属于 &lt;strong&gt;Synchronous I/O&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;按照这个定义，之前所说的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Blocking I/O&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IO multiplexing&lt;/code&gt;都属于 &lt;strong&gt;Synchronous I/O&lt;/strong&gt;。&lt;/p&gt;
 
-&lt;p&gt;有人会说，&lt;code class=&quot;highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 并没有被block啊。这里有个非常“狡猾”的地方，定义中所指的 &lt;code class=&quot;highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 是指&lt;strong&gt;真实的I/O操作&lt;/strong&gt;，就是例子中的 read 这个 system call。&lt;code class=&quot;highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 在执行 read 这个system call 的时候，如果 kernel 的数据没有准备好，这时候不会 block 进程。但是，当kernel 中数据准备好的时候，read 会将数据从kernel 拷贝到用户空间的缓冲区中，这个时候进程是被 block 的。&lt;/p&gt;
+&lt;p&gt;有人会说，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 并没有被block啊。这里有个非常“狡猾”的地方，定义中所指的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 是指&lt;strong&gt;真实的I/O操作&lt;/strong&gt;，就是例子中的 read 这个 system call。&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 在执行 read 这个system call 的时候，如果 kernel 的数据没有准备好，这时候不会 block 进程。但是，当kernel 中数据准备好的时候，read 会将数据从kernel 拷贝到用户空间的缓冲区中，这个时候进程是被 block 的。&lt;/p&gt;
 
 &lt;p&gt;而&lt;strong&gt;Asynchronous I/O&lt;/strong&gt;则不一样，当进程发起 &lt;strong&gt;I/O&lt;/strong&gt; 操作之后，就直接返回再也不理睬了，直到 kernel 发送一个信号，告诉进程说 I/O完成。在这整个过程中，&lt;strong&gt;进程完全没有被 block&lt;/strong&gt;。&lt;/p&gt;
 
@@ -2539,14 +2760,14 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
     
       <item>
         <title>Linux 内核加载启动过程分析</title>
-        <description>&lt;p&gt;本文是基于 &lt;code class=&quot;highlighter-rouge&quot;&gt;Linux Kernel 4.4.49&lt;/code&gt; 版本内核源码中的 x86 32 位体系结构进行分析。&lt;/p&gt;
+        <description>&lt;p&gt;本文是基于 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Linux Kernel 4.4.49&lt;/code&gt; 版本内核源码中的 x86 32 位体系结构进行分析。&lt;/p&gt;
 
 &lt;h1 id=&quot;bios-传统模式下的-x86-pc-启动过程&quot;&gt;BIOS 传统模式下的 X86 PC 启动过程&lt;/h1&gt;
 
 &lt;h2 id=&quot;什么是-bios&quot;&gt;什么是 BIOS？&lt;/h2&gt;
 &lt;p&gt;简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在 PC 设备中的只读存储器（ROM）中，主要完成检测内存、显卡等一系列硬件设备和建立中断向量表（IVT，Interrupt Vector Table）的工作。&lt;/p&gt;
 
-&lt;p&gt;ROM 其实也一块内存，它会被映射到 CPU 实模式下所能访问的 1MB 物理内存空间的顶部，即地址 &lt;code class=&quot;highlighter-rouge&quot;&gt;0xF000:0000 ~ 0xF000:FFFF&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;ROM 其实也一块内存，它会被映射到 CPU 实模式下所能访问的 1MB 物理内存空间的顶部，即地址 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0xF000:0000 ~ 0xF000:FFFF&lt;/code&gt;。&lt;/p&gt;
 
 &lt;p&gt;在这里补充一下， X86 处理器有两种运行模式一种是实模式，另外一种是保护模式，它们两者之间最主要的区别就是：实模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分段&lt;/strong&gt;方式（也就是&lt;strong&gt;段基址：段内便宜&lt;/strong&gt;），生成的是可以直接访问物理内存的&lt;strong&gt;物理地址&lt;/strong&gt;，而保护模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分页&lt;/strong&gt;方式，生成的是&lt;strong&gt;虚拟地址&lt;/strong&gt;，不能直接访问物理内存，需要通过 &lt;strong&gt;MMU&lt;/strong&gt; 硬件将虚拟地址转换为物理地址后才能访问物理内存。&lt;/p&gt;
 
@@ -2559,15 +2780,15 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 
 &lt;ol&gt;
   &lt;li&gt;
-    &lt;p&gt;当 X86 架构的 PC 在开机上电的一瞬间，CPU 中的 &lt;strong&gt;CS&lt;/strong&gt; 和 &lt;strong&gt;IP&lt;/strong&gt; 寄存器就被设置成了 &lt;code class=&quot;highlighter-rouge&quot;&gt;0xF000:FFF0&lt;/code&gt;（这个地址就是 BIOS 代码所在内存区域），这个地址指向了 CPU 执行第一条指令的位置。而在这个地址里只存放了一条非常简单的跳转指令 &lt;code class=&quot;highlighter-rouge&quot;&gt;jmp far f000:e05b&lt;/code&gt;，然后程序就跳转到了 BIOS 代码中的另外一个地址 &lt;code class=&quot;highlighter-rouge&quot;&gt;f000:e05b&lt;/code&gt; 处开始接着往下执行。&lt;/p&gt;
+    &lt;p&gt;当 X86 架构的 PC 在开机上电的一瞬间，CPU 中的 &lt;strong&gt;CS&lt;/strong&gt; 和 &lt;strong&gt;IP&lt;/strong&gt; 寄存器就被设置成了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0xF000:FFF0&lt;/code&gt;（这个地址就是 BIOS 代码所在内存区域），这个地址指向了 CPU 执行第一条指令的位置。而在这个地址里只存放了一条非常简单的跳转指令 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jmp far f000:e05b&lt;/code&gt;，然后程序就跳转到了 BIOS 代码中的另外一个地址 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;f000:e05b&lt;/code&gt; 处开始接着往下执行。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;接下来，BIOS 就马不停蹄地检测内存、显卡等外设信息，当硬件检测通过之后，就在内存的物理内存的起始位置 &lt;code class=&quot;highlighter-rouge&quot;&gt;0x000 ~ 0x3FF&lt;/code&gt; （刚好 1KB 的内存空间)建立中断向量表（IVT），如上图物理内存最底部的所示。&lt;/p&gt;
+    &lt;p&gt;接下来，BIOS 就马不停蹄地检测内存、显卡等外设信息，当硬件检测通过之后，就在内存的物理内存的起始位置 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x000 ~ 0x3FF&lt;/code&gt; （刚好 1KB 的内存空间)建立中断向量表（IVT），如上图物理内存最底部的所示。&lt;/p&gt;
 
-    &lt;p&gt;x86 中断向量表中有 256 个中断向量，每个中断向量用 4 个字节来表示（CS 用两个字节表示，IP 也用两个字节表示），通过中断向量中保存的 &lt;code class=&quot;highlighter-rouge&quot;&gt;CS:IP&lt;/code&gt; 地址就可以跳转到对应的中断处理程序去处理中断请求信号。&lt;/p&gt;
+    &lt;p&gt;x86 中断向量表中有 256 个中断向量，每个中断向量用 4 个字节来表示（CS 用两个字节表示，IP 也用两个字节表示），通过中断向量中保存的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CS:IP&lt;/code&gt; 地址就可以跳转到对应的中断处理程序去处理中断请求信号。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;最后，BIOS 将&lt;strong&gt;启动磁盘&lt;/strong&gt;中的第 1 个扇区（MBR 扇区，Master Boot Record）的 512 个字节的数据加载到物理内存地址为 &lt;code class=&quot;highlighter-rouge&quot;&gt;0x7C00 ~ 0x7E00&lt;/code&gt; 的区域，然后程序就跳转到 &lt;code class=&quot;highlighter-rouge&quot;&gt;0x7C00&lt;/code&gt; 处开始执行，至此，BIOS 就完成了所有的工作，将控制权转交到了 MBR 中的代码。&lt;/p&gt;
+    &lt;p&gt;最后，BIOS 将&lt;strong&gt;启动磁盘&lt;/strong&gt;中的第 1 个扇区（MBR 扇区，Master Boot Record）的 512 个字节的数据加载到物理内存地址为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x7C00 ~ 0x7E00&lt;/code&gt; 的区域，然后程序就跳转到 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x7C00&lt;/code&gt; 处开始执行，至此，BIOS 就完成了所有的工作，将控制权转交到了 MBR 中的代码。&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ol&gt;
 
@@ -2617,7 +2838,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;objcopy 工具的作用是拷贝一个目标文件的内容到另一个目标文件中，也就是说，可以将一种格式的目标文件转换成另一种格式的目标文件。通过使用 binary 作为输出目标(-o binary)，可产生一个原始的二进制文件，实质上是将所有的符号和重定位信息都将被抛弃，只剩下二进制数据。&lt;/p&gt;
 
 &lt;h3 id=&quot;zimage&quot;&gt;zImage&lt;/h3&gt;
-&lt;p&gt;zImage 是 ARM Linux 常用的一种压缩镜像文件，它是由vmlinux 加上&lt;strong&gt;解压代码&lt;/strong&gt;经 gzip 压缩而成，命令格式是 &lt;code class=&quot;highlighter-rouge&quot;&gt;make zImage&lt;/code&gt;，这种格式的 Linux 内核镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
+&lt;p&gt;zImage 是 ARM Linux 常用的一种压缩镜像文件，它是由vmlinux 加上&lt;strong&gt;解压代码&lt;/strong&gt;经 gzip 压缩而成，命令格式是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make zImage&lt;/code&gt;，这种格式的 Linux 内核镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
 
 &lt;h3 id=&quot;bzimage&quot;&gt;bzImage&lt;/h3&gt;
 &lt;p&gt;bzImage 不是用 bzip2 压缩的，&lt;strong&gt;bz 表示 big zImage&lt;/strong&gt;,其格式与 zImage 类似，但采用了不同的压缩算法，注意，bzImage 的压缩率更高是压缩的内核映像。&lt;/p&gt;
@@ -2625,7 +2846,7 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;p&gt;zImage vs bzImage：它们不仅是一个压缩文件，而且在这两个文件的开头部分内嵌有解压缩代码。两者的&lt;strong&gt;不同之处&lt;/strong&gt;在于，老的&lt;strong&gt;zImage 解压缩内核到低端内存&lt;/strong&gt;(第一个 640K)，&lt;strong&gt;bzImage解压缩内核到高端内存(1M以上)&lt;/strong&gt;。如果内核比较小，那么可以采用 zImage 或 bzImage 之一，两种方式引导的系统运行时是相同的。大的内核采用 bzImage，不能采用 zImage。&lt;/p&gt;
 
 &lt;h3 id=&quot;uimage&quot;&gt;uImage&lt;/h3&gt;
-&lt;p&gt;uImage 是 uboot 专用的镜像文件，它是在 zImage 之前加上一个长度为&lt;strong&gt;0x40&lt;/strong&gt;的头信息(tag)，在头信息内说明了该镜像文件的类型、加载 位置、生成时间、大小等信息。换句话说，若直接从 uImage 的0x40位置开始执行，则 zImage 和 uImage 没有任何区别，命令格式是 &lt;code class=&quot;highlighter-rouge&quot;&gt;make uImage&lt;/code&gt;，这种格式的 Linux 镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
+&lt;p&gt;uImage 是 uboot 专用的镜像文件，它是在 zImage 之前加上一个长度为&lt;strong&gt;0x40&lt;/strong&gt;的头信息(tag)，在头信息内说明了该镜像文件的类型、加载 位置、生成时间、大小等信息。换句话说，若直接从 uImage 的0x40位置开始执行，则 zImage 和 uImage 没有任何区别，命令格式是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make uImage&lt;/code&gt;，这种格式的 Linux 镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
 
 &lt;h3 id=&quot;xipimage&quot;&gt;xipImage&lt;/h3&gt;
 &lt;p&gt;这种格式的 Linux 镜像文件多存放在 NOR Flash 上，且运行时不需要拷贝到内存 SDRAM 中，可以直接在 NOR Flash 中运行。&lt;/p&gt;
@@ -2679,7 +2900,7 @@ Kernel: &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/bzImage is r
 
 &lt;p&gt;header.S 文件中的部分代码如下所示：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;BOOTSEG     = 0x07C0        /* original address of boot-sector */
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;BOOTSEG     = 0x07C0        /* original address of boot-sector */
 SYSSEG      = 0x1000        /* historical load address &amp;gt;&amp;gt; 4 */
 
 ......
@@ -2786,7 +3007,7 @@ die:
 
 &lt;p&gt;&lt;strong&gt;setup.ld 链接脚本&lt;/strong&gt;的工作就是将 header.S 中的各个小节按照 ELF 可执行文件格式链接在一起，最终生成 &lt;strong&gt;boot/setup.bin&lt;/strong&gt;  文件，setup.ld 文件中的部分内容如下所示：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/*
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/*
  * setup.ld
  *
  * Linker script for the i386 setup code
@@ -2828,21 +3049,21 @@ SECTIONS
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;由 setup.ld 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;ENTRY(_start)&lt;/code&gt; 可知，&lt;strong&gt;header.S&lt;/strong&gt; 文件中 &lt;code class=&quot;highlighter-rouge&quot;&gt;_start&lt;/code&gt; 汇编程序是 bzImage 内核映像开始执行的入口点，即引导扇区之后的开始处（偏移512字节处），它会准备大量的&lt;strong&gt;bootloader&lt;/strong&gt; 参数，最后的 &lt;code class=&quot;highlighter-rouge&quot;&gt;call main&lt;/code&gt; 跳转到 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/boot/main.c:main()&lt;/code&gt; 函数处执行，这就是众所周知的 main 函数，它们都工作在&lt;strong&gt;实模式&lt;/strong&gt;下。&lt;/p&gt;
+&lt;p&gt;由 setup.ld 中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ENTRY(_start)&lt;/code&gt; 可知，&lt;strong&gt;header.S&lt;/strong&gt; 文件中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_start&lt;/code&gt; 汇编程序是 bzImage 内核映像开始执行的入口点，即引导扇区之后的开始处（偏移512字节处），它会准备大量的&lt;strong&gt;bootloader&lt;/strong&gt; 参数，最后的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;call main&lt;/code&gt; 跳转到 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/boot/main.c:main()&lt;/code&gt; 函数处执行，这就是众所周知的 main 函数，它们都工作在&lt;strong&gt;实模式&lt;/strong&gt;下。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;arch/x86/boot/main.c:main()&lt;/strong&gt; 函数主要完成的工作：&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;copy_boot_params&lt;/code&gt; 函数把位于第一个扇区(boot/setup.bin 中的 boot sector)的参数复制到 &lt;strong&gt;boot_params&lt;/strong&gt; 变量中，boot_params 变量位于 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 的数据段。&lt;/li&gt;
+  &lt;li&gt;调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_boot_params&lt;/code&gt; 函数把位于第一个扇区(boot/setup.bin 中的 boot sector)的参数复制到 &lt;strong&gt;boot_params&lt;/strong&gt; 变量中，boot_params 变量位于 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 的数据段。&lt;/li&gt;
   &lt;li&gt;初始化早期启动状态下的控制台（console）。&lt;/li&gt;
   &lt;li&gt;初始化堆空间。&lt;/li&gt;
   &lt;li&gt;检测 CPU 相关信息。&lt;/li&gt;
   &lt;li&gt;通过向 BIOS 查询的方式，收集硬件相关信息，并将结果存放在第 0 号物理页中。&lt;/li&gt;
-  &lt;li&gt;调用了 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/boot/pm.c:go_to_protected_mode(void) ---&amp;gt; arch/x86/boot/pmjump.S:protected_mode_jump()&lt;/code&gt; 函数，从 bzImage 中的 &lt;code class=&quot;highlighter-rouge&quot;&gt;boot/setup.bin&lt;/code&gt; &lt;strong&gt;实模式部分&lt;/strong&gt;的代码跳转到了 &lt;code class=&quot;highlighter-rouge&quot;&gt;boot/vmlinux.bin&lt;/code&gt; &lt;strong&gt;保护模式&lt;/strong&gt;的代码。&lt;/li&gt;
+  &lt;li&gt;调用了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/boot/pm.c:go_to_protected_mode(void) ---&amp;gt; arch/x86/boot/pmjump.S:protected_mode_jump()&lt;/code&gt; 函数，从 bzImage 中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;boot/setup.bin&lt;/code&gt; &lt;strong&gt;实模式部分&lt;/strong&gt;的代码跳转到了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;boot/vmlinux.bin&lt;/code&gt; &lt;strong&gt;保护模式&lt;/strong&gt;的代码。&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h2 id=&quot;保护模式下内核加载过程&quot;&gt;保护模式下内核加载过程&lt;/h2&gt;
-&lt;p&gt;执行完 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 部分的代码之后，Bootloader 就接着把内核镜像 bzImage 中的第二部分 &lt;strong&gt;boot/vmlinux.bin&lt;/strong&gt; 加载到物理内存中起始地址为 &lt;strong&gt;0x100000&lt;/strong&gt; 的位置，boot/vmlinux.bin 代码在&lt;strong&gt;保护模式&lt;/strong&gt;下的入口是 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/boot/compressed/head_32.S::startup_32&lt;/code&gt; 汇编代码，这段汇编代码中主要完成两个工作：&lt;/p&gt;
+&lt;p&gt;执行完 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 部分的代码之后，Bootloader 就接着把内核镜像 bzImage 中的第二部分 &lt;strong&gt;boot/vmlinux.bin&lt;/strong&gt; 加载到物理内存中起始地址为 &lt;strong&gt;0x100000&lt;/strong&gt; 的位置，boot/vmlinux.bin 代码在&lt;strong&gt;保护模式&lt;/strong&gt;下的入口是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/boot/compressed/head_32.S::startup_32&lt;/code&gt; 汇编代码，这段汇编代码中主要完成两个工作：&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;将 boot/vmlinux.bin 文件中解压内核的代码拷贝到物理内存中 boot/vmlinux.bin 的后面。&lt;/li&gt;
@@ -2852,7 +3073,7 @@ SECTIONS
   &lt;li&gt;最后，跳转到解压缩后的内核文件 vmlinux 中的入口函数开始启动内核。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;解压缩后的内核文件 vmlinux 的入口函数是 &lt;code class=&quot;highlighter-rouge&quot;&gt;arch/x86/kernel/head_32.S::startup_32&lt;/code&gt; 中的startup_32（32位内核的入口函数），在这个函数中会拷贝 &lt;strong&gt;boot_params&lt;/strong&gt; 结构体变量以及&lt;strong&gt;boot_command_line&lt;/strong&gt;，初始化页表，开启分页机制。startup_32() 汇编代码会接着调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;init/main.c:start_kernel()&lt;/code&gt; 函数，这是Linux 内核的启动函数。&lt;code class=&quot;highlighter-rouge&quot;&gt;init/main.c&lt;/code&gt; 文件是整个 Linux 内核的中央联结点。每种体系结构都会执行一些底层设置函数，然后执行名为&lt;code class=&quot;highlighter-rouge&quot;&gt;start_kernel&lt;/code&gt; 的函数（在 init/main.c 中可以找到这个函数）。可以认为 main.c 是内核的“粘合剂（glue）”，之前执行的代码都是&lt;strong&gt;各种体系结构相关&lt;/strong&gt;的代码，一旦到达&lt;strong&gt;start_kernel()&lt;/strong&gt;，就与体系结构无关了。&lt;/p&gt;
+&lt;p&gt;解压缩后的内核文件 vmlinux 的入口函数是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/kernel/head_32.S::startup_32&lt;/code&gt; 中的startup_32（32位内核的入口函数），在这个函数中会拷贝 &lt;strong&gt;boot_params&lt;/strong&gt; 结构体变量以及&lt;strong&gt;boot_command_line&lt;/strong&gt;，初始化页表，开启分页机制。startup_32() 汇编代码会接着调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init/main.c:start_kernel()&lt;/code&gt; 函数，这是Linux 内核的启动函数。&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init/main.c&lt;/code&gt; 文件是整个 Linux 内核的中央联结点。每种体系结构都会执行一些底层设置函数，然后执行名为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;start_kernel&lt;/code&gt; 的函数（在 init/main.c 中可以找到这个函数）。可以认为 main.c 是内核的“粘合剂（glue）”，之前执行的代码都是&lt;strong&gt;各种体系结构相关&lt;/strong&gt;的代码，一旦到达&lt;strong&gt;start_kernel()&lt;/strong&gt;，就与体系结构无关了。&lt;/p&gt;
 
 &lt;p&gt;至此，Linux Kernel 的加载过程就分析完毕了，整个过程可以用下面这张图来总结一下：&lt;/p&gt;
 
@@ -2881,116 +3102,6 @@ SECTIONS
         <category>内核</category>
         
         <category>操作系统</category>
-        
-        
-        <category>内核</category>
-        
-      </item>
-    
-      <item>
-        <title>ramfs, tmpfs, rootfs, initramfs的区别</title>
-        <description>&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14973695337147.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;什么是文件系统&quot;&gt;什么是文件系统？&lt;/h1&gt;
-
-&lt;p&gt;如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什么东西呢？&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;下面是引用自Wikipedia上关于&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F&quot;&gt;文件系统&lt;/a&gt;的介绍：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;在计算机系统中，文件系统（file system）是一种存储和组织数据的一种方法，它使得对数据发访问和查找变得更加容易。&lt;/p&gt;
-
-  &lt;p&gt;文件系统使用&lt;strong&gt;文件&lt;/strong&gt;和&lt;strong&gt;树形目录&lt;/strong&gt;的抽象逻辑概念代替了硬盘和光盘等物理存储设备所用的数据块的概念，用户使用文件系统来保存数据而不必关系数据实际保存在物理存储设备的地址为多少的数据块中，用户只需要记住这个文件的所属目录和文件名即可。在写入数据之前，用户也不必关心硬盘上哪个数据块没有被使用，所有的物理存储设备的存储空间的分配和释放功能都是由文件系统自动完成，用户只需要记住数据被写入到了哪个文件中。&lt;/p&gt;
-
-  &lt;p&gt;文件系统可以用来在不同的物理存储介质上存储和组织数据，通常最常见的物理存储设备是硬盘，光盘以及Flash，磁带等等。但是，在某些情况下文件系统也可以使用内存（random-access memory，RAM）作为文件的存储介质，例如tmpfs，当文件存储在这种存储介质上时，一旦计算机掉电之后，该介质上面的所有文件就都消失了。甚至有的文件系统可能根本没有对应的文件，例如如proc文件系统。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h1 id=&quot;什么是-ramfs&quot;&gt;什么是 ramfs？&lt;/h1&gt;
-&lt;p&gt;&lt;strong&gt;Ramfs&lt;/strong&gt; 是一个空间大小动态可变的基于 RAM 的文件系统，它是Linux 用来实现磁盘缓存（page cache and dentry cache）的文件系统。&lt;/p&gt;
-
-&lt;p&gt;ramfs 是一个仅存在与内存中文件系统，它没有后备存储（例如磁盘），也就是说 ramfs 文件系统所管理的文件都是存放在内存中，而不存放在磁盘中，如果计算机掉电关闭，那么 ramfs 文件系统中所有文件也就都没有了。&lt;/p&gt;
-
-&lt;p&gt;当普通磁盘中的文件被操作系统加载到内存中时，内核会分配 page 来存储文件中的内容，然后进程通过读写内存中文件对应的 page 实现对文件的读写修改操作，当完成了所有的读写操作之后，文件对应的 page 就会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，然后在合适的时机被操作系统写回到原来的磁盘中对应的文件中，内存中原来存放这些文件的 page 就会被标记为干净，最后被系统回收重新使用。而 ramfs 文件系统中的文件当同样被加载到内存中 page 进行读写操作之后，它对应的 page 并不会被标记为&lt;strong&gt;脏页&lt;/strong&gt;，因为 ramfs 中文件没有下级的后备存储器（例如，磁盘），也就没有了写回后备存储器的操作，所以为它分配的这些 page 也就无法回收了。&lt;/p&gt;
-
-&lt;h1 id=&quot;什么是-tmpfs&quot;&gt;什么是 tmpfs？&lt;/h1&gt;
-&lt;p&gt;ramfs 中有一个非常大的&lt;strong&gt;缺点&lt;/strong&gt;就是你可以持续不断地向 ramfs 文件系统中的文件持续不断地写入数据直到填满整个物理内存空间为止。出现这个问题的原因就是前面介绍的 ramfs 文件系统不存在向普通磁盘那样的将内存中的文件内容写回到文件的操作，也就导致了它所占据的那部分内存空间是无法被释放的，正是因为这个原因，通常只有 &lt;strong&gt;root&lt;/strong&gt; 用户才有读写 ramfs 文件系统中文件的权限。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;tmpfs&lt;/strong&gt; 文件系统是从 &lt;strong&gt;ramfs&lt;/strong&gt; 衍生而来的一个文件系统，但是它相对于 ramfs 多了&lt;strong&gt;空间容量大小限制&lt;/strong&gt;，并且还可以将文件系统中一些&lt;strong&gt;不必要的的文件内容写到交换空间&lt;/strong&gt;中（swap space）。并且 tmpfs 文件系统的大小还可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;mount -o remount ...&lt;/code&gt; 命令来重新调整。&lt;/p&gt;
-
-&lt;p&gt;有关 tmpfs 更加详细的内容可以查看内核源码中的文档：&lt;em&gt;Documentation/filesystems/tmpfs.txt&lt;/em&gt;。&lt;/p&gt;
-
-&lt;h2 id=&quot;什么是-rootfs&quot;&gt;什么是 rootfs？&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;rootfs&lt;/strong&gt;（也叫根文件系统） 它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录下的结构，例如，&lt;code class=&quot;highlighter-rouge&quot;&gt;/boot&lt;/code&gt; 目录下存放的是启动内核相关的文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/etc&lt;/code&gt; 目录中存放的则是一些系统配置文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/dev&lt;/code&gt; 目录下存放的则是系统的设备文件，&lt;code class=&quot;highlighter-rouge&quot;&gt;/bin&lt;/code&gt; 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录的结构如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
-├── bin
-├── boot
-├── cdrom
-├── data
-├── dev
-├── etc
-├── home
-├── initrd.img -&amp;gt; boot/initrd.img-3.13.0-107-generic
-├── lib
-├── lib32
-├── lib64
-├── libx32
-├── lost+found
-├── media
-├── mnt
-├── opt
-├── proc
-├── root
-├── run
-├── sbin
-├── srv
-├── sys
-├── tmp
-├── usr
-├── var
-└── vmlinuz -&amp;gt; boot/vmlinuz-4.2.0-27-generic
-
-24 directories, 5 files
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;通常 rootfs 文件系统应该非常简洁，它只包含了它所必须用的文件，并且尽量避免少去修改 rootfs，以免破坏 rootfs，导致整个 Linux 系统无法启动。&lt;/p&gt;
-
-&lt;p&gt;Linux 系统的启动过程与 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootfs&lt;/code&gt; 也是密切相关，rootfs 可能会存在于存储在 RAM 存储设备中，也可能会存在硬盘设备中，这部分的我会在 Linux 系统的启动过程中作介绍。&lt;/p&gt;
-
-&lt;h2 id=&quot;什么是-initramfs&quot;&gt;什么是 initramfs？&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;initramfs&lt;/strong&gt; 是一种以 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpio&lt;/code&gt; 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像，BootLoader 加载 boot.img，并启动内核之后，内核接着就对 &lt;code class=&quot;highlighter-rouge&quot;&gt;cpio&lt;/code&gt; 格式的 initramfs 进行解压，并将解压后得到的 &lt;code class=&quot;highlighter-rouge&quot;&gt;rootfs&lt;/code&gt; 加载进内存，最后内核会检查 rootfs 中是否存在 &lt;strong&gt;init&lt;/strong&gt; 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 &lt;strong&gt;init&lt;/strong&gt; 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 &lt;code class=&quot;highlighter-rouge&quot;&gt;/&lt;/code&gt; 根目录上，最后通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;exec chroot . /sbin/init&lt;/code&gt; 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 &lt;strong&gt;/sbin/init&lt;/strong&gt; 程序来启动系统中的其他进程和服务。&lt;/p&gt;
-
-&lt;p&gt;有关更加详细的 Linux Kernel + initramfs 的启动过程可以阅读下面这篇文章：&lt;a href=&quot;http://xstarcd.github.io/wiki/Linux/ShengRuLiJie_linux_2.6_initramfs.html&quot;&gt;深入理解Linux 2.6 的initramfs 机制&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;参考文章&quot;&gt;参考文章&lt;/h2&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F&quot;&gt;wiki-文件系统&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.linfo.org/root_filesystem.html&quot;&gt;Root Filesystem Definition&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt&quot;&gt;Kernel-doc:ramfs, rootfs and initramfs&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/filesystems/tmpfs.txt&quot;&gt;Kernel-doc: tmpfs&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://xstarcd.github.io/wiki/Linux/ShengRuLiJie_linux_2.6_initramfs.html&quot;&gt;深入理解Linux 2.6 的initramfs 机制&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/goodboychina/article/details/27306985&quot;&gt;initramfs完全解读&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/fjb2080/article/details/5344525&quot;&gt;跟我一步一步制作一个基本的linux启动盘&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Wed, 14 Jun 2017 08:00:51 +0800</pubDate>
-        <link>http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html</guid>
-        
-        <category>ramfs</category>
-        
-        <category>tmpfs</category>
-        
-        <category>rootfs</category>
-        
-        <category>initramfs</category>
-        
-        <category>文件系统</category>
-        
-        <category>Linux</category>
         
         
         <category>内核</category>

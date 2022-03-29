@@ -10,7 +10,7 @@
   <meta name="description" content="Android HAL 简介Android 系统硬件抽象层（Hardware Abstract Layer）运行在用户空间中，它向下屏蔽了硬件驱动的实现细节，向上提供了硬件访问的服务。通过 HAL 层，Android 系统分为两层来支持硬件设备，其中一层实现在用户空间，另外一层实现在内核空间中，它在 Androi...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -517,7 +521,7 @@
 <p>所以，Android 就在用户空间搞了一个 HAL 层，将硬件的一些重要的操作都放在这一层中完成，这些操作都封装在厂商所提供的一个动态链接库中，从而达到了避免源码公开的目的，而底层 Linux 内核空间中的设备驱动模块，现在则只提供一些最基本的硬件设备寄存器操作的功能。</p>
 
 <h2 id="hal-模块是如何实现的">HAL 模块是如何实现的？</h2>
-<p>由于最近一直在做一个 Android-x86 系统相关的项目，其中就有一部分是跟音频 HAL 模块紧密相关，所以我就重新对 HAL 的相关知识进行了一个学习和整理，所以本文中将以音频系统对应的 audio HAL 模块（ 它最终是以 <code class="highlighter-rouge">audio.primary.x86.so</code> 的动态链接库形式存在 ）为例来介绍一个 HAL 模块的定义及实现过程。</p>
+<p>由于最近一直在做一个 Android-x86 系统相关的项目，其中就有一部分是跟音频 HAL 模块紧密相关，所以我就重新对 HAL 的相关知识进行了一个学习和整理，所以本文中将以音频系统对应的 audio HAL 模块（ 它最终是以 <code class="language-plaintext highlighter-rouge">audio.primary.x86.so</code> 的动态链接库形式存在 ）为例来介绍一个 HAL 模块的定义及实现过程。</p>
 
 <h3 id="hal-层的三个重要结构体">HAL 层的三个重要结构体</h3>
 <p>Android 系统的 HAL 层其实并不复杂，只要你能理解清楚下面这 3 个结构体的含义：</p>
@@ -533,7 +537,7 @@
 <p><strong>注意：这里一定区分 hw_module_t 和 hw_device_t 它们所表示的含义</strong></p>
 
 <h4 id="hw_module_t">hw_module_t</h4>
-<p>结构体 hw_module_t 定义在 <code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
+<p>结构体 hw_module_t 定义在 <code class="language-plaintext highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
  * Every hardware module must have a data structure named HAL_MODULE_INFO_SYM
@@ -628,7 +632,7 @@
 </ul>
 
 <h4 id="hw_device_t">hw_device_t</h4>
-<p>结构体 hw_device_t 定义在 <code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
+<p>结构体 hw_device_t 定义在 <code class="language-plaintext highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
  * Every device data structure must begin with hw_device_t
@@ -682,7 +686,7 @@
 </ul>
 
 <h4 id="hw_module_methods_t">hw_module_methods_t</h4>
-<p>结构体 hw_module_methods_t 定义在 <code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
+<p>结构体 hw_module_methods_t 定义在 <code class="language-plaintext highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code> 文件中，其定义如下所示：</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="n">hw_module_methods_t</span> <span class="p">{</span>
     <span class="cm">/** Open a specific device */</span>
@@ -700,7 +704,7 @@
 
 <h3 id="step-1定义-struct-audio_module-模块">Step 1：定义 struct audio_module 模块</h3>
 <p>我们前面在结构体 hw_module_t 介绍时，有提到具体的<strong>硬件模块</strong>要定义一个新的结构体并且这个结构体的==第一个成员必须是 hw_module_t 类型==，所以根据这个规则，audio_module 的定义如下所示：
-代码路径：<code class="highlighter-rouge">/hardware/libhardware/include/hardware/audio.h</code></p>
+代码路径：<code class="language-plaintext highlighter-rouge">/hardware/libhardware/include/hardware/audio.h</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">audio_module</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">hw_module_t</span> <span class="n">common</span><span class="p">;</span>
@@ -709,7 +713,7 @@
 
 <h3 id="step-2定义-struct-audio_module-类型的-hal_module_info_sym-变量">step 2：定义 struct audio_module 类型的 HAL_MODULE_INFO_SYM 变量</h3>
 <p>HAL_MODULE_INFO_SYM 其实是一个宏，它定义如下所示：
-代码路径：<code class="highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code></p>
+代码路径：<code class="language-plaintext highlighter-rouge">/hardware/libhardware/include/hardware/hardware.h</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
  * Name of the hal_module_info
@@ -722,8 +726,8 @@
 <span class="cp">#define HAL_MODULE_INFO_SYM_AS_STR  "HMI"
 </span></code></pre></div></div>
 
-<p>而 struct audio_module 类型名为 <code class="highlighter-rouge">HAL_MODULE_INFO_SYM</code> 变量的定义如下所示：
-代码路径：<code class="highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
+<p>而 struct audio_module 类型名为 <code class="language-plaintext highlighter-rouge">HAL_MODULE_INFO_SYM</code> 变量的定义如下所示：
+代码路径：<code class="language-plaintext highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">audio_module</span> <span class="n">HAL_MODULE_INFO_SYM</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">.</span><span class="n">common</span> <span class="o">=</span> <span class="p">{</span>
@@ -800,24 +804,24 @@
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>在上面音频硬件设备结构体 <code class="highlighter-rouge">audio_hw_device</code> 的定义中，第一个结构体成员就是 <code class="highlighter-rouge">struct hw_device_t</code> 类型的，而其他的结构体成员都是函数指针，例如 <code class="highlighter-rouge">open_output_stream</code> 函数就是用来打开播放音频的扬声器设备，<code class="highlighter-rouge">open_input_stream</code> 函数则是用来打开录音用的麦克风设备。</p>
+<p>在上面音频硬件设备结构体 <code class="language-plaintext highlighter-rouge">audio_hw_device</code> 的定义中，第一个结构体成员就是 <code class="language-plaintext highlighter-rouge">struct hw_device_t</code> 类型的，而其他的结构体成员都是函数指针，例如 <code class="language-plaintext highlighter-rouge">open_output_stream</code> 函数就是用来打开播放音频的扬声器设备，<code class="language-plaintext highlighter-rouge">open_input_stream</code> 函数则是用来打开录音用的麦克风设备。</p>
 
 <h3 id="step-4定义-struct-hw_module_methods_t-函数列表变量">step 4：定义 struct hw_module_methods_t 函数列表变量</h3>
-<p>在前面介绍的结构体 hw_module_t 的定义中就有一个 hw_module_methods_t 函数指针类型的成员<code class="highlighter-rouge">open</code>，该函数的作用就是让<strong>硬件模块</strong>打开<strong>硬件设备</strong>，然后对特定硬件设备（例如上面的 struct audio_device_t结构体）中定义函数指针变量进行赋值绑定，所以在每个<strong>硬件模块</strong>都要实现这样一个变量。</p>
+<p>在前面介绍的结构体 hw_module_t 的定义中就有一个 hw_module_methods_t 函数指针类型的成员<code class="language-plaintext highlighter-rouge">open</code>，该函数的作用就是让<strong>硬件模块</strong>打开<strong>硬件设备</strong>，然后对特定硬件设备（例如上面的 struct audio_device_t结构体）中定义函数指针变量进行赋值绑定，所以在每个<strong>硬件模块</strong>都要实现这样一个变量。</p>
 
-<p>struct audio_module 结构体中 <code class="highlighter-rouge">struct hw_module_t 类型的成员 common </code>中的 hw_module_methods_t 函数指针成员的实现绑定如下所示：
-代码路径：<code class="highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
+<p>struct audio_module 结构体中 <code class="language-plaintext highlighter-rouge">struct hw_module_t 类型的成员 common </code>中的 hw_module_methods_t 函数指针成员的实现绑定如下所示：
+代码路径：<code class="language-plaintext highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="k">struct</span> <span class="n">hw_module_methods_t</span> <span class="n">hal_module_methods</span> <span class="o">=</span> <span class="p">{</span>
     <span class="p">.</span><span class="n">open</span> <span class="o">=</span> <span class="n">adev_open</span><span class="p">,</span>
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>可以看到，在 audio HAL 模块中使用了 <code class="highlighter-rouge">adev_open</code> 函数来初始化了 struct hw_module_methods_t 中的 <code class="highlighter-rouge">open</code> 函数指针成员。我们现在回过头来看 <strong>step 2</strong>中 <strong>struct audio_module HAL_MODULE_INFO_SYM</strong> 变量的定义中，audio_module 中的第一个成员 common中的结构体变量 methods 的指针就是被初始化指向了现在这里定义的 <code class="highlighter-rouge">hal_module_methods</code> 变量。</p>
+<p>可以看到，在 audio HAL 模块中使用了 <code class="language-plaintext highlighter-rouge">adev_open</code> 函数来初始化了 struct hw_module_methods_t 中的 <code class="language-plaintext highlighter-rouge">open</code> 函数指针成员。我们现在回过头来看 <strong>step 2</strong>中 <strong>struct audio_module HAL_MODULE_INFO_SYM</strong> 变量的定义中，audio_module 中的第一个成员 common中的结构体变量 methods 的指针就是被初始化指向了现在这里定义的 <code class="language-plaintext highlighter-rouge">hal_module_methods</code> 变量。</p>
 
 <h3 id="step-5adev_open-函数的实现">step 5：adev_open 函数的实现</h3>
-<p>最后，我们来看看 <code class="highlighter-rouge">adev_open</code> 函数的实现，看看它是如何通过 audio_module 硬件模块对象来打开 audio_hw_device 硬件设备对象。
-代码路径：<code class="highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
+<p>最后，我们来看看 <code class="language-plaintext highlighter-rouge">adev_open</code> 函数的实现，看看它是如何通过 audio_module 硬件模块对象来打开 audio_hw_device 硬件设备对象。
+代码路径：<code class="language-plaintext highlighter-rouge">&lt;aosp&gt;/generic/goldfish/audio/audio_hw.c</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">int</span> <span class="nf">adev_open</span><span class="p">(</span><span class="k">const</span> <span class="n">hw_module_t</span><span class="o">*</span> <span class="n">module</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span><span class="p">,</span>
                      <span class="n">hw_device_t</span><span class="o">**</span> <span class="n">device</span><span class="p">)</span>
@@ -865,8 +869,8 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>这里再补充一个小的定义，<code class="highlighter-rouge">struct generic_audio_device</code> 中的第一个成员 <code class="highlighter-rouge">device</code> 就是我们前面提到的 <code class="highlighter-rouge">struct audio_hw_device</code> 结构体，它的定义如下:
-代码路径：<code class="highlighter-rouge">/hardware/libaudio/audio_hw.c</code></p>
+<p>这里再补充一个小的定义，<code class="language-plaintext highlighter-rouge">struct generic_audio_device</code> 中的第一个成员 <code class="language-plaintext highlighter-rouge">device</code> 就是我们前面提到的 <code class="language-plaintext highlighter-rouge">struct audio_hw_device</code> 结构体，它的定义如下:
+代码路径：<code class="language-plaintext highlighter-rouge">/hardware/libaudio/audio_hw.c</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">generic_audio_device</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">audio_hw_device</span> <span class="n">device</span><span class="p">;</span>
@@ -878,13 +882,13 @@
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>我们可以从 <code class="highlighter-rouge">adev_open</code> 函数中的实现中看到，它里面的主要工作就是做一些对 <code class="highlighter-rouge">struct audio_hw_device</code> 对象的初始化，将其定义的函数指针指向对应的已经实现好的函数中。例如，这里将<code class="highlighter-rouge">struct audio_hw_device</code>中定义的 <code class="highlighter-rouge">open_output_stream</code> 函数指针成员指向了 <code class="highlighter-rouge">adev_open_output_stream</code> 函数。这样在 Framework 层调用的 <code class="highlighter-rouge">struct audio_hw_device</code> 对象的 <code class="highlighter-rouge">open_output_stream</code> 函数，其实最终调用的是 <code class="highlighter-rouge">adev_open_output_stream</code>函数。</p>
+<p>我们可以从 <code class="language-plaintext highlighter-rouge">adev_open</code> 函数中的实现中看到，它里面的主要工作就是做一些对 <code class="language-plaintext highlighter-rouge">struct audio_hw_device</code> 对象的初始化，将其定义的函数指针指向对应的已经实现好的函数中。例如，这里将<code class="language-plaintext highlighter-rouge">struct audio_hw_device</code>中定义的 <code class="language-plaintext highlighter-rouge">open_output_stream</code> 函数指针成员指向了 <code class="language-plaintext highlighter-rouge">adev_open_output_stream</code> 函数。这样在 Framework 层调用的 <code class="language-plaintext highlighter-rouge">struct audio_hw_device</code> 对象的 <code class="language-plaintext highlighter-rouge">open_output_stream</code> 函数，其实最终调用的是 <code class="language-plaintext highlighter-rouge">adev_open_output_stream</code>函数。</p>
 
 <p><strong>这里，还有一点需要特别注意的就是我们所打开的硬件设备对象是怎么返回的？</strong>
-答案就是它是通过 <code class="highlighter-rouge">open</code> 函数中的第三个参数 <code class="highlighter-rouge">hw_device_t** device</code>返回的。在 open 函数初始化并打开特定的硬件设备之后，它就将硬件设备结构体中的第一个成员 <code class="highlighter-rouge">struct audio_hw_device</code> 类型的 common 对象返回。</p>
+答案就是它是通过 <code class="language-plaintext highlighter-rouge">open</code> 函数中的第三个参数 <code class="language-plaintext highlighter-rouge">hw_device_t** device</code>返回的。在 open 函数初始化并打开特定的硬件设备之后，它就将硬件设备结构体中的第一个成员 <code class="language-plaintext highlighter-rouge">struct audio_hw_device</code> 类型的 common 对象返回。</p>
 
 <p><strong>那么为什么这里返回的是 hw_device_t** 类型的硬件设备，而是不是audio_hw_device** 类型呢？</strong>
-其实这个问题在前面在介绍 <code class="highlighter-rouge">hw_module_methods_t</code> 中的 <code class="highlighter-rouge">open</code> 函数时已经提到过了。这里主要也蕴含着面向对象编程中的另外一种重要思想<strong>多态</strong>，这使得使用的 hw_device_t 指针就可以访问到子类中继承了父类的属性和方法，如果要获得某个子类所特有的属性，那么只要将其进行类型的强制转换即可。</p>
+其实这个问题在前面在介绍 <code class="language-plaintext highlighter-rouge">hw_module_methods_t</code> 中的 <code class="language-plaintext highlighter-rouge">open</code> 函数时已经提到过了。这里主要也蕴含着面向对象编程中的另外一种重要思想<strong>多态</strong>，这使得使用的 hw_device_t 指针就可以访问到子类中继承了父类的属性和方法，如果要获得某个子类所特有的属性，那么只要将其进行类型的强制转换即可。</p>
 
 <h2 id="总结">总结</h2>
 <p>理解 Android HAL 层最关键的还是要弄清楚 hw_module_t 、 hw_device_t、 hw_module_methods_t 这三个结构体的含义即关系，以及如何基于这三个结构体来实现特定硬件的<strong>硬件模块结构体</strong>、<strong>硬件设备结构体</strong>、<strong>硬件模块方法列表结构体</strong>。其实从面向对象编程的角度来考虑，前面三者和后面三者之间的关系，就好比是父类和子类的关系，如下图所示：
@@ -1371,6 +1375,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1396,10 +1408,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

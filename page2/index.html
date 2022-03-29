@@ -11,7 +11,7 @@
 ">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -406,6 +406,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -431,10 +439,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -493,6 +497,28 @@
 
 <div class="wrapper">
 <ul class="post-list">
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html">QEMU/KVM 原理综述</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>QEMU 工作原理简介 QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用： 作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。 作为虚拟机监视器：模拟全系统，利用其它VMM（Xen，KVM等等）来使用硬件提供的虚拟化支持，创建接近于主机性能的虚拟机。 QEMU虚拟化的主要原理 系统虚拟化最重要的就是虚拟化出计算机系统中最重要的三大组件：CPU、内存和IO设备。QEMU虚拟出来的CPU成为vCPU，为了提升vCPU执行Guest OS中指令的效率，通过KVM、Xen等虚拟化技术，直接利用CPU硬件虚拟化的支持，在主机上安全地执行虚拟机代码（需要BIOS中CPU开启对应的硬件虚拟化支持）。 在x86平台上最常见的虚拟化组合就是QEMU/KVM的组合了，其中利用QEMU来模拟IO外设，通过KVM来捕获Guest OS中运行的指令并将其中非特权指令在物理CPU上直接运行，达到硬件加速的目的。 KVM内核模块对用户空间只暴露出一个/dev/kvm的设备文件，然后通过ioctl命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。 KVM 虚拟化原理简介 KVM是Linux内核的一个虚拟化特性，由一组内核模块文件组成，它可以让QEMU中运行的Guest OS的指令直接在Host OS上的CPU中执行，前提是Guest OS和Host...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">November 21, 2018</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/虚拟化">虚拟化</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
   
   <li>
     <h2>
@@ -569,28 +595,6 @@
     </section>
     <section class="post-meta">
       <div class="post-date">June 27, 2017</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/内核">内核</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2017/06/14/ramfs-rootfs-initramfs%E7%9A%84%E5%8C%BA%E5%88%AB.html">ramfs, tmpfs, rootfs, initramfs的区别</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>什么是文件系统？ 如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什么东西呢？ 下面是引用自Wikipedia上关于文件系统的介绍： 在计算机系统中，文件系统（file system）是一种存储和组织数据的一种方法，它使得对数据发访问和查找变得更加容易。 文件系统使用文件和树形目录的抽象逻辑概念代替了硬盘和光盘等物理存储设备所用的数据块的概念，用户使用文件系统来保存数据而不必关系数据实际保存在物理存储设备的地址为多少的数据块中，用户只需要记住这个文件的所属目录和文件名即可。在写入数据之前，用户也不必关心硬盘上哪个数据块没有被使用，所有的物理存储设备的存储空间的分配和释放功能都是由文件系统自动完成，用户只需要记住数据被写入到了哪个文件中。 文件系统可以用来在不同的物理存储介质上存储和组织数据，通常最常见的物理存储设备是硬盘，光盘以及Flash，磁带等等。但是，在某些情况下文件系统也可以使用内存（random-access memory，RAM）作为文件的存储介质，例如tmpfs，当文件存储在这种存储介质上时，一旦计算机掉电之后，该介质上面的所有文件就都消失了。甚至有的文件系统可能根本没有对应的文件，例如如proc文件系统。 什么是...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">June 14, 2017</div>
       <div class="post-categories">
       in 
         
@@ -962,6 +966,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -987,10 +999,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

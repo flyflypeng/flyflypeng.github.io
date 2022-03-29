@@ -10,7 +10,7 @@
   <meta name="description" content="EOF 的定义  EOF 是 end of file 的缩写，表示”文字流”（stream）的结尾。这里的”文字流”，可以是文件（file），也可以是标准输入（stdin）。以前在学习 C 语言文件操作的时候，一直记得 EOF 就是一个标记，通过它可以判断程序是否读取到文件的末尾了，例如下面的这段代码就是将一个文...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -508,7 +512,7 @@
 </blockquote>
 
 <p>以前在学习 C 语言文件操作的时候，一直记得 EOF 就是一个标记，通过它可以判断程序是否读取到文件的末尾了，例如下面的这段代码就是将一个文本文件中的字符输出到标准输出中，并通过 EOF 来判断程序是否读到了文件末尾：</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span>
 <span class="cp">#define FILENAME "gdb_test.c"
 </span>
@@ -528,7 +532,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>所以，我一直很好奇 <code class="highlighter-rouge">EOF</code> 到底是什么个什么东西，它只是一个简单的常量还是一个特殊的字符呢？</p>
+<p>所以，我一直很好奇 <code class="language-plaintext highlighter-rouge">EOF</code> 到底是什么个什么东西，它只是一个简单的常量还是一个特殊的字符呢？</p>
 
 <p><strong>EOF</strong> 定义在 <em>/usr/include/stdio.h</em> 文件中：</p>
 
@@ -539,7 +543,7 @@ Some things throughout the library rely on this being -1.  */
     #endif
 </code></pre>
 
-<p>从上面 <code class="highlighter-rouge">EOF</code> 的定义我们可以看出 EOF 本质上就是一个值为<code class="highlighter-rouge">-1</code>的常量！</p>
+<p>从上面 <code class="language-plaintext highlighter-rouge">EOF</code> 的定义我们可以看出 EOF 本质上就是一个值为<code class="language-plaintext highlighter-rouge">-1</code>的常量！</p>
 
 <!--more-->
 
@@ -562,7 +566,7 @@ Some things throughout the library rely on this being -1.  */
 <h2 id="标准输入文件">标准输入文件</h2>
 <p>标准输入文件（stdin）它对应的是外设键盘输入，而在 Linux 系统中它被抽象成一个文件，准确地说是一个流文件。这种文件和上面普通文本文件最大的区别就是它的文件大小是不固定的，它就像是一个水管的进水端，可以在任何时候都可以接收输入。</p>
 
-<p>正是因为标准输入文件这种流式的特点，决定了无法通过前面提到那种比较文件大小方法来判断是否读取到了文件末尾。因此，Linux 系统判断标准输入文件是否读取到文件末尾的方法是：<strong>设置一个特殊的输入标记来表示文件末尾，而在Linux 系统中这个标记就是组合键<code class="highlighter-rouge">Ctrl+D</code>，当系统捕获到这个组合键时，就让 r read 函数返回一个 EOF 常量，告知程序已经读取到标准文件的末尾了。</strong></p>
+<p>正是因为标准输入文件这种流式的特点，决定了无法通过前面提到那种比较文件大小方法来判断是否读取到了文件末尾。因此，Linux 系统判断标准输入文件是否读取到文件末尾的方法是：<strong>设置一个特殊的输入标记来表示文件末尾，而在Linux 系统中这个标记就是组合键<code class="language-plaintext highlighter-rouge">Ctrl+D</code>，当系统捕获到这个组合键时，就让 r read 函数返回一个 EOF 常量，告知程序已经读取到标准文件的末尾了。</strong></p>
 
 <h2 id="socket-流文件">socket 流文件</h2>
 <p>socket 流文件和标准输入文件类似都是流式文件，并且它是从网络上进行数据读取，所以上面两种判断文件是否读取到末尾的方法都不适用于 socket 流文件。</p>
@@ -1064,6 +1068,14 @@ Some things throughout the library rely on this being -1.  */
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1089,10 +1101,6 @@ Some things throughout the library rely on this being -1.  */
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

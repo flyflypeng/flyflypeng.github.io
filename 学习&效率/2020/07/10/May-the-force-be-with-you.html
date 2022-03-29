@@ -10,7 +10,7 @@
   <meta name="description" content="May the force be with youLinux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  udev: Device Manager for the Linux Kern...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -504,6 +508,8 @@
 <article class="post-content">
   <h1 id="may-the-force-be-with-you">May the force be with you</h1>
 
+<iframe src="https://www.xmind.net/embed/ckdwBg/" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="true"></iframe>
+
 <h2 id="linux-系统编程">Linux 系统编程</h2>
 
 <ul>
@@ -537,7 +543,7 @@
 
 <ul>
   <li><a href="https://tlanyan.me/yum-repos-summary/">常用yum源整理</a>：介绍了官方yum源和第三方yum源的区别和常用的yum源镜像地址</li>
-  <li><a href="https://juejin.im/post/5d0ef5376fb9a07ef63fe74e">CentOS 7上升级/安装gcc</a>：这篇文章介绍了如何通过<code class="highlighter-rouge">scl</code>工具更新gcc版本</li>
+  <li><a href="https://juejin.im/post/5d0ef5376fb9a07ef63fe74e">CentOS 7上升级/安装gcc</a>：这篇文章介绍了如何通过<code class="language-plaintext highlighter-rouge">scl</code>工具更新gcc版本</li>
   <li><a href="https://www.cnblogs.com/wswind/p/10729610.html">CentOS 使用第三方软件源 安装最新版本软件 省去编译烦恼 IUS SCL</a></li>
   <li><a href="https://linux.cn/article-8509-1.html">CentOS 上最佳的第三方仓库</a></li>
 </ul>
@@ -606,21 +612,21 @@
     <p><strong>vscode常用快捷键</strong></p>
 
     <ul>
-      <li><code class="highlighter-rouge">F12</code>：跳转到定义处</li>
-      <li><code class="highlighter-rouge">Shift + F12</code>：跳转到引用该函数的地方</li>
-      <li><code class="highlighter-rouge">Alt + &lt;左/右方向键&gt;</code>：跳转到上一次光标处/下一次光标处</li>
-      <li><code class="highlighter-rouge">Ctrl + P</code>窗口可以执行的操作：
+      <li><code class="language-plaintext highlighter-rouge">F12</code>：跳转到定义处</li>
+      <li><code class="language-plaintext highlighter-rouge">Shift + F12</code>：跳转到引用该函数的地方</li>
+      <li><code class="language-plaintext highlighter-rouge">Alt + &lt;左/右方向键&gt;</code>：跳转到上一次光标处/下一次光标处</li>
+      <li><code class="language-plaintext highlighter-rouge">Ctrl + P</code>窗口可以执行的操作：
         <ul>
           <li>直接输入文件名，快速打开文件</li>
           <li>? 列出当前可执行的动作</li>
           <li>! 显示Errors或Warnings，也可以Ctrl+Shift+M</li>
-          <li><code class="highlighter-rouge">:</code>跳转到行数，也可以<code class="highlighter-rouge">Ctrl+G</code>直接进入</li>
-          <li><code class="highlighter-rouge">@</code>跳转到symbol（搜索变量或者函数），也可以<code class="highlighter-rouge">Ctrl+Shift+O</code>直接进入</li>
-          <li><code class="highlighter-rouge">@:</code>根据分类跳转symbol，查找属性或函数，也可以<code class="highlighter-rouge">Ctrl+Shift+O</code>后输入<code class="highlighter-rouge">:</code>进入</li>
-          <li><code class="highlighter-rouge">#</code> 根据名字查找symbol，也可以<code class="highlighter-rouge">Ctrl+T</code></li>
+          <li><code class="language-plaintext highlighter-rouge">:</code>跳转到行数，也可以<code class="language-plaintext highlighter-rouge">Ctrl+G</code>直接进入</li>
+          <li><code class="language-plaintext highlighter-rouge">@</code>跳转到symbol（搜索变量或者函数），也可以<code class="language-plaintext highlighter-rouge">Ctrl+Shift+O</code>直接进入</li>
+          <li><code class="language-plaintext highlighter-rouge">@:</code>根据分类跳转symbol，查找属性或函数，也可以<code class="language-plaintext highlighter-rouge">Ctrl+Shift+O</code>后输入<code class="language-plaintext highlighter-rouge">:</code>进入</li>
+          <li><code class="language-plaintext highlighter-rouge">#</code> 根据名字查找symbol，也可以<code class="language-plaintext highlighter-rouge">Ctrl+T</code></li>
         </ul>
       </li>
-      <li><code class="highlighter-rouge">Ctrl + K , Ctrl + S</code>：打开VScode绑定的快捷键列表，可以搜索快捷键</li>
+      <li><code class="language-plaintext highlighter-rouge">Ctrl + K , Ctrl + S</code>：打开VScode绑定的快捷键列表，可以搜索快捷键</li>
     </ul>
   </li>
 </ul>
@@ -834,6 +840,14 @@
 			
 		</span>
 		<span class="next-post">
+			
+				<a href="/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">
+					<span class="page-number">ptrace 系统调用拦截和模拟</span>
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+					</span>
+				</a>
 			
 		</span>
 	</section>
@@ -1193,6 +1207,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1218,10 +1240,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

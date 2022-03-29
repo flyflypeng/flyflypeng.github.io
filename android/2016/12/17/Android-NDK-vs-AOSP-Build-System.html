@@ -10,7 +10,7 @@
   <meta name="description" content="前言最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 Android NDK 和 AOSP(Android Open Source Project) Build System 这两个东西，但是由于他们两者都可以将 C/C++ 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -503,7 +507,7 @@
 
 <article class="post-content">
   <h1 id="前言">前言</h1>
-<p>最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 <code class="highlighter-rouge">Android NDK</code> 和 <code class="highlighter-rouge">AOSP(Android Open Source Project) Build System</code> 这两个东西，但是由于他们两者都可以将 <code class="highlighter-rouge">C/C++</code> 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所以，痛定思痛，不想再被这种似四而非的感觉折磨了，今天就抽空写下这篇文章来捋清楚两者之间关系。</p>
+<p>最近自己一直在做有关 Android 系统源码底层的开发，就经常接触到 <code class="language-plaintext highlighter-rouge">Android NDK</code> 和 <code class="language-plaintext highlighter-rouge">AOSP(Android Open Source Project) Build System</code> 这两个东西，但是由于他们两者都可以将 <code class="language-plaintext highlighter-rouge">C/C++</code> 代码编译成可执行文件或者动态链接库，导致我经常将这两者弄混淆了。所以，痛定思痛，不想再被这种似四而非的感觉折磨了，今天就抽空写下这篇文章来捋清楚两者之间关系。</p>
 
 <h1 id="android-ndk">Android NDK</h1>
 
@@ -513,7 +517,7 @@
   <p>The Android NDK is a toolset that lets you implement parts of your app using native-code languages such as C and C++. For certain types of apps, this can help you reuse code libraries written in those languages.</p>
 </blockquote>
 
-<p>上面的介绍我觉得已经解释地非常清楚了，我再扩展地补充一下：Android NDK 本质上是一套<code class="highlighter-rouge">交叉编译工具集</code>，它可以将 C/C++ 源码编译成适用于不同硬件平台的<code class="highlighter-rouge">库文件</code>和<code class="highlighter-rouge">可执行文件</code>，而这些库文件和可执行文件可以被上层的基于 Java 语言编写的 APP 加载调用，从而实现了 C/C++ 源码在 APP 中的复用。</p>
+<p>上面的介绍我觉得已经解释地非常清楚了，我再扩展地补充一下：Android NDK 本质上是一套<code class="language-plaintext highlighter-rouge">交叉编译工具集</code>，它可以将 C/C++ 源码编译成适用于不同硬件平台的<code class="language-plaintext highlighter-rouge">库文件</code>和<code class="language-plaintext highlighter-rouge">可执行文件</code>，而这些库文件和可执行文件可以被上层的基于 Java 语言编写的 APP 加载调用，从而实现了 C/C++ 源码在 APP 中的复用。</p>
 
 <p>下面这幅图就非常简洁地体现了 NDK 的用途：
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/Screen%20Shot%202016-12-15%20at%209.02.21%20PM.png" alt="" /></p>
@@ -522,12 +526,12 @@
 
 <h2 id="android-ndk-应用实例">Android NDK 应用实例</h2>
 
-<p>例如，在图像处理中我们常用的 <code class="highlighter-rouge">OpenCV</code> 库就是使用 C++ 编写的，如果我们想在我们使用 Java 开发的 Android APP 中使用 OpenCV 库中的一些处理函数，那么该怎么办呢？
+<p>例如，在图像处理中我们常用的 <code class="language-plaintext highlighter-rouge">OpenCV</code> 库就是使用 C++ 编写的，如果我们想在我们使用 Java 开发的 Android APP 中使用 OpenCV 库中的一些处理函数，那么该怎么办呢？
 当然，你可以直接去找基于 Java 实现的 OpenCV 的 jar 包，然后去调用对应的函数，但是这种Java 实现版本的 OpenCV 在处理的效率上肯定不及 C++ 实现版本的 OpenCV（尤其是在做图形处理方面）。
-所以，另外一种方法就是通过 Android NDK 工具将 OpenCV 的代码编译成指定硬件平台的库文件，然后在 Android APP 进程中通过 <code class="highlighter-rouge">JNI</code> 的方式来使用 OpenCV 中提供的处理函数，实现自己想要的某种功能。</p>
+所以，另外一种方法就是通过 Android NDK 工具将 OpenCV 的代码编译成指定硬件平台的库文件，然后在 Android APP 进程中通过 <code class="language-plaintext highlighter-rouge">JNI</code> 的方式来使用 OpenCV 中提供的处理函数，实现自己想要的某种功能。</p>
 
 <h2 id="android-ndk-编译系统">Android NDK 编译系统</h2>
-<p>Android NDK 编译系统其实本质上就是一系列的<code class="highlighter-rouge">交叉编译工具链</code>，而 NDK 中所使用的编译脚本 <code class="highlighter-rouge">ndk-build</code> 就是根据编译配置文件 <code class="highlighter-rouge">Android.mk</code> 和 <code class="highlighter-rouge">Application.mk</code> 来调用这些交叉编译工具链中的工具编译生成指定 ABI 平台下目标链接库文件或者可执行文件。</p>
+<p>Android NDK 编译系统其实本质上就是一系列的<code class="language-plaintext highlighter-rouge">交叉编译工具链</code>，而 NDK 中所使用的编译脚本 <code class="language-plaintext highlighter-rouge">ndk-build</code> 就是根据编译配置文件 <code class="language-plaintext highlighter-rouge">Android.mk</code> 和 <code class="language-plaintext highlighter-rouge">Application.mk</code> 来调用这些交叉编译工具链中的工具编译生成指定 ABI 平台下目标链接库文件或者可执行文件。</p>
 
 <p>这里我觉得还是有必要多费点文字对 Android NDK 包中的文件及目录的内容进行一个说明，以便大家对 NDK 有更加深一步的理解。NDK 包中的文件及目录结构如下所示：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b<span class="nv">$ </span>tree <span class="nt">-L</span> 1
@@ -551,19 +555,19 @@
 </code></pre></div></div>
 
 <ul>
-  <li>build：该目录下包含了 ndk-build 编译脚本中所使用到的各种小的脚本文件，例如我们在 Android.mk 中常见的将源码编译成共享链接库文件的语句： <code class="highlighter-rouge">include $(BUILD_SHARED_LIBRARY)</code>中的 <code class="highlighter-rouge">BUILD_SHARED_LIBRARY</code> 对应的就是一个编译脚本文件： <code class="highlighter-rouge">&lt;ndk-home&gt;/build/core/build-shared-library.mk</code>。</li>
+  <li>build：该目录下包含了 ndk-build 编译脚本中所使用到的各种小的脚本文件，例如我们在 Android.mk 中常见的将源码编译成共享链接库文件的语句： <code class="language-plaintext highlighter-rouge">include $(BUILD_SHARED_LIBRARY)</code>中的 <code class="language-plaintext highlighter-rouge">BUILD_SHARED_LIBRARY</code> 对应的就是一个编译脚本文件： <code class="language-plaintext highlighter-rouge">&lt;ndk-home&gt;/build/core/build-shared-library.mk</code>。</li>
   <li>ndk-build：NDK 的核心，NDK 编译所使用的最主要的编译脚本。</li>
   <li>ndk-gdb：调试 NDK 编译出来的库的工具。</li>
-  <li>ndk-stack：对 Android 系统运行时共享链接库崩溃时产生的 <code class="highlighter-rouge">tombstone</code> 文件进行解析的工具。它在调试异常崩溃 Bug 时定为到具体出错的源码位置非常有帮助，具体使用方法详见我的这篇博客：<a href="http://woshijpf.github.io/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90/">Android NDK Tombstone/Crash 分析</a></li>
-  <li>platforms：这个文件夹里保存的是各个 Android 系统版本下不同硬件平台对应的 NDK 提供的系统共享链接库文件，例如：<code class="highlighter-rouge">liblog.so, libdl.so, libc.so等等</code>。</li>
-  <li>source：这个目录下主要包含的就是 NDK 所中的 <code class="highlighter-rouge">C++ STL</code> 库的源码，有 <code class="highlighter-rouge">gnu_stl</code> 的实现，也有 <code class="highlighter-rouge">llvm-stl</code>的实现。</li>
-  <li>toolchains：这个目录也是非常关键的一个目录，它里面包含了不同目标硬件平台下面的交叉编译工具，可以将 C/C++ 库编译成可运行在 <code class="highlighter-rouge">arm,x86,x86-64,mips</code>等不同硬件平台上面。</li>
+  <li>ndk-stack：对 Android 系统运行时共享链接库崩溃时产生的 <code class="language-plaintext highlighter-rouge">tombstone</code> 文件进行解析的工具。它在调试异常崩溃 Bug 时定为到具体出错的源码位置非常有帮助，具体使用方法详见我的这篇博客：<a href="http://woshijpf.github.io/2016/06/14/Android-NDK-Tombstone-Crash-%E5%88%86%E6%9E%90/">Android NDK Tombstone/Crash 分析</a></li>
+  <li>platforms：这个文件夹里保存的是各个 Android 系统版本下不同硬件平台对应的 NDK 提供的系统共享链接库文件，例如：<code class="language-plaintext highlighter-rouge">liblog.so, libdl.so, libc.so等等</code>。</li>
+  <li>source：这个目录下主要包含的就是 NDK 所中的 <code class="language-plaintext highlighter-rouge">C++ STL</code> 库的源码，有 <code class="language-plaintext highlighter-rouge">gnu_stl</code> 的实现，也有 <code class="language-plaintext highlighter-rouge">llvm-stl</code>的实现。</li>
+  <li>toolchains：这个目录也是非常关键的一个目录，它里面包含了不同目标硬件平台下面的交叉编译工具，可以将 C/C++ 库编译成可运行在 <code class="language-plaintext highlighter-rouge">arm,x86,x86-64,mips</code>等不同硬件平台上面。</li>
 </ul>
 
-<p>这里就不对 <code class="highlighter-rouge">Android.mk</code> 编译配置文件的编写方法展开说明了，有关内容可以参见下面这篇文章：<a href="http://web.guohuiwang.com/technical-notes/androidndk1">Mastering Android NDK Build System - Part 1: Techniques with ndk-build</a>和<a href="https://developer.android.com/ndk/guides/android_mk.html">Android.mk</a></p>
+<p>这里就不对 <code class="language-plaintext highlighter-rouge">Android.mk</code> 编译配置文件的编写方法展开说明了，有关内容可以参见下面这篇文章：<a href="http://web.guohuiwang.com/technical-notes/androidndk1">Mastering Android NDK Build System - Part 1: Techniques with ndk-build</a>和<a href="https://developer.android.com/ndk/guides/android_mk.html">Android.mk</a></p>
 
 <h2 id="android-ndk-中系统提供的共享链接库">Android NDK 中系统提供的共享链接库</h2>
-<p>有时我们的自己编写的源码中除了实现某种特定的功能之外，可能还会在C/C++代码中使用到日志打印输出函数，而这个日志打印函数就位于 Android NDK 中 Android 系统提供的 <code class="highlighter-rouge">liblog.so</code> 库中。除了 liblog.so 库之外，NDK 还提供了下面这些系统共享链接库供我们自己的源码进行加载调用：</p>
+<p>有时我们的自己编写的源码中除了实现某种特定的功能之外，可能还会在C/C++代码中使用到日志打印输出函数，而这个日志打印函数就位于 Android NDK 中 Android 系统提供的 <code class="language-plaintext highlighter-rouge">liblog.so</code> 库中。除了 liblog.so 库之外，NDK 还提供了下面这些系统共享链接库供我们自己的源码进行加载调用：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>woshijpf@woshijpf-OptiPlex-9020:~/Android/NDK/android-ndk-r12b/platforms/android-22/arch-x86/usr/lib<span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-al</span>
 total 10996
 drwxr-xr-x 2 woshijpf woshijpf    4096 Jun 15  2016 <span class="nb">.</span>
@@ -595,55 +599,55 @@ drwxr-xr-x 4 woshijpf woshijpf    4096 Jun 15  2016 ..
 </code></pre></div></div>
 
 <p><strong>那么这些系统提供的共享链接库是怎么被加载使用的呢？</strong>
-例如，我现在写了一个 C++ 源文件 <code class="highlighter-rouge">hello.cpp</code>，并且在这个源文件中调用了 <code class="highlighter-rouge">__android_log_print()</code> 函数打印日志，那么我就需要在对应的 <code class="highlighter-rouge">Android.mk</code> 文件中加入下面这条语句来显示地链接 <code class="highlighter-rouge">/system/lib/liblog.so</code> 库：</p>
+例如，我现在写了一个 C++ 源文件 <code class="language-plaintext highlighter-rouge">hello.cpp</code>，并且在这个源文件中调用了 <code class="language-plaintext highlighter-rouge">__android_log_print()</code> 函数打印日志，那么我就需要在对应的 <code class="language-plaintext highlighter-rouge">Android.mk</code> 文件中加入下面这条语句来显示地链接 <code class="language-plaintext highlighter-rouge">/system/lib/liblog.so</code> 库：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_LDLIBS :<span class="o">=</span> <span class="nt">-llog</span>
 </code></pre></div></div>
 
 <p><strong>那么这些系统共享链接库是如何编译出来的呢？</strong>
-因为安全性和兼容性问题以及上层应用程序的需求，NDK 提供的只是 Android 系统中一小部分系统共享链接库，并且这些系统共享链接库都是在 <code class="highlighter-rouge">Android 源码</code> 编译时生成的，例如，<code class="highlighter-rouge">liblog.so</code> 库就是由 Android 源码中 <em>/system/core/liblog/</em> 目录下的源码编译而来的。而在 <em>$NDK/platforms/android-22/arch-arm/usr/include/android/log.h</em> 头文件中声明的日志打印函数 <code class="highlighter-rouge">__android_log_write()</code> 的实际代码实现就在 Android 源码的 <code class="highlighter-rouge">/system/core/liblog/logd_write.c</code> 文件中。</p>
+因为安全性和兼容性问题以及上层应用程序的需求，NDK 提供的只是 Android 系统中一小部分系统共享链接库，并且这些系统共享链接库都是在 <code class="language-plaintext highlighter-rouge">Android 源码</code> 编译时生成的，例如，<code class="language-plaintext highlighter-rouge">liblog.so</code> 库就是由 Android 源码中 <em>/system/core/liblog/</em> 目录下的源码编译而来的。而在 <em>$NDK/platforms/android-22/arch-arm/usr/include/android/log.h</em> 头文件中声明的日志打印函数 <code class="language-plaintext highlighter-rouge">__android_log_write()</code> 的实际代码实现就在 Android 源码的 <code class="language-plaintext highlighter-rouge">/system/core/liblog/logd_write.c</code> 文件中。</p>
 
 <h2 id="相关参考文章">相关参考文章</h2>
 <p><a href="https://developer.android.com/ndk/guides/stable_apis.html">Android NDK Native APIs</a>
 <a href="https://developer.android.com/ndk/guides/cpp-support.html">C++ Library Support</a></p>
 
 <h1 id="aosp-build-system">AOSP Build System</h1>
-<p><code class="highlighter-rouge">AOSP</code> 是 <code class="highlighter-rouge">Android Open Source Project</code> 的简称，接下来用我就用它等价地表示 Android 系统源码。</p>
+<p><code class="language-plaintext highlighter-rouge">AOSP</code> 是 <code class="language-plaintext highlighter-rouge">Android Open Source Project</code> 的简称，接下来用我就用它等价地表示 Android 系统源码。</p>
 
 <h2 id="aosp-build-system-是什么">AOSP Build System 是什么？</h2>
-<p><code class="highlighter-rouge">AOSP Build System</code> 是用来编译 Android 系统，Android SDK 以及相关文档的一套框架。该编译系统主要由 Make 文件（<strong>注意：这里的 Make 文件不是 Makefile 文件，而是 Android 编译系统自己构架的一套编译配置文件，通常以*.mk 为文件后缀</strong>），Shell 脚本以及 Python 脚本组成，其中最主要的是 Make 文件。</p>
+<p><code class="language-plaintext highlighter-rouge">AOSP Build System</code> 是用来编译 Android 系统，Android SDK 以及相关文档的一套框架。该编译系统主要由 Make 文件（<strong>注意：这里的 Make 文件不是 Makefile 文件，而是 Android 编译系统自己构架的一套编译配置文件，通常以*.mk 为文件后缀</strong>），Shell 脚本以及 Python 脚本组成，其中最主要的是 Make 文件。</p>
 
-<p>在 Android Build System 中编译所使用到的 <code class="highlighter-rouge">Make</code> 文件主要分为三类：</p>
+<p>在 Android Build System 中编译所使用到的 <code class="language-plaintext highlighter-rouge">Make</code> 文件主要分为三类：</p>
 
 <ul>
   <li>第一类是 Build 系统核心文件，此类文件定义了整个 Build 系统的框架，而其他所有 Make 文件都是在这个框架的基础上编写出来的。</li>
   <li>第二类是针对某个产品（一个产品可能是某个型号的手机或者平板电脑）的 Make 文件，这些文件通常位于 device 目录下，该目录下又以公司名以及产品名分为两级目录。</li>
-  <li>第三类是针对某个模块的 Make 文件。整个 Android 系统中，包含了大量的模块，每个模块都有一个专门的 Make 文件，这类文件的名称统一为 <code class="highlighter-rouge">Android.mk</code>，该文件中定义了如何编译当前模块。Build 系统会在整个源码树中扫描名称为“Android.mk”的文件并根据其中的内容执行模块的编译。</li>
+  <li>第三类是针对某个模块的 Make 文件。整个 Android 系统中，包含了大量的模块，每个模块都有一个专门的 Make 文件，这类文件的名称统一为 <code class="language-plaintext highlighter-rouge">Android.mk</code>，该文件中定义了如何编译当前模块。Build 系统会在整个源码树中扫描名称为“Android.mk”的文件并根据其中的内容执行模块的编译。</li>
 </ul>
 
 <h2 id="aosp-build-system-所依赖的编译工具">AOSP Build System 所依赖的编译工具</h2>
 <p>Android 系统从下到上主要分为下面5层，而每一层所使用的编程语言如下：</p>
 
 <ul>
-  <li>Kernel：Android 定制化过的 <code class="highlighter-rouge">Linux Kernel</code>，使用的当然是 <code class="highlighter-rouge">C</code> 语言了。</li>
-  <li>HAL：这一层是用户态驱动层，它主要功能是和下层 Kernel 中的硬件驱动程序进行交互，这一层主要使用的语言是 <code class="highlighter-rouge">C/C++</code>。</li>
-  <li>Frameworks native：这一层是 Android 系统核心组件的实现位置，在这一层中主要通过 <code class="highlighter-rouge">C++</code> 语言来实现。</li>
-  <li>Frameworks java：这一层其实是对 Frameworks native 层套上一层 Java 的外壳，封装成 Android SDK 提供给上层的 APP 开发者进行调用，这一层主要使用了 <code class="highlighter-rouge">Java</code> 语言进行实现。</li>
-  <li>APP：这一层主要面向的是 Android APP 开发人员，并且 Android 提供的 SDK 是基于 Java 语言的，所以 APP 的代码实现也是 <code class="highlighter-rouge">Java</code> 语言。</li>
+  <li>Kernel：Android 定制化过的 <code class="language-plaintext highlighter-rouge">Linux Kernel</code>，使用的当然是 <code class="language-plaintext highlighter-rouge">C</code> 语言了。</li>
+  <li>HAL：这一层是用户态驱动层，它主要功能是和下层 Kernel 中的硬件驱动程序进行交互，这一层主要使用的语言是 <code class="language-plaintext highlighter-rouge">C/C++</code>。</li>
+  <li>Frameworks native：这一层是 Android 系统核心组件的实现位置，在这一层中主要通过 <code class="language-plaintext highlighter-rouge">C++</code> 语言来实现。</li>
+  <li>Frameworks java：这一层其实是对 Frameworks native 层套上一层 Java 的外壳，封装成 Android SDK 提供给上层的 APP 开发者进行调用，这一层主要使用了 <code class="language-plaintext highlighter-rouge">Java</code> 语言进行实现。</li>
+  <li>APP：这一层主要面向的是 Android APP 开发人员，并且 Android 提供的 SDK 是基于 Java 语言的，所以 APP 的代码实现也是 <code class="language-plaintext highlighter-rouge">Java</code> 语言。</li>
 </ul>
 
-<p>既然 Android 系统源码中包含了 3 种编程语言，那么在 <code class="highlighter-rouge">AOSP Build System</code> 中肯定也使用了许多编译工具来进行编译（<strong>Android 官方推荐使用 Ubuntu 14.04 来对 Android 源码进行编译，所以这里就以 Ubuntu 系统中所使用的编译工具为例</strong>）：</p>
+<p>既然 Android 系统源码中包含了 3 种编程语言，那么在 <code class="language-plaintext highlighter-rouge">AOSP Build System</code> 中肯定也使用了许多编译工具来进行编译（<strong>Android 官方推荐使用 Ubuntu 14.04 来对 Android 源码进行编译，所以这里就以 Ubuntu 系统中所使用的编译工具为例</strong>）：</p>
 
 <ul>
-  <li>编译 C/C++ 代码：使用 Ubuntu 14.04 中自带的 <code class="highlighter-rouge">gcc</code> 编译器即可。</li>
-  <li>编译 Java 代码：在 Ubuntu 14.04 中推荐使用 <code class="highlighter-rouge">OpenJDK-1.7</code> 来进行编译。</li>
-  <li>make 工具：前面提到 AOSP Build System 是基于 make 工具，所以这里也使用 Ubuntu 14.04 中自带的 <code class="highlighter-rouge">make</code> 工具即可。</li>
+  <li>编译 C/C++ 代码：使用 Ubuntu 14.04 中自带的 <code class="language-plaintext highlighter-rouge">gcc</code> 编译器即可。</li>
+  <li>编译 Java 代码：在 Ubuntu 14.04 中推荐使用 <code class="language-plaintext highlighter-rouge">OpenJDK-1.7</code> 来进行编译。</li>
+  <li>make 工具：前面提到 AOSP Build System 是基于 make 工具，所以这里也使用 Ubuntu 14.04 中自带的 <code class="language-plaintext highlighter-rouge">make</code> 工具即可。</li>
 </ul>
 
 <h2 id="aosp-build-system-编译系统共享链接库的方法">AOSP Build System 编译系统共享链接库的方法</h2>
-<p>在 <code class="highlighter-rouge">AOSP Build System 是什么？</code> 小节中，我提到了 Android 系统源码中也使用了 <code class="highlighter-rouge">Android.mk</code> 文件来将某个模块编译成库文件或者可执行文件。</p>
+<p>在 <code class="language-plaintext highlighter-rouge">AOSP Build System 是什么？</code> 小节中，我提到了 Android 系统源码中也使用了 <code class="language-plaintext highlighter-rouge">Android.mk</code> 文件来将某个模块编译成库文件或者可执行文件。</p>
 
-<p>例如，Android 系统源码中的 <code class="highlighter-rouge">AudioFlinger</code> 服务对应使用的是系统中的 <code class="highlighter-rouge">libaudioflinge.so</code>共享链接库文件 ，该共享链接库的源码实现位于 <code class="highlighter-rouge">frameworks/av/services/audioflinger</code>，在同一目录下面的 <code class="highlighter-rouge">Android.mk</code> 编译配置文件如下所示：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_SRC_FILES:=               \ # 编译该模块所需要使用到的源文件
+<p>例如，Android 系统源码中的 <code class="language-plaintext highlighter-rouge">AudioFlinger</code> 服务对应使用的是系统中的 <code class="language-plaintext highlighter-rouge">libaudioflinge.so</code>共享链接库文件 ，该共享链接库的源码实现位于 <code class="language-plaintext highlighter-rouge">frameworks/av/services/audioflinger</code>，在同一目录下面的 <code class="language-plaintext highlighter-rouge">Android.mk</code> 编译配置文件如下所示：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_SRC_FILES:=               \ # 编译该模块所需要使用到的源文件
     AudioFlinger.cpp            \
     Threads.cpp                 \
     Tracks.cpp                  \
@@ -691,24 +695,24 @@ include $(BUILD_SHARED_LIBRARY) # 编译成 libaudioflinger.so 库文件
 <span class="nv">$lunch</span> <span class="c"># 选择自己需要编译的 Android 系统版本</span>
 </code></pre></div></div>
 
-<p>有了 Android 编译环境之后，只需要在将当前的工作目录切换到 <em>frameworks/av/services/audioflinger</em> 目录下来编译 <code class="highlighter-rouge">AudioFlinger</code> 模块</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 由于 libaudioflinger.so 所需依赖其他的系统共享链接库文件，所以需要先把整个 Android 源码生成这些共享链接库文件
+<p>有了 Android 编译环境之后，只需要在将当前的工作目录切换到 <em>frameworks/av/services/audioflinger</em> 目录下来编译 <code class="language-plaintext highlighter-rouge">AudioFlinger</code> 模块</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 由于 libaudioflinger.so 所需依赖其他的系统共享链接库文件，所以需要先把整个 Android 源码生成这些共享链接库文件
 $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger.so 共享链接库文件
 </code></pre></div></div>
-<p><strong>注意：</strong>虽然咋一看上去 Android 源码中某个模块的编译配置文件 <code class="highlighter-rouge">Android.mk</code>和 NDK 中所用的编译配置文件 <code class="highlighter-rouge">Android.mk</code> 没有什么不同，但是其实还是有一些细微的区别的，尤其是在<strong>使用共享链接库</strong>方面。</p>
+<p><strong>注意：</strong>虽然咋一看上去 Android 源码中某个模块的编译配置文件 <code class="language-plaintext highlighter-rouge">Android.mk</code>和 NDK 中所用的编译配置文件 <code class="language-plaintext highlighter-rouge">Android.mk</code> 没有什么不同，但是其实还是有一些细微的区别的，尤其是在<strong>使用共享链接库</strong>方面。</p>
 
-<p>例如，上面 Android 系统中源码编译出来的 <code class="highlighter-rouge">libaudioflinger.so</code> 库文件中链接 <code class="highlighter-rouge">liblog.so</code> 库文件使用的是 <code class="highlighter-rouge">LOCAL_SHARED_LIBRARIES</code> 编译变量：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_SHARED_LIBRARIES := \ # 链接该模块所依赖的共享链接库文件
+<p>例如，上面 Android 系统中源码编译出来的 <code class="language-plaintext highlighter-rouge">libaudioflinger.so</code> 库文件中链接 <code class="language-plaintext highlighter-rouge">liblog.so</code> 库文件使用的是 <code class="language-plaintext highlighter-rouge">LOCAL_SHARED_LIBRARIES</code> 编译变量：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_SHARED_LIBRARIES := \ # 链接该模块所依赖的共享链接库文件
     ...
     liblog \
     ...
 </code></pre></div></div>
 
-<p>而在 NDK 编译自己使用 C/C++ 编写的模块时，如果要链接 <code class="highlighter-rouge">liblog.so</code> 库文件，<code class="highlighter-rouge">Android.mk</code> 文件中的写法则是：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_LDLIBS := -llog
+<p>而在 NDK 编译自己使用 C/C++ 编写的模块时，如果要链接 <code class="language-plaintext highlighter-rouge">liblog.so</code> 库文件，<code class="language-plaintext highlighter-rouge">Android.mk</code> 文件中的写法则是：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LOCAL_LDLIBS := -llog
 </code></pre></div></div>
 
-<p><strong>所以，我们可以看出来在 <code class="highlighter-rouge">AOSP</code> 中所有编译出来的系统链接库文件（不管是静态库文件还是共享链接库文件）对 <code class="highlighter-rouge">AOSP</code> 中各个模块都是可见和可以被链接使用的，而对于 NDK 来说它只能通过 <code class="highlighter-rouge">LOCAL_LDLIBS</code> 的变量来链接使用 Android 系统中提供的一小部分系统链接库文件。</strong></p>
+<p><strong>所以，我们可以看出来在 <code class="language-plaintext highlighter-rouge">AOSP</code> 中所有编译出来的系统链接库文件（不管是静态库文件还是共享链接库文件）对 <code class="language-plaintext highlighter-rouge">AOSP</code> 中各个模块都是可见和可以被链接使用的，而对于 NDK 来说它只能通过 <code class="language-plaintext highlighter-rouge">LOCAL_LDLIBS</code> 的变量来链接使用 Android 系统中提供的一小部分系统链接库文件。</strong></p>
 
 <h2 id="相关参考文章-1">相关参考文章</h2>
 <p>有关 AOSP Build System 更加详细的介绍，可以参考下面的的文章：
@@ -718,7 +722,7 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 <a href="http://source.android.com/source/initializing.html">Establishing a Build Environment</a></p>
 
 <h1 id="android-ndk-和-aosp-build-system-的差异">Android NDK 和 AOSP Build System 的差异</h1>
-<p>前面我们对 <code class="highlighter-rouge">Android NDK</code> 和 <code class="highlighter-rouge">AOSP Build System</code> 做了比较详细的说明，所以在这一小节中就是对两者从下面几个方面进行一个差异对比：</p>
+<p>前面我们对 <code class="language-plaintext highlighter-rouge">Android NDK</code> 和 <code class="language-plaintext highlighter-rouge">AOSP Build System</code> 做了比较详细的说明，所以在这一小节中就是对两者从下面几个方面进行一个差异对比：</p>
 
 <ul>
   <li>两种编译系统面向的开发人员群体</li>
@@ -729,22 +733,22 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
 <h2 id="两种编译系统面向的开发人员群体">两种编译系统面向的开发人员群体</h2>
 
 <ul>
-  <li><code class="highlighter-rouge">Android NDK</code> 它所面对的开发人员群体是<code class="highlighter-rouge">APP</code> 开发人员，他们想使用 <code class="highlighter-rouge">C/C++</code> 代码来实现某种功能，然后在上层 APP 的 <code class="highlighter-rouge">Java</code> 代码中来通过 JNI 的方式来调用这些函数。例如，一些手机游戏 APP 的开发人员，为了使得游戏运行时画面更加流畅，他们就常常会把这些图像渲染这块耗时和性能要求较高的模块通过 <code class="highlighter-rouge">C/C++</code> 代码调用 <code class="highlighter-rouge">OpenGLES API</code> 函数来实现，然后通过 <code class="highlighter-rouge">ndk-build</code> 编译成共享库文件，然后被上层的 APP 中的 Java 代码加载调用。</li>
-  <li><code class="highlighter-rouge">AOSP Build System</code> 面向的开发人员群体则是一些底层操作系统的开发人员，他们需要根据自己的需求和硬件平台的特性对 <code class="highlighter-rouge">Android</code> 源码进行一个定制修改，然后通过 <code class="highlighter-rouge">AOSP Build System</code> 重新编译得到自己想要的 Android 系统的镜像和库文件。</li>
+  <li><code class="language-plaintext highlighter-rouge">Android NDK</code> 它所面对的开发人员群体是<code class="language-plaintext highlighter-rouge">APP</code> 开发人员，他们想使用 <code class="language-plaintext highlighter-rouge">C/C++</code> 代码来实现某种功能，然后在上层 APP 的 <code class="language-plaintext highlighter-rouge">Java</code> 代码中来通过 JNI 的方式来调用这些函数。例如，一些手机游戏 APP 的开发人员，为了使得游戏运行时画面更加流畅，他们就常常会把这些图像渲染这块耗时和性能要求较高的模块通过 <code class="language-plaintext highlighter-rouge">C/C++</code> 代码调用 <code class="language-plaintext highlighter-rouge">OpenGLES API</code> 函数来实现，然后通过 <code class="language-plaintext highlighter-rouge">ndk-build</code> 编译成共享库文件，然后被上层的 APP 中的 Java 代码加载调用。</li>
+  <li><code class="language-plaintext highlighter-rouge">AOSP Build System</code> 面向的开发人员群体则是一些底层操作系统的开发人员，他们需要根据自己的需求和硬件平台的特性对 <code class="language-plaintext highlighter-rouge">Android</code> 源码进行一个定制修改，然后通过 <code class="language-plaintext highlighter-rouge">AOSP Build System</code> 重新编译得到自己想要的 Android 系统的镜像和库文件。</li>
 </ul>
 
 <h2 id="生成的链接库或可执行文件的目的">生成的链接库或可执行文件的目的</h2>
 
 <ul>
-  <li><code class="highlighter-rouge">Android NDK</code> 生成链接库或可执行文件的目的是为了执行实现上层 APP 层中的需要通过 <code class="highlighter-rouge">C/C++</code> 才能实现的某种功能，还是上面举过的例子，手机游戏 APP 开发人员需要通过 <code class="highlighter-rouge">C/C++</code> 才能实现一些性能要求很高的图像渲染操作。</li>
-  <li><code class="highlighter-rouge">AOSP Build System</code> 中生成的链接库文件或可执行文件都是 Android 系统运行起来<code class="highlighter-rouge">必须依赖</code>的库文件，非常重要！！！例如，我们前面一直举的  <code class="highlighter-rouge">liblog.so</code> 就是由 <code class="highlighter-rouge">AOSP Build System</code> 编译出来的一个系统共享链接库文件，如果没有这个文件，那么 Android 系统的日志系统就挂了。</li>
+  <li><code class="language-plaintext highlighter-rouge">Android NDK</code> 生成链接库或可执行文件的目的是为了执行实现上层 APP 层中的需要通过 <code class="language-plaintext highlighter-rouge">C/C++</code> 才能实现的某种功能，还是上面举过的例子，手机游戏 APP 开发人员需要通过 <code class="language-plaintext highlighter-rouge">C/C++</code> 才能实现一些性能要求很高的图像渲染操作。</li>
+  <li><code class="language-plaintext highlighter-rouge">AOSP Build System</code> 中生成的链接库文件或可执行文件都是 Android 系统运行起来<code class="language-plaintext highlighter-rouge">必须依赖</code>的库文件，非常重要！！！例如，我们前面一直举的  <code class="language-plaintext highlighter-rouge">liblog.so</code> 就是由 <code class="language-plaintext highlighter-rouge">AOSP Build System</code> 编译出来的一个系统共享链接库文件，如果没有这个文件，那么 Android 系统的日志系统就挂了。</li>
 </ul>
 
 <h2 id="系统共享链接库的支持">系统共享链接库的支持</h2>
 
 <ul>
-  <li><code class="highlighter-rouge">Android NDK</code> 中支持用户自己编写的 C/C++ 代码链接调用一部分系统共享链接库文件，例如 <code class="highlighter-rouge">liblog.so, libOpenSLES.so, libGLESv2.so</code> 等库文件，有关 Andorid NDK 支持那些系统库文件，详见 NDK 的官方文档：<a href="https://developer.android.com/ndk/guides/stable_apis.html">Android NDK Native APIs</a></li>
-  <li><code class="highlighter-rouge">AOSP Build System</code> 就好比是系统共享链接库的“妈”，既然这些库文件都由它编译出来的，那么 <code class="highlighter-rouge">AOSP</code> 中任意一个模块肯定都可以使用全部的系统共享链接库文件。</li>
+  <li><code class="language-plaintext highlighter-rouge">Android NDK</code> 中支持用户自己编写的 C/C++ 代码链接调用一部分系统共享链接库文件，例如 <code class="language-plaintext highlighter-rouge">liblog.so, libOpenSLES.so, libGLESv2.so</code> 等库文件，有关 Andorid NDK 支持那些系统库文件，详见 NDK 的官方文档：<a href="https://developer.android.com/ndk/guides/stable_apis.html">Android NDK Native APIs</a></li>
+  <li><code class="language-plaintext highlighter-rouge">AOSP Build System</code> 就好比是系统共享链接库的“妈”，既然这些库文件都由它编译出来的，那么 <code class="language-plaintext highlighter-rouge">AOSP</code> 中任意一个模块肯定都可以使用全部的系统共享链接库文件。</li>
 </ul>
 
 
@@ -1221,6 +1225,14 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1246,10 +1258,6 @@ $ mm # 读取当前工作目录下的 Android.mk 文件，编译 libaudioflinger
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

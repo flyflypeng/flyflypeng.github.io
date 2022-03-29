@@ -10,7 +10,7 @@
   <meta name="description" content="Hexo简介 Hexo是一款快速、简洁和高效的一款静态博客框架，它出自于台湾的一名大学生Tommy Chen之手。这款博客框架程序是基于Node.js开发的，它编译上百篇的博文也只仅仅需要几秒就可以了，非常快速。并且，Hexo也是一款非常受程序猿喜欢的博客搭建框架，它使用Markdown解析文章，同时你还可以将你...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -542,17 +546,17 @@
 <h3 id="hexo">Hexo</h3>
 <p>完成Node.js和Git的安装之后，下面就可以通过Node.js自带的包管理器安装Hexo了。
 安装的命令如下:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g hexo-cli
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g hexo-cli
 </code></pre></div></div>
 <p>在安装完成之后，我们可以通过以下命令来查看安装的hexo的版本:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo version
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo version
 </code></pre></div></div>
 <p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/hexo_version.png" alt="hexo" /></p>
 
 <h2 id="hexo博客网站搭建-">Hexo博客网站搭建 <span id="3"></span></h2>
 
 <p>完成了Hexo安装之后，我们需要在自己的本地磁盘上新建一个文件夹，用来存放Hexo博客网站的相关文件。执行完以下的命令之后，在相应的目录下就会自动生成Hexo博客网站所需的相关文件。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo init &lt;folder&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo init &lt;folder&gt;
 $ cd &lt;folder&gt;
 $ npm install
 </code></pre></div></div>
@@ -584,13 +588,13 @@ $ npm install
 <h3 id="测试">测试</h3>
 
 <p>在完成上述的安装配置之后，一个默认的Hexo博客网站就搭建好了，我们可以使用以下命令，启动本地服务</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo server
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo server
 </code></pre></div></div>
 <p>在启动完成本地服务之后，我们可以根据命令行窗口中的提示在浏览器中输入 http://0.0.0.0:4000 就能在浏览器中查看到Hexo默认生成的静态网站的页面。以后，我们在自己编写好博文之后，我们也可以通过这种方式首先在本地先预览下静态网页的效果，如果没有问题，则再通过hexo d 命令部署到github网站上。</p>
 
 <h2 id="网站配置-">网站配置 <span id="4"></span></h2>
 <p>下面，我就以自己Hexo博客网站中的_config.yml配置文件来解释各个配置项的意义。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Hexo Configuration
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Hexo Configuration
 ## Docs: http://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
@@ -683,17 +687,17 @@ baidusitemap:
 
 <h2 id="hexo命令使用-">Hexo命令使用 <span id="5"></span></h2>
 <h3 id="init">init</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo init [folder]
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo init [folder]
 </code></pre></div></div>
 <p>新建一个网站。如果没有设置folder，则默认在当前文件夹建立网站。</p>
 
 <h3 id="new">new</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo new [layout] &lt;title&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo new [layout] &lt;title&gt;
 </code></pre></div></div>
 <p>新建一篇文章。如果没有设置 layout 的话，默认使用 _config.yml 中的 default_layout 参数代替。如果标题包含空格的话，请使用引号括起来。</p>
 
 <h3 id="generate">generate</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo generate
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo generate
 </code></pre></div></div>
 <p>生成静态网页文件。</p>
 
@@ -717,12 +721,12 @@ baidusitemap:
 </table>
 
 <h3 id="publish">publish</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># hexo publish [layout] &lt;filename&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># hexo publish [layout] &lt;filename&gt;
 </code></pre></div></div>
 <p>发辫草稿箱目录_drafts下的草稿。</p>
 
 <h3 id="server">server</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo server
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo server
 </code></pre></div></div>
 <p>启动服务器。</p>
 
@@ -750,7 +754,7 @@ baidusitemap:
 </table>
 
 <h3 id="deploy">deploy</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo deploy
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo deploy
 </code></pre></div></div>
 <p>部署网站。</p>
 
@@ -770,7 +774,7 @@ baidusitemap:
 </table>
 
 <h3 id="render">render</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo render &lt;file&gt; ...
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo render &lt;file&gt; ...
 </code></pre></div></div>
 <p>渲染文件</p>
 
@@ -790,27 +794,27 @@ baidusitemap:
 </table>
 
 <h3 id="migrate">migrate</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo migrate &lt;type&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo migrate &lt;type&gt;
 </code></pre></div></div>
 <p>从其他系统迁移内容。</p>
 
 <h3 id="clean">clean</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo clean
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo clean
 </code></pre></div></div>
 <p>清除缓存文件（db.json）和已经生成的静态文件（public）。</p>
 
 <h3 id="list">list</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo list &lt;type&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo list &lt;type&gt;
 </code></pre></div></div>
 <p>列出网站资料。</p>
 
 <h3 id="version">version</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo version
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo version
 </code></pre></div></div>
 <p>显示hexo版本。</p>
 
 <h3 id="常用命令简写">常用命令简写</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo n == hexo new
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hexo n == hexo new
 hexo g == hexo generate
 hexo s == hexo server
 hexo d == hexo deploy
@@ -818,26 +822,26 @@ hexo d == hexo deploy
 
 <h3 id="插件安装">插件安装</h3>
 <p>Hexo采用Node.js中的npm包管理器安装插件。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install &lt;plugin-name&gt; --save
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install &lt;plugin-name&gt; --save
 npm update #升级
 npm uninstall &lt;plugin-name&gt; #卸载
 </code></pre></div></div>
 <p>其中<plugin-name>是插件名称。</plugin-name></p>
 
 <h3 id="主题安装">主题安装</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
 </code></pre></div></div>
 <p>其中，<repository>是主题theme-name在github上的仓库地址，<theme-name>是存放在Hexo博客文件夹下theme文件夹中的主题目录名称。</theme-name></repository></p>
 
 <h2 id="文章编辑及发布-">文章编辑及发布 <span id="6"></span></h2>
 <h3 id="新建文章">新建文章</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo new "标题"
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo new "标题"
 </code></pre></div></div>
 <p>当在命令行窗口中执行上述命令之后，在source/_posts目录下会生成一个文件名”标题.md”的文件。</p>
 
 <h3 id="front-matter">Front Matter</h3>
 <p>Front-matter 是文件最上方以 — 分隔的区域，用于指定个别文件的变量，举例来说：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>title: Hello World
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>title: Hello World
 date: 2013/7/13 20:46:25
 ---
 </code></pre></div></div>
@@ -898,7 +902,7 @@ date: 2013/7/13 20:46:25
 <h3 id="发布">发布</h3>
 <p>本文以发布到github上的github pages为例。
 编辑全局配置文件 _config.yml 中的 deploy 部分</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Deployment  #部署，即将网站部署到github上的配置
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Deployment  #部署，即将网站部署到github上的配置
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git  #表示使用git工具进行部署
@@ -906,7 +910,7 @@ deploy:
   branch: master  #部署到仓库的分支
 </code></pre></div></div>
 <p>完成上述的网站全局配置文件中的网站部署设置之后，下面只需要执行静态网页生成和网站部署的命令，如下所示:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo generate -d
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ hexo generate -d
 </code></pre></div></div>
 
 <h2 id="主题优化--">主题优化  <span id="7"></span></h2>
@@ -915,7 +919,7 @@ deploy:
 
 <h3 id="主题下载">主题下载</h3>
 <p>你可以通过git工具从github上下载下主题。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;repository&gt; themes/&lt;theme-name&gt;
 </code></pre></div></div>
 <p>当然，你也可以在github相关主题的网页上直接下载压缩文件，然后将主题解压到指定文件夹内即可。</p>
 
@@ -933,7 +937,7 @@ deploy:
 </ul>
 
 <p>下面就以我所使用的主题<a href="https://github.com/litten/hexo-theme-yilia">yilia</a>的配置文件为例。</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Header
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Header
 menu:  #主题主界面左边显示的菜单项设置
   主页: /
   所有文章: /archives
@@ -1481,6 +1485,14 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1506,10 +1518,6 @@ aboutme: 或者是明天，或者是梦里。我重新念起我最爱的诗。�
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

@@ -10,7 +10,7 @@
   <meta name="description" content="Linux I/O 模型在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词：  Synchronous I/O  Asynchronous I/O  Blocking I/O  Non-blocking I/O首先，这里讲的 I/O 指的是用户空间的 I/O，并且主要侧重于...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -543,7 +547,7 @@
 <p><strong>blocking I/O 的特点是用户进程在 I/O 操作的两个阶段都被 block 了。</strong></p>
 
 <h1 id="non-blocking-io">Non-blocking I/O</h1>
-<p>Linux 系统中可以在调用 <code class="highlighter-rouge">open</code> 函数打开 socket 文件时或者调用 <code class="highlighter-rouge">fcntl</code> 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：</p>
+<p>Linux 系统中可以在调用 <code class="language-plaintext highlighter-rouge">open</code> 函数打开 socket 文件时或者调用 <code class="language-plaintext highlighter-rouge">fcntl</code> 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：</p>
 
 <p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003788703867.jpg" alt="" /></p>
 
@@ -556,30 +560,30 @@
 <p><strong>non-blocking I/O 的特点就是用户进程需要不断地询问 kernel 数据是否准备好了。</strong></p>
 
 <h1 id="io-multiplexing">I/O Multiplexing</h1>
-<p><code class="highlighter-rouge">I/O multiplexing</code> 就是我们经常说的 <strong>select</strong>、<strong>poll</strong>和<strong>epoll</strong>，有些地方也称这种 I/O 方式为 <code class="highlighter-rouge">event driven I/O</code>。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。</p>
+<p><code class="language-plaintext highlighter-rouge">I/O multiplexing</code> 就是我们经常说的 <strong>select</strong>、<strong>poll</strong>和<strong>epoll</strong>，有些地方也称这种 I/O 方式为 <code class="language-plaintext highlighter-rouge">event driven I/O</code>。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。</p>
 
 <p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003804947449.jpg" alt="" /></p>
 
 <p><strong>I/O multiplexing 的特点是通过一种机制让一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入可读的就绪状态，select/poll/epoll函数就可以立即返回。</strong></p>
 
-<p>这个图和 <code class="highlighter-rouge">blocking I/O</code> 的图其实并没有太大的不同，事实上，开销还会更大一点。因为这里需要使用两个 system call (select 和 read)，而 blocking I/O 只调用了一个system call (read)。但是，<strong>用 select 的优势在于它可以同时处理多个connection</strong>。</p>
+<p>这个图和 <code class="language-plaintext highlighter-rouge">blocking I/O</code> 的图其实并没有太大的不同，事实上，开销还会更大一点。因为这里需要使用两个 system call (select 和 read)，而 blocking I/O 只调用了一个system call (read)。但是，<strong>用 select 的优势在于它可以同时处理多个connection</strong>。</p>
 
 <p>所以，如果处理的连接数不是很高的话，使用 <strong>select/epoll</strong> 的 web server 不一定比使用 <strong>multi-threading + blocking I/O</strong> 的 web server 性能更好，可能延迟还更大。<strong>select/epoll</strong>的优势并不是对于单个连接能处理得更快，而是在于能处理更多的连接。</p>
 
-<p>在 <code class="highlighter-rouge">I/O multiplexing</code> 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。</p>
+<p>在 <code class="language-plaintext highlighter-rouge">I/O multiplexing</code> 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。</p>
 
 <h1 id="signal-driven-io">Signal Driven I/O</h1>
 <p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003812004927.jpg" alt="" /></p>
 
-<p><strong>Signal Driven I/O</strong> 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 <code class="highlighter-rouge">SIGIO</code> 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。</p>
+<p><strong>Signal Driven I/O</strong> 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 <code class="language-plaintext highlighter-rouge">SIGIO</code> 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。</p>
 
-<p>但是这种 I/O 模型存在一个非常重大的<strong>缺陷问题</strong>：<code class="highlighter-rouge">SIGIO</code> 这种信号对于每个进程来说只有一个！如果使该信号对进程中的两个描述符（这两个文件描述符都等待着 I/O 操作）都起作用，那么进程在接到此信号后就无法判别是哪一个文件描述符准备好了。所以 <strong>Signal Driven I/O</strong> 模型在现实中用的非常少。</p>
+<p>但是这种 I/O 模型存在一个非常重大的<strong>缺陷问题</strong>：<code class="language-plaintext highlighter-rouge">SIGIO</code> 这种信号对于每个进程来说只有一个！如果使该信号对进程中的两个描述符（这两个文件描述符都等待着 I/O 操作）都起作用，那么进程在接到此信号后就无法判别是哪一个文件描述符准备好了。所以 <strong>Signal Driven I/O</strong> 模型在现实中用的非常少。</p>
 
 <h1 id="asynchronous-io">Asynchronous I/O</h1>
 <p>Linux 系统中 Asynchronous I/O 的操作流程如下图所示：
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003826926363.jpg" alt="" /></p>
 
-<p>用户进程通过 <code class="highlighter-rouge">aio_read()</code> 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 <strong>asynchronous read</strong>  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。</p>
+<p>用户进程通过 <code class="language-plaintext highlighter-rouge">aio_read()</code> 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 <strong>asynchronous read</strong>  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。</p>
 
 <p><strong>Asynchronous I/O 操作最大的特点就是整个 I/O 操作流程中，用户进程始终没有被 block。</strong></p>
 
@@ -607,11 +611,11 @@
   <li>An asynchronous I/O operation does not cause the requesting process to be blocked;</li>
 </ul>
 
-<p><strong>两者的区别就在于 Synchronous I/O 做 <code class="highlighter-rouge">IO operation</code> 的时候会将用户空间的进程阻塞。</strong></p>
+<p><strong>两者的区别就在于 Synchronous I/O 做 <code class="language-plaintext highlighter-rouge">IO operation</code> 的时候会将用户空间的进程阻塞。</strong></p>
 
-<p>按照这个定义，之前所说的 <code class="highlighter-rouge">Blocking I/O</code>，<code class="highlighter-rouge">Non-blocking I/O</code>，<code class="highlighter-rouge">IO multiplexing</code>都属于 <strong>Synchronous I/O</strong>。</p>
+<p>按照这个定义，之前所说的 <code class="language-plaintext highlighter-rouge">Blocking I/O</code>，<code class="language-plaintext highlighter-rouge">Non-blocking I/O</code>，<code class="language-plaintext highlighter-rouge">IO multiplexing</code>都属于 <strong>Synchronous I/O</strong>。</p>
 
-<p>有人会说，<code class="highlighter-rouge">Non-blocking I/O</code> 并没有被block啊。这里有个非常“狡猾”的地方，定义中所指的 <code class="highlighter-rouge">IO operation</code> 是指<strong>真实的I/O操作</strong>，就是例子中的 read 这个 system call。<code class="highlighter-rouge">Non-blocking I/O</code> 在执行 read 这个system call 的时候，如果 kernel 的数据没有准备好，这时候不会 block 进程。但是，当kernel 中数据准备好的时候，read 会将数据从kernel 拷贝到用户空间的缓冲区中，这个时候进程是被 block 的。</p>
+<p>有人会说，<code class="language-plaintext highlighter-rouge">Non-blocking I/O</code> 并没有被block啊。这里有个非常“狡猾”的地方，定义中所指的 <code class="language-plaintext highlighter-rouge">IO operation</code> 是指<strong>真实的I/O操作</strong>，就是例子中的 read 这个 system call。<code class="language-plaintext highlighter-rouge">Non-blocking I/O</code> 在执行 read 这个system call 的时候，如果 kernel 的数据没有准备好，这时候不会 block 进程。但是，当kernel 中数据准备好的时候，read 会将数据从kernel 拷贝到用户空间的缓冲区中，这个时候进程是被 block 的。</p>
 
 <p>而<strong>Asynchronous I/O</strong>则不一样，当进程发起 <strong>I/O</strong> 操作之后，就直接返回再也不理睬了，直到 kernel 发送一个信号，告诉进程说 I/O完成。在这整个过程中，<strong>进程完全没有被 block</strong>。</p>
 
@@ -1089,6 +1093,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1114,10 +1126,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

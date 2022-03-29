@@ -10,7 +10,7 @@
   <meta name="description" content="什么是文件系统？如果你接触过Linux系统中的文件系统，相信你对下面这些名词肯定不会陌生，例如：ext2, ext3, ext4, FAT, FAT32, tmpfs, rootfs, NTFS, YAFFS, sysfs, procfs 等等。俺滴神啊，怎么会有这么多不同类型的文件系统啊，那么文件系统到底是个什...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -530,12 +534,12 @@
 <h1 id="什么是-tmpfs">什么是 tmpfs？</h1>
 <p>ramfs 中有一个非常大的<strong>缺点</strong>就是你可以持续不断地向 ramfs 文件系统中的文件持续不断地写入数据直到填满整个物理内存空间为止。出现这个问题的原因就是前面介绍的 ramfs 文件系统不存在向普通磁盘那样的将内存中的文件内容写回到文件的操作，也就导致了它所占据的那部分内存空间是无法被释放的，正是因为这个原因，通常只有 <strong>root</strong> 用户才有读写 ramfs 文件系统中文件的权限。</p>
 
-<p><strong>tmpfs</strong> 文件系统是从 <strong>ramfs</strong> 衍生而来的一个文件系统，但是它相对于 ramfs 多了<strong>空间容量大小限制</strong>，并且还可以将文件系统中一些<strong>不必要的的文件内容写到交换空间</strong>中（swap space）。并且 tmpfs 文件系统的大小还可以通过 <code class="highlighter-rouge">mount -o remount ...</code> 命令来重新调整。</p>
+<p><strong>tmpfs</strong> 文件系统是从 <strong>ramfs</strong> 衍生而来的一个文件系统，但是它相对于 ramfs 多了<strong>空间容量大小限制</strong>，并且还可以将文件系统中一些<strong>不必要的的文件内容写到交换空间</strong>中（swap space）。并且 tmpfs 文件系统的大小还可以通过 <code class="language-plaintext highlighter-rouge">mount -o remount ...</code> 命令来重新调整。</p>
 
 <p>有关 tmpfs 更加详细的内容可以查看内核源码中的文档：<em>Documentation/filesystems/tmpfs.txt</em>。</p>
 
 <h2 id="什么是-rootfs">什么是 rootfs？</h2>
-<p><strong>rootfs</strong>（也叫根文件系统） 它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 <code class="highlighter-rouge">/</code> 根目录下的结构，例如，<code class="highlighter-rouge">/boot</code> 目录下存放的是启动内核相关的文件，<code class="highlighter-rouge">/etc</code> 目录中存放的则是一些系统配置文件，<code class="highlighter-rouge">/dev</code> 目录下存放的则是系统的设备文件，<code class="highlighter-rouge">/bin</code> 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 <code class="highlighter-rouge">/</code> 根目录的结构如下所示：</p>
+<p><strong>rootfs</strong>（也叫根文件系统） 它本质上就是一个 Linux 系统中基本的文件目录组织结构，也就是 Linux 系统中 <code class="language-plaintext highlighter-rouge">/</code> 根目录下的结构，例如，<code class="language-plaintext highlighter-rouge">/boot</code> 目录下存放的是启动内核相关的文件，<code class="language-plaintext highlighter-rouge">/etc</code> 目录中存放的则是一些系统配置文件，<code class="language-plaintext highlighter-rouge">/dev</code> 目录下存放的则是系统的设备文件，<code class="language-plaintext highlighter-rouge">/bin</code> 目录下存放的则是一些可执行的二进制文件等等，在我的 Ubuntu 机器上的 <code class="language-plaintext highlighter-rouge">/</code> 根目录的结构如下所示：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">.</span>
 ├── bin
@@ -570,10 +574,10 @@
 
 <p>通常 rootfs 文件系统应该非常简洁，它只包含了它所必须用的文件，并且尽量避免少去修改 rootfs，以免破坏 rootfs，导致整个 Linux 系统无法启动。</p>
 
-<p>Linux 系统的启动过程与 <code class="highlighter-rouge">rootfs</code> 也是密切相关，rootfs 可能会存在于存储在 RAM 存储设备中，也可能会存在硬盘设备中，这部分的我会在 Linux 系统的启动过程中作介绍。</p>
+<p>Linux 系统的启动过程与 <code class="language-plaintext highlighter-rouge">rootfs</code> 也是密切相关，rootfs 可能会存在于存储在 RAM 存储设备中，也可能会存在硬盘设备中，这部分的我会在 Linux 系统的启动过程中作介绍。</p>
 
 <h2 id="什么是-initramfs">什么是 initramfs？</h2>
-<p><strong>initramfs</strong> 是一种以 <code class="highlighter-rouge">cpio</code> 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像，BootLoader 加载 boot.img，并启动内核之后，内核接着就对 <code class="highlighter-rouge">cpio</code> 格式的 initramfs 进行解压，并将解压后得到的 <code class="highlighter-rouge">rootfs</code> 加载进内存，最后内核会检查 rootfs 中是否存在 <strong>init</strong> 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 <strong>init</strong> 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 <code class="highlighter-rouge">/</code> 根目录上，最后通过 <code class="highlighter-rouge">exec chroot . /sbin/init</code> 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 <strong>/sbin/init</strong> 程序来启动系统中的其他进程和服务。</p>
+<p><strong>initramfs</strong> 是一种以 <code class="language-plaintext highlighter-rouge">cpio</code> 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像，BootLoader 加载 boot.img，并启动内核之后，内核接着就对 <code class="language-plaintext highlighter-rouge">cpio</code> 格式的 initramfs 进行解压，并将解压后得到的 <code class="language-plaintext highlighter-rouge">rootfs</code> 加载进内存，最后内核会检查 rootfs 中是否存在 <strong>init</strong> 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 <strong>init</strong> 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 <code class="language-plaintext highlighter-rouge">/</code> 根目录上，最后通过 <code class="language-plaintext highlighter-rouge">exec chroot . /sbin/init</code> 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 <strong>/sbin/init</strong> 程序来启动系统中的其他进程和服务。</p>
 
 <p>有关更加详细的 Linux Kernel + initramfs 的启动过程可以阅读下面这篇文章：<a href="http://xstarcd.github.io/wiki/Linux/ShengRuLiJie_linux_2.6_initramfs.html">深入理解Linux 2.6 的initramfs 机制</a></p>
 
@@ -1062,6 +1066,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1087,10 +1099,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

@@ -10,7 +10,7 @@
   <meta name="description" content="目标采用 kubernetes.io 官方推荐的 kubeadm 工具安装 kubernetes 集群。  Docker版本：18.06.0-ce  Kubernetes版本：v1.18.0集群规划            角色      主机名      IP地址      系统                 ...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -552,7 +556,7 @@
   <li>
     <p><strong>关闭系统中的内存 swap 功能</strong></p>
 
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  # 查看系统是否启用了 swap
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  # 查看系统是否启用了 swap
   cat /proc/swaps
   Filename				Type		Size	Used	Priority
   /dev/sda5                               partition	2095100	0	-1
@@ -662,22 +666,22 @@ apt-mark hold kubelet kubeadm kubectl
 
 <p>获取镜像列表后可以通过下面的脚本从dockerhub上获取镜像并重命名：</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/bin/bash
 
-<span class="nv">images</span><span class="o">=(</span>kube-apiserver:v1.18.0 <span class="se">\</span>
-	kube-controller-manager:v1.18.0 <span class="se">\</span>
-	kube-scheduler:v1.18.0 <span class="se">\</span>
-	kube-proxy:v1.18.0 <span class="se">\</span>
-	pause:3.2 <span class="se">\</span>
-	etcd:3.4.3-0 <span class="se">\</span>
-	coredns:1.6.7<span class="o">)</span>
+images=(kube-apiserver:v1.18.0 \
+	kube-controller-manager:v1.18.0 \
+	kube-scheduler:v1.18.0 \
+	kube-proxy:v1.18.0 \
+	pause:3.2 \
+	etcd:3.4.3-0 \
+	coredns:1.6.7)
 
-<span class="k">for </span>imageName <span class="k">in</span> <span class="k">${</span><span class="nv">images</span><span class="p">[@]</span><span class="k">}</span> <span class="p">;</span> <span class="k">do
-    </span>docker pull aiotceo/<span class="nv">$imageName</span>
-    docker tag aiotceo/<span class="nv">$imageName</span> k8s.gcr.io/<span class="nv">$imageName</span>
-    docker rmi aiotceo/<span class="nv">$imageName</span>
-<span class="k">done</span>
-<span class="o">)</span>
+for imageName in ${images[@]} ; do
+    docker pull aiotceo/$imageName
+    docker tag aiotceo/$imageName k8s.gcr.io/$imageName
+    docker rmi aiotceo/$imageName
+done
+)
 </code></pre></div></div>
 
 <p>下载 k8s 所需的各个组件的镜像如下所示：</p>
@@ -697,20 +701,20 @@ k8s.gcr.io/etcd                      3.4.3-0             303ce5db0e90        5 m
 
 <h4 id="kubeadm-init初始化环境">kubeadm init初始化环境</h4>
 
-<p>通过<code class="highlighter-rouge">kubeadm init</code>命令来初始化Master节点：</p>
+<p>通过<code class="language-plaintext highlighter-rouge">kubeadm init</code>命令来初始化Master节点：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubeadm init <span class="nt">--pod-network-cidr</span><span class="o">=</span>192.168.0.0/16 <span class="nt">--apiserver-advertise-address</span><span class="o">=</span>192.168.5.154
 </code></pre></div></div>
 
-<p>在实际的部署当中需要将 <code class="highlighter-rouge">--apiserver-advertise-address</code> 参数后面的值设置为当前主机的ip地址。</p>
+<p>在实际的部署当中需要将 <code class="language-plaintext highlighter-rouge">--apiserver-advertise-address</code> 参数后面的值设置为当前主机的ip地址。</p>
 
 <ul>
-  <li><code class="highlighter-rouge">--apiserver-advertise-address</code>：API 服务器所公布的其正在监听的 IP 地址。如果未设置，则使用默认网络接口。</li>
-  <li><code class="highlighter-rouge">--pod-network-cidr</code>：指明 pod 网络可以使用的 IP 地址段。如果设置了这个参数，控制平面将会为每一个节点自动分配 CIDRs。如果要配置calico网络插件，这个值一定要设置为<code class="highlighter-rouge">192.168.0.0/16</code></li>
+  <li><code class="language-plaintext highlighter-rouge">--apiserver-advertise-address</code>：API 服务器所公布的其正在监听的 IP 地址。如果未设置，则使用默认网络接口。</li>
+  <li><code class="language-plaintext highlighter-rouge">--pod-network-cidr</code>：指明 pod 网络可以使用的 IP 地址段。如果设置了这个参数，控制平面将会为每一个节点自动分配 CIDRs。如果要配置calico网络插件，这个值一定要设置为<code class="language-plaintext highlighter-rouge">192.168.0.0/16</code></li>
 </ul>
 
 <p>初始化成功之后的输出信息如下所示：</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/Code/scripts# kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.5.154
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/Code/scripts# kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.5.154
 W0329 02:35:23.887370   13950 configset.go:202] WARNING: kubeadm cannot validate component configs for API groups [kubelet.config.k8s.io kubeproxy.config.k8s.io]
 [init] Using Kubernetes version: v1.18.0
 [preflight] Running pre-flight checks
@@ -788,7 +792,7 @@ kubeadm join 192.168.5.154:6443 --token l09phn.zkiuy0ipc2yp6syq \
 
 <p>所需的命令在init成功后也会有提示，主要是为了保存相关的配置信息在用户目录下，这样不用每次都输入相关的认证信息。</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> mkdir -p $HOME/.kube
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 </code></pre></div></div>
@@ -800,7 +804,7 @@ chown $(id -u):$(id -g) $HOME/.kube/config
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> https://docs.projectcalico.org/v3.11/manifests/calico.yaml
 </code></pre></div></div>
 
-<p>确认calico网络插件是否配置好，只要去检查<code class="highlighter-rouge">CoreDNS Pod</code>是否处于Running状态，检查的方法如下：</p>
+<p>确认calico网络插件是否配置好，只要去检查<code class="language-plaintext highlighter-rouge">CoreDNS Pod</code>是否处于Running状态，检查的方法如下：</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubectl get pods <span class="nt">--all-namespaces</span>
 NAMESPACE     NAME                                                       READY   STATUS    RESTARTS   AGE
 kube-system   calico-kube-controllers-5b8b769fcd-xxftq                   1/1     Running   1          11m
@@ -876,7 +880,7 @@ This node has joined the cluster:
 Run <span class="s1">'kubectl get nodes'</span> on the control-plane to see this node <span class="nb">join </span>the cluster.
 </code></pre></div></div>
 
-<p>最后我们在Master节点上运行<code class="highlighter-rouge">kubectl get nodes</code>查看Worker节点是否已经加入了：</p>
+<p>最后我们在Master节点上运行<code class="language-plaintext highlighter-rouge">kubectl get nodes</code>查看Worker节点是否已经加入了：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@flyflypeng-VirtualBox-k8s-master:/home/flyflypeng/k8s# kubectl get nodes <span class="nt">-o</span> wide
 NAME                               STATUS   ROLES    AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
@@ -884,13 +888,13 @@ flyflypeng-desktop-k8s-worker      Ready    &lt;none&gt;   11m   v1.18.0   192.1
 flyflypeng-virtualbox-k8s-master   Ready    master   9h    v1.18.0   192.168.5.154   &lt;none&gt;        Ubuntu 16.04.5 LTS   4.15.0-36-generic   docker://18.6.0
 </code></pre></div></div>
 
-<p><strong>注意：如果原来已经加入 Cluster 的 Node 重启之后，需要通过 <code class="highlighter-rouge">kubeadm reset</code> 重置当前 Node 的环境，然后重新使用 <code class="highlighter-rouge">kubeadm join</code> 来将当前 Node 加入到 Master Node 管理。</strong></p>
+<p><strong>注意：如果原来已经加入 Cluster 的 Node 重启之后，需要通过 <code class="language-plaintext highlighter-rouge">kubeadm reset</code> 重置当前 Node 的环境，然后重新使用 <code class="language-plaintext highlighter-rouge">kubeadm join</code> 来将当前 Node 加入到 Master Node 管理。</strong></p>
 
 <h3 id="部署其他插件">部署其他插件</h3>
 
 <p>由于很多官方的插件所需镜像也在 http://gcr.io 上，所以遇到这种情况，可以通过下面的方式获取：<a href="https://zhuanlan.zhihu.com/p/46341911">kubernetes安装（国内环境）</a></p>
 
-<p>将yaml文件中镜像地址的<code class="highlighter-rouge">k8s.gcr.io</code>替换成<code class="highlighter-rouge">registry.cn-hangzhou.aliyuncs.com/google_containers</code></p>
+<p>将yaml文件中镜像地址的<code class="language-plaintext highlighter-rouge">k8s.gcr.io</code>替换成<code class="language-plaintext highlighter-rouge">registry.cn-hangzhou.aliyuncs.com/google_containers</code></p>
 
 <h3 id="在其他机器上访问集群">在其他机器上访问集群</h3>
 
@@ -900,7 +904,7 @@ flyflypeng-virtualbox-k8s-master   Ready    master   9h    v1.18.0   192.168.5.1
 kubectl <span class="nt">--kubeconfig</span> ./admin.conf get nodes
 </code></pre></div></div>
 
-<p>为了避免每次都敲kubectl命令时都加上配置选项<code class="highlighter-rouge">--kubeconfig</code>，我们可以简单地在shell配置环境中的加个<code class="highlighter-rouge">alias</code>：</p>
+<p>为了避免每次都敲kubectl命令时都加上配置选项<code class="language-plaintext highlighter-rouge">--kubeconfig</code>，我们可以简单地在shell配置环境中的加个<code class="language-plaintext highlighter-rouge">alias</code>：</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># kubectl --kubeconfig alias</span>
 <span class="nb">alias </span><span class="nv">kubectl</span><span class="o">=</span><span class="s1">'kubectl --kubeconfig /Users/woshijpf/k8s/admin.conf'</span>
@@ -926,7 +930,7 @@ kubernetes   ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP          20
 web          NodePort    10.101.158.14   &lt;none&gt;        3000:32678/TCP   36m
 </code></pre></div></div>
 
-<p>通过浏览器访问Worker节点上<code class="highlighter-rouge">http://192.168.5.8:32678</code>地址：
+<p>通过浏览器访问Worker节点上<code class="language-plaintext highlighter-rouge">http://192.168.5.8:32678</code>地址：
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/container-web-app.jpg" alt="" /></p>
 
 <p>下面是我kubenetes v1.18.0版本上验证过的yaml文件：</p>
@@ -1040,8 +1044,8 @@ web          NodePort    10.101.158.14   &lt;none&gt;        3000:32678/TCP   36
 
 <p><strong>注意事项：</strong></p>
 <ul>
-  <li>如果不想将镜像上传到dockerhub上，直接在worker节点上使用编译出来的镜像，则需要在部署web app的<code class="highlighter-rouge">web-pod.yaml</code>文件中添加上镜像拉去的策略<code class="highlighter-rouge">imagePullPolicy: IfNotPresent</code></li>
-  <li>副本集(ReplicaSet)的测试过程中，要将yaml文件中的<code class="highlighter-rouge">apiVersion</code>的值从<code class="highlighter-rouge">extensions/v1beta1</code>替换成<code class="highlighter-rouge">apps/v1</code>，因为<code class="highlighter-rouge">extensions/v1beta1</code>已经被弃用了。</li>
+  <li>如果不想将镜像上传到dockerhub上，直接在worker节点上使用编译出来的镜像，则需要在部署web app的<code class="language-plaintext highlighter-rouge">web-pod.yaml</code>文件中添加上镜像拉去的策略<code class="language-plaintext highlighter-rouge">imagePullPolicy: IfNotPresent</code></li>
+  <li>副本集(ReplicaSet)的测试过程中，要将yaml文件中的<code class="language-plaintext highlighter-rouge">apiVersion</code>的值从<code class="language-plaintext highlighter-rouge">extensions/v1beta1</code>替换成<code class="language-plaintext highlighter-rouge">apps/v1</code>，因为<code class="language-plaintext highlighter-rouge">extensions/v1beta1</code>已经被弃用了。</li>
 </ul>
 
 <h2 id="faq">FAQ</h2>
@@ -1055,7 +1059,7 @@ web          NodePort    10.101.158.14   &lt;none&gt;        3000:32678/TCP   36
   <li>Never 只使用本地镜像，从不拉取，即使本地没有</li>
 </ul>
 
-<p>如果省略imagePullPolicy，镜像tag为 <code class="highlighter-rouge">:latest</code>，策略为always。</p>
+<p>如果省略imagePullPolicy，镜像tag为 <code class="language-plaintext highlighter-rouge">:latest</code>，策略为always。</p>
 
 <h2 id="参考文章">参考文章</h2>
 
@@ -1538,6 +1542,14 @@ web          NodePort    10.101.158.14   &lt;none&gt;        3000:32678/TCP   36
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1563,10 +1575,6 @@ web          NodePort    10.101.158.14   &lt;none&gt;        3000:32678/TCP   36
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

@@ -10,7 +10,7 @@
   <meta name="description" content="QEMU 工作原理简介QEMU是一款开源的模拟器和虚拟机监视器（Virtual Machine Monitor, VMM）。QEMU主要提供两个功能给用户使用：  作为用户态模拟器：通过动态代码翻译机制来执行不同架构的代码，例如在X86平台上模拟ARM平台下执行环境。  作为虚拟机监视器：模拟全系统，利用其它VM...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -518,7 +522,7 @@
 
 <p>在x86平台上最常见的虚拟化组合就是QEMU/KVM的组合了，其中利用QEMU来模拟IO外设，通过KVM来捕获Guest OS中运行的指令并将其中非特权指令在物理CPU上直接运行，达到硬件加速的目的。</p>
 
-<p>KVM内核模块对用户空间只暴露出一个<code class="highlighter-rouge">/dev/kvm</code>的设备文件，然后通过<code class="highlighter-rouge">ioctl</code>命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。</p>
+<p>KVM内核模块对用户空间只暴露出一个<code class="language-plaintext highlighter-rouge">/dev/kvm</code>的设备文件，然后通过<code class="language-plaintext highlighter-rouge">ioctl</code>命令与QEMU进程进行通信，KVM利用硬件扩展直接将虚拟机代码运行于主机之上，当vCPU需要执行访问IO设备寄存器的指令时，vCPU就会停止从退回到QEMU进程中，由QEMU去模拟操作的结果。</p>
 
 <h2 id="kvm-虚拟化原理简介">KVM 虚拟化原理简介</h2>
 
@@ -533,7 +537,7 @@
   如果QEMU中运行的Guest OS和Host OS的硬件架构相同，那么Guest OS中的指令可以直接在Host OS上的物理CPU上执行，而不需要通过QEMU软件模拟的方式去执行Guest OS中的指令，大大提高了Guest虚拟机的性能。</li>
     </ul>
   </li>
-  <li>QEMU结合KVM执行Guest OS指令的步骤简要描述<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>：
+  <li>QEMU结合KVM执行Guest OS指令的步骤简要描述<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>：
     <blockquote>
       <p>打开/dev/kvm设备文件、创建虚拟机、创建vCPU、向KVM模块发送KVM_RUN的ioctl调用，接下来KVM模块利用CPU上的硬件虚拟化扩展功能来直接执行guest的运行。当guest在执行过程中遇到读取硬件设备寄存器等I/O操作、暂停guest CPU或其他特殊指令等KVM无法执行的操作时，会退出当前KVM并交由Qemu处理。Qemu模拟器判断退出原因并执行相应的操作：如果是遇到I/O操作或特殊指令，Qemu会去模拟执行这些操作；如果是暂停guest CPU操作，Qemu停止并等待下一次guest中断。
   上述流程用下面的代码来简单表示：</p>
@@ -570,10 +574,10 @@
   <li><a href="https://blog.csdn.net/xiongwenwu/article/details/58586013">KVM/Qemu 工作原理系列目录</a></li>
 </ul>
 
-<div class="footnotes">
+<div class="footnotes" role="doc-endnotes">
   <ol>
-    <li id="fn:1">
-      <p><a href="https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en">QEMU深入解析：综述篇</a> <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://www.ibm.com/developerworks/community/blogs/5144904d-5d75-45ed-9d2b-cf1754ee936a/entry/20160805?lang=en">QEMU深入解析：综述篇</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -1051,6 +1055,14 @@
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1076,10 +1088,6 @@
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         

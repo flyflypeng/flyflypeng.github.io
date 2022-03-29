@@ -10,7 +10,7 @@
   <meta name="description" content="1. 函数 .1 函数调用 Python中内置了许多函数，在python程序中我们可以直接通过函数名调用，例如: abs,chr,ord等等。我们也可以从Python的官方文档中查看到内置函数的具体信息:https://docs.python.org/2/library/functions.html#absPyt...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2020">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
   
 
   <!-- External libraries -->
@@ -403,6 +403,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -428,10 +436,6 @@
         
           
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-          
-        
-          
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
           
         
           
@@ -558,14 +562,14 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">math</span>
 
 <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">step</span><span class="p">,</span><span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="n">nx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">step</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
-    <span class="n">ny</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">step</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">nx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">step</span><span class="o">*</span><span class="n">math</span><span class="p">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">ny</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">step</span><span class="o">*</span><span class="n">math</span><span class="p">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">nx</span><span class="p">,</span><span class="n">ny</span>
 
-<span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="n">math</span><span class="p">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
 <span class="k">print</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span>
 
-<span class="n">r</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="n">math</span><span class="p">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
 <span class="k">print</span> <span class="n">r</span>
 </code></pre></div></div>
 
@@ -806,7 +810,7 @@ b</p>
 
 <p>列出当前目录下的所有文件和目录，我可以通过下面这一行简单的代码就能实现了:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">os</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">'.'</span><span class="p">)]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="n">listdir</span><span class="p">(</span><span class="s">'.'</span><span class="p">)]</span>
 <span class="p">[</span><span class="s">'define_generator.pyc'</span><span class="p">,</span> <span class="s">'iteration_example.py~'</span><span class="p">,</span> <span class="s">'iteration_example.py'</span><span class="p">,</span> <span class="s">'fibonacci.py'</span><span class="p">,</span> <span class="s">'define_generator.py'</span><span class="p">,</span> <span class="s">'fibonacci.pyc'</span><span class="p">]</span>
 </code></pre></div></div>
 
@@ -825,27 +829,27 @@ b</p>
 </code></pre></div></div>
 <p>list可以通过索引或者迭代的方式进行访问，那么如何访问generator中的元素呢？
 前面讲到，generator的目的就是为了节约内存空间，它的元素不是全部一次性就计算出来的，而是通过保存了算法，然后根据算法一步一步地计算出来的。因此，generator中采用了next()方法来获取generator中的元素，例如:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">0</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">1</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">4</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">9</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">16</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">25</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">36</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">49</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">64</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="mi">81</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">StopIteration</span>
@@ -855,8 +859,8 @@ b</p>
 <p>但是上面这种调用generator的方法的确有些复杂，由于generator对象也是一个可迭代的对象，所以我们可以通过for循环来访问generator中的元素，例如:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="n">n</span>
-<span class="o">...</span>
+<span class="p">...</span>     <span class="k">print</span> <span class="n">n</span>
+<span class="p">...</span>
 <span class="mi">0</span>
 <span class="mi">1</span>
 <span class="mi">4</span>
@@ -873,24 +877,24 @@ b</p>
 
 <p>在这里最难理解的就是generator的执行顺序和函数的执行顺序不一样。函数是顺序执行，遇到return语句或者执行完函数的最后一行语句后返回。而变成generator的函数，在每次遇到next()的时候执行，遇到yield语句返回，再次执行时从上一次返回的yield语句处接下去继续执行，直到遇到函数体中的return语句或者执行到函数体的最后一行语句才停止，下面就举个简单的例子:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">odd</span><span class="p">():</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="s">'step 1'</span>
-<span class="o">...</span>     <span class="k">yield</span> <span class="mi">1</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="s">'step 2'</span>
-<span class="o">...</span>     <span class="k">yield</span> <span class="mi">2</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="s">'step 3'</span>
-<span class="o">...</span>     <span class="k">yield</span> <span class="mi">3</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">print</span> <span class="s">'step 1'</span>
+<span class="p">...</span>     <span class="k">yield</span> <span class="mi">1</span>
+<span class="p">...</span>     <span class="k">print</span> <span class="s">'step 2'</span>
+<span class="p">...</span>     <span class="k">yield</span> <span class="mi">2</span>
+<span class="p">...</span>     <span class="k">print</span> <span class="s">'step 3'</span>
+<span class="p">...</span>     <span class="k">yield</span> <span class="mi">3</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">o</span> <span class="o">=</span> <span class="n">odd</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="n">step</span> <span class="mi">1</span>
 <span class="mi">1</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="n">step</span> <span class="mi">2</span>
 <span class="mi">2</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="n">step</span> <span class="mi">3</span>
 <span class="mi">3</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="o">.</span><span class="nb">next</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">o</span><span class="p">.</span><span class="nb">next</span><span class="p">()</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">StopIteration</span>
@@ -903,8 +907,8 @@ b</p>
 <h3 id="31-高阶函数-">3.1 高阶函数 <span id="3.1"></span></h3>
 <p>变量可以指向函数，函数的参数又可以接受变量，所以当一个函数A可以接受另一个函数B作为参数时，我们就称函数A为高阶函数。例如，</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">f</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">add</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="nb">abs</span><span class="p">)</span>
 <span class="mi">20</span>
 </code></pre></div></div>
@@ -918,9 +922,9 @@ b</p>
 <h5 id="map">map</h5>
 <p>map函数接收两个参数，一个是函数，一个是序列，map将接收到的函数依次作用于序列中的每个元素，并把结果作为新的list返回，例如:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
-<span class="o">...</span>     
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="p">...</span>     
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">map</span><span class="p">(</span><span class="n">f</span><span class="p">,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
 <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
 </code></pre></div></div>
@@ -935,19 +939,19 @@ b</p>
 
 <p>例如，一个序列求和就可以通过reduce实现</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">return</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">add</span><span class="p">,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
 <span class="mi">15</span>
 </code></pre></div></div>
 
 <p>在介绍完，map和reduce的用法之后，我们就给出一个两者混合使用的例子: 将字符串形式表示的整数转换成整数。</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">fn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="mi">10</span><span class="o">+</span><span class="n">y</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="mi">10</span><span class="o">+</span><span class="n">y</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">num2int</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="p">{</span><span class="s">'0'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s">'1'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'2'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">'3'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">'4'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">'5'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">'6'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">'7'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s">'8'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s">'9'</span><span class="p">:</span> <span class="mi">9</span><span class="p">}[</span><span class="n">s</span><span class="p">]</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">return</span> <span class="p">{</span><span class="s">'0'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s">'1'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'2'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">'3'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">'4'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">'5'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">'6'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">'7'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s">'8'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s">'9'</span><span class="p">:</span> <span class="mi">9</span><span class="p">}[</span><span class="n">s</span><span class="p">]</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="nb">map</span><span class="p">(</span><span class="n">num2int</span><span class="p">,</span><span class="s">'13579'</span><span class="p">))</span>
 <span class="mi">13579</span>
 </code></pre></div></div>
@@ -957,8 +961,8 @@ b</p>
 
 <p>解答:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">name_format</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-	<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-	<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+	<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">lower</span><span class="p">()</span>
+	<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">capitalize</span><span class="p">()</span>
 	<span class="k">return</span> <span class="n">s</span>
 
 <span class="k">print</span> <span class="nb">map</span><span class="p">(</span><span class="n">name_format</span><span class="p">,[</span><span class="s">'adam'</span><span class="p">,</span><span class="s">'LISA'</span><span class="p">,</span><span class="s">'barT'</span><span class="p">])</span>
@@ -987,7 +991,7 @@ b</p>
 
 <span class="k">def</span> <span class="nf">filter_prime_number</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 	<span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
-	<span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+	<span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">)(</span><span class="n">math</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 	<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
 		<span class="k">if</span> <span class="n">x</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
 			<span class="k">return</span> <span class="bp">True</span>
@@ -1012,12 +1016,12 @@ b</p>
 
 <p>例如，我们想实现一个排倒序的功能，那么我们可以自定义一个排倒序的比较函数，然后将这个函数传递到sorted函数中:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">reversed_cmp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">:</span>
-<span class="o">...</span>             <span class="k">return</span> <span class="mi">1</span>
-<span class="o">...</span>     <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">:</span>
-<span class="o">...</span>             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="mi">0</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">:</span>
+<span class="p">...</span>             <span class="k">return</span> <span class="mi">1</span>
+<span class="p">...</span>     <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">y</span><span class="p">:</span>
+<span class="p">...</span>             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="mi">0</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">sorted</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span><span class="n">reversed_cmp</span><span class="p">)</span>
 <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span> 
@@ -1028,12 +1032,12 @@ b</p>
 
 <p>下面就以一个求和函数为例:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">lazy_sum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">sum</span><span class="p">():</span>
-<span class="o">...</span>         <span class="n">ax</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="o">...</span>         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-<span class="o">...</span>             <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="n">n</span>
-<span class="o">...</span>         <span class="k">return</span> <span class="n">ax</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="nb">sum</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">sum</span><span class="p">():</span>
+<span class="p">...</span>         <span class="n">ax</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">...</span>         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+<span class="p">...</span>             <span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span> <span class="o">+</span> <span class="n">n</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="n">ax</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="nb">sum</span>
 </code></pre></div></div>
 <p>当我们调用lazy_sum()时，返回的不是最后计算得到的数值，而是一个函数对象</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="n">lazy_sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">)</span>
@@ -1049,13 +1053,13 @@ b</p>
 <h5 id="闭包的使用">闭包的使用</h5>
 <p>闭包的使用虽然简单，但是它有许多需要注意的地方，下面就举个例子:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">count</span><span class="p">():</span>
-<span class="o">...</span>     <span class="n">fs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="o">...</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
-<span class="o">...</span>             <span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
-<span class="o">...</span>                 <span class="k">return</span> <span class="n">i</span><span class="o">*</span><span class="n">i</span>
-<span class="o">...</span>             <span class="n">fs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">fs</span>
-<span class="o">...</span> 
+<span class="p">...</span>     <span class="n">fs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="p">...</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+<span class="p">...</span>             <span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+<span class="p">...</span>                 <span class="k">return</span> <span class="n">i</span><span class="o">*</span><span class="n">i</span>
+<span class="p">...</span>             <span class="n">fs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="n">fs</span>
+<span class="p">...</span> 
 <span class="o">&gt;&gt;&gt;</span> <span class="n">f1</span><span class="p">,</span><span class="n">f2</span><span class="p">,</span><span class="n">f3</span> <span class="o">=</span> <span class="n">count</span><span class="p">()</span>
 </code></pre></div></div>
 <p>在上面例子中，每次循环都建立了一个新的函数，然后将3个函数都通过列表的形式返回了。</p>
@@ -1074,14 +1078,14 @@ b</p>
 
 <p>如果一定要引用循环变量怎么办？方法是再创建一个函数，用该函数的参数绑定循环变量当前的值，无论该循环变量后续如何更改，已绑定到函数参数的值不变:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">count</span><span class="p">():</span>
-<span class="o">...</span>     <span class="n">fs</span><span class="o">=</span><span class="p">[]</span>
-<span class="o">...</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
-<span class="o">...</span>             <span class="k">def</span> <span class="nf">g</span><span class="p">():</span>
-<span class="o">...</span>                 <span class="k">return</span> <span class="n">j</span><span class="o">*</span><span class="n">j</span>
-<span class="o">...</span>             <span class="k">return</span> <span class="n">g</span>
-<span class="o">...</span>         <span class="n">fs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">fs</span>
+<span class="p">...</span>     <span class="n">fs</span><span class="o">=</span><span class="p">[]</span>
+<span class="p">...</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+<span class="p">...</span>         <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
+<span class="p">...</span>             <span class="k">def</span> <span class="nf">g</span><span class="p">():</span>
+<span class="p">...</span>                 <span class="k">return</span> <span class="n">j</span><span class="o">*</span><span class="n">j</span>
+<span class="p">...</span>             <span class="k">return</span> <span class="n">g</span>
+<span class="p">...</span>         <span class="n">fs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="n">fs</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">f1</span><span class="p">()</span>
 <span class="mi">1</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">f2</span><span class="p">()</span>
@@ -1103,7 +1107,7 @@ b</p>
 	<span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
 </code></pre></div></div>
 <p>从上面的例子中，我们可以总结一下匿名函数的定义形式:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">lambda</span> <span class="err">形参</span><span class="p">:</span><span class="err">返回值表达式</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">lambda</span> <span class="n">形参</span><span class="p">:</span><span class="n">返回值表达式</span>
 </code></pre></div></div>
 <p>其中关键字<strong>lambda</strong>表示匿名函数，冒号前面是形参，冒号后面就是返回值表达式。但是从上面的匿名函数定义形式我们就可以看出，匿名函数有个限制，就是它的返回值只能有一个，因为冒号后面只允许有一个返回值表达式。</p>
 
@@ -1120,16 +1124,16 @@ b</p>
 
 <p>函数对象有一个__name__属性，可以拿到函数的名字:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">now</span><span class="p">():</span>
-<span class="o">...</span>     <span class="k">print</span> <span class="s">'2015-07-20'</span>
-<span class="o">...</span> 
-<span class="o">&gt;&gt;&gt;</span> <span class="n">now</span><span class="o">.</span><span class="n">_name_</span>
+<span class="p">...</span>     <span class="k">print</span> <span class="s">'2015-07-20'</span>
+<span class="p">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">now</span><span class="p">.</span><span class="n">_name_</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
   <span class="n">File</span> <span class="s">"&lt;stdin&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="nb">AttributeError</span><span class="p">:</span> <span class="s">'function'</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s">'_name_'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">now</span><span class="o">.</span><span class="n">__name__</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">now</span><span class="p">.</span><span class="n">__name__</span>
 <span class="s">'now'</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">g</span> <span class="o">=</span> <span class="n">now</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="o">.</span><span class="n">__name__</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">g</span><span class="p">.</span><span class="n">__name__</span>
 <span class="s">'now'</span>
 </code></pre></div></div>
 <p>在这里要注意一点: “__name__“属性中“name”前面和后面均有<strong>两个英文下划线</strong>。</p>
@@ -1138,10 +1142,10 @@ b</p>
 
 <p>本质上，decorator就是一个返回函数的高阶函数。所以，我们要定义一个能打印日志的decorator，可定义如下:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">print</span> <span class="s">'call </span><span class="si">%</span><span class="s">s():'</span><span class="o">%</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
-<span class="o">...</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="n">wrapper</span>
+<span class="p">...</span>     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="p">...</span>         <span class="k">print</span> <span class="s">'call %s():'</span><span class="o">%</span><span class="p">(</span><span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
+<span class="p">...</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="n">wrapper</span>
 </code></pre></div></div>
 
 <p>观察上面的log，因它是一个decorator，所以接受一个函数作为参数，并返回一个函数。我们需要借助Python中的@语法，把decorator置于函数的定义处:</p>
@@ -1159,7 +1163,7 @@ b</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-            <span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s </span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">'%s %s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">wrapper</span>
     <span class="k">return</span> <span class="n">decorator</span>
@@ -1176,7 +1180,7 @@ b</p>
 <img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/decorator_analysis_process2.png" alt="decorator_analysis_process2" /></p>
 
 <p>以上两种decorator的定义都没有问题，但还差最后一步。因为我们讲了函数也是对象，它有__name__等属性，但你去看经过decorator装饰之后的函数，它们的__name__已经从原来的’now’变成了’wrapper’:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">now</span><span class="o">.</span><span class="n">__name__</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">now</span><span class="p">.</span><span class="n">__name__</span>
 <span class="s">'wrapper'</span>
 </code></pre></div></div>
 <p>因为返回的那个wrapper()函数名字就是’wrapper’，所以，需要把原始函数的__name__等属性复制到wrapper()函数中，否则，有些依赖函数签名的代码执行就会出错。</p>
@@ -1185,9 +1189,9 @@ b</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">functools</span>
 
 <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="o">@</span><span class="n">functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="o">@</span><span class="n">functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="k">print</span> <span class="s">'call </span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="k">print</span> <span class="s">'call %s():'</span> <span class="o">%</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrapper</span>
 </code></pre></div></div>
@@ -1196,9 +1200,9 @@ b</p>
 
 <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="o">@</span><span class="n">functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="o">@</span><span class="n">functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-            <span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s </span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">'%s %s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">wrapper</span>
     <span class="k">return</span> <span class="n">decorator</span>
@@ -1209,12 +1213,12 @@ b</p>
 
 <span class="n">now</span><span class="p">()</span>
 
-<span class="k">print</span> <span class="s">'now.__name__: </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">now</span><span class="o">.</span><span class="n">__name__</span>
+<span class="k">print</span> <span class="s">'now.__name__: %s'</span> <span class="o">%</span> <span class="n">now</span><span class="p">.</span><span class="n">__name__</span>
 </code></pre></div></div>
 <p>后者运行的结果为:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">execute</span> <span class="n">now</span><span class="p">():</span>
 <span class="mi">2015</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">20</span>
-<span class="n">now</span><span class="o">.</span><span class="n">__name__</span><span class="p">:</span> <span class="n">now</span>
+<span class="n">now</span><span class="p">.</span><span class="n">__name__</span><span class="p">:</span> <span class="n">now</span>
 </code></pre></div></div>
 
 <p><strong>import functools</strong>是导入functools模块。</p>
@@ -1223,11 +1227,11 @@ b</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">functools</span>
 
 <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="o">@</span><span class="n">functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="o">@</span><span class="n">functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s </span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="p">(</span><span class="s">'begin call'</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">'%s %s():'</span> <span class="o">%</span> <span class="p">(</span><span class="s">'begin call'</span><span class="p">,</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
         <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-	<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s </span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="p">(</span><span class="s">'end call'</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+	<span class="k">print</span> <span class="s">'%s %s():'</span> <span class="o">%</span> <span class="p">(</span><span class="s">'end call'</span><span class="p">,</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">wrapper</span>
 
 <span class="o">@</span><span class="n">log</span>
@@ -1259,12 +1263,12 @@ now.<strong>name</strong>: now</p>
 
 <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-        <span class="o">@</span><span class="n">functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="o">@</span><span class="n">functools</span><span class="p">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
 			<span class="k">if</span> <span class="n">text</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
-				<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+				<span class="k">print</span> <span class="s">'%s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
 			<span class="k">else</span><span class="p">:</span>
-				<span class="k">print</span> <span class="s">'</span><span class="si">%</span><span class="s">s </span><span class="si">%</span><span class="s">s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+				<span class="k">print</span> <span class="s">'%s %s():'</span> <span class="o">%</span> <span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
 			<span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">wrapper</span>
     <span class="k">return</span> <span class="n">decorator</span>
@@ -1307,14 +1311,14 @@ now1():
 </code></pre></div></div>
 <p>假设要转换大量的二进制字符串，每次都传入int(x, base=2)非常麻烦，于是，我们想到，可以定义一个int2()的函数，默认把base=2传进去:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">int2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="o">...</span>     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="o">...</span>
+<span class="p">...</span>     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">...</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">int2</span><span class="p">(</span><span class="s">'1000'</span><span class="p">)</span>
 <span class="mi">8</span>
 </code></pre></div></div>
 <p>functools.partial就是帮助我们创建一个偏函数的，不需要我们自己定义int2()，可以直接使用下面的代码创建一个新的函数int2:</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">functools</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">int2</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">int2</span> <span class="o">=</span> <span class="n">functools</span><span class="p">.</span><span class="n">partial</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">int2</span><span class="p">(</span><span class="s">'1000'</span><span class="p">)</span>
 <span class="mi">8</span>
 </code></pre></div></div>
@@ -1794,6 +1798,14 @@ now1():
         
         
         
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1819,10 +1831,6 @@ now1():
         
         
           <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
-        
-        
-        
-          <li class="nav-link"><a href="/category/linux/">Linux</a>
         
         
         
