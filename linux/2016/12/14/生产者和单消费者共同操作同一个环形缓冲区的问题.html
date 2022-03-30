@@ -42,11 +42,11 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER..." />
-  <meta property="og:url" content="http://flyflypeng.github.io" />
+  <meta property="og:url" content="https://flyflypeng.tech" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="http://flyflypeng.github.io/assets/instacode.png" />
+  <meta property="og:image" content="https://flyflypeng.tech/assets/instacode.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -57,16 +57,16 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="单生产者和单消费者共同操作同一个环形缓冲区的问题">
   <meta name="twitter:description" content="问题描述  本问题只针对单个生产者进程和单个消费者进程的问题进行讨论。  生产者进程和消费者进程之间通过共享内存的方式进行IPC通信。  环形缓冲区存放在共享内存中，并且环形缓冲区中环形缓冲单元的个数为 2^N 个（N为大于1的正整数），环形缓冲区的数据结构定义为：     #define RING_BUFFER...">
-  <meta name="twitter:image" content="http://flyflypeng.github.io/assets/instacode.png">
-  <meta name="twitter:url" content="http://flyflypeng.github.io">
+  <meta name="twitter:image" content="https://flyflypeng.tech/assets/instacode.png">
+  <meta name="twitter:url" content="https://flyflypeng.tech">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://flyflypeng.github.io/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://flyflypeng.github.io/feed.xml" />
+  <link rel="canonical" href="https://flyflypeng.tech/linux/2016/12/14/%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="https://flyflypeng.tech/feed.xml" />
 </head>
 
 
@@ -592,7 +592,7 @@
   
     
     
-      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=FlyFlyPeng"
+      <a href="//twitter.com/share?text=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=https%3A%2F%2Fflyflypeng.tech%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&via=flyflypeng_bear"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -607,20 +607,6 @@
     
     
     
-      <a href="//www.facebook.com/sharer.php?t=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&u=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
-        onclick="window.open(this.href, 'facebook-share', 'width=550,height=255');return false;">
-        <i class="fa fa-facebook-square fa-lg"></i>
-      </a>
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
     
     
     
@@ -632,34 +618,6 @@
     
     
     
-      <a href="//www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html"
-        onclick="window.open(this.href, 'linkedin-share', 'width=550,height=255');return false;">
-        <i class="fa fa-linkedin-square fa-lg"></i>
-      </a>
-    
-    
-    
-    
-  
-    
-    
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
-    
-    
-    
-      <a href="//www.pinterest.com/pin/create/button/?description=%E5%8D%95%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E5%8D%95%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B1%E5%90%8C%E6%93%8D%E4%BD%9C%E5%90%8C%E4%B8%80%E4%B8%AA%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA%E7%9A%84%E9%97%AE%E9%A2%98&url=http%3A%2F%2Fflyflypeng.github.io%2Flinux%2F2016%2F12%2F14%2F%25E7%2594%259F%25E4%25BA%25A7%25E8%2580%2585%25E5%2592%258C%25E5%258D%2595%25E6%25B6%2588%25E8%25B4%25B9%25E8%2580%2585%25E5%2585%25B1%25E5%2590%258C%25E6%2593%258D%25E4%25BD%259C%25E5%2590%258C%25E4%25B8%2580%25E4%25B8%25AA%25E7%258E%25AF%25E5%25BD%25A2%25E7%25BC%2593%25E5%2586%25B2%25E5%258C%25BA%25E7%259A%2584%25E9%2597%25AE%25E9%25A2%2598.html&media=http://flyflypeng.github.io/assets/instacode.png"
-        onclick="window.open(this.href, 'pinterest-share', 'width=550,height=255');return false;">
-        <i class="fa fa-pinterest-square fa-lg"></i>
-      </a>
     
     
     
@@ -1123,22 +1081,20 @@
       <p><strong>Contact</strong></p>
       <ul class="social-media-list">
         <li>
-          <a href="mailto:woshijpf@zju.com">
+          <a href="mailto:flyflyflypeng@gmail.com">
             <i class="fa fa-envelope-o"></i>
-            <span class="username">woshijpf@zju.com</span>
+            <span class="username">flyflyflypeng@gmail.com</span>
           </a>
         </li>
 
         
           
           <li>
-            <a href="https://twitter.com/FlyFlyPeng" title="Follow me on Twitter">
+            <a href="https://twitter.com/flyflypeng_bear" title="Follow me on Twitter">
               <i class="fa fa-twitter"></i>
-              <span class="username">FlyFlyPeng</span>
+              <span class="username">flyflypeng_bear</span>
             </a>
           </li>
-          
-        
           
         
           
@@ -1152,26 +1108,8 @@
         
           
           <li>
-            <a href="https://www.linkedin.com/in/%E9%B9%8F%E9%A3%9E-%E5%A7%9C-683b03130/" title="Connect with me on LinkedIn">
-              <i class="fa fa-linkedin"></i>
-              <span class="username">FlyFlyPeng</span>
-            </a>
-          </li>
-          
-        
-          
-          <li>
             <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
               <i class="fa fa-instagram"></i>
-              <span class="username">FlyFlyPeng</span>
-            </a>
-          </li>
-          
-        
-          
-          <li>
-            <a href="https://www.pinterest.com/flyflypeng/" title="Follow me on Pinterest">
-              <i class="fa fa-pinterest"></i>
               <span class="username">FlyFlyPeng</span>
             </a>
           </li>
