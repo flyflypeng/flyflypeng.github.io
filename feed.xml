@@ -6,9 +6,272 @@
 </description>
     <link>https://flyflypeng.tech/</link>
     <atom:link href="https://flyflypeng.tech/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 01 Apr 2022 00:08:02 +0800</pubDate>
-    <lastBuildDate>Fri, 01 Apr 2022 00:08:02 +0800</lastBuildDate>
+    <pubDate>Sat, 23 Apr 2022 12:31:40 +0800</pubDate>
+    <lastBuildDate>Sat, 23 Apr 2022 12:31:40 +0800</lastBuildDate>
     <generator>Jekyll v4.2.2</generator>
+    
+      <item>
+        <title>kata-containers 2.x 版本安装运行</title>
+        <description>&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+
+&lt;p&gt;家里的电脑重装了系统，原来环境上的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kata-containers 1.x&lt;/code&gt;版本也没有了，所以趁着这个机会就鼓捣一下在新的Ubuntu 20.04系统上安装一个最新的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kata-containers 2.4.0&lt;/code&gt;版本。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;kata社区推荐从Linux发行版的软件源中安装kata安全容器组件，但是社区只提供了CentOS 8 和 Fedora 34 以上版本配套的官方软件安装包：&lt;a href=&quot;https://github.com/kata-containers/kata-containers/tree/main/docs/install#official-packages&quot;&gt;Official packages&lt;/a&gt;
+Ubuntu系统可以采用Snap包管理器进行安装：&lt;a href=&quot;https://github.com/kata-containers/kata-containers/tree/main/docs/install#snap-installation&quot;&gt;Snap Installation&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;上述官方推荐的方法都是简单的一键安装方式，如果想弄清楚kata软件安装包中有什么文件内容，建议直接下载社区发布已经预编译好的二进制安装包进行手动安装。所以，本文中主要介绍的是如何在一台Ubuntu系统中安装kata-containers 2.x版本二进制软件包。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;注意：kata官方社区提供的只有x86架构预编译好的二进制压缩包，如果你的机器arm64架构版本，那么你只能参考社区的编译方法手动编译安装了。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;安装准备&quot;&gt;安装准备&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;1. 准备一台Linux系统的物理机，Ubuntu、openEuler、CentOS等常见的Linux发行版系统都可以&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. 确保的你的机器环境上已经开启了BIOS中的硬件虚拟化加速支持&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;可以通过下面的命令来检查你物理机上的CPU是否是支持硬件虚拟化加速功能：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-E&lt;/span&gt;  &lt;span class=&quot;s1&quot;&gt;&apos;(vmx|svm)&apos;&lt;/span&gt; /proc/cpuinfo
+
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
+vmx flags	: vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple pml ept_mode_based_exec
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;如果输出的结果中包含&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vmx或svm&lt;/code&gt;，恭喜你的CPU支持硬件虚拟化能力。&lt;/p&gt;
+
+&lt;p&gt;检查完CPU是否支持硬件虚拟化能力之后，你还需要确认你物理机上的BIOS是否开启了硬件虚拟化能力。&lt;/p&gt;
+
+&lt;p&gt;开启的方法也非常简单，步骤如下：&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;根据机器所安装主板的厂商，搜索一下进入BIOS的按键上什么，一般都是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;F12&lt;/code&gt;、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ESC&lt;/code&gt;键等&lt;/li&gt;
+  &lt;li&gt;重启电脑，然后一直按住进入BIOS的按键，等待进入BIOS环境&lt;/li&gt;
+  &lt;li&gt;进入BIOS配置界面后，找到CPU处理器的设置界面，然后开启虚拟化技术支持。&lt;/li&gt;
+  &lt;li&gt;保存后退出，然后正常进入系统启动流程，启动系统&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;3. 加载KVM虚拟化模块&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在一般发行版系统中都保存有KVM内核模块文件，只需要手动加载一下即可：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;modprobe kvm kvm_intel
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;查看KVM模块是否加载到内核中了：&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo lsmod | grep kvm
+kvm_intel             303104  0
+kvm                   864256  1 kvm_intel
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;手动安装&quot;&gt;手动安装&lt;/h2&gt;
+
+&lt;h3 id=&quot;安装kata-containers二进制组件&quot;&gt;安装kata-containers二进制组件&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;1. 从&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kata-containers&lt;/code&gt;官方社区下载编译好的二进制压缩包&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;从下载链接页面中找到最新release的二进制压缩包即可
+下载链接：https://github.com/kata-containers/kata-containers/releases&lt;/p&gt;
+
+&lt;p&gt;下载图中红色框起来的压缩包：
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220422230322.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. 解压二进制软件包，并拷贝到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/opt/&lt;/code&gt;目录下&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;下载下来的二进制软件包采用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;xz&lt;/code&gt;命令进行解压，得到如下的目录和文件，其结构如下所示：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;tar&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-xf&lt;/span&gt; kata-static-2.4.0-x86_64.tar.xz
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls
+&lt;/span&gt;kata-static-2.4.0-x86_64.tar.xz  opt
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;tree &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; 4 ./opt/
+./opt/
+└── kata
+    ├── bin
+    │   ├── cloud-hypervisor
+    │   ├── containerd-shim-kata-v2
+    │   ├── firecracker
+    │   ├── jailer
+    │   ├── kata-collect-data.sh
+    │   ├── kata-monitor
+    │   ├── kata-runtime
+    │   └── qemu-system-x86_64
+    ├── libexec
+    │   └── kata-qemu
+    │       └── virtiofsd
+    └── share
+        ├── bash-completion
+        │   └── completions
+        ├── defaults
+        │   └── kata-containers
+        ├── kata-containers
+        │   ├── config-5.15.26
+        │   ├── kata-alpine-3.15.initrd
+        │   ├── kata-clearlinux-latest.image
+        │   ├── kata-containers-initrd.img -&amp;gt; kata-alpine-3.15.initrd
+        │   ├── kata-containers.img -&amp;gt; kata-clearlinux-latest.image
+        │   ├── vmlinux-5.15.26-90
+        │   ├── vmlinux.container -&amp;gt; vmlinux-5.15.26-90
+        │   ├── vmlinuz-5.15.26-90
+        │   └── vmlinuz.container -&amp;gt; vmlinuz-5.15.26-90
+        └── kata-qemu
+            └── qemu
+
+12 directories, 18 files
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;简要介绍一下上述各个目录中存放文件的作用：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata/bin&lt;/code&gt;：该目录下主要存放了kata运行时相关的二进制文件（例如最主要的二进制文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;containerd-shim-kata-v2&lt;/code&gt;）、虚拟化组件的二进制文件，例如&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;qemu-system-x86_64&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata/libexec/kata-qemu&lt;/code&gt;：该目录存放的是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;virtiofsd&lt;/code&gt;二进制文件，它的作用事在宿主机上作为virtiofs的后端，实现宿主机和安全容器虚拟机中之间目录文件的共享&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata/share/bash-completion&lt;/code&gt;：该目录下存放的就是bash环境中的自动补全脚本&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata/share/defaults/kata-containers/&lt;/code&gt;：该目录下存放的是kata-containers安全容器的配置文件&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;configuration.toml&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata/share/kata-containers/&lt;/code&gt;：该目录下存放的则是安全容器中Guest Kernel的裁剪的配置选项文件、Guest OS的initrd格式和image格式镜像，以及Guest Kernel的二进制文件&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata/share/kata-qemu/qemu&lt;/code&gt;：该目录下主要存放了qemu虚拟化相关的bios二进制文件、firmware固件信息&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;然后，把解压到当前目录下&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./opt/kata&lt;/code&gt;文件夹给移动到根目录下的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/opt/&lt;/code&gt;下面：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mv&lt;/span&gt; ./opt/kata /opt/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;3. 将&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;containerd-shim-kata-v2&lt;/code&gt;二进制软链接到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/local/bin/&lt;/code&gt;目录下，以便containerd容器引擎可以找到kata运行时对应的二进制文件&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo ln&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; /opt/kata/bin/containerd-shim-kata-v2 /usr/local/bin/containerd-shim-kata-v2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;安装和配置containerd容器引擎&quot;&gt;安装和配置containerd容器引擎&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;1. 安装containerd&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;由于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kata-containers 2.x&lt;/code&gt;版本已经不支持OCI Runtime Spec的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shimv1&lt;/code&gt;标准，因此需要通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;containerd&lt;/code&gt;容器引擎或者我们在openEuler上开源的&lt;a href=&quot;https://gitee.com/openeuler/iSulad&quot;&gt;iSulad&lt;/a&gt;容器引擎来支持&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Containerd-Shimv2&lt;/code&gt;接口标准。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我本地的环境上Ubuntu系统，并且我之前环境中已经装过了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Docker CE 20.10.14&lt;/code&gt;版本。由于在安装Docker软件包的同时，它也会安装好&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;containerd&lt;/code&gt;组件。&lt;/p&gt;
+
+&lt;p&gt;所以，这里建议你直接参考Docker官方的教程来安装Docker，顺便完成containerd组件的安装。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce&quot;&gt;Get Docker CE for Ubuntu&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. 修改containerd配置文件，支持kata运行时&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;containerd默认的配置文件路径：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/containerd/config.toml&lt;/code&gt;，将该文件中的内容修改为如下的内容，添加对于kata容器运行时的支持：&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cat /etc/containerd/config.toml
+#   Copyright 2018-2022 Docker Inc.
+
+#   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+
+#       http://www.apache.org/licenses/LICENSE-2.0
+
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+disabled_plugins = [&quot;cri&quot;]
+
+root = &quot;/var/lib/containerd&quot;
+state = &quot;/run/containerd&quot;
+subreaper = true
+oom_score = 0
+
+[grpc]
+  address = &quot;/run/containerd/containerd.sock&quot;
+  uid = 0
+  gid = 0
+
+#[debug]
+#  address = &quot;/run/containerd/debug.sock&quot;
+#  uid = 0
+#  gid = 0
+#  level = &quot;info&quot;
+
+[plugins]
+  [plugins.&quot;io.containerd.grpc.v1.cri&quot;]
+    [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd]
+      default_runtime_name = &quot;kata&quot;
+      [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes]
+        [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.kata]
+          runtime_type = &quot;io.containerd.kata.v2&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;注意：上面的containerd配置文件中，我已经把Docker安装包默认安装时配置的containerd.toml文件做了一些修改，把很多注释掉的配置选项都打开了。
+其中，关于kata容器运行时的配置主要集中在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[plugins]&lt;/code&gt;配置项中。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;3. 重启containerd系统服务&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;完成上述的配置之后，重启一下&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;containerd.service&lt;/code&gt;系统服务，使配置生效。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;systemctl restart containerd
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;systemctl status containerd.service
+● containerd.service - containerd container runtime
+     Loaded: loaded &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;/lib/systemd/system/containerd.service&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; enabled&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; vendor preset: enabled&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+     Active: active &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;running&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; since Fri 2022-04-22 21:52:39 CST&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; 1h 47min ago
+       Docs: https://containerd.io
+    Process: 388705 &lt;span class=&quot;nv&quot;&gt;ExecStartPre&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/sbin/modprobe overlay &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;exited, &lt;span class=&quot;nv&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0/SUCCESS&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+   Main PID: 388706 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;containerd&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      Tasks: 11
+     Memory: 19.0M
+     CGroup: /system.slice/containerd.service
+             └─388706 /usr/bin/containerd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;测试kata安全容器是否安装成功&quot;&gt;测试kata安全容器是否安装成功&lt;/h2&gt;
+
+&lt;p&gt;好了，通过上面的步骤我们已经在本地的机器上安装好kata安全容器的二进制软件包和containerd容器引擎，接下来我们通过下面的命令来验证一下安装的kata安全容器是否已经安装成功。&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ image&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;docker.io/library/busybox:latest&quot;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ctr image pull &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$image&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# 查看安全容器中Guest Kernel的版本号&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ctr run &lt;span class=&quot;nt&quot;&gt;--runtime&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;io.containerd.kata.v2&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$image&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; test-kata &lt;span class=&quot;nb&quot;&gt;uname&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;
+
+5.15.26
+
+&lt;span class=&quot;c&quot;&gt;# 查看物理机上安装的Linux内核版本号，两者不同则说明安全容器已经成功运行了&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;uname&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-r&lt;/span&gt;
+5.13.0-30-generic
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;另外，我们还可以启动一个kata安全容器，在宿主机上观察是否存在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;qemu&lt;/code&gt;进程：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ctr run &lt;span class=&quot;nt&quot;&gt;--runtime&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;io.containerd.kata.v2&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$image&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; test-kata &lt;span class=&quot;nb&quot;&gt;sleep &lt;/span&gt;999999
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ps &lt;span class=&quot;nt&quot;&gt;-ef&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;qemu
+root      395216  395206  0 23:47 ?        00:00:00 /opt/kata/libexec/kata-qemu/virtiofsd &lt;span class=&quot;nt&quot;&gt;--syslog&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;auto &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; no_posix_lock &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/run/kata-containers/shared/sandboxes/test-kata/shared &lt;span class=&quot;nt&quot;&gt;--fd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3 &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--thread-pool-size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; announce_submounts
+root      395223       1  1 23:47 ?        00:00:00 /opt/kata/bin/qemu-system-x86_64 &lt;span class=&quot;nt&quot;&gt;-name&lt;/span&gt; sandbox-test-kata &lt;span class=&quot;nt&quot;&gt;-uuid&lt;/span&gt; 9ecd8760-80dc-41c1-8e4e-58adc4f68079 &lt;span class=&quot;nt&quot;&gt;-machine&lt;/span&gt; q35,accel&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;kvm,kernel_irqchip&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on,nvdimm&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on &lt;span class=&quot;nt&quot;&gt;-cpu&lt;/span&gt; host,pmu&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;off &lt;span class=&quot;nt&quot;&gt;-qmp&lt;/span&gt; unix:/run/vc/vm/test-kata/qmp.sock,server&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on,wait&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;off &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 2048M,slots&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;10,maxmem&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;16688M &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; pci-bridge,bus&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;pcie.0,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;pci-bridge-0,chassis_nr&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1,shpc&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;off,addr&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2,io-reserve&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4k,mem-reserve&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1m,pref64-reserve&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1m &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; virtio-serial-pci,disable-modern&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;serial0 &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; virtconsole,chardev&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;charconsole0,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;console0 &lt;span class=&quot;nt&quot;&gt;-chardev&lt;/span&gt; socket,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;charconsole0,path&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/run/vc/vm/test-kata/console.sock,server&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on,wait&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;off &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; nvdimm,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;nv0,memdev&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;mem0,unarmed&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on &lt;span class=&quot;nt&quot;&gt;-object&lt;/span&gt; memory-backend-file,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;mem0,mem-path&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/opt/kata/share/kata-containers/kata-clearlinux-latest.image,size&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;134217728,readonly&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; virtio-scsi-pci,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;scsi0,disable-modern&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-object&lt;/span&gt; rng-random,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;rng0,filename&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/dev/urandom &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; virtio-rng-pci,rng&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;rng0 &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; vhost-vsock-pci,disable-modern&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;,vhostfd&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;vsock-3535502973,guest-cid&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3535502973 &lt;span class=&quot;nt&quot;&gt;-chardev&lt;/span&gt; socket,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;char-59c971d21afa49b1,path&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/run/vc/vm/test-kata/vhost-fs.sock &lt;span class=&quot;nt&quot;&gt;-device&lt;/span&gt; vhost-user-fs-pci,chardev&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;char-59c971d21afa49b1,tag&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;kataShared &lt;span class=&quot;nt&quot;&gt;-rtc&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;base&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;utc,driftfix&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;slew,clock&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;host &lt;span class=&quot;nt&quot;&gt;-global&lt;/span&gt; kvm-pit.lost_tick_policy&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;discard &lt;span class=&quot;nt&quot;&gt;-vga&lt;/span&gt; none &lt;span class=&quot;nt&quot;&gt;-no-user-config&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-nodefaults&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-nographic&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--no-reboot&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-daemonize&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-object&lt;/span&gt; memory-backend-file,id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;dimm1,size&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2048M,mem-path&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/dev/shm,share&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on &lt;span class=&quot;nt&quot;&gt;-numa&lt;/span&gt; node,memdev&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;dimm1 &lt;span class=&quot;nt&quot;&gt;-kernel&lt;/span&gt; /opt/kata/share/kata-containers/vmlinux-5.15.26-90 &lt;span class=&quot;nt&quot;&gt;-append&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;tsc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;reliable no_timer_check rcupdate.rcu_expedited&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 i8042.direct&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 i8042.dumbkbd&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 i8042.nopnp&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 i8042.noaux&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 noreplace-smp &lt;span class=&quot;nv&quot;&gt;reboot&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;k &lt;span class=&quot;nv&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;hvc0 &lt;span class=&quot;nv&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;hvc1 cryptomgr.notests net.ifnames&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0 &lt;span class=&quot;nv&quot;&gt;pci&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;lastbus&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0 &lt;span class=&quot;nv&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/dev/pmem0p1 &lt;span class=&quot;nv&quot;&gt;rootflags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;dax,data&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;ordered,errors&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;remount-ro ro &lt;span class=&quot;nv&quot;&gt;rootfstype&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;ext4 quiet systemd.show_status&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nv&quot;&gt;nr_cpus&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4 systemd.unit&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;kata-containers.target systemd.mask&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;systemd-networkd.service systemd.mask&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;systemd-networkd.socket scsi_mod.scan&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;none &lt;span class=&quot;nt&quot;&gt;-pidfile&lt;/span&gt; /run/vc/vm/test-kata/pid &lt;span class=&quot;nt&quot;&gt;-smp&lt;/span&gt; 1,cores&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1,threads&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1,sockets&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4,maxcpus&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;4
+root      395226  395216  0 23:47 ?        00:00:00 /opt/kata/libexec/kata-qemu/virtiofsd &lt;span class=&quot;nt&quot;&gt;--syslog&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;auto &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; no_posix_lock &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/run/kata-containers/shared/sandboxes/test-kata/shared &lt;span class=&quot;nt&quot;&gt;--fd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3 &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--thread-pool-size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; announce_submounts
+flyflyp+  395289  380349  0 23:47 pts/3    00:00:00 &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--color&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;auto &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.bzr &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;CVS &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.git &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.hg &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.svn &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.idea &lt;span class=&quot;nt&quot;&gt;--exclude-dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;.tox qemu
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;看来真的是通过qemu hypervisor把安全容器虚拟机给拉起来了，如果大家有兴趣，可以分析一下这个qemu进程中各个命令行参数的含义。&lt;/p&gt;
+
+&lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/kata-containers/kata-containers/blob/main/docs/install/container-manager/containerd/containerd-install.md&quot;&gt;Install Kata Containers with containerd&lt;/a&gt;
+&lt;a href=&quot;https://gitee.com/openeuler/iSulad/blob/master/docs/integration.md&quot;&gt;iSulad配置支持kata安全容器文档&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 22 Apr 2022 16:00:00 +0800</pubDate>
+        <link>https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html</link>
+        <guid isPermaLink="true">https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html</guid>
+        
+        <category>云原生</category>
+        
+        <category>kata-containers</category>
+        
+        <category>sandbox</category>
+        
+        
+        <category>云原生</category>
+        
+      </item>
     
       <item>
         <title>ptrace 系统调用拦截和模拟</title>
@@ -2755,356 +3018,6 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
         
         
         <category>linux</category>
-        
-      </item>
-    
-      <item>
-        <title>Linux 内核加载启动过程分析</title>
-        <description>&lt;p&gt;本文是基于 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Linux Kernel 4.4.49&lt;/code&gt; 版本内核源码中的 x86 32 位体系结构进行分析。&lt;/p&gt;
-
-&lt;h1 id=&quot;bios-传统模式下的-x86-pc-启动过程&quot;&gt;BIOS 传统模式下的 X86 PC 启动过程&lt;/h1&gt;
-
-&lt;h2 id=&quot;什么是-bios&quot;&gt;什么是 BIOS？&lt;/h2&gt;
-&lt;p&gt;简单来说 BIOS 也是一段程序代码，但是它比较特殊，它是 CPU 启动后执行的第一段代码，存储在 PC 设备中的只读存储器（ROM）中，主要完成检测内存、显卡等一系列硬件设备和建立中断向量表（IVT，Interrupt Vector Table）的工作。&lt;/p&gt;
-
-&lt;p&gt;ROM 其实也一块内存，它会被映射到 CPU 实模式下所能访问的 1MB 物理内存空间的顶部，即地址 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0xF000:0000 ~ 0xF000:FFFF&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;在这里补充一下， X86 处理器有两种运行模式一种是实模式，另外一种是保护模式，它们两者之间最主要的区别就是：实模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分段&lt;/strong&gt;方式（也就是&lt;strong&gt;段基址：段内便宜&lt;/strong&gt;），生成的是可以直接访问物理内存的&lt;strong&gt;物理地址&lt;/strong&gt;，而保护模式下 CPU 访问内存的地址采用的是&lt;strong&gt;分页&lt;/strong&gt;方式，生成的是&lt;strong&gt;虚拟地址&lt;/strong&gt;，不能直接访问物理内存，需要通过 &lt;strong&gt;MMU&lt;/strong&gt; 硬件将虚拟地址转换为物理地址后才能访问物理内存。&lt;/p&gt;
-
-&lt;p&gt;X86 实模式下物理内存映射空间结构如下图所示：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14983994852650.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;bios-启动过程&quot;&gt;BIOS 启动过程&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;当 X86 架构的 PC 在开机上电的一瞬间，CPU 中的 &lt;strong&gt;CS&lt;/strong&gt; 和 &lt;strong&gt;IP&lt;/strong&gt; 寄存器就被设置成了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0xF000:FFF0&lt;/code&gt;（这个地址就是 BIOS 代码所在内存区域），这个地址指向了 CPU 执行第一条指令的位置。而在这个地址里只存放了一条非常简单的跳转指令 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jmp far f000:e05b&lt;/code&gt;，然后程序就跳转到了 BIOS 代码中的另外一个地址 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;f000:e05b&lt;/code&gt; 处开始接着往下执行。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;接下来，BIOS 就马不停蹄地检测内存、显卡等外设信息，当硬件检测通过之后，就在内存的物理内存的起始位置 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x000 ~ 0x3FF&lt;/code&gt; （刚好 1KB 的内存空间)建立中断向量表（IVT），如上图物理内存最底部的所示。&lt;/p&gt;
-
-    &lt;p&gt;x86 中断向量表中有 256 个中断向量，每个中断向量用 4 个字节来表示（CS 用两个字节表示，IP 也用两个字节表示），通过中断向量中保存的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CS:IP&lt;/code&gt; 地址就可以跳转到对应的中断处理程序去处理中断请求信号。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;最后，BIOS 将&lt;strong&gt;启动磁盘&lt;/strong&gt;中的第 1 个扇区（MBR 扇区，Master Boot Record）的 512 个字节的数据加载到物理内存地址为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x7C00 ~ 0x7E00&lt;/code&gt; 的区域，然后程序就跳转到 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;0x7C00&lt;/code&gt; 处开始执行，至此，BIOS 就完成了所有的工作，将控制权转交到了 MBR 中的代码。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;mbr-扇区&quot;&gt;MBR 扇区&lt;/h2&gt;
-&lt;p&gt;MBR（Master Boot Record）扇区是启动磁盘中的第 1 个扇区，它主要由三部分组成：第一部分是一段引导程序，主要用来加载启动内核所需 Bootloader 程序；第二部分是当前启动磁盘的分区表；第三部分是标识 MBR 扇区的魔数 &lt;strong&gt;0x55&lt;/strong&gt; 和 &lt;strong&gt;0xAA&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;MBR 分区组成结构如下图所示：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984029056904.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;bootloader-加载程序&quot;&gt;Bootloader 加载程序&lt;/h2&gt;
-&lt;p&gt;Bootloader 是一段用来将 Linux Kernel 镜像文件加载到物理内存中指定地址的程序，这里所指的 Bootloader 是广义上概念，其实它还可以细分成两个独立的 bootloader：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;第一个 bootloader&lt;/strong&gt;：由 MBR 扇区中的前 446 个字节构成，作用是找到第二个 bootloader 并将其加载到物理内存中，并跳转到第二个 bootloader 中执行。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;第二个 bootloader&lt;/strong&gt;：这个 bootloader 位于启动盘中 MBR 扇区之后，根据 bootloader 代码的大小可能会占用一个或多个磁盘分区，它的主要作用就是找到磁盘中存放的 Linux Kernel 镜像文件以及 initrd 文件（如果在内核命令行参数中指定了的话），并将其加载到物理内存当中。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;注：initrd 是 initialized ram disk 的意思。主要用于加载硬件驱动模块，辅助内核的启动，挂载真正的根文件系统。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;上述这两个 bootloader 程序合在一起就构成了我们在 Linux 系统中经常用到的两个 Bootloader 程序，LILO（Linux Loader）或者是 GRUB（Grand Unified Boot Loader）。&lt;/p&gt;
-
-&lt;p&gt;GRUB 是我们现在 Linux 发行版系统中最常用到的 Bootloader，它的&lt;strong&gt;优势在于它可以识别 Linux 文件系统&lt;/strong&gt;，例如 ext3，ext4 格式的文件系统。不像 LILO 只能从原始的磁盘扇区中加载 Linux Kernel 镜像，GRUB 可以从 ext3 或者 ext4 格式文件系统的磁盘分区中加载 Linux Kernel 镜像。&lt;/p&gt;
-
-&lt;p&gt;总结一下 Bootloader 主要完成了下面几项工作：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;从 MBR 扇区中的第一个 bootloader 程序跳转实际执行内核加载操作的第二个 bootloder 程序。&lt;/li&gt;
-  &lt;li&gt;第二个 bootloder 程序查找 Linux Kernel 镜像在启动盘中的位置（要么存放磁盘中的固定位置，要么通过文件系统去解析）。&lt;/li&gt;
-  &lt;li&gt;将找到的 Linux Kernel 镜像和 initrd 文件加载到物理内存中的指定地址处，并建立运行内核的所需的基本环境。&lt;/li&gt;
-  &lt;li&gt;最后，Bootloader 就将控制权转交到 Linux 内核，然后由内核开始执行。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;x86 系统中 Bootloader 加载内核启动的过程，如下图所示：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984058448893.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;linux-kernel-镜像&quot;&gt;Linux Kernel 镜像&lt;/h1&gt;
-
-&lt;h2 id=&quot;linux-kernel-镜像格式&quot;&gt;Linux Kernel 镜像格式&lt;/h2&gt;
-&lt;p&gt;Linux 内核有多种格式的镜像，例如 vmlinux、Image、zImage、bzImage、uImage、xipImage、bootpImage 等。&lt;/p&gt;
-
-&lt;h3 id=&quot;vmlinux&quot;&gt;vmlinux&lt;/h3&gt;
-&lt;p&gt;vmlinux 是可引导的、未压缩、可压缩的内核镜像，vm 代表&lt;strong&gt;Virtual Memory&lt;/strong&gt;，Linux 支持虚拟内存，因此得名 vm。它是由用户对内核源码编译得到，实质是 ELF 格式的文件，也就是说vmlinux 是编译出来的最原始的内核文件，未被压缩过。&lt;/p&gt;
-
-&lt;h3 id=&quot;image&quot;&gt;Image&lt;/h3&gt;
-&lt;p&gt;Image是经过 &lt;strong&gt;objcopy&lt;/strong&gt; 处理的只包含二进制数据的内核代码，它已经不是 ELF 格式了，但这种格式的内核镜像还没有经过压缩。&lt;/p&gt;
-
-&lt;p&gt;objcopy 工具的作用是拷贝一个目标文件的内容到另一个目标文件中，也就是说，可以将一种格式的目标文件转换成另一种格式的目标文件。通过使用 binary 作为输出目标(-o binary)，可产生一个原始的二进制文件，实质上是将所有的符号和重定位信息都将被抛弃，只剩下二进制数据。&lt;/p&gt;
-
-&lt;h3 id=&quot;zimage&quot;&gt;zImage&lt;/h3&gt;
-&lt;p&gt;zImage 是 ARM Linux 常用的一种压缩镜像文件，它是由vmlinux 加上&lt;strong&gt;解压代码&lt;/strong&gt;经 gzip 压缩而成，命令格式是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make zImage&lt;/code&gt;，这种格式的 Linux 内核镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
-
-&lt;h3 id=&quot;bzimage&quot;&gt;bzImage&lt;/h3&gt;
-&lt;p&gt;bzImage 不是用 bzip2 压缩的，&lt;strong&gt;bz 表示 big zImage&lt;/strong&gt;,其格式与 zImage 类似，但采用了不同的压缩算法，注意，bzImage 的压缩率更高是压缩的内核映像。&lt;/p&gt;
-
-&lt;p&gt;zImage vs bzImage：它们不仅是一个压缩文件，而且在这两个文件的开头部分内嵌有解压缩代码。两者的&lt;strong&gt;不同之处&lt;/strong&gt;在于，老的&lt;strong&gt;zImage 解压缩内核到低端内存&lt;/strong&gt;(第一个 640K)，&lt;strong&gt;bzImage解压缩内核到高端内存(1M以上)&lt;/strong&gt;。如果内核比较小，那么可以采用 zImage 或 bzImage 之一，两种方式引导的系统运行时是相同的。大的内核采用 bzImage，不能采用 zImage。&lt;/p&gt;
-
-&lt;h3 id=&quot;uimage&quot;&gt;uImage&lt;/h3&gt;
-&lt;p&gt;uImage 是 uboot 专用的镜像文件，它是在 zImage 之前加上一个长度为&lt;strong&gt;0x40&lt;/strong&gt;的头信息(tag)，在头信息内说明了该镜像文件的类型、加载 位置、生成时间、大小等信息。换句话说，若直接从 uImage 的0x40位置开始执行，则 zImage 和 uImage 没有任何区别，命令格式是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make uImage&lt;/code&gt;，这种格式的 Linux 镜像文件多存放在 NAND Flash 上。&lt;/p&gt;
-
-&lt;h3 id=&quot;xipimage&quot;&gt;xipImage&lt;/h3&gt;
-&lt;p&gt;这种格式的 Linux 镜像文件多存放在 NOR Flash 上，且运行时不需要拷贝到内存 SDRAM 中，可以直接在 NOR Flash 中运行。&lt;/p&gt;
-
-&lt;p&gt;有关 NOR Flash 和 NAND Flash 的概念和区别可以参靠下面这篇文章：&lt;a href=&quot;http://blog.csdn.net/shuaishuai80/article/details/6202205&quot;&gt;NorFlash和NandFlash区别&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;linux-kernel-镜像生成过程&quot;&gt;Linux Kernel 镜像生成过程&lt;/h2&gt;
-&lt;p&gt;一个可以被&lt;strong&gt;加载启动&lt;/strong&gt;的 Linux 内核镜像除了包含上面介绍的最基本的压缩或者未被压缩的编译好的 Linux Kernel 镜像目标文件之外，还包含一个文件头部分和末尾的CRC校验码部分，它的结构如下图所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/Linux-kernel-boot-image.png&quot; alt=&quot;Linux-kernel-boot-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：如上图所示的内核镜像中，&lt;strong&gt;boot/setup.bin&lt;/strong&gt; 是实模式下执行的代码，&lt;strong&gt;boo/vmlinux.bin&lt;/strong&gt; 则是保护模式下执行的代码。&lt;/p&gt;
-
-&lt;p&gt;例如，在内核从 &lt;strong&gt;vmlinux&lt;/strong&gt; 文件编译生成 &lt;strong&gt;bzImage&lt;/strong&gt; 内核镜像文件的过程如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;MKPIGGY &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/compressed/piggy.S
-  AS      &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/compressed/piggy.o &lt;span class=&quot;c&quot;&gt;# 编译 arch/x86/boot/compressed/piggy.S&lt;/span&gt;
-  LD      &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/compressed/vmlinux &lt;span class=&quot;c&quot;&gt;# 将 piggy.o 和 vmlinux 链接在一起生成 vmlinux.bin&lt;/span&gt;
-  ZOFFSET &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/zoffset.h
-  OBJCOPY &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/vmlinux.bin &lt;span class=&quot;c&quot;&gt;# 使用 objcopy 命令去除 vmlinux 中的符号表信息&lt;/span&gt;
-  AS      &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/header.o &lt;span class=&quot;c&quot;&gt;# 汇编 arch/x86/boot/header.S 文件&lt;/span&gt;
-  LD      &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/setup.elf &lt;span class=&quot;c&quot;&gt;# 链接 setup.elf 文件和 header.o 文件生成 setup.bin 文件&lt;/span&gt;
-  OBJCOPY &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/setup.bin
-  BUILD   &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/bzImage &lt;span class=&quot;c&quot;&gt;# 最后将 vmlinux.bin 和 setup.bin 文件链接到一起生成 bzImage 内核镜像文件&lt;/span&gt;
-Setup is 15612 bytes &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;padded to 15872 bytes&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
-System is 6254 kB
-CRC 88b350d1 &lt;span class=&quot;c&quot;&gt;#生成 CRC 校验码，添加到bzImage 内核镜像的末尾&lt;/span&gt;
-Kernel: &lt;span class=&quot;nb&quot;&gt;arch&lt;/span&gt;/x86/boot/bzImage is ready  &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;#1)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;整个从 vmlinux 内核镜像文件生成一个可被加载启动的内核镜像文件的过程可以用下面这张图来描述：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984462874879.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;有关 x86 架构 Linux Kernel 启动相关的具体细节可以查看内核源码中的文档：&lt;a href=&quot;https://www.kernel.org/doc/Documentation/x86/boot.txt&quot;&gt;THE LINUX/x86 BOOT PROTOCOL&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;linux-kernel-加载过程&quot;&gt;Linux Kernel 加载过程&lt;/h2&gt;
-
-&lt;p&gt;Bootloader 将内核镜像加载到物理内存之后，内存的布局如下所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984488084415.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;整个Linux Kernel 的加载过程就是对 Linux Kernel 镜像分阶段加载，然后在实模式中进行一些基本硬件的设置，建立页表等操作之后，跳转到保护模式下的内核入口开始执行。&lt;/p&gt;
-
-&lt;h2 id=&quot;实模式下内核加载过程&quot;&gt;实模式下内核加载过程&lt;/h2&gt;
-&lt;p&gt;Bootloader 在找到内核镜像之后，第一步做的工作就是将内核镜像文件中的起始第一部分 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 加载到 &lt;strong&gt;0x7c00&lt;/strong&gt; 地址之上的物理内存中，然后跳转到 setup.bin 文件中的入口地址开始执行，注意这部分的代码是在&lt;strong&gt;实模式&lt;/strong&gt;下运行的。&lt;/p&gt;
-
-&lt;p&gt;如在 &lt;strong&gt;Linux Kernel 镜像生成过程&lt;/strong&gt; 小节中可启动的内核镜像图所示，boot/setup.bin 文件是由 &lt;strong&gt;boot sector&lt;/strong&gt;（注意这个 boot sector 和 MBR 扇区是不一样的，是内核中遗留下来的一块地方，现在基本不怎么使用这块地方了，可能在其他体系架构的内核镜像中会使用这一部分来存储一些参数） 和 &lt;strong&gt;setup 代码&lt;/strong&gt; 组成，其中 boot sector 占用了 512 字节的空间。&lt;/p&gt;
-
-&lt;p&gt;实模式设置（setup）阶段主要完成一些&lt;strong&gt;体系结构相关的硬件初始化工作&lt;/strong&gt;，涉及的文件有 &lt;em&gt;arch/x86/boot/header.S&lt;/em&gt;、链接脚本&lt;em&gt;setup.ld&lt;/em&gt;、&lt;em&gt;arch/x86/boot/main.c&lt;/em&gt;。header.S 第一部分定义了 .bstext、.bsdata、.header 这 3 个节，共同构成了vmlinuz 的第一个512字节(即引导扇区的内容)。常量 BOOTSEG 和SYSSEG 定义了引导扇区和内核的载入的地址。&lt;/p&gt;
-
-&lt;p&gt;header.S 文件中的部分代码如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;BOOTSEG     = 0x07C0        /* original address of boot-sector */
-SYSSEG      = 0x1000        /* historical load address &amp;gt;&amp;gt; 4 */
-
-......
-
-    .code16
-    .section &quot;.bstext&quot;, &quot;ax&quot; /* .bstext 小节 */
-
-    .global bootsect_start
-bootsect_start:
-#ifdef CONFIG_EFI_STUB
-    # &quot;MZ&quot;, MS-DOS header
-    .byte 0x4d
-    .byte 0x5a
-#endif
-
-    # Normalize the start address
-    ljmp    $BOOTSEG, $start2
-
-start2:
-    movw    %cs, %ax
-    movw    %ax, %ds
-    movw    %ax, %es
-    movw    %ax, %ss
-    xorw    %sp, %sp
-    sti
-    cld
-
-    movw    $bugger_off_msg, %si
-    
-......
-
-.section &quot;.bsdata&quot;, &quot;a&quot; /* .bsdata 小节 */
-bugger_off_msg:
-    .ascii  &quot;Use a boot loader.\r\n&quot;
-    .ascii  &quot;\n&quot;
-    .ascii  &quot;Remove disk and press any key to reboot...\r\n&quot;
-    .byte   0
-    
-......
-
-# Kernel attributes; used by setup.  This is part 1 of the
-    # header, from the old boot sector.
-
-    .section &quot;.header&quot;, &quot;a&quot; /* .header 小节 */
-    .globl  sentinel
-sentinel:   .byte 0xff, 0xff        /* Used to detect broken loaders */
-
-    .globl  hdr
-hdr:
-setup_sects:    .byte 0         /* Filled in by build.c */
-root_flags: .word ROOT_RDONLY
-syssize:    .long 0         /* Filled in by build.c */
-ram_size:   .word 0         /* Obsolete */
-vid_mode:   .word SVGA_MODE
-root_dev:   .word 0         /* Filled in by build.c */
-boot_flag:  .word 0xAA55
-
-/*---------------------512 字节偏移处-----------------------------*/
-
-/* _start 位置是内核装载时实模式执行代码的入口地址
-    这一点我们可以从 setup.ld 脚本文件中的 ENTRY(_start) 
-    得知
- */
-/* 从 _start 开始真正的进入实模式开始执行 setup 代码 */
-# offset 512, entry point
-
-    .globl  _start
-_start:
-        # Explicitly enter this as bytes, or the assembler
-        # tries to generate a 3-byte jump here, which causes
-        # everything else to push off to the wrong offset.
-        .byte   0xeb        # short (2-byte) jump
-        .byte   start_of_setup-1f
-
-......
-
-# Zero the bss
-    movw    $__bss_start, %di
-    movw    $_end+3, %cx
-    xorl    %eax, %eax
-    subw    %di, %cx
-    shrw    $2, %cx
-    rep; stosl
-
-# Jump to C code (should not return)
-    calll   main
-
-# Setup corrupt somehow...
-setup_bad:
-    movl    $setup_corrupt, %eax
-    calll   puts
-    # Fall through...
-
-    .globl  die
-    .type   die, @function
-die:
-    hlt
-    jmp die
-
-    .size   die, .-die
-
-    .section &quot;.initdata&quot;, &quot;a&quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;setup.ld 链接脚本&lt;/strong&gt;的工作就是将 header.S 中的各个小节按照 ELF 可执行文件格式链接在一起，最终生成 &lt;strong&gt;boot/setup.bin&lt;/strong&gt;  文件，setup.ld 文件中的部分内容如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/*
- * setup.ld
- *
- * Linker script for the i386 setup code
- */
-OUTPUT_FORMAT(&quot;elf32-i386&quot;, &quot;elf32-i386&quot;, &quot;elf32-i386&quot;)
-OUTPUT_ARCH(i386)
-ENTRY(_start)
-
-SECTIONS
-{
-    . = 0;
-    .bstext     : { *(.bstext) }
-    .bsdata     : { *(.bsdata) }
-
-    . = 495;
-    .header     : { *(.header) }
-    .entrytext  : { *(.entrytext) }
-    .inittext   : { *(.inittext) }
-    .initdata   : { *(.initdata) }
-    __end_init = .;
-
-    .text       : { *(.text) }
-    .text32     : { *(.text32) }
-
-    . = ALIGN(16);
-    .rodata     : { *(.rodata*) }
-    
-    ......
-
-    . = ALIGN(16);
-    .data       : { *(.data*) }
-
-    .signature  : {
-        setup_sig = .;
-        LONG(0x5a5aaa55)
-    }
-    
-    ....
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;由 setup.ld 中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ENTRY(_start)&lt;/code&gt; 可知，&lt;strong&gt;header.S&lt;/strong&gt; 文件中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_start&lt;/code&gt; 汇编程序是 bzImage 内核映像开始执行的入口点，即引导扇区之后的开始处（偏移512字节处），它会准备大量的&lt;strong&gt;bootloader&lt;/strong&gt; 参数，最后的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;call main&lt;/code&gt; 跳转到 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/boot/main.c:main()&lt;/code&gt; 函数处执行，这就是众所周知的 main 函数，它们都工作在&lt;strong&gt;实模式&lt;/strong&gt;下。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;arch/x86/boot/main.c:main()&lt;/strong&gt; 函数主要完成的工作：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;copy_boot_params&lt;/code&gt; 函数把位于第一个扇区(boot/setup.bin 中的 boot sector)的参数复制到 &lt;strong&gt;boot_params&lt;/strong&gt; 变量中，boot_params 变量位于 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 的数据段。&lt;/li&gt;
-  &lt;li&gt;初始化早期启动状态下的控制台（console）。&lt;/li&gt;
-  &lt;li&gt;初始化堆空间。&lt;/li&gt;
-  &lt;li&gt;检测 CPU 相关信息。&lt;/li&gt;
-  &lt;li&gt;通过向 BIOS 查询的方式，收集硬件相关信息，并将结果存放在第 0 号物理页中。&lt;/li&gt;
-  &lt;li&gt;调用了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/boot/pm.c:go_to_protected_mode(void) ---&amp;gt; arch/x86/boot/pmjump.S:protected_mode_jump()&lt;/code&gt; 函数，从 bzImage 中的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;boot/setup.bin&lt;/code&gt; &lt;strong&gt;实模式部分&lt;/strong&gt;的代码跳转到了 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;boot/vmlinux.bin&lt;/code&gt; &lt;strong&gt;保护模式&lt;/strong&gt;的代码。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;保护模式下内核加载过程&quot;&gt;保护模式下内核加载过程&lt;/h2&gt;
-&lt;p&gt;执行完 &lt;strong&gt;boot/setup.bin&lt;/strong&gt; 部分的代码之后，Bootloader 就接着把内核镜像 bzImage 中的第二部分 &lt;strong&gt;boot/vmlinux.bin&lt;/strong&gt; 加载到物理内存中起始地址为 &lt;strong&gt;0x100000&lt;/strong&gt; 的位置，boot/vmlinux.bin 代码在&lt;strong&gt;保护模式&lt;/strong&gt;下的入口是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/boot/compressed/head_32.S::startup_32&lt;/code&gt; 汇编代码，这段汇编代码中主要完成两个工作：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;将 boot/vmlinux.bin 文件中解压内核的代码拷贝到物理内存中 boot/vmlinux.bin 的后面。&lt;/li&gt;
-  &lt;li&gt;初始化 stack 和 heap 空间。&lt;/li&gt;
-  &lt;li&gt;解压缩内核，解压缩后的内核就是我们从源码编译得到的 vmlinux ELF 可执行文件。&lt;/li&gt;
-  &lt;li&gt;如果有选项指定，可能还需要对解压后的内核地址进行一个重定位（Relocate）。&lt;/li&gt;
-  &lt;li&gt;最后，跳转到解压缩后的内核文件 vmlinux 中的入口函数开始启动内核。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;解压缩后的内核文件 vmlinux 的入口函数是 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;arch/x86/kernel/head_32.S::startup_32&lt;/code&gt; 中的startup_32（32位内核的入口函数），在这个函数中会拷贝 &lt;strong&gt;boot_params&lt;/strong&gt; 结构体变量以及&lt;strong&gt;boot_command_line&lt;/strong&gt;，初始化页表，开启分页机制。startup_32() 汇编代码会接着调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init/main.c:start_kernel()&lt;/code&gt; 函数，这是Linux 内核的启动函数。&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init/main.c&lt;/code&gt; 文件是整个 Linux 内核的中央联结点。每种体系结构都会执行一些底层设置函数，然后执行名为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;start_kernel&lt;/code&gt; 的函数（在 init/main.c 中可以找到这个函数）。可以认为 main.c 是内核的“粘合剂（glue）”，之前执行的代码都是&lt;strong&gt;各种体系结构相关&lt;/strong&gt;的代码，一旦到达&lt;strong&gt;start_kernel()&lt;/strong&gt;，就与体系结构无关了。&lt;/p&gt;
-
-&lt;p&gt;至此，Linux Kernel 的加载过程就分析完毕了，整个过程可以用下面这张图来总结一下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/14984654332695.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;参考文章&quot;&gt;参考文章&lt;/h1&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;http://linux-development-for-fresher.blogspot.com/2012/07/linux-boot-process-in-nutshell.html&quot;&gt;Linux Boot Process in a nutshell&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/efi-stub.txt&quot;&gt;The EFI Boot Stub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/efi-stub.txt&quot;&gt;Archlinux-EFISTUB&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.wowotech.net/armv8a_arch/UEFI.html&quot;&gt;ARM64的启动过程之（五）：UEFI&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface&quot;&gt;Unified Extensible Firmware Interface - ArchWiki&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://blog.woodelf.org/2014/05/28/uefi-boot-how-it-works.html&quot;&gt;UEFI 启动：实际工作原理&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.rodsbooks.com/efi-bootloaders/principles.html&quot;&gt;Managing EFI Boot Loaders for Linux:BasicPrinciples&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.csdn.net/duguteng/article/details/7552774&quot;&gt;x86中断向量表&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://wiki.osdev.org/Boot_Sequence&quot;&gt;Boot Sequence&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.linuxidc.com/Linux/2014-10/108033.htm&quot;&gt;Linux内核启动过程分析&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Tue, 27 Jun 2017 00:35:33 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E5%86%85%E6%A0%B8/2017/06/27/Linux-%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%88%86%E6%9E%90.html</guid>
-        
-        <category>内核</category>
-        
-        <category>操作系统</category>
-        
-        
-        <category>内核</category>
         
       </item>
     

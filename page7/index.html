@@ -432,6 +432,10 @@
           
         
           
+          <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -518,6 +522,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">Linux make 和 Makefile 详解</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>1. 前言 如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。 在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只需要一个命令”make”就可以完成编译、链接和运行。不过在使用”make”命令之前，我们需要完成一个叫做”Makefile”文件的编写，这个文件详细描述了我们整个工程该如何取编译、链接以及最后生成一个可执行的文件，以及这个过程中所需要依赖的文件和其他工具软件。 在介绍make和Makefile之前，我们来补充说明一下linux下一个简单C语言源程序的编译、链接的过程。 编译: 编译就是把文本形式的源代码翻译称为及其语言形式的目标文件的过程。 链接: 链接就是把目标文件和使用到的库文件进行组织，最终形成可执行代码的过程。 整个编译和链接的过程的图解如下: 从上图可知，整个代码编译的过程分为编译和链接两个阶段，其中编译对应的是大括号对应的部分，其余则是链接过程。 在这里我们还要特别说明一下linux中的库文件！ 库: 库是一组预先编译好的函数的集合，这些函数都是按照可重用的原则编写的。 在linux中库文件可以分为静态库和共享库(有的地方也叫做动态库)。 静态库: 它也称为归档文件(archive file)，按照惯例它们的文件都是以”.a”结尾，比如标准C语言函数库”/usr/lib/libc.a”。静态库在程序链接时会使用，链接器会将程序中使用到函数的代码从静态库文件中拷贝到应用程序中。一旦链接完成，在执行程序的时候就不需要静态库了。由于每个使用静态库的应用程序都需要拷贝所用到函数的代码，所以静态链接生成的可执行文件都会比较大。 共享库:...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">September 3, 2015</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/linux">Linux</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/24/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B03.html">Python 学习笔记（3）</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -591,28 +617,6 @@
     </section>
     <section class="post-meta">
       <div class="post-date">July 15, 2015</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/利器">利器</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2015/07/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8.html">Hexo博客搭建与使用</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>Hexo简介 Hexo是一款快速、简洁和高效的一款静态博客框架，它出自于台湾的一名大学生Tommy Chen之手。这款博客框架程序是基于Node.js开发的，它编译上百篇的博文也只仅仅需要几秒就可以了，非常快速。并且，Hexo也是一款非常受程序猿喜欢的博客搭建框架，它使用Markdown解析文章，同时你还可以将你的网站非常简单快速地部署到github page上。Hexo还具有非常丰富的插件系统，用户可以基于这些插件来做一些网站的扩展。 如果你觉得搭建的过程还是有些繁琐，但是当你一旦搭建完成之后，你用Hexo来发表你用Markdown写的文章，你就会觉得这是一件很轻松很舒服的事情。有关详情你可以进入Hexo的中文网站查看相关文档。 Hexo安装 系统环境 由于本人是一个程序猿，平时使用较多的是Linux操作系统，所以本文是基于Ubuntu 14.04 64位系统环境搭建的Hexo博客。如果你使用的是windows系统，那么请移步到文章末尾有关windows平台的安装教程的链接，点此跳转。 安装 在安装Hexo之前，我们首先需要安装下面的必备软件。 Node.js 安装Node.js，你可以点击上面的链接进入Node.js的官网，下载下源码自己手动编译安装，具体的步骤可以参见其文档。在安装完成Node.js之后，它自带了包管理器npm。最后一步，我们还需要确定一下我们的Node.js是否安装好了，我们可以通过以下的命令来测试Node.js是否安装成功。 如果出现了如上图所示的版本信息结果之后，则说明Node.js已经安装成功了。 Git Git 是由Linux之父Linus开发的一款分布式的代码管理工具，它能够很方便地管理本地的代码，而且还可以将本地代码提交到远程的github网站上进行代码托管。 Github是全球最大的代码托管网站，同时也是全球最大的开源软件托管网站，在这里我们可以寻找到许许多多非常优秀的开源软件。除了代码托管的功能之外，github网站还推出了github pages的功能。Github...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">July 13, 2015</div>
       <div class="post-categories">
       in 
         
@@ -989,6 +993,10 @@
         
         
           <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
         
         
         

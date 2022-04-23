@@ -6,9 +6,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>May the force be with you</title>
+  <title>kata-containers 2.x 版本安装运行</title>
   <meta name="description"
-    content="May the force be with youLinux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  udev: Device Manager for the Linux Kern...">
+    content="概述家里的电脑重装了系统，原来环境上的kata-containers 1.x版本也没有了，所以趁着这个机会就鼓捣一下在新的Ubuntu 20.04系统上安装一个最新的kata-containers 2.4.0版本。  kata社区推荐从Linux发行版的软件源中安装kata安全容器组件，但是社区只提供了CentO...">
   
   <meta name="author" content="Pengfei Jiang">
   <meta name="copyright" content="&copy; Pengfei Jiang 2022">
@@ -44,13 +44,13 @@
   
   <!-- Facebook OGP cards -->
   <meta property="og:description"
-    content="May the force be with youLinux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  udev: Device Manager for the Linux Kern..." />
+    content="概述家里的电脑重装了系统，原来环境上的kata-containers 1.x版本也没有了，所以趁着这个机会就鼓捣一下在新的Ubuntu 20.04系统上安装一个最新的kata-containers 2.4.0版本。  kata社区推荐从Linux发行版的软件源中安装kata安全容器组件，但是社区只提供了CentO..." />
   <meta property="og:url" content="https://flyflypeng.tech" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
-  <meta property="og:title" content="May the force be with you" />
+  <meta property="og:title" content="kata-containers 2.x 版本安装运行" />
   <meta property="og:type" content="website" />
   <meta property="og:image"
-    content="https://flyflypeng.techhttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg" />
+    content="https://flyflypeng.techhttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220423123102.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -59,11 +59,11 @@
   
   <!-- Twitter: card tags -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="May the force be with you">
+  <meta name="twitter:title" content="kata-containers 2.x 版本安装运行">
   <meta name="twitter:description"
-    content="May the force be with youLinux 系统编程  linux下的僵尸进程产生原因和解决方法（含具体代码）  普通线程和内核线程  libc、glibc和glib的关系  我从来没有真正明白：什么是POSIX？  udev: Device Manager for the Linux Kern...">
+    content="概述家里的电脑重装了系统，原来环境上的kata-containers 1.x版本也没有了，所以趁着这个机会就鼓捣一下在新的Ubuntu 20.04系统上安装一个最新的kata-containers 2.4.0版本。  kata社区推荐从Linux发行版的软件源中安装kata安全容器组件，但是社区只提供了CentO...">
   <meta name="twitter:image"
-    content="https://flyflypeng.techhttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg">
+    content="https://flyflypeng.techhttps://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220423123102.png">
   <meta name="twitter:url" content="https://flyflypeng.tech">
   
 
@@ -71,7 +71,7 @@
 
   <!-- Site styles -->
   <link rel="stylesheet" href=" /css/main.css">
-  <link rel="canonical" href="https://flyflypeng.tech/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html">
+  <link rel="canonical" href="https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html">
   <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="https://flyflypeng.tech /feed.xml" />
 
   <!-- Google analytics -->
@@ -503,10 +503,10 @@
     <div class="page-content">
         <div class="post">
 
-<div class="post-header-container has-cover" style="background-image: url(https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/IMG_20200627_095427-01.jpeg);">
+<div class="post-header-container has-cover" style="background-image: url(https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220423123102.png);">
   <div class="scrim has-cover">
     <header class="post-header">
-      <h1 class="title">May the force be with you</h1>
+      <h1 class="title">kata-containers 2.x 版本安装运行</h1>
       <p class="info">by <strong>FlyFlyPeng</strong></p>
     </header>
   </div>
@@ -517,251 +517,269 @@
 
 
 <section class="post-meta">
-  <div class="post-date">July 10, 2020</div>
+  <div class="post-date">April 22, 2022</div>
   <div class="post-categories">
   in 
     
-    <a href="/category/学习&效率">学习&效率</a>
+    <a href="/category/云原生">云原生</a>
     
   
   </div>
 </section>
 
 <article class="post-content">
-  <h1 id="may-the-force-be-with-you">May the force be with you</h1>
+  <h2 id="概述">概述</h2>
 
-<iframe src="https://www.xmind.net/embed/ckdwBg/" width="750" height="630" frameborder="0" scrolling="no" allowfullscreen="true"></iframe>
+<p>家里的电脑重装了系统，原来环境上的<code class="language-plaintext highlighter-rouge">kata-containers 1.x</code>版本也没有了，所以趁着这个机会就鼓捣一下在新的Ubuntu 20.04系统上安装一个最新的<code class="language-plaintext highlighter-rouge">kata-containers 2.4.0</code>版本。</p>
 
-<h2 id="linux-系统编程">Linux 系统编程</h2>
+<blockquote>
+  <p>kata社区推荐从Linux发行版的软件源中安装kata安全容器组件，但是社区只提供了CentOS 8 和 Fedora 34 以上版本配套的官方软件安装包：<a href="https://github.com/kata-containers/kata-containers/tree/main/docs/install#official-packages">Official packages</a>
+Ubuntu系统可以采用Snap包管理器进行安装：<a href="https://github.com/kata-containers/kata-containers/tree/main/docs/install#snap-installation">Snap Installation</a></p>
+</blockquote>
 
-<ul>
-  <li><a href="https://blog.csdn.net/LEON1741/article/details/78142269">linux下的僵尸进程产生原因和解决方法（含具体代码）</a></li>
-  <li><a href="https://www.cnblogs.com/alantu2018/p/8526916.html">普通线程和内核线程</a></li>
-  <li><a href="https://blog.csdn.net/yasi_xi/article/details/9899599">libc、glibc和glib的关系</a></li>
-  <li><a href="https://cloud.tencent.com/developer/ask/26856">我从来没有真正明白：什么是POSIX？</a></li>
-  <li><a href="https://insujang.github.io/2018-11-27/udev-device-manager-for-the-linux-kernel-in-userspace/">udev: Device Manager for the Linux Kernel in Userspace</a></li>
-</ul>
+<p>上述官方推荐的方法都是简单的一键安装方式，如果想弄清楚kata软件安装包中有什么文件内容，建议直接下载社区发布已经预编译好的二进制安装包进行手动安装。所以，本文中主要介绍的是如何在一台Ubuntu系统中安装kata-containers 2.x版本二进制软件包。</p>
 
-<h3 id="编译--链接">编译 &amp; 链接</h3>
+<blockquote>
+  <p>注意：kata官方社区提供的只有x86架构预编译好的二进制压缩包，如果你的机器arm64架构版本，那么你只能参考社区的编译方法手动编译安装了。</p>
+</blockquote>
 
-<ul>
-  <li><a href="http://chemiandy.lofter.com/post/1d254b22_69a16af">Linux库文件搜索路径</a></li>
-  <li><a href="https://tech.meituan.com/2015/01/22/linker.html">高级语言的编译：链接及装载过程介绍</a></li>
-  <li><a href="https://itbilu.com/linux/management/V1vdnt9ll.html">Linux升级安装GCC</a></li>
-  <li><a href="https://itbilu.com/linux/management/NymXRUieg.html">解决类似 /usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.21’ not found 的问题</a></li>
-</ul>
+<h2 id="安装准备">安装准备</h2>
 
-<h3 id="网络">网络</h3>
+<p><strong>1. 准备一台Linux系统的物理机，Ubuntu、openEuler、CentOS等常见的Linux发行版系统都可以</strong></p>
 
-<ul>
-  <li><a href="https://github.com/zqjflash/tcp-ip-protocol">TCP（传输控制协议）</a></li>
-  <li><a href="https://e-mailky.github.io/2017-02-14-netlink-user-kernel1">用户空间和内核空间通讯–netlink</a></li>
-  <li><a href="https://stephanietang.github.io/2020/04/19/how-https-works/">HTTPS的工作原理</a></li>
-</ul>
+<p><strong>2. 确保的你的机器环境上已经开启了BIOS中的硬件虚拟化加速支持</strong></p>
 
-<h2 id="操作系统">操作系统</h2>
+<p>可以通过下面的命令来检查你物理机上的CPU是否是支持硬件虚拟化加速功能：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">grep</span> <span class="nt">-E</span>  <span class="s1">'(vmx|svm)'</span> /proc/cpuinfo
 
-<h3 id="操作系统发行版">操作系统发行版</h3>
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
+vmx flags	: vnmi preemption_timer invvpid ept_x_only ept_ad ept_1gb flexpriority tsc_offset vtpr mtf vapic ept vpid unrestricted_guest ple pml ept_mode_based_exec
+</code></pre></div></div>
 
-<ul>
-  <li><a href="https://tlanyan.me/yum-repos-summary/">常用yum源整理</a>：介绍了官方yum源和第三方yum源的区别和常用的yum源镜像地址</li>
-  <li><a href="https://juejin.im/post/5d0ef5376fb9a07ef63fe74e">CentOS 7上升级/安装gcc</a>：这篇文章介绍了如何通过<code class="language-plaintext highlighter-rouge">scl</code>工具更新gcc版本</li>
-  <li><a href="https://www.cnblogs.com/wswind/p/10729610.html">CentOS 使用第三方软件源 安装最新版本软件 省去编译烦恼 IUS SCL</a></li>
-  <li><a href="https://linux.cn/article-8509-1.html">CentOS 上最佳的第三方仓库</a></li>
-</ul>
+<p>如果输出的结果中包含<code class="language-plaintext highlighter-rouge">vmx或svm</code>，恭喜你的CPU支持硬件虚拟化能力。</p>
 
-<h2 id="计算机体系结构">计算机体系结构</h2>
+<p>检查完CPU是否支持硬件虚拟化能力之后，你还需要确认你物理机上的BIOS是否开启了硬件虚拟化能力。</p>
 
-<ul>
-  <li><a href="https://www.zhihu.com/question/23474438">处理器架构、指令集和汇编语言，三者有何关系？</a></li>
-</ul>
-
-<h2 id="虚拟化">虚拟化</h2>
-
-<ul>
-  <li><a href="http://smilejay.com/2012/11/how-to-mount-a-qcow2-image/">如何挂载QCOW2格式的镜像文件</a></li>
-  <li><a href="https://www.cnblogs.com/hugetong/p/5903105.html">挂载qcow2文件，qcow2里边还有个lvm</a></li>
-  <li><a href="https://www.infoq.cn/article/wcSmEKasstv*AdEPZE61">基于 Kata Containers 与 iSulad 的云容器实践解析</a></li>
-</ul>
-
-<h2 id="云原生">云原生</h2>
-
-<h3 id="serverless">Serverless</h3>
-
-<p><a href="http://liubin.org/blog/2018/05/04/the-world-is-full-managed/">世界是 container 的，也是 microservice 的，但最终还是 serverless 的</a></p>
-
-<h3 id="k8s">k8s</h3>
-
-<ul>
-  <li><a href="https://note.sycki.com/articles/kubernetes/k8s-code-kubelet">k8s源码分析-kubelet</a></li>
-  <li><a href="https://www.jianshu.com/p/1919fb8a48ea">Kubelet 对CNI的实现</a></li>
-  <li><a href="https://segmentfault.com/a/1190000019956620">彻底理解kubernetes CNI</a></li>
-</ul>
-
-<h3 id="容器">容器</h3>
-
-<ul>
-  <li><a href="https://tech.meituan.com/2020/03/12/cloud-native-security.html">云原生之容器安全实践</a></li>
-  <li><a href="https://segmentfault.com/a/1190000016137548">Dockerfile多阶段构建原理和使用场景</a></li>
-</ul>
-
-<h3 id="安全容器">安全容器</h3>
-
-<ul>
-  <li><a href="https://www.infoq.cn/article/wcSmEKasstv*AdEPZE61">基于 Kata Containers 与 iSulad 的云容器实践解析</a></li>
-  <li><a href="https://cloud.tencent.com/developer/news/604184">Kata Containers 创始人带你入门安全容器技术</a></li>
-</ul>
-
-<h2 id="利器">利器</h2>
-
-<ul>
-  <li><a href="https://www.cnblogs.com/hongdada/p/9776547.html">Typora快捷键</a></li>
-</ul>
-
-<h3 id="vscode">vscode</h3>
-
-<ul>
-  <li>
-    <p><a href="https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf">vscode快捷键速记表</a></p>
-  </li>
-  <li>
-    <p><a href="https://www.zhihu.com/question/37623310/answer/150017561">VS Code有哪些常用的快捷键？ - 唐伟的回答 - 知乎</a></p>
-  </li>
-  <li>
-    <p><a href="https://segmentfault.com/a/1190000017949680">宇宙最强vscode教程（基础篇）</a></p>
-  </li>
-  <li>
-    <p><strong>vscode常用快捷键</strong></p>
-
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">F12</code>：跳转到定义处</li>
-      <li><code class="language-plaintext highlighter-rouge">Shift + F12</code>：跳转到引用该函数的地方</li>
-      <li><code class="language-plaintext highlighter-rouge">Alt + &lt;左/右方向键&gt;</code>：跳转到上一次光标处/下一次光标处</li>
-      <li><code class="language-plaintext highlighter-rouge">Ctrl + P</code>窗口可以执行的操作：
-        <ul>
-          <li>直接输入文件名，快速打开文件</li>
-          <li>? 列出当前可执行的动作</li>
-          <li>! 显示Errors或Warnings，也可以Ctrl+Shift+M</li>
-          <li><code class="language-plaintext highlighter-rouge">:</code>跳转到行数，也可以<code class="language-plaintext highlighter-rouge">Ctrl+G</code>直接进入</li>
-          <li><code class="language-plaintext highlighter-rouge">@</code>跳转到symbol（搜索变量或者函数），也可以<code class="language-plaintext highlighter-rouge">Ctrl+Shift+O</code>直接进入</li>
-          <li><code class="language-plaintext highlighter-rouge">@:</code>根据分类跳转symbol，查找属性或函数，也可以<code class="language-plaintext highlighter-rouge">Ctrl+Shift+O</code>后输入<code class="language-plaintext highlighter-rouge">:</code>进入</li>
-          <li><code class="language-plaintext highlighter-rouge">#</code> 根据名字查找symbol，也可以<code class="language-plaintext highlighter-rouge">Ctrl+T</code></li>
-        </ul>
-      </li>
-      <li><code class="language-plaintext highlighter-rouge">Ctrl + K , Ctrl + S</code>：打开VScode绑定的快捷键列表，可以搜索快捷键</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="开发工具">开发工具</h3>
-
-<ul>
-  <li><a href="https://blog.csdn.net/zhangpower1993/article/details/52184581">vim插件管理器：Vundle的介绍及安装（很全）</a></li>
-  <li><a href="https://stedolan.github.io/jq/">json生成和解析命令行工具-jq</a></li>
-  <li><a href="https://blog.b1uew01f.net/learnnotes/linux/304.html">jq: shell 脚本中JSON创建、解析工具</a></li>
-  <li><a href="http://blog.lujun9972.win/blog/2018/03/01/使用jq组装json/index.html">使用jq组装JSON</a></li>
-</ul>
-
-<h2 id="编译原理">编译原理</h2>
-
-<ul>
-  <li><a href="https://www.infoq.cn/article/t184YFyd_VMEv0dIhpRd">不想当“螺丝钉”？先搞定编译原理</a></li>
-  <li><a href="https://www.infoq.cn/article/laTWH0UM4ZWWiTSAmrlR">2019 年最新编译原理学习全攻略</a></li>
-</ul>
-
-<h2 id="linux-内核">Linux 内核</h2>
-
-<ul>
-  <li><a href="http://www.wowotech.net/device_model/uevent.html">Linux设备模型(3)_Uevent</a></li>
-  <li><a href="https://www.jianshu.com/p/10653d83909d">Linux 设备模型之 Uevent</a></li>
-</ul>
-
-<h3 id="设备管理">设备管理</h3>
-
-<ul>
-  <li><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-udev/index.html">使用 udev 高效、动态地管理 Linux 设备文件</a>：设备文件创建/udev</li>
-  <li><a href="https://cloud.tencent.com/developer/article/1169495">udev和devfs的区别</a></li>
-  <li><a href="https://blog.csdn.net/longwang155069/article/details/52757592">devtmpfs文件系统创建设备节点</a></li>
-</ul>
-
-<h2 id="编程语言">编程语言</h2>
-
-<h3 id="rust">Rust</h3>
-
-<ul>
-  <li><a href="https://www.zhihu.com/question/31038569/answer/915365379">如何开始学习 Rust 语言? - 蒋古申的回答 - 知乎</a></li>
-  <li><a href="https://github.com/rcore-os/zCore">zCore-一个用Rust写的RISV的小型操作系统</a></li>
-  <li><a href="https://github.com/emosenkis/esp-rs/issues/10">解决rust nightly编译工具链问题-error: toolchain ‘nightly-x86_64-unknown-linux-gnu’ is not installed</a></li>
-  <li>Rust语言的开发迭代发布流程-<a href="https://kaisery.github.io/trpl-zh-cn/appendix-07-nightly-rust.html#%E9%99%84%E5%BD%95-grust-%E6%98%AF%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E7%9A%84%E4%B8%8E-nightly-rust">附录-grust-是如何开发的与-nightly-rust</a></li>
-</ul>
-
-<h3 id="golang">Golang</h3>
-
-<ul>
-  <li><a href="https://stackoverflow.com/questions/42848636/difference-between-golang-org-packages-and-the-standard-library">Difference between golang.org packages and the standard library</a></li>
-  <li><a href="https://www.bookstack.cn/books/qcrao-Go-Questions">Go 语言问题集(Go Questions)</a></li>
-</ul>
-
-<h3 id="webassembly">WebAssembly</h3>
-
-<ul>
-  <li><a href="https://rustwasm.github.io/docs/book/introduction.html#rust--and-webassembly-">Rust And WebAssembly</a></li>
-  <li><a href="https://developer.mozilla.org/zh-CN/docs/WebAssembly/Understanding_the_text_format">理解WebAssembly文本格式</a></li>
-  <li><a href="https://rustcc.cn/article?id=b8a26e3a-16f2-4657-acdb-dd64b3a6773c">【Rust每周一知】Rust, wasm, wasi 试玩儿</a></li>
-  <li><a href="https://github.com/rustcc/RustPrimer/blob/master/install/rustup.md">Rust 版本管理工具: rustup</a></li>
-</ul>
-
-<h2 id="调试">调试</h2>
-
-<h3 id="gdb调试方法">gdb调试方法</h3>
-
-<ul>
-  <li><a href="https://izualzhy.cn/why-the-code-stack-is-overflow">追core笔记之五：如何查看一个corrupt stack的core</a></li>
-  <li><a href="https://www.cnblogs.com/chengliangsheng/p/3597010.html">Linux中用gdb 查看代码堆栈的信息</a></li>
-  <li><a href="https://github.com/selfboot/CS_Offer/blob/master/C%2B%2B/GDB_Debug.md">使用 GDB 调试程序</a></li>
-  <li><a href="https://draveness.me/golang/">Go 语言设计与实现</a></li>
-</ul>
-
-<h3 id="debuginfo包">debuginfo包</h3>
-
-<ul>
-  <li><a href="[https://github.com/kulong0105/kulong0105.github.io/blob/master/documents/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3debuginfo.pdf](https://github.com/kulong0105/kulong0105.github.io/blob/master/documents/深入理解debuginfo.pdf)">深入理解debuginfo</a></li>
-</ul>
-
-<h2 id="软件开发流程">软件开发流程</h2>
-
-<h3 id="版本管理">版本管理</h3>
-
-<p><a href="https://semver.org/lang/zh-CN/">语义化版本 2.0.0</a>：语义化版本管理的方式，版本格式为：主版本号.次版本号.修订号</p>
-
+<p>开启的方法也非常简单，步骤如下：</p>
 <ol>
-  <li>主版本号：当你做了不兼容的 API 修改，</li>
-  <li>次版本号：当你做了向下兼容的功能性新增，</li>
-  <li>修订号：当你做了向下兼容的问题修正。</li>
+  <li>根据机器所安装主板的厂商，搜索一下进入BIOS的按键上什么，一般都是<code class="language-plaintext highlighter-rouge">F12</code>、<code class="language-plaintext highlighter-rouge">ESC</code>键等</li>
+  <li>重启电脑，然后一直按住进入BIOS的按键，等待进入BIOS环境</li>
+  <li>进入BIOS配置界面后，找到CPU处理器的设置界面，然后开启虚拟化技术支持。</li>
+  <li>保存后退出，然后正常进入系统启动流程，启动系统</li>
 </ol>
 
-<h2 id="问题定位">问题定位</h2>
+<p><strong>3. 加载KVM虚拟化模块</strong></p>
 
-<h3 id="内核">内核</h3>
+<p>在一般发行版系统中都保存有KVM内核模块文件，只需要手动加载一下即可：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>modprobe kvm kvm_intel
+</code></pre></div></div>
 
+<p>查看KVM模块是否加载到内核中了：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo lsmod | grep kvm
+kvm_intel             303104  0
+kvm                   864256  1 kvm_intel
+</code></pre></div></div>
+
+<h2 id="手动安装">手动安装</h2>
+
+<h3 id="安装kata-containers二进制组件">安装kata-containers二进制组件</h3>
+
+<p><strong>1. 从<code class="language-plaintext highlighter-rouge">kata-containers</code>官方社区下载编译好的二进制压缩包</strong></p>
+
+<p>从下载链接页面中找到最新release的二进制压缩包即可
+下载链接：https://github.com/kata-containers/kata-containers/releases</p>
+
+<p>下载图中红色框起来的压缩包：
+<img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220422230322.png" alt="" /></p>
+
+<p><strong>2. 解压二进制软件包，并拷贝到<code class="language-plaintext highlighter-rouge">/opt/</code>目录下</strong></p>
+
+<p>下载下来的二进制软件包采用<code class="language-plaintext highlighter-rouge">xz</code>命令进行解压，得到如下的目录和文件，其结构如下所示：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-xf</span> kata-static-2.4.0-x86_64.tar.xz
+
+<span class="nv">$ </span><span class="nb">ls
+</span>kata-static-2.4.0-x86_64.tar.xz  opt
+
+<span class="nv">$ </span>tree <span class="nt">-L</span> 4 ./opt/
+./opt/
+└── kata
+    ├── bin
+    │   ├── cloud-hypervisor
+    │   ├── containerd-shim-kata-v2
+    │   ├── firecracker
+    │   ├── jailer
+    │   ├── kata-collect-data.sh
+    │   ├── kata-monitor
+    │   ├── kata-runtime
+    │   └── qemu-system-x86_64
+    ├── libexec
+    │   └── kata-qemu
+    │       └── virtiofsd
+    └── share
+        ├── bash-completion
+        │   └── completions
+        ├── defaults
+        │   └── kata-containers
+        ├── kata-containers
+        │   ├── config-5.15.26
+        │   ├── kata-alpine-3.15.initrd
+        │   ├── kata-clearlinux-latest.image
+        │   ├── kata-containers-initrd.img -&gt; kata-alpine-3.15.initrd
+        │   ├── kata-containers.img -&gt; kata-clearlinux-latest.image
+        │   ├── vmlinux-5.15.26-90
+        │   ├── vmlinux.container -&gt; vmlinux-5.15.26-90
+        │   ├── vmlinuz-5.15.26-90
+        │   └── vmlinuz.container -&gt; vmlinuz-5.15.26-90
+        └── kata-qemu
+            └── qemu
+
+12 directories, 18 files
+</code></pre></div></div>
+
+<p>简要介绍一下上述各个目录中存放文件的作用：</p>
 <ul>
-  <li><a href="https://github.com/xry111/xry111.github.io/blob/master/FixWrongIRQRouting.md">错误的 IRQ 中断路由及修复</a></li>
+  <li><code class="language-plaintext highlighter-rouge">./opt/kata/bin</code>：该目录下主要存放了kata运行时相关的二进制文件（例如最主要的二进制文件<code class="language-plaintext highlighter-rouge">containerd-shim-kata-v2</code>）、虚拟化组件的二进制文件，例如<code class="language-plaintext highlighter-rouge">qemu-system-x86_64</code></li>
+  <li><code class="language-plaintext highlighter-rouge">./opt/kata/libexec/kata-qemu</code>：该目录存放的是<code class="language-plaintext highlighter-rouge">virtiofsd</code>二进制文件，它的作用事在宿主机上作为virtiofs的后端，实现宿主机和安全容器虚拟机中之间目录文件的共享</li>
+  <li><code class="language-plaintext highlighter-rouge">./opt/kata/share/bash-completion</code>：该目录下存放的就是bash环境中的自动补全脚本</li>
+  <li><code class="language-plaintext highlighter-rouge">./opt/kata/share/defaults/kata-containers/</code>：该目录下存放的是kata-containers安全容器的配置文件<code class="language-plaintext highlighter-rouge">configuration.toml</code></li>
+  <li><code class="language-plaintext highlighter-rouge">./opt/kata/share/kata-containers/</code>：该目录下存放的则是安全容器中Guest Kernel的裁剪的配置选项文件、Guest OS的initrd格式和image格式镜像，以及Guest Kernel的二进制文件</li>
+  <li><code class="language-plaintext highlighter-rouge">./opt/kata/share/kata-qemu/qemu</code>：该目录下主要存放了qemu虚拟化相关的bios二进制文件、firmware固件信息</li>
 </ul>
 
-<h2 id="优质博客网站">优质博客网站</h2>
+<p>然后，把解压到当前目录下<code class="language-plaintext highlighter-rouge">./opt/kata</code>文件夹给移动到根目录下的<code class="language-plaintext highlighter-rouge">/opt/</code>下面：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">mv</span> ./opt/kata /opt/
+</code></pre></div></div>
 
-<ul>
-  <li><a href="http://chenweixiang.github.io/">Chenweixiang</a></li>
-  <li><a href="https://insujang.github.io/">insujang</a></li>
-</ul>
+<p><strong>3. 将<code class="language-plaintext highlighter-rouge">containerd-shim-kata-v2</code>二进制软链接到<code class="language-plaintext highlighter-rouge">/usr/local/bin/</code>目录下，以便containerd容器引擎可以找到kata运行时对应的二进制文件</strong></p>
 
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo ln</span> <span class="nt">-s</span> /opt/kata/bin/containerd-shim-kata-v2 /usr/local/bin/containerd-shim-kata-v2
+</code></pre></div></div>
+
+<h3 id="安装和配置containerd容器引擎">安装和配置containerd容器引擎</h3>
+
+<p><strong>1. 安装containerd</strong></p>
+
+<blockquote>
+  <p>由于<code class="language-plaintext highlighter-rouge">kata-containers 2.x</code>版本已经不支持OCI Runtime Spec的<code class="language-plaintext highlighter-rouge">shimv1</code>标准，因此需要通过<code class="language-plaintext highlighter-rouge">containerd</code>容器引擎或者我们在openEuler上开源的<a href="https://gitee.com/openeuler/iSulad">iSulad</a>容器引擎来支持<code class="language-plaintext highlighter-rouge">Containerd-Shimv2</code>接口标准。</p>
+</blockquote>
+
+<p>我本地的环境上Ubuntu系统，并且我之前环境中已经装过了<code class="language-plaintext highlighter-rouge">Docker CE 20.10.14</code>版本。由于在安装Docker软件包的同时，它也会安装好<code class="language-plaintext highlighter-rouge">containerd</code>组件。</p>
+
+<p>所以，这里建议你直接参考Docker官方的教程来安装Docker，顺便完成containerd组件的安装。</p>
+
+<p><a href="https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce">Get Docker CE for Ubuntu</a></p>
+
+<p><strong>2. 修改containerd配置文件，支持kata运行时</strong></p>
+
+<p>containerd默认的配置文件路径：<code class="language-plaintext highlighter-rouge">/etc/containerd/config.toml</code>，将该文件中的内容修改为如下的内容，添加对于kata容器运行时的支持：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cat /etc/containerd/config.toml
+#   Copyright 2018-2022 Docker Inc.
+
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+
+#       http://www.apache.org/licenses/LICENSE-2.0
+
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+disabled_plugins = ["cri"]
+
+root = "/var/lib/containerd"
+state = "/run/containerd"
+subreaper = true
+oom_score = 0
+
+[grpc]
+  address = "/run/containerd/containerd.sock"
+  uid = 0
+  gid = 0
+
+#[debug]
+#  address = "/run/containerd/debug.sock"
+#  uid = 0
+#  gid = 0
+#  level = "info"
+
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      default_runtime_name = "kata"
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.kata]
+          runtime_type = "io.containerd.kata.v2"
+</code></pre></div></div>
+
+<blockquote>
+  <p>注意：上面的containerd配置文件中，我已经把Docker安装包默认安装时配置的containerd.toml文件做了一些修改，把很多注释掉的配置选项都打开了。
+其中，关于kata容器运行时的配置主要集中在<code class="language-plaintext highlighter-rouge">[plugins]</code>配置项中。</p>
+</blockquote>
+
+<p><strong>3. 重启containerd系统服务</strong></p>
+
+<p>完成上述的配置之后，重启一下<code class="language-plaintext highlighter-rouge">containerd.service</code>系统服务，使配置生效。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>systemctl restart containerd
+
+<span class="nv">$ </span><span class="nb">sudo </span>systemctl status containerd.service
+● containerd.service - containerd container runtime
+     Loaded: loaded <span class="o">(</span>/lib/systemd/system/containerd.service<span class="p">;</span> enabled<span class="p">;</span> vendor preset: enabled<span class="o">)</span>
+     Active: active <span class="o">(</span>running<span class="o">)</span> since Fri 2022-04-22 21:52:39 CST<span class="p">;</span> 1h 47min ago
+       Docs: https://containerd.io
+    Process: 388705 <span class="nv">ExecStartPre</span><span class="o">=</span>/sbin/modprobe overlay <span class="o">(</span><span class="nv">code</span><span class="o">=</span>exited, <span class="nv">status</span><span class="o">=</span>0/SUCCESS<span class="o">)</span>
+   Main PID: 388706 <span class="o">(</span>containerd<span class="o">)</span>
+      Tasks: 11
+     Memory: 19.0M
+     CGroup: /system.slice/containerd.service
+             └─388706 /usr/bin/containerd
+</code></pre></div></div>
+
+<h2 id="测试kata安全容器是否安装成功">测试kata安全容器是否安装成功</h2>
+
+<p>好了，通过上面的步骤我们已经在本地的机器上安装好kata安全容器的二进制软件包和containerd容器引擎，接下来我们通过下面的命令来验证一下安装的kata安全容器是否已经安装成功。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ image</span><span class="o">=</span><span class="s2">"docker.io/library/busybox:latest"</span>
+
+<span class="nv">$ </span><span class="nb">sudo </span>ctr image pull <span class="s2">"</span><span class="nv">$image</span><span class="s2">"</span>
+
+<span class="c"># 查看安全容器中Guest Kernel的版本号</span>
+<span class="nv">$ </span><span class="nb">sudo </span>ctr run <span class="nt">--runtime</span> <span class="s2">"io.containerd.kata.v2"</span> <span class="nt">--rm</span> <span class="nt">-t</span> <span class="s2">"</span><span class="nv">$image</span><span class="s2">"</span> test-kata <span class="nb">uname</span> <span class="nt">-r</span>
+
+5.15.26
+
+<span class="c"># 查看物理机上安装的Linux内核版本号，两者不同则说明安全容器已经成功运行了</span>
+<span class="nv">$ </span><span class="nb">uname</span> <span class="nt">-r</span>
+5.13.0-30-generic
+</code></pre></div></div>
+
+<p>另外，我们还可以启动一个kata安全容器，在宿主机上观察是否存在<code class="language-plaintext highlighter-rouge">qemu</code>进程：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>ctr run <span class="nt">--runtime</span> <span class="s2">"io.containerd.kata.v2"</span> <span class="nt">-d</span> <span class="nt">-t</span> <span class="s2">"</span><span class="nv">$image</span><span class="s2">"</span> test-kata <span class="nb">sleep </span>999999
+
+<span class="nv">$ </span>ps <span class="nt">-ef</span> | <span class="nb">grep </span>qemu
+root      395216  395206  0 23:47 ?        00:00:00 /opt/kata/libexec/kata-qemu/virtiofsd <span class="nt">--syslog</span> <span class="nt">-o</span> <span class="nv">cache</span><span class="o">=</span>auto <span class="nt">-o</span> no_posix_lock <span class="nt">-o</span> <span class="nb">source</span><span class="o">=</span>/run/kata-containers/shared/sandboxes/test-kata/shared <span class="nt">--fd</span><span class="o">=</span>3 <span class="nt">-f</span> <span class="nt">--thread-pool-size</span><span class="o">=</span>1 <span class="nt">-o</span> announce_submounts
+root      395223       1  1 23:47 ?        00:00:00 /opt/kata/bin/qemu-system-x86_64 <span class="nt">-name</span> sandbox-test-kata <span class="nt">-uuid</span> 9ecd8760-80dc-41c1-8e4e-58adc4f68079 <span class="nt">-machine</span> q35,accel<span class="o">=</span>kvm,kernel_irqchip<span class="o">=</span>on,nvdimm<span class="o">=</span>on <span class="nt">-cpu</span> host,pmu<span class="o">=</span>off <span class="nt">-qmp</span> unix:/run/vc/vm/test-kata/qmp.sock,server<span class="o">=</span>on,wait<span class="o">=</span>off <span class="nt">-m</span> 2048M,slots<span class="o">=</span>10,maxmem<span class="o">=</span>16688M <span class="nt">-device</span> pci-bridge,bus<span class="o">=</span>pcie.0,id<span class="o">=</span>pci-bridge-0,chassis_nr<span class="o">=</span>1,shpc<span class="o">=</span>off,addr<span class="o">=</span>2,io-reserve<span class="o">=</span>4k,mem-reserve<span class="o">=</span>1m,pref64-reserve<span class="o">=</span>1m <span class="nt">-device</span> virtio-serial-pci,disable-modern<span class="o">=</span><span class="nb">false</span>,id<span class="o">=</span>serial0 <span class="nt">-device</span> virtconsole,chardev<span class="o">=</span>charconsole0,id<span class="o">=</span>console0 <span class="nt">-chardev</span> socket,id<span class="o">=</span>charconsole0,path<span class="o">=</span>/run/vc/vm/test-kata/console.sock,server<span class="o">=</span>on,wait<span class="o">=</span>off <span class="nt">-device</span> nvdimm,id<span class="o">=</span>nv0,memdev<span class="o">=</span>mem0,unarmed<span class="o">=</span>on <span class="nt">-object</span> memory-backend-file,id<span class="o">=</span>mem0,mem-path<span class="o">=</span>/opt/kata/share/kata-containers/kata-clearlinux-latest.image,size<span class="o">=</span>134217728,readonly<span class="o">=</span>on <span class="nt">-device</span> virtio-scsi-pci,id<span class="o">=</span>scsi0,disable-modern<span class="o">=</span><span class="nb">false</span> <span class="nt">-object</span> rng-random,id<span class="o">=</span>rng0,filename<span class="o">=</span>/dev/urandom <span class="nt">-device</span> virtio-rng-pci,rng<span class="o">=</span>rng0 <span class="nt">-device</span> vhost-vsock-pci,disable-modern<span class="o">=</span><span class="nb">false</span>,vhostfd<span class="o">=</span>3,id<span class="o">=</span>vsock-3535502973,guest-cid<span class="o">=</span>3535502973 <span class="nt">-chardev</span> socket,id<span class="o">=</span>char-59c971d21afa49b1,path<span class="o">=</span>/run/vc/vm/test-kata/vhost-fs.sock <span class="nt">-device</span> vhost-user-fs-pci,chardev<span class="o">=</span>char-59c971d21afa49b1,tag<span class="o">=</span>kataShared <span class="nt">-rtc</span> <span class="nv">base</span><span class="o">=</span>utc,driftfix<span class="o">=</span>slew,clock<span class="o">=</span>host <span class="nt">-global</span> kvm-pit.lost_tick_policy<span class="o">=</span>discard <span class="nt">-vga</span> none <span class="nt">-no-user-config</span> <span class="nt">-nodefaults</span> <span class="nt">-nographic</span> <span class="nt">--no-reboot</span> <span class="nt">-daemonize</span> <span class="nt">-object</span> memory-backend-file,id<span class="o">=</span>dimm1,size<span class="o">=</span>2048M,mem-path<span class="o">=</span>/dev/shm,share<span class="o">=</span>on <span class="nt">-numa</span> node,memdev<span class="o">=</span>dimm1 <span class="nt">-kernel</span> /opt/kata/share/kata-containers/vmlinux-5.15.26-90 <span class="nt">-append</span> <span class="nv">tsc</span><span class="o">=</span>reliable no_timer_check rcupdate.rcu_expedited<span class="o">=</span>1 i8042.direct<span class="o">=</span>1 i8042.dumbkbd<span class="o">=</span>1 i8042.nopnp<span class="o">=</span>1 i8042.noaux<span class="o">=</span>1 noreplace-smp <span class="nv">reboot</span><span class="o">=</span>k <span class="nv">console</span><span class="o">=</span>hvc0 <span class="nv">console</span><span class="o">=</span>hvc1 cryptomgr.notests net.ifnames<span class="o">=</span>0 <span class="nv">pci</span><span class="o">=</span><span class="nv">lastbus</span><span class="o">=</span>0 <span class="nv">root</span><span class="o">=</span>/dev/pmem0p1 <span class="nv">rootflags</span><span class="o">=</span>dax,data<span class="o">=</span>ordered,errors<span class="o">=</span>remount-ro ro <span class="nv">rootfstype</span><span class="o">=</span>ext4 quiet systemd.show_status<span class="o">=</span><span class="nb">false </span><span class="nv">panic</span><span class="o">=</span>1 <span class="nv">nr_cpus</span><span class="o">=</span>4 systemd.unit<span class="o">=</span>kata-containers.target systemd.mask<span class="o">=</span>systemd-networkd.service systemd.mask<span class="o">=</span>systemd-networkd.socket scsi_mod.scan<span class="o">=</span>none <span class="nt">-pidfile</span> /run/vc/vm/test-kata/pid <span class="nt">-smp</span> 1,cores<span class="o">=</span>1,threads<span class="o">=</span>1,sockets<span class="o">=</span>4,maxcpus<span class="o">=</span>4
+root      395226  395216  0 23:47 ?        00:00:00 /opt/kata/libexec/kata-qemu/virtiofsd <span class="nt">--syslog</span> <span class="nt">-o</span> <span class="nv">cache</span><span class="o">=</span>auto <span class="nt">-o</span> no_posix_lock <span class="nt">-o</span> <span class="nb">source</span><span class="o">=</span>/run/kata-containers/shared/sandboxes/test-kata/shared <span class="nt">--fd</span><span class="o">=</span>3 <span class="nt">-f</span> <span class="nt">--thread-pool-size</span><span class="o">=</span>1 <span class="nt">-o</span> announce_submounts
+flyflyp+  395289  380349  0 23:47 pts/3    00:00:00 <span class="nb">grep</span> <span class="nt">--color</span><span class="o">=</span>auto <span class="nt">--exclude-dir</span><span class="o">=</span>.bzr <span class="nt">--exclude-dir</span><span class="o">=</span>CVS <span class="nt">--exclude-dir</span><span class="o">=</span>.git <span class="nt">--exclude-dir</span><span class="o">=</span>.hg <span class="nt">--exclude-dir</span><span class="o">=</span>.svn <span class="nt">--exclude-dir</span><span class="o">=</span>.idea <span class="nt">--exclude-dir</span><span class="o">=</span>.tox qemu
+</code></pre></div></div>
+
+<p>看来真的是通过qemu hypervisor把安全容器虚拟机给拉起来了，如果大家有兴趣，可以分析一下这个qemu进程中各个命令行参数的含义。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://github.com/kata-containers/kata-containers/blob/main/docs/install/container-manager/containerd/containerd-install.md">Install Kata Containers with containerd</a>
+<a href="https://gitee.com/openeuler/iSulad/blob/master/docs/integration.md">iSulad配置支持kata安全容器文档</a></p>
 
 </article>
 
 
 
 <section class="tags">
-  <strong>Tags:</strong> <a href="/tag/Linux">Linux</a>,&nbsp;<a href="/tag/笔记">笔记</a>,&nbsp;<a href="/tag/内核">内核</a>,&nbsp;<a href="/tag/云原生">云原生</a>
+  <strong>Tags:</strong> <a href="/tag/云原生">云原生</a>,&nbsp;<a href="/tag/kata-containers">kata-containers</a>,&nbsp;<a href="/tag/sandbox">sandbox</a>
 </section>
 
 
@@ -775,7 +793,7 @@
   
     
     
-      <a href="//twitter.com/share?text=May+the+force+be+with+you&url=https%3A%2F%2Fflyflypeng.tech%2F%25E5%25AD%25A6%25E4%25B9%25A0%26%25E6%2595%2588%25E7%258E%2587%2F2020%2F07%2F10%2FMay-the-force-be-with-you.html&via=flyflypeng_bear"
+      <a href="//twitter.com/share?text=kata-containers+2.x+%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C&url=https%3A%2F%2Fflyflypeng.tech%2F%25E4%25BA%2591%25E5%258E%259F%25E7%2594%259F%2F2022%2F04%2F22%2Fkata-containers-2-x-%25E7%2589%2588%25E6%259C%25AC%25E5%25AE%2589%25E8%25A3%2585%25E8%25BF%2590%25E8%25A1%258C.html&via=flyflypeng_bear"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -810,24 +828,16 @@
 	<section class="post-navigation">
 		<span class="prev-post">
 			
-				<a href="/%E6%88%B7%E5%A4%96/2020/04/24/%E9%9C%B2%E8%90%A5%E6%8C%87%E5%8D%97.html">
+				<a href="/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">
 					<span class="fa-stack fa-lg">
 						<i class="fa fa-square fa-stack-2x"></i>
 						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
 					</span>
-					<span class="page-number">杭州周边露营指南</span>
+					<span class="page-number">ptrace 系统调用拦截和模拟</span>
 				</a>
 			
 		</span>
 		<span class="next-post">
-			
-				<a href="/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">
-					<span class="page-number">ptrace 系统调用拦截和模拟</span>
-					<span class="fa-stack fa-lg">
-						<i class="fa fa-square fa-stack-2x"></i>
-						<i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
-					</span>
-				</a>
 			
 		</span>
 	</section>
