@@ -45,12 +45,12 @@
   <!-- Facebook OGP cards -->
   <meta property="og:description"
     content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES..." />
-  <meta property="og:url" content="https://flyflypeng.tech" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程" />
   <meta property="og:type" content="website" />
   <meta property="og:image"
-    content="https://flyflypeng.tech/assets/androidBg.jpg" />
+    content="http://localhost:4000/assets/androidBg.jpg" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -63,16 +63,16 @@
   <meta name="twitter:description"
     content="1. OpenGL ES 和 OpenGL ES 库的区别  OpenGL ES ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。  OpenGL ES 库：OpenGL ES 库就是上面 OpenGL ES...">
   <meta name="twitter:image"
-    content="https://flyflypeng.tech/assets/androidBg.jpg">
-  <meta name="twitter:url" content="https://flyflypeng.tech">
+    content="http://localhost:4000/assets/androidBg.jpg">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href=" /css/main.css">
-  <link rel="canonical" href="https://flyflypeng.tech/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="https://flyflypeng.tech /feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000 /feed.xml" />
 
   <!-- Google analytics -->
   
@@ -430,6 +430,14 @@
         
           
           <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
           
         
           
@@ -1104,7 +1112,7 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
   
     
     
-      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=https%3A%2F%2Fflyflypeng.tech%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&via=flyflypeng_bear"
+      <a href="//twitter.com/share?text=Android+%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AOpenGL+ES+%E5%BA%93%E5%92%8C+EGL+%E5%BA%93%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B&url=http%3A%2F%2Flocalhost%3A4000%2Fandroid%2F2017%2F09%2F05%2FAndroid%25E7%25B3%25BB%25E7%25BB%259F%25E5%259B%25BE%25E5%25BD%25A2%25E6%25A0%2588OpenGLES%25E5%2592%258CEGL%25E5%25BA%2593%25E7%259A%2584%25E5%258A%25A0%25E8%25BD%25BD%25E8%25BF%2587%25E7%25A8%258B.html&via=flyflypeng_bear"
         onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
         <i class="fa fa-twitter-square fa-lg"></i>
       </a>
@@ -1525,6 +1533,14 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
         
         
           <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
         
         
         

@@ -47,12 +47,12 @@
   <meta property="og:description"
     content="Do one thing and do it well.
 " />
-  <meta property="og:url" content="https://flyflypeng.tech" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Fly Higher's Blog" />
   <meta property="og:type" content="website" />
   <meta property="og:image"
-    content="https://flyflypeng.tech/assets/logo.png" />
+    content="http://localhost:4000/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -66,16 +66,16 @@
     content="Do one thing and do it well.
 ">
   <meta name="twitter:image"
-    content="https://flyflypeng.tech/assets/logo.png">
-  <meta name="twitter:url" content="https://flyflypeng.tech">
+    content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href=" /css/main.css">
-  <link rel="canonical" href="https://flyflypeng.tech/page7/">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="https://flyflypeng.tech /feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/page7/">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000 /feed.xml" />
 
   <!-- Google analytics -->
   
@@ -436,6 +436,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -522,6 +530,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2016/03/11/Sublime-Text-3-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85.html">Sublime-Text-3-插件安装</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>Package Control 简介 Sublime Text 3 之所以强大在于它有许许多多的功能非常丰富的插件，可以适用不同的编程语言的需要。 而 Package Control 就是安装并管理这些插件的工具。在安装好 Package Control 之后，我们就可以通过它来安装其他一系列的插件了。 Package Control 安装 Package Control 的安装方法也非常简单，官方安装文档：Package...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">March 11, 2016</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/利器">利器</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/linux/2015/09/03/Linux%E4%B8%8Bmake%E5%92%8CMakefile%E8%AF%A6%E8%A7%A3%E9%87%8A.html">Linux make 和 Makefile 详解</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -599,28 +629,6 @@
       in 
         
         <a href="/category/编程语言">编程语言</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%88%A9%E5%99%A8/2015/07/15/Ubuntu-14-04%E4%B8%8B%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85Firefox%E7%9A%84flash%E6%8F%92%E4%BB%B6.html">Ubuntu 14.04下手动安装Firefox的flash插件</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>前言 以前自己一直使用的是Google的Chrome浏览器，主要是因为Chrome浏览器很简洁并且响应速度快。但是后来当自己想在不同的系统平台下的Chrome浏览器同步自己保存的书签时就遇到了一个很让人蛋疼的问题，Chrome只支持Google账户同步，而在俺们大天朝，Google是黑户，如果不通过某种方法是根本无法享受到Google的一系列服务，包括Chrome的书签同步功能。山不转水转，我就重新寻找一个可以在多平台进行书签同步的浏览器了，这不，Firefox就出现在我的世界中了。 用了一段时间的Firefox感觉还不错，功能也很全面，还有很多的插件扩展浏览器的功能，关键它也支持不同平台的书签同步功能。但是，但是，但是，直到有一天当我打开Firefox想看视频时，它却给我弹出这个东东。 好不，不懂只能文度娘了。在度娘上找到了“病因”，原来是Firefox上面的flash插件版本太低不安全了，尼玛，老子在其他浏览器上都没遇到过这种问题啊，没办法，这不得解决嘛。后来的后来，我几乎每个月都能碰见这种情况一会，以前找到的解决方案也忘了，所以今天就把这法子给记下来，以备后用。 在Ubuntu下这种插件也没有apt包可以直接安装，只能自己手动下载安装，下面就详细说明下整个安装过程。 1. 下载flash插件 flash 插件的官方下载地址为: https://get.adobe.com/flashplayer/?loc=cn 然后选择.tar.gz压缩文件格式下载，如下所示: 2. 解压文件 将下载好的flash插件压缩包，解压到一个文件夹中，如下所示: 3. 将解压出来的libflashplayer.so拷贝到/usr/lib/mozilla/plugins/下 $ sudo cp libflashplayer.so...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">July 15, 2015</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/利器">利器</a>
         
       
       </div>
@@ -997,6 +1005,14 @@
         
         
           <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
         
         
         

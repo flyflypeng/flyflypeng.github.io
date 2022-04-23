@@ -4,11 +4,65 @@
     <title>Fly Higher&apos;s Blog</title>
     <description>Do one thing and do it well.
 </description>
-    <link>https://flyflypeng.tech/</link>
-    <atom:link href="https://flyflypeng.tech/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 23 Apr 2022 12:31:40 +0800</pubDate>
-    <lastBuildDate>Sat, 23 Apr 2022 12:31:40 +0800</lastBuildDate>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sat, 23 Apr 2022 23:01:33 +0800</pubDate>
+    <lastBuildDate>Sat, 23 Apr 2022 23:01:33 +0800</lastBuildDate>
     <generator>Jekyll v4.2.2</generator>
+    
+      <item>
+        <title>VSCode配置Linux内核源码阅读环境</title>
+        <description>&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+
+&lt;p&gt;简单记录一下在VSCode IDE上配置Linux内核源码阅读环境的方法，欢迎自取自用😁&lt;/p&gt;
+
+&lt;h2 id=&quot;开发环境说明&quot;&gt;开发环境说明&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;主力开发机: MacBook Pro M1 14’ + VSCode IDE&lt;/li&gt;
+  &lt;li&gt;Linux Server:  Ubuntu 20.04.03&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;平时的开发方式就是在我的Macbook Pro上打开VSCode IDE，然后通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Remote SSH&lt;/code&gt;插件远程连接到我家里的Linux Server上进行Linux内核源码阅读和开发工作&lt;/p&gt;
+
+&lt;h2 id=&quot;配置流程&quot;&gt;配置流程&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;通过Remote SSH插件，从Macbook Pro上连接到远端的Linux开发机中&lt;/li&gt;
+  &lt;li&gt;安装C/C++官方插件&lt;/li&gt;
+  &lt;li&gt;在Ubuntu开发机上通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo apt install global&lt;/code&gt;安装global工具&lt;/li&gt;
+  &lt;li&gt;安装C/C++ GNU Global插件&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;在VSCode的命令行界面中通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Global:Rebuild Gtags Database&lt;/code&gt;
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220423225830.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;过几分钟生成完毕，就会在linux源码目录下生成GTAGS、GRTAGS、GPATH三个tag数据库文件
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &amp;lt;linux-kernel-source-dir&amp;gt;
+
+ &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;G&quot;&lt;/span&gt;
+ 4:COPYING
+ 10:GPATH
+ 11:GRTAGS
+ 12:GTAGS
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;最好重新加载一下工作区，然后就可以通过代码定义跳转的快捷键进行跳转了&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20220423225955.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 23 Apr 2022 16:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2022/04/23/vscode%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2022/04/23/vscode%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
+        
+        <category>vscode</category>
+        
+        <category>kernel</category>
+        
+        
+        <category>利器</category>
+        
+      </item>
     
       <item>
         <title>kata-containers 2.x 版本安装运行</title>
@@ -255,12 +309,14 @@ flyflyp+  395289  380349  0 23:47 pts/3    00:00:00 &lt;span class=&quot;nb&quot
 
 &lt;h2 id=&quot;参考&quot;&gt;参考&lt;/h2&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/kata-containers/kata-containers/blob/main/docs/install/container-manager/containerd/containerd-install.md&quot;&gt;Install Kata Containers with containerd&lt;/a&gt;
-&lt;a href=&quot;https://gitee.com/openeuler/iSulad/blob/master/docs/integration.md&quot;&gt;iSulad配置支持kata安全容器文档&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/kata-containers/kata-containers/blob/main/docs/install/container-manager/containerd/containerd-install.md&quot;&gt;Install Kata Containers with containerd&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://gitee.com/openeuler/iSulad/blob/master/docs/integration.md&quot;&gt;iSulad配置支持kata安全容器文档&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         <pubDate>Fri, 22 Apr 2022 16:00:00 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html</guid>
+        <link>http://localhost:4000/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%91%E5%8E%9F%E7%94%9F/2022/04/22/kata-containers-2-x-%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85%E8%BF%90%E8%A1%8C.html</guid>
         
         <category>云原生</category>
         
@@ -474,8 +530,8 @@ flyflyp+  395289  380349  0 23:47 pts/3    00:00:00 &lt;span class=&quot;nb&quot
 &lt;/ul&gt;
 </description>
         <pubDate>Mon, 28 Mar 2022 18:40:00 +0800</pubDate>
-        <link>https://flyflypeng.tech/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</guid>
+        <link>http://localhost:4000/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</link>
+        <guid isPermaLink="true">http://localhost:4000/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html</guid>
         
         <category>笔记</category>
         
@@ -723,8 +779,8 @@ flyflyp+  395289  380349  0 23:47 pts/3    00:00:00 &lt;span class=&quot;nb&quot
 
 </description>
         <pubDate>Fri, 10 Jul 2020 07:00:00 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</guid>
+        <link>http://localhost:4000/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%AD%A6%E4%B9%A0&%E6%95%88%E7%8E%87/2020/07/10/May-the-force-be-with-you.html</guid>
         
         <category>Linux</category>
         
@@ -943,8 +999,8 @@ flyflyp+  395289  380349  0 23:47 pts/3    00:00:00 &lt;span class=&quot;nb&quot
 &lt;p&gt;装备更新中。。。。。。&lt;/p&gt;
 </description>
         <pubDate>Fri, 24 Apr 2020 07:00:32 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E6%88%B7%E5%A4%96/2020/04/24/%E9%9C%B2%E8%90%A5%E6%8C%87%E5%8D%97.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E6%88%B7%E5%A4%96/2020/04/24/%E9%9C%B2%E8%90%A5%E6%8C%87%E5%8D%97.html</guid>
+        <link>http://localhost:4000/%E6%88%B7%E5%A4%96/2020/04/24/%E9%9C%B2%E8%90%A5%E6%8C%87%E5%8D%97.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E6%88%B7%E5%A4%96/2020/04/24/%E9%9C%B2%E8%90%A5%E6%8C%87%E5%8D%97.html</guid>
         
         <category>户外</category>
         
@@ -1523,8 +1579,8 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
 
 </description>
         <pubDate>Sun, 29 Mar 2020 04:00:31 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2020/03/29/Kubernetes%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E4%BA%91%E5%8E%9F%E7%94%9F/2020/03/29/Kubernetes%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</guid>
+        <link>http://localhost:4000/%E4%BA%91%E5%8E%9F%E7%94%9F/2020/03/29/Kubernetes%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E4%BA%91%E5%8E%9F%E7%94%9F/2020/03/29/Kubernetes%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.html</guid>
         
         <category>kubernetes</category>
         
@@ -2012,8 +2068,8 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflype
 &lt;/div&gt;
 </description>
         <pubDate>Mon, 23 Mar 2020 04:00:31 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
+        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
         
         <category>Mac</category>
         
@@ -2107,8 +2163,8 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflype
 &lt;/div&gt;
 </description>
         <pubDate>Wed, 21 Nov 2018 08:12:33 +0800</pubDate>
-        <link>https://flyflypeng.tech/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</guid>
+        <link>http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E8%99%9A%E6%8B%9F%E5%8C%96/2018/11/21/QEMU-KVM-%E5%8E%9F%E7%90%86%E7%BB%BC%E8%BF%B0.html</guid>
         
         <category>虚拟化</category>
         
@@ -2681,8 +2737,8 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
 
 </description>
         <pubDate>Tue, 05 Sep 2017 00:00:00 +0800</pubDate>
-        <link>https://flyflypeng.tech/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
+        <link>http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
         
         <category>Android</category>
         
@@ -2874,8 +2930,8 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
 &lt;/div&gt;
 </description>
         <pubDate>Mon, 04 Sep 2017 00:00:00 +0800</pubDate>
-        <link>https://flyflypeng.tech/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
+        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
+        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
         
         <category>Android</category>
         
@@ -2887,137 +2943,6 @@ er Object”），即用来描述模型的数组，如顶点数组、纹理数�
         
         
         <category>android</category>
-        
-      </item>
-    
-      <item>
-        <title>Linux I/O 模型详解</title>
-        <description>&lt;h1 id=&quot;linux-io-模型&quot;&gt;Linux I/O 模型&lt;/h1&gt;
-&lt;p&gt;在 Linux/Unix 系统环境下进行 I/O 编程时，我们经常会遇到这些似懂非懂的名词：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Synchronous I/O&lt;/li&gt;
-  &lt;li&gt;Asynchronous I/O&lt;/li&gt;
-  &lt;li&gt;Blocking I/O&lt;/li&gt;
-  &lt;li&gt;Non-blocking I/O&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;首先，这里讲的 &lt;strong&gt;I/O&lt;/strong&gt; 指的是用户空间的 I/O，并且主要侧重于网络编程中的 I/O 操作，而用户空间的 I/O 操作主要分为两个阶段：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;等待数据准备就绪（waiting for the data to be ready）&lt;/li&gt;
-  &lt;li&gt;将数据从内核拷贝到进程中（copying the data from kernel to the process）&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;正是因为这两个阶段，Linux 系统中的 I/O 模型主要可以分为下面五种：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Blocking I/O&lt;/li&gt;
-  &lt;li&gt;Non-blocking I/O&lt;/li&gt;
-  &lt;li&gt;I/O multiplexing&lt;/li&gt;
-  &lt;li&gt;Asynchronous I/O&lt;/li&gt;
-  &lt;li&gt;Signal driven I/O&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;!--more--&gt;
-
-&lt;h1 id=&quot;blocking-io&quot;&gt;Blocking I/O&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003778419199.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在 Linux 中所有的 socket 文件描述符默认都是 blocking 的，一个典型的网络 socket 文件描述符的 read 操作的流程如上图所示。&lt;/p&gt;
-
-&lt;p&gt;当用户进程调用 read 这个系统调用，kernel 就开始了 &lt;strong&gt;I/O&lt;/strong&gt; 的第一个阶段：准备数据（对于网络IO来说，很多时候数据在一开始还没有到达。比如，还没有收到一个完整的UDP包。这个时候 kernel 就要等待足够的数据到来），这个过程需要等待，也就是说&lt;strong&gt;数据被拷贝到操作系统内核的缓冲区&lt;/strong&gt;中是需要一个过程的。&lt;/p&gt;
-
-&lt;p&gt;而在用户进程这边，整个进程一直处于阻塞状态。当 kernel 中数据准备好之后，系统就会将数据从 kernel 中拷贝到用户空间进程的缓冲区中，然后 kernel 返回结果，用户进程才解除 blocking 的状态，重新运行起来。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;blocking I/O 的特点是用户进程在 I/O 操作的两个阶段都被 block 了。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;non-blocking-io&quot;&gt;Non-blocking I/O&lt;/h1&gt;
-&lt;p&gt;Linux 系统中可以在调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;open&lt;/code&gt; 函数打开 socket 文件时或者调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fcntl&lt;/code&gt; 函数来设置 socket 文件描述符为非阻塞状态，当对一个 non-blocking 的 socket 文件描述符执行读操作时，它的执行流程如下图所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003788703867.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在 non-blocking I/O 的情境下，当用户进程调用 read 系统调用函数时，如果 kernel 中的数据没有准备好，那么系统并不会 block 用户进程，而是立即返回一个 error。&lt;/p&gt;
-
-&lt;p&gt;从用户进程角度看 ，当它发起一个 read 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 error 时，它就知道数据还没有准备好，于是它可以再次发送read操作。&lt;/p&gt;
-
-&lt;p&gt;一旦 kernel 中的数据准备好之后，并且再次收到了用户进程发送的 read 系统调用时，它就马上将准备好的数据拷贝到用户空间的缓冲区中。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;non-blocking I/O 的特点就是用户进程需要不断地询问 kernel 数据是否准备好了。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h1 id=&quot;io-multiplexing&quot;&gt;I/O Multiplexing&lt;/h1&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 就是我们经常说的 &lt;strong&gt;select&lt;/strong&gt;、&lt;strong&gt;poll&lt;/strong&gt;和&lt;strong&gt;epoll&lt;/strong&gt;，有些地方也称这种 I/O 方式为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;event driven I/O&lt;/code&gt;。I/O multiplexing 的好处就是一个进程可以处理多个网络连接 I/O，它的工作原理就是 select/poll/epoll 函数会不断的查询所监测的 socket 文件描述符中是否有 socket 准备好读写了，如果有，那么系统就会通知用户进程。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003804947449.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;I/O multiplexing 的特点是通过一种机制让一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入可读的就绪状态，select/poll/epoll函数就可以立即返回。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;这个图和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;blocking I/O&lt;/code&gt; 的图其实并没有太大的不同，事实上，开销还会更大一点。因为这里需要使用两个 system call (select 和 read)，而 blocking I/O 只调用了一个system call (read)。但是，&lt;strong&gt;用 select 的优势在于它可以同时处理多个connection&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;所以，如果处理的连接数不是很高的话，使用 &lt;strong&gt;select/epoll&lt;/strong&gt; 的 web server 不一定比使用 &lt;strong&gt;multi-threading + blocking I/O&lt;/strong&gt; 的 web server 性能更好，可能延迟还更大。&lt;strong&gt;select/epoll&lt;/strong&gt;的优势并不是对于单个连接能处理得更快，而是在于能处理更多的连接。&lt;/p&gt;
-
-&lt;p&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I/O multiplexing&lt;/code&gt; 模型中，实际中，对于每一个 socket，一般都设置成为 non-blocking，但是，如上图所示，整个用户的process 其实是一直被 block 的。只不过用户进程是被 select 这个函数 block，而不是被 socket I/O 给 block。&lt;/p&gt;
-
-&lt;h1 id=&quot;signal-driven-io&quot;&gt;Signal Driven I/O&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003812004927.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 的工作原理就是用户进程首先和 kernel 之间建立信号的通知机制，即用户进程告诉 kernel，如果 kernel 中数据准备好了，就通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 信号通知我。然后用户空间的进程就会调用 read 系统调用将准备好的数据从 kernel 拷贝到用户空间。&lt;/p&gt;
-
-&lt;p&gt;但是这种 I/O 模型存在一个非常重大的&lt;strong&gt;缺陷问题&lt;/strong&gt;：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SIGIO&lt;/code&gt; 这种信号对于每个进程来说只有一个！如果使该信号对进程中的两个描述符（这两个文件描述符都等待着 I/O 操作）都起作用，那么进程在接到此信号后就无法判别是哪一个文件描述符准备好了。所以 &lt;strong&gt;Signal Driven I/O&lt;/strong&gt; 模型在现实中用的非常少。&lt;/p&gt;
-
-&lt;h1 id=&quot;asynchronous-io&quot;&gt;Asynchronous I/O&lt;/h1&gt;
-&lt;p&gt;Linux 系统中 Asynchronous I/O 的操作流程如下图所示：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15003826926363.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;用户进程通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aio_read()&lt;/code&gt; 函数进行读取操作时，就可以立刻返回到进程中，接着执行其他的操作。从 kernel 的角度来看，当它收到 &lt;strong&gt;asynchronous read&lt;/strong&gt;  操作时，它会立刻返回，并不会阻塞用户进程。然后，kernel 会等待数据准备完成，接着将数据拷贝到用户空间进程的缓冲区中。当这一切都完成之后，kernel 会给用户发送一个 signal 通知用户空间的进程，告诉它 read 操作完成了。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Asynchronous I/O 操作最大的特点就是整个 I/O 操作流程中，用户进程始终没有被 block。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;在 POSIX 异步 I/O 中，会有一个 &lt;strong&gt;struct aiocb&lt;/strong&gt; 结构体来描述异步 I/O 操作，这个结构体的定义如下所示：&lt;/p&gt;
-
-&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aiocb&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;aio_fildes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* file descriptor */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;off_t&lt;/span&gt;           &lt;span class=&quot;n&quot;&gt;aio_offset&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* file offset for I/O */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;aio_buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* buffer for I/O */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;          &lt;span class=&quot;n&quot;&gt;aio_nbytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* number of bytes to transfer */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;aio_reqprio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* priority */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sigevent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;aio_sigevent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* signal infomation */&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;             &lt;span class=&quot;n&quot;&gt;aio_lio_opcode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* operation for list I/O */&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这个 POSIX 异步 I/O 控制块结构体描述了，异步 I/O 操作对应的文件描述符，用户空间的进程存放读/写的数据的缓冲区，以及异步 I/O 操作完成之后，对接收到信号的处理结构体等等。&lt;/p&gt;
-
-&lt;h1 id=&quot;synchronous-io-和-asynchronous-io-的区别&quot;&gt;Synchronous I/O 和 Asynchronous I/O 的区别&lt;/h1&gt;
-
-&lt;p&gt;在说明 &lt;strong&gt;Synchronous I/O&lt;/strong&gt; 和 &lt;strong&gt;Asynchronous I/O&lt;/strong&gt; 的区别之前，需要先给出两者的定义，POSIX 中两者的定义是这样子的：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;A synchronous I/O operation causes the requesting process to be blocked until that I/O operation completes;&lt;/li&gt;
-  &lt;li&gt;An asynchronous I/O operation does not cause the requesting process to be blocked;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;两者的区别就在于 Synchronous I/O 做 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 的时候会将用户空间的进程阻塞。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;按照这个定义，之前所说的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Blocking I/O&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IO multiplexing&lt;/code&gt;都属于 &lt;strong&gt;Synchronous I/O&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;有人会说，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 并没有被block啊。这里有个非常“狡猾”的地方，定义中所指的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IO operation&lt;/code&gt; 是指&lt;strong&gt;真实的I/O操作&lt;/strong&gt;，就是例子中的 read 这个 system call。&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Non-blocking I/O&lt;/code&gt; 在执行 read 这个system call 的时候，如果 kernel 的数据没有准备好，这时候不会 block 进程。但是，当kernel 中数据准备好的时候，read 会将数据从kernel 拷贝到用户空间的缓冲区中，这个时候进程是被 block 的。&lt;/p&gt;
-
-&lt;p&gt;而&lt;strong&gt;Asynchronous I/O&lt;/strong&gt;则不一样，当进程发起 &lt;strong&gt;I/O&lt;/strong&gt; 操作之后，就直接返回再也不理睬了，直到 kernel 发送一个信号，告诉进程说 I/O完成。在这整个过程中，&lt;strong&gt;进程完全没有被 block&lt;/strong&gt;。&lt;/p&gt;
-
-</description>
-        <pubDate>Tue, 11 Jul 2017 03:55:24 +0800</pubDate>
-        <link>https://flyflypeng.tech/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html</link>
-        <guid isPermaLink="true">https://flyflypeng.tech/linux/2017/07/11/Linux-IO%E6%A8%A1%E5%9E%8B.html</guid>
-        
-        <category>Linux</category>
-        
-        <category>Unix</category>
-        
-        <category>I/O</category>
-        
-        
-        <category>linux</category>
         
       </item>
     

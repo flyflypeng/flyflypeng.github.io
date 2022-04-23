@@ -47,12 +47,12 @@
   <meta property="og:description"
     content="Do one thing and do it well.
 " />
-  <meta property="og:url" content="https://flyflypeng.tech" />
+  <meta property="og:url" content="http://localhost:4000" />
   <meta property="og:site_name" content="Fly Higher's Blog" />
   <meta property="og:title" content="Fly Higher's Blog" />
   <meta property="og:type" content="website" />
   <meta property="og:image"
-    content="https://flyflypeng.tech/assets/logo.png" />
+    content="http://localhost:4000/assets/logo.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="612" />
   <meta property="og:image:height" content="605" />
@@ -66,16 +66,16 @@
     content="Do one thing and do it well.
 ">
   <meta name="twitter:image"
-    content="https://flyflypeng.tech/assets/logo.png">
-  <meta name="twitter:url" content="https://flyflypeng.tech">
+    content="http://localhost:4000/assets/logo.png">
+  <meta name="twitter:url" content="http://localhost:4000">
   
 
   
 
   <!-- Site styles -->
   <link rel="stylesheet" href=" /css/main.css">
-  <link rel="canonical" href="https://flyflypeng.tech/page5/">
-  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="https://flyflypeng.tech /feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/page5/">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000 /feed.xml" />
 
   <!-- Google analytics -->
   
@@ -436,6 +436,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -522,6 +530,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/%E7%94%9F%E6%B4%BB/2016/06/06/%E6%88%91%E7%9A%84%E4%B9%A6%E5%8D%95.html">书单</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>在读       已读       想读 文学类       IT 技术类       心理类  ...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">June 6, 2016</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/生活">生活</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/2016/05/21/%E6%AF%8F%E4%B8%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%93%E4%B8%9A%E5%AD%A6%E7%94%9F%E5%BF%85%E9%A1%BB%E7%9F%A5%E9%81%93%E7%9A%84%E4%BA%8B.html">每个计算机专业学生必须知道的事</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -599,28 +629,6 @@
       in 
         
         <a href="/category/学习&效率">学习&效率</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/%E5%86%85%E6%A0%B8/2016/05/10/Linux-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.html">Linux 系统调用内核源码分析</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>什么是系统调用？ 系统调用是应用程序与内核交互的一种方式。系统调用作为一种接口，通过系统调用，应用程序能够进入操作系统内核，从而使用内核提供的各种资源，比如操作硬件，开关中断，改变特权模式等等。首先，系统调用是一个软中断，既然是中断那么一般就具有中断号和中断处理程序两个属性，Linux 使用 0x80 号中断作为系统调用的入口，而中断处理程序的地址放在中断向量表里。 系统调用在内核空间和用户空间之间建立了一个连接的中间层，它主要为系统提供了下面三个主要功能： 第一，系统调用在底层硬件和用户空间之间建立了一个抽象的接口。例如，当用户空间的应用程序想读写一个文件时，程序员只需要通过系统调用接口完成读写操作即可，而不需要知道文件所在的底层磁盘是什么介质类型以及它所使用的是什么文件系统等一系列复杂的底层细节。 第二，系统调用让操作系统变得更加稳定和安全。Linux 中的内核好比就是一个仲裁者，它基于访问权限、用户组、临界区等机制来控制用户空间中应用程序用户空间中应用程序对底层硬件资源的访问，使得应用程序不会非法地使用硬件资源或者窃取其他应用程序所使用的资源以致对系统造成损害。 第三，系统调用便于实现系统虚拟化。系统调用提供的中间层，它屏蔽了许多的底层的细节，使得应用程序和底层系统的耦合性降低，这样系统的虚拟化变得更加简单。 系统调用的处理过程 当我们在用户态应用程序中调用一个系统调用函数时，它背后所隐藏的从用户态到内核态的整个处理过程，如下图所示： 在上图中，应用程序中调用 libc 库中的封装好的 xyz() 系统调用函数，然后 xyz() 就接着执行 libc...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">May 10, 2016</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/内核">内核</a>
         
       
       </div>
@@ -997,6 +1005,14 @@
         
         
           <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
         
         
         
