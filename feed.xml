@@ -6,9 +6,186 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 23 Apr 2022 23:01:33 +0800</pubDate>
-    <lastBuildDate>Sat, 23 Apr 2022 23:01:33 +0800</lastBuildDate>
-    <generator>Jekyll v4.2.2</generator>
+    <pubDate>Mon, 30 Jan 2023 19:59:06 +0800</pubDate>
+    <lastBuildDate>Mon, 30 Jan 2023 19:59:06 +0800</lastBuildDate>
+    <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>论文分享 - VirtualFlow: Decoupling Deep Learning Models from the underlying Hardware</title>
+        <description>&lt;h2 id=&quot;reference&quot;&gt;Reference&lt;/h2&gt;
+
+&lt;p&gt;Or, Andrew, Haoyu Zhang, and Michael None Freedman. “Virtualflow: Decoupling deep learning models from the underlying hardware.” &lt;em&gt;Proceedings of Machine Learning and Systems&lt;/em&gt; 4 (2022): 126-140.&lt;/p&gt;
+
+&lt;h2 id=&quot;faq&quot;&gt;FAQ&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Tensorflow的AI框架中已经用Executor的概念抽象解耦了底层的实际执行硬件，VirtualFlow所抽象的Virtual Nodes与Executor相比有什么差异？
+    &lt;blockquote&gt;
+      &lt;p&gt;传统的AI框架中Virtual Nodes和Physical Accelerators资源的映射关系是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1:1&lt;/code&gt;，例如在Tensorflow中每个GPU设备对应一个抽象的Executor对象。
+但是这只是&lt;strong&gt;时间和资源空间中的一种划分方式&lt;/strong&gt;
+VirtualFlow则是将时间和资源两个维度组成的空间进行划分，拓展了传统AI框架中的Virtual Nodes和Physical Accelerators资源&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1:1&lt;/code&gt;的映射关系
+VirtualFlow的一个创新点就&lt;strong&gt;在于用时间换空间，并保持模型的收敛速度和模型精度不变&lt;/strong&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;模型的收敛性和batch-size/learning-rate这些的hyperparameters之间的关系是什么？
+    &lt;blockquote&gt;
+      &lt;p&gt;在说模型收敛的时候，&lt;strong&gt;一般指的是训练、验证损失曲线没有大的波动&lt;/strong&gt;，而且随着训练轮数不断增加，波动依然可以在一定容忍范围内。
+个人理解，收敛的意义是系统稳定，就是模型的某一个权重参数发生小的改变的时候，模型输出结果不会发生强烈变化，导致系统崩溃，也就是所谓的发散。
+网络模型不收敛直观体现是&lt;strong&gt;loss函数无法下降&lt;/strong&gt;，本质上是网络或者训练方法有问题，包括batch-size大小，是否数据归一化，学习率设计，初始化权重等，这些都需要检查一下&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;VirtualFlow的Virtual Nodes是怎么保证模型的收敛性？
+    &lt;blockquote&gt;
+      &lt;p&gt;场景说明：原来大模型难以在资源较小规模的GPU集群上直接复用原来的Hyperparameters进行训练，因为原来在大集群上使用的batch-size在不修改的情况下，在小规模的GPU集群上运行不起来。如果直接调整模型的Hyperparameters适应小规模的GPU集群，那么就会存在模型收敛性和模型精度变化的问题
+所以，VirtualFlow是直接用与原始大规模集群训练场景相同数量的Virtual Nodes节点来模拟原始大规模集群中的GPU节点，这样就不需要调整模型的Hyperparameters参数。
+文中的一个可重现相同模型精度的实验设计，也可以看到所有的实验对照组中所有的virtual nodes的数量是相同。
+&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230130153829.png&quot; alt=&quot;&quot; /&gt;
+ &lt;strong&gt;总结一下就是VirtualFlow通过Virtual Nodes模拟出了和原场景相同的GPU数量，自己封装了Virtual Nodes到Physical GPU Resource之间的复杂的映射关系和处理逻辑&lt;/strong&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;VirtualFlow中不同模型的Virtual Nodes设置多大才比较合适呢？
+    &lt;blockquote&gt;
+      &lt;p&gt;这个需要根据具体的场景进行选择。&lt;/p&gt;
+      &lt;ul&gt;
+        &lt;li&gt;在论文中重点提到的&lt;strong&gt;用小规模GPU集群模拟大集群分布式的训练场景&lt;/strong&gt;下，Virtual Nodes的数量应该和原始场景中GPU的数量保持一致&lt;/li&gt;
+        &lt;li&gt;如果是利用VirtualFlow实现利用不同类型GPU资源的异构训练场景时，则需要通过论文中提到的&lt;strong&gt;异构资源分配求解器 + 离线特征提取&lt;/strong&gt;进行求解，得到最优地资源分配方式&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;模型与底层硬件强耦合的两个因素：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Hyperparameters与底层硬件强耦合&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;训练过程中的&lt;strong&gt;Hyperparameters&lt;/strong&gt;（例如learning rata, batch size, dropout rate）对于&lt;strong&gt;模型收敛性影响非常大&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;一些利用大规模加速器硬件资源和大batch-size训练得到的模型，很难通过小规模的加速器资源复现出相同的模型结果，主要原因是大规模训练集群中batch-size较大，而相同的batch-size无法适用在小规模的集群中，如果通过缩小batch-size大小，则模型训练的收敛性则存在较大的差异&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;模型的计算图与底层硬件强耦合&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;计算图中会强耦合底层硬件加速器资源的信息（例如分布式训练中的模型参数同步策略）&lt;/li&gt;
+      &lt;li&gt;模型训练过程中资源弹性扩展性差，调整硬件加速器资源需要涉及到一系列的模型参数checkpoint和restore，计算图重新编译优化等一系列操作&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;virtual-node处理流程&quot;&gt;Virtual Node处理流程&lt;/h2&gt;
+
+&lt;p&gt;Virtual Node概念抽象：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;从模型的角度来看，计算单元就是虚拟的Virtual Nodes，只要Virtual Nodes的数量不发生变化，那么模型的batch-size和收敛精度都将保持不变&lt;/li&gt;
+  &lt;li&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230129112137.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;VirtualFlow内存开销&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;VirtualFlow的内存开销主要来自于Gradient Buffer，这个Buffer是同一个物理硬件加速器的所有Virtual Node所共享
+    &lt;ul&gt;
+      &lt;li&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230129114044.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Gradient Buffer的大小跟模型参数大小成正相关，与batch-size无关，通常在训练过程中只占显存非常小的一个比例&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;VirtualFlow中关于时间和资源的权衡：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;传统的AI框架中Virtual Nodes和Physical Accelerators资源的映射关系是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1:1&lt;/code&gt;，但是这只是&lt;strong&gt;时间和资源空间中的一种划分方式&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;VirtualFlow则是将时间和资源两个维度组成的空间进行划分，拓展了传统AI框架中的Virtual Nodes和Physical Accelerators资源&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1:1&lt;/code&gt;的映射关系&lt;/li&gt;
+  &lt;li&gt;VirtualFlow的一个创新点就&lt;strong&gt;在于用时间换空间，并保持模型的收敛速度和模型精度不变&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230129115440.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;资源弹性扩缩容&quot;&gt;资源弹性扩缩容&lt;/h2&gt;
+
+&lt;p&gt;VirtualFlow相比于已有的GPU Cluster Schedulers的区别：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;在集群底层物理加速器资源扩缩时，&lt;strong&gt;无需中断已经在运行的Job和从checkpoint处恢复执行&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;已有的GPU集群调度器&lt;strong&gt;无法在不损害模型收敛性和精度的条件下&lt;/strong&gt;，动态地&lt;strong&gt;重新调整模型训练任务所需的资源大小&lt;/strong&gt;（举了一个例子，Job A需要2个GPU，Job B需要8个GPU，但是现在环境上只有8个GPU，如果无法调整Job的资源需求大小，那么这两个Job根本无法同时运行，而当Job A运行时，则剩余的6个GPU就会浪费）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;能够动态地调整Job对于资源的需求，可以大大地增加新的调度机会点&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;多种异构资源协同训练&quot;&gt;多种异构资源协同训练&lt;/h2&gt;
+
+&lt;p&gt;当前最新的AI框架在加速器资源分配时有一个前提假设：&lt;strong&gt;同一个Job只能分配使用相同的加速器资源（同种架构和同种硬件型号）&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;存在的两个挑战：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;如何有效地将virtual nodes映射到实际的异构加速器资源？
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;离线特征提取&lt;/strong&gt;：根据不同type resource类型和batch-size进行进行offline profiling，&lt;strong&gt;获取到不同type resource各自batch-size和throughput之间的关系&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;异构资源分配求解器&lt;/strong&gt;：通过公式归一化抽象出得到异构资源的分配方式，然后进行求解
+        &lt;ul&gt;
+          &lt;li&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230129164843.png&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;如何提供与同构资源相同的训练语义？
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;梯度值同步&lt;/strong&gt;：通过不同的加速器上的梯度加权平均方法，保证梯度同步时的不同加速器设备上的梯度值汇聚均分时的&lt;strong&gt;正确性&lt;/strong&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;数据分片&lt;/strong&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;实验分析&quot;&gt;实验分析&lt;/h2&gt;
+
+&lt;p&gt;直接看论文里面的Evaluation章节吧，实验部分主要分为：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;验证大规模集群模型训练在小规模集群上的复现，并保持模型精度不下降&lt;/li&gt;
+  &lt;li&gt;验证VirtualFlow框架的资源弹性伸缩能力&lt;/li&gt;
+  &lt;li&gt;验证VirtualFlow框架的多类型异构资源协同训练能力&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;VirtualFlow的核心思想类似于&lt;strong&gt;GPU虚拟化中的一虚多&lt;/strong&gt;，同一个物理GPU分时模拟多个GPU，它的一个好处就是不需要等到所有的物理资源需求都满足时才能开始工作，可以更灵活地组合多个任务共同执行，提高整个资源的资源利用率&lt;/li&gt;
+  &lt;li&gt;VirtualFlow的主要工作
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;模型收敛性保障&lt;/strong&gt;：小规模GPU集群模拟大规模集群训练模型的场景，可以保证模型的收敛性和模型精度&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;资源弹性伸缩&lt;/strong&gt;：VirtualFlow维护了Virtual Node到Physical GPU之间的映射关系，可以动态地调整物理资源在各个Job之间分配，提高资源利用率，并屏蔽底层物理资源动态伸缩带来的影响&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;异构资源协同训练&lt;/strong&gt;：充分利用系统中多种异构计算资源，通过Virtual Nodes屏蔽底层资源的差异，利用离线训练提取关键特征，然后通过求解器得出最优地Virtual Node到Physical Node的映射关系&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;论文中&lt;strong&gt;没有详细地阐述关于Virtual Node是如何建模&lt;/strong&gt;的，例如它模拟的GPU的显存多大，CUDA Core的数量是多少。如果Virtual Node模拟的显存大于底层实际GPU硬件设备的显存大小，Virtual Node就无法完成到实际GPU设备之间的映射&lt;/li&gt;
+  &lt;li&gt;VirtualFlow在大模型场景（单个模型参数大小无法存放在单个GPU节点上）时，如何将模型并行和数据并行相结合；还有复杂的多节点分布式训练场景下，如何做好Virtual Node到Distributed Physical GPU资源之间的映射（&lt;strong&gt;好像这种情况就退化成了GPU资源池化拉远的场景&lt;/strong&gt;）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://slideslive.ch/38987813/virtualflow-decoupling-deep-learning-models-from-the-underlying-hardware?ref=recommended&quot;&gt;slides-MLSys 2022-VirtualFlow: Decoupling Deep Learning Models from the Underlying Hardware&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://www.cnblogs.com/cindycindy/p/13470925.html&quot;&gt;深度学习什么是收敛？&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sun, 29 Jan 2023 16:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E8%AE%BA%E6%96%87/2023/01/29/%E8%AE%BA%E6%96%87%E5%88%86%E4%BA%AB-VirtualFlow-MLSys-2022.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E8%AE%BA%E6%96%87/2023/01/29/%E8%AE%BA%E6%96%87%E5%88%86%E4%BA%AB-VirtualFlow-MLSys-2022.html</guid>
+        
+        <category>MLSys</category>
+        
+        <category>论文</category>
+        
+        <category>AI</category>
+        
+        
+        <category>论文</category>
+        
+      </item>
     
       <item>
         <title>VSCode配置Linux内核源码阅读环境</title>
@@ -2747,199 +2924,6 @@ OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件�
         <category>EGL</category>
         
         <category>Graphic</category>
-        
-        
-        <category>android</category>
-        
-      </item>
-    
-      <item>
-        <title>Android 系统图形栈（一）： OpenGL ES 和 EGL 介绍</title>
-        <description>&lt;h2 id=&quot;opengl-es&quot;&gt;OpenGL ES&lt;/h2&gt;
-
-&lt;h3 id=&quot;什么是-opengl-es&quot;&gt;什么是 OpenGL ES？&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;OpenGL ES（OpenGL for Embedded Systems）是 OpenGL 三维图形API的子集，针对手机、PDA和游戏主机等嵌入式设备而设计，各显卡制造商和系统制造商来实现这组 API。&lt;sup id=&quot;fnref:footnote_1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:footnote_1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;!--more--&gt;
-
-&lt;h3 id=&quot;opengl-基本概念&quot;&gt;OpenGL 基本概念&lt;/h3&gt;
-
-&lt;p&gt;因为 OpenGL ES 是 OpenGL 的一个子集，所以下面就主要介绍一些有关 OpenGL 的一些基本概念。&lt;/p&gt;
-
-&lt;p&gt;OpenGL 的结构可以从逻辑上划分为下面 3 个部分：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;图元&lt;/strong&gt;（Primitives）&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;缓冲区&lt;/strong&gt;（Buffers）&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;光栅化&lt;/strong&gt;（Rasterize）&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;图元primitives&quot;&gt;图元（Primitives）&lt;/h4&gt;
-
-&lt;p&gt;在 OpenGL 的世界里，我们只能画&lt;strong&gt;点、线、三角形&lt;/strong&gt;这三种基本图形，而其它复杂的图形都可以通过三角形来组成。所以这里的图元指的就是这三种基础图形：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;点&lt;/strong&gt;：点存在于三维空间，坐标用（x,y,z）表示。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;线&lt;/strong&gt;：由两个三维空间中的点组成。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;三角形&lt;/strong&gt;：由三个三维空间的点组成。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;缓冲区buffers&quot;&gt;缓冲区（Buffers）&lt;/h4&gt;
-
-&lt;p&gt;OpenGL 中主要有 3 种 Buffer：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;帧缓冲区&lt;/strong&gt;（Frame Buffers）
-  帧缓冲区：这个是存储&lt;strong&gt;OpenGL 最终渲染输出结果的地方&lt;/strong&gt;，它是一个包含多个图像的集合，例如颜色图像、深度图像、模板图像等。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;渲染缓冲区&lt;/strong&gt;（Render Buffers）
-  渲染缓冲区：渲染缓冲区就是一个图像，它是 Frame Buffer 的一个子集。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;strong&gt;缓冲区对象&lt;/strong&gt;（Buffer Objects）
-  缓冲区对象就是程序员输入到 OpenGL 的数据，分为结构类和索引类的。前者被称为“数组缓冲区对象”或“顶点缓冲区对象”（“Array Buffer Object”或“Vertex Buff
-er Object”），即用来描述模型的数组，如顶点数组、纹理数组等； 后者被称为“索引缓冲区对象”（“Index Buffer Object”），是对上述数组的索引。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;光栅化rasterize&quot;&gt;光栅化（Rasterize）&lt;/h4&gt;
-
-&lt;p&gt;在介绍光栅化之前，首先来补充 OpenGL 中的两个非常重要的概念：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Vertex
-  Vertex 就是图形中顶点，一系列的顶点就围成了一个图形。&lt;/li&gt;
-  &lt;li&gt;Fragment
-  Fragment 是三维空间的点、线、三角形这些基本图元映射到二维平面上的映射区域，通常一个 Fragment 对应于屏幕上的一个像素，但高分辨率的屏幕可能会用多个像素点映射到一个 Fragment，以减少 GPU 的工作。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;而&lt;strong&gt;光栅化&lt;/strong&gt;是把点、线、三角形映射到屏幕上的像素点的过程。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170904150453148671075.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;着色器程序shader&quot;&gt;着色器程序（Shader）&lt;/h4&gt;
-
-&lt;p&gt;Shader 用来描述如何绘制（渲染），GLSL 是 OpenGL 的编程语言，全称 OpenGL Shader Language，它的语法类似于 C 语言。OpenGL 渲染需要两种 Shader：Vertex Shader 和 Fragment Shader。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Vertex Shader
-  Vertex Shader 对于3D模型网格的每个顶点执行一次，主要是确定该顶点的最终位置。&lt;/li&gt;
-  &lt;li&gt;Fragment Shader
-  Fragment Shader对光栅化之后2D图像中的每个像素处理一次。3D物体的表面最终显示成什么样将由它决定，例如为模型的可见表面添加纹理，处理光照、阴影的影响等等。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;opengl-流水线&quot;&gt;OpenGL 流水线&lt;/h4&gt;
-
-&lt;p&gt;OpenGL 中有两种流水线，一种是固定流水线，另外一种则是可编程流水线。&lt;/p&gt;
-
-&lt;p&gt;其中，OpenGL 1.0 版本支持固定流水线。其结构如下图所示：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/opengles_1x_pipeline.gif&quot; alt=&quot;OpenGL 1.0 固定流水线&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;从OpenGL 2.0版本开始，OpenGL支持可编程的流水线。也就是说，程序员可以通过Shader（一种程序）来控制GPU渲染的过程。
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/opengles_20_pipeline2.gif&quot; alt=&quot;OpenGL 2.0 可编程流水线&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;egl&quot;&gt;EGL&lt;/h2&gt;
-
-&lt;h3 id=&quot;什么是-egl&quot;&gt;什么是 EGL？&lt;/h3&gt;
-
-&lt;p&gt;EGL 是 OpenGL ES 渲染 API 和本地窗口系统(native platform window system)之间的一个中间接口层，它主要由系统制造商实现。EGL提供如下机制：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;与设备的原生窗口系统通信&lt;/li&gt;
-  &lt;li&gt;查询绘图表面的可用类型和配置&lt;/li&gt;
-  &lt;li&gt;创建绘图表面&lt;/li&gt;
-  &lt;li&gt;在OpenGL ES 和其他图形渲染API之间同步渲染&lt;/li&gt;
-  &lt;li&gt;管理纹理贴图等渲染资源&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;为了让OpenGL ES能够绘制在当前设备上，我们需要EGL作为OpenGL ES与设备的&lt;strong&gt;桥梁&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;h3 id=&quot;使用-egl-绘图的基本步骤&quot;&gt;使用 EGL 绘图的基本步骤&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/15038887630772.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Display(EGLDisplay) 是对实际显示设备的抽象。&lt;/li&gt;
-  &lt;li&gt;Surface（EGLSurface）是对用来存储图像的内存区域&lt;/li&gt;
-  &lt;li&gt;FrameBuffer 的抽象，包括 Color Buffer， Stencil Buffer ，Depth Buffer。Context (EGLContext) 存储 OpenGL ES绘图的一些状态信息。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使用EGL的绘图的一般步骤：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;获取 EGL Display 对象：eglGetDisplay()&lt;/li&gt;
-  &lt;li&gt;初始化与 EGLDisplay 之间的连接：eglInitialize()&lt;/li&gt;
-  &lt;li&gt;获取 EGLConfig 对象：eglChooseConfig()&lt;/li&gt;
-  &lt;li&gt;创建 EGLContext 实例：eglCreateContext()&lt;/li&gt;
-  &lt;li&gt;创建 EGLSurface 实例：eglCreateWindowSurface()&lt;/li&gt;
-  &lt;li&gt;连接 EGLContext 和 EGLSurface：eglMakeCurrent()&lt;/li&gt;
-  &lt;li&gt;使用 OpenGL ES API 绘制图形：gl_*()&lt;/li&gt;
-  &lt;li&gt;切换 front buffer 和 back buffer 送显：eglSwapBuffer()&lt;/li&gt;
-  &lt;li&gt;断开并释放与 EGLSurface 关联的 EGLContext 对象：eglRelease()&lt;/li&gt;
-  &lt;li&gt;删除 EGLSurface 对象&lt;/li&gt;
-  &lt;li&gt;删除 EGLContext 对象&lt;/li&gt;
-  &lt;li&gt;终止与 EGLDisplay 之间的连接&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;opengl-es-和-egl-的联系&quot;&gt;OpenGL ES 和 EGL 的联系&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20170904150453844639965.png&quot; alt=&quot;20170904150453844639965.png&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;一个类比的例子&quot;&gt;一个类比的例子&lt;/h3&gt;
-
-&lt;p&gt;我们来思考一下画家绘画的过程：首先要有一名懂得各种绘画技艺的画家，然后他需要一张画布，一些笔，一些颜料，一些辅助工具（尺、模板、橡皮、调色板等等），然后他在画布上绘制第一幅画，完成之后展示给人们看；在人们观赏第一幅画的时候，他可以在第二张画布上绘制第二幅画，绘制完成后收回第一幅画，将第二幅画展现给人们看；接着使用工具擦除第一幅画，在同一张画布上绘制第三幅画；周而复始，人们便看到了一幅接一幅的画。&lt;/p&gt;
-
-&lt;p&gt;对比 OpenGL ES/EGL，各要素的对应关系大体如下：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;画家：编程人员&lt;/li&gt;
-  &lt;li&gt;笔、颜料、辅助工具：OpenGL ES API&lt;/li&gt;
-  &lt;li&gt;画布：EGL 创建的 Surface&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;所以计算机绘画的本质就是选择图像显示的像素格式，申请一块内存（画布），填充像素（颜色），绘制完成之后，通知计算机显示到屏幕上（按比例发射RGB光），最终就看到了所绘制的画面。之所以要先选择像素格式，是因为无论是所申请内存的大小，还是硬件驱动解析这块内存的方式，都是由像素格式决定的。&lt;/p&gt;
-
-&lt;h2 id=&quot;参考资料&quot;&gt;参考资料&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.khronos.org/egl&quot;&gt;EGL 的官方介绍说明&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.slideshare.net/SuhanLee2/understaing-android-egl&quot;&gt;Understaing Android EGL&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://blog.piasy.com/2016/06/07/Open-gl-es-android-2-part-1/&quot;&gt;安卓 OpenGL ES 2.0 完全入门（一）：基本概念和 hello world&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2920106.html&quot;&gt;EGL 参考资料1: 学习OpenGL-ES: 1 - 像素、颜色、显存、初始化&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/21/2921123.html&quot;&gt;EGL 参考资料2: 学习OpenGL-ES: 2 - EGL解析&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://mobile.51cto.com/app-show-436809.htm&quot;&gt;OpenGL ES 2.0 编程三步曲&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/kiffa/archive/2013/02/22/2922487.html&quot;&gt;OpenGL 参考资料1: 学习OpenGL-ES: 3 - 3D绘图原理&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/hrlnw/p/4642272.html&quot;&gt;Android OpenGL ES 离屏渲染（offscreen render）&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.shengbin.me/posts/opengl-concepts/&quot;&gt;OpenGL基本概念&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-1/&quot;&gt;All about OpenGL ES 2.x - (part 1/3)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-2/&quot;&gt;All about OpenGL ES 2.x - (part 2/3)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://blog.db-in.com/all-about-opengl-es-2-x-part-3/&quot;&gt;All about OpenGL ES 2.x - (part 3/3)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://wiki.jikexueyuan.com/project/opengl-es-guide/about-egl.html&quot;&gt;关于EGL&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:footnote_1&quot; role=&quot;doc-endnote&quot;&gt;
-      &lt;p&gt;https://zh.wikipedia.org/wiki/OpenGL_ES &lt;a href=&quot;#fnref:footnote_1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Mon, 04 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html</guid>
-        
-        <category>Android</category>
-        
-        <category>Graphic</category>
-        
-        <category>OpenGLES</category>
-        
-        <category>EGL</category>
         
         
         <category>android</category>

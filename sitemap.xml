@@ -161,6 +161,10 @@
 <lastmod>2022-04-23T16:00:00+08:00</lastmod>
 </url>
 <url>
+<loc>http://localhost:4000/%E8%AE%BA%E6%96%87/2023/01/29/%E8%AE%BA%E6%96%87%E5%88%86%E4%BA%AB-VirtualFlow-MLSys-2022.html</loc>
+<lastmod>2023-01-29T16:00:00+08:00</lastmod>
+</url>
+<url>
 <loc>http://localhost:4000/about/</loc>
 </url>
 <url>
@@ -410,6 +414,15 @@
 <loc>http://localhost:4000/tag/kernel/</loc>
 </url>
 <url>
+<loc>http://localhost:4000/tag/mlsys/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/tag/%E8%AE%BA%E6%96%87/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/tag/ai/</loc>
+</url>
+<url>
 <loc>http://localhost:4000/category/android/</loc>
 </url>
 <url>
@@ -443,6 +456,9 @@
 <loc>http://localhost:4000/category/%E6%88%B7%E5%A4%96/</loc>
 </url>
 <url>
+<loc>http://localhost:4000/category/%E8%AE%BA%E6%96%87/</loc>
+</url>
+<url>
 <loc>http://localhost:4000/page2/</loc>
 </url>
 <url>
@@ -462,5 +478,8 @@
 </url>
 <url>
 <loc>http://localhost:4000/page8/</loc>
+</url>
+<url>
+<loc>http://localhost:4000/page9/</loc>
 </url>
 </urlset>

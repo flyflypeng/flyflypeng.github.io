@@ -11,7 +11,7 @@
     content="1. 前言如果你有手动从源码编译过linux应用程序的经历，那么你肯定不会对”./configure“,”make”,”make install”这些命令感到陌生。下面我们就来探索一下这个过程中的每一都发生了什么。在Linux系统环境中使用GNU的make工具可以很方便地构建和编译一个大型的工程,整个工程的编译只...">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2023">
   
 
   <!-- External libraries -->
@@ -441,6 +441,18 @@
           
         
           
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -482,6 +494,12 @@
         
           
           <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
           
         
           
@@ -676,11 +694,11 @@
 <span class="nv">CC</span> <span class="o">=</span> gcc
 <span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-O</span> <span class="nt">-g</span>
 <span class="nl">helloworld</span><span class="o">:</span><span class="nf">$(OBJS)</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(OBJS)</span> <span class="nt">-o</span> helloworld
+	<span class="p">$(</span>CC<span class="p">)</span> <span class="p">$(</span>OBJS<span class="p">)</span> <span class="nt">-o</span> helloworld
 <span class="nl">file1.o</span><span class="o">:</span><span class="nf">file1.c file2.h</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> file1.c <span class="nt">-o</span> file1.o
+	<span class="p">$(</span>CC<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-c</span> file1.c <span class="nt">-o</span> file1.o
 <span class="nl">file2.o</span><span class="o">:</span><span class="nf">file2.c file2.h</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> file2.c <span class="nt">-o</span> file2.o
+	<span class="p">$(</span>CC<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-c</span> file2.c <span class="nt">-o</span> file2.o
 <span class="nl">clean</span><span class="o">:</span>
 	<span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">*</span>.o helloworld
 </code></pre></div></div>
@@ -724,14 +742,14 @@
 <span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-O</span> <span class="nt">-g</span>
 <span class="nv">TARGET</span> <span class="o">=</span>  ./helloworld
 <span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
+	<span class="p">$(</span>CC<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
 <span class="nl">%.o</span><span class="o">:</span><span class="nf">%.cpp</span>
-	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
-<span class="nv">SOURCES</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">wildcard</span> <span class="k">*</span>.c <span class="k">*</span>.cpp<span class="nf">)</span>
-<span class="nv">OBJS</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">patsubst</span> %.c,%.o,<span class="nf">$(</span><span class="nb">patsubst</span> %.cpp,%.o,<span class="nv">$(SOURCES)</span><span class="nf">))</span>
+	<span class="p">$(</span>XX<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
+<span class="nv">SOURCES</span> <span class="o">=</span> <span class="p">$(</span>wildcard <span class="k">*</span>.c <span class="k">*</span>.cpp<span class="p">)</span>
+<span class="nv">OBJS</span> <span class="o">=</span> <span class="p">$(</span>patsubst %.c,%.o,<span class="p">$(</span>patsubst %.cpp,%.o,<span class="p">$(</span>SOURCES<span class="p">)))</span>
 
 <span class="nl">$(TARGET)</span><span class="o">:</span><span class="nf">$(OBJS)</span>
-	<span class="nv">$(XX)</span> <span class="nv">$(OBJS)</span> <span class="nt">-o</span> <span class="nv">$(TARGET)</span>
+	<span class="p">$(</span>XX<span class="p">)</span> <span class="p">$(</span>OBJS<span class="p">)</span> <span class="nt">-o</span> <span class="p">$(</span>TARGET<span class="p">)</span>
     <span class="err">chmod</span> <span class="err">a+x</span> <span class="err">$(TARGET)</span>
 <span class="nl">clean</span><span class="o">:</span>
 	<span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">*</span>.o helloworld
@@ -748,9 +766,9 @@ SOURCES = $(wildcard *.c *.cpp)  #这句代码表示产生一个所有以.c，.c
 OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示把文件列表中的所有的.c,.cpp字符变成.o，形成一个新的文件列表，然后存入OBJS变量中。</p>
 
 <div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">%.o</span><span class="o">:</span><span class="nf">%.c</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
+	<span class="p">$(</span>CC<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
 <span class="nl">%.o</span><span class="o">:</span><span class="nf">%.cpp</span>
-	<span class="nv">$(XX)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
+	<span class="p">$(</span>XX<span class="p">)</span> <span class="p">$(</span>CFLAGS<span class="p">)</span> <span class="nt">-c</span> <span class="nv">$&lt;</span> <span class="nt">-o</span> <span class="nv">$@</span>
 </code></pre></div></div>
 <p>这几句命令表示把所有的 .c , .cpp 文件编译成.o文件。
 这里有三个比较有用的内部变量:</p>
@@ -1267,6 +1285,18 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
         
         
         
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1308,6 +1338,12 @@ OBJS = $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCES)))  #这句代码表示
         
         
           <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
         
         
         

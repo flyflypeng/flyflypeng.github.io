@@ -12,7 +12,7 @@
 ">
   
   <meta name="author" content="Pengfei Jiang">
-  <meta name="copyright" content="&copy; Pengfei Jiang 2022">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2023">
   
 
   <!-- External libraries -->
@@ -444,6 +444,18 @@
           
         
           
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -488,6 +500,12 @@
           
         
           
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+        
+          
         
           
         
@@ -527,6 +545,28 @@
 
 <div class="wrapper">
 <ul class="post-list">
+  
+  <li>
+    <h2>
+      <a class="post-link" href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2015/07/17/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01.html">Python 学习笔记（1）</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>1. Python简介 Python是著名的“龟叔”Guido van Rossum在1989年圣诞节期间，为了打发无聊的圣诞节而编写的一个编程语言[1]。 Python就为我们提供了非常完善的基础代码库，覆盖了网络、文件、GUI、数据库、文本等大量内容，被形象地称作“内置电池（batteries included）”。用Python开发，许多功能不必从零编写，直接使用现成的即可。 除了内置的库外，Python还有大量的第三方库，也就是别人开发的，供你直接使用的东西。当然，如果你开发的代码通过很好的封装，也可以作为第三方库给别人使用。 总的来说，Python的哲学就是简单优雅，尽量写容易看明白的代码，尽量写少的代码。如果一个资深程序员向你炫耀他写的晦涩难懂、动不动就几万行的代码，你可以尽情地嘲笑他。 那Python适合开发哪些类型的应用呢？ 首选是网络应用，包括网站、后台服务等等； 其次是许多日常需要的小工具，包括系统管理员需要的脚本任务等等； 另外就是把其他语言开发的程序再包装起来，方便使用。 最后说说Python的缺点: 任何编程语言都有缺点，Python也不例外。优点说过了，那Python有哪些缺点呢？ 第一个缺点就是运行速度慢，和C程序相比非常慢，因为Python是解释型语言，你的代码在执行时会一行一行地翻译成CPU能理解的机器码，这个翻译过程非常耗时，所以很慢。而C程序是运行前直接编译成CPU能执行的机器码，所以非常快。 第二个缺点就是代码不能加密。如果要发布你的Python程序，实际上就是发布源代码，这一点跟C语言不同，C语言不用发布源代码，只需要把编译后的机器 码（也就是你在Windows上常见的xxx.exe文件）发布出去。要从机器码反推出C代码是不可能的，所以，凡是编译型的语言，都没有这个问题，而解 释型的语言，则必须把源码发布出去。 2....</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">July 17, 2015</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/编程语言">编程语言</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
   
   <li>
     <h2>
@@ -613,28 +653,6 @@
     </section>
   </li>
   
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/android/2015/05/19/Android-Virtual-Keyboard.html">Android 虚拟激光键盘设计及实现</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>简介 当第一次在网上看到虚拟激光键盘时，我真的被震惊到了，觉得这键盘好科幻好酷炫啊，完全就是电影里的未来高科技的赶脚啊。看到这么酷炫高达上的东西，其实心中早已按倷不住了，要不自己就动手DIY一个？于是，就在网上各种搜索查找相关的资料，找到一个写得很详细图文并茂的的一个教程，低成本激光投射虚拟键盘的设计制作-上(原理和硬件)和低成本激光投射虚拟键盘的设计制作-下(算法与实现)，我也在RoboPeak公司的产品中看到了这款虚拟激光键盘的产品（其实这家公司是做国内开源硬件和机器人平台的公司，我觉得它们的很多产品都非常有创新性）。 当然我也在淘宝上搜过有关虚拟激光键盘的产品，网上在售的主要是韩国Celluon公司的产品（如上图所示，价格在800-1000左右）和国内深圳某公司生产的与之相似的产品（价格只有200-300），它们都是基于蓝牙连接技术的键盘，只要你的设备支持蓝牙与其连接，智能手机、平板电脑、台式电脑、笔记本电脑也都可以使用。总之，虚拟激光键盘技术已经很成熟了，并且蓝牙技术也使得平台兼容性得到很好地解决。 现在移动办公的概念也离我们越来越近，只要一个手机或平板连上WIFI，就能随时随地进种处理各种事务，但是对于移动办公来说，文本文件和图表文件的处理是主要的业务需求，而现在的手机中自带的触屏输入系统存在着输入速度慢、键盘按键小、误输率高等缺点，所以能不能将虚拟激光键盘和移动设备结合在一起，将虚拟激光键盘内置到移动设备中作为其内置的一个输入功能，解决移动设备中触屏输入的缺点呢？于是，我就决定做这么一个基于Android系统的虚拟激光键盘，但这只是一个功能模型，如果能够将各个部件缩小化，然后将其嵌入到移动设备中，上面的设想也就能够实现了。 基本原理 本设计的虚拟激光键盘主要由键盘图像投影模块、红外激光定位系统、广角摄像头图像采集系统和Android平板四部分组成。在任意的平整的漫反射表面，通过红色波段的激光器透射刻有键盘图像的光栅，投影出QWERTY式的标准键盘图像，当用户敲击投影出的键盘图像中的某个按键时，通过广角摄像头就能捕捉到键盘区域内的键盘图像信息，再利用图像处理技术识别出图像中用户所敲击键盘的位置坐标，然后根据位置坐标映射到预先测量保存好的键盘布局文件中由此来确定按键的键值，然后将按键的键值封装成Android系统中的按键事件发送到Android系统中，这样就能实现与Android系统自带的软键盘一样的输入功能。 在上面虚拟激光键盘的原理介绍中，有三个核心的问题: 如何产生产生键盘画面？ 如何识别按键事件？ 如何模拟Android系统中按键事件 产生键盘画面 如果你小时候也和我一样玩过下面这种激光笔的话，相信你就知道我们的键盘图案是怎么产生了 实际上在激光投影键盘产品中，这类画面往往是通过全息投影技术得到的。激光器通过照射先前保存有键盘画面的全息镜片的方式在目标平面上产生相应的画面。还好现在我们有万能的淘宝，我们可以买到这样的激光键盘投射器。Ok，键盘图案就可以通过这个模块很简单地实现了。 识别按键事件 由于键盘画面可以投射在任意的表面上，因此传统的靠物理按钮的手段自然是不可能的（否则也称不上虚拟键盘）。需要非接触的手段来检测。这里给出了几种途径，他们在技术上都是可行的: 通过计算机视觉的方式，通过图像来识别 通过摄像头捕捉键盘区域的画面并进行分析，判断出键盘输入事件。 通过检测按键发出的声音来判断 这里假设使用者在按键时会碰触桌面，产生一定的敲击声。通过检测该声音传播时间，可以进行定位。该 方案在国外的一些研究机构已经实现。...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">May 19, 2015</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/android">Android</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
   
 </ul>
 
@@ -650,12 +668,14 @@
 			</a>
 			
 		
-		<span class="page-number">Page 8 of 8</span>
+		<span class="page-number">Page 8 of 9</span>
 		
-		<span class="fa-stack fa-lg">
-      <i class="fa fa-square fa-stack-2x"></i>
-      <i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
-    </span>
+		<a class="newer-posts" href="/page9">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-square fa-stack-2x"></i>
+        <i class="fa fa-angle-double-right fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
 		
 	</p>
 </nav>
@@ -1014,6 +1034,18 @@
         
         
         
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+        
+        
+        
           <li class="nav-link"><a href="/category/android/">android</a>
         
         
@@ -1055,6 +1087,12 @@
         
         
           <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
         
         
         
