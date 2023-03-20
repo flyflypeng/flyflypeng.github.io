@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>100个Rust问题</title>
+  <meta name="description"
+    content="说明这是一个我自己在学习Rust语言中记录的一闪而过不明白想深入探究或者在写代码中经常会去搜索才能获取到答案的一些问题。这篇文章希望可以给大家当做是一个FAQ来使用，遇到Rust相关的困惑时，直接Ctrl + F。希望它比ChatGPT给出的答案更接近你想要得到的标准答案！1. Rust examples样例程序...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2023">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href=" /assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href=" /assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href=" /assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href=" /assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href=" /assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href=" /assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href=" /assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href=" /assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href=" /assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href=" /assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href=" /assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href=" /assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href=" /assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href=" /assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href=" /assets/icons/favicon-16x16.png">
+  <link rel="manifest" href=" /assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content=" /assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description"
+    content="说明这是一个我自己在学习Rust语言中记录的一闪而过不明白想深入探究或者在写代码中经常会去搜索才能获取到答案的一些问题。这篇文章希望可以给大家当做是一个FAQ来使用，遇到Rust相关的困惑时，直接Ctrl + F。希望它比ChatGPT给出的答案更接近你想要得到的标准答案！1. Rust examples样例程序..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="100个Rust问题" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image"
+    content="http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230320145945.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="100个Rust问题">
+  <meta name="twitter:description"
+    content="说明这是一个我自己在学习Rust语言中记录的一闪而过不明白想深入探究或者在写代码中经常会去搜索才能获取到答案的一些问题。这篇文章希望可以给大家当做是一个FAQ来使用，遇到Rust相关的困惑时，直接Ctrl + F。希望它比ChatGPT给出的答案更接近你想要得到的标准答案！1. Rust examples样例程序...">
+  <meta name="twitter:image"
+    content="http://localhost:4000https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230320145945.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href=" /css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2023/03/19/100%E4%B8%AARust%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000 /feed.xml" />
+
+  <!-- Google analytics -->
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQJMFGY2LD"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-WQJMFGY2LD');
+</script>
+  
+</head>
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/keyboard/">keyboard</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/virtual/">virtual</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/android/">Android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/opencv/">opencv</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/markdown/">Markdown</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%8B%B1%E8%AF%AD/">英语</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%AD%A6%E4%B9%A0/">学习</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/hexo/">Hexo</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%8D%9A%E5%AE%A2/">博客</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ubuntu/">Ubuntu</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/firefox/">Firefox</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/python/">Python</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/make/">make</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/makefile/">Makefile</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sublimetext/">SublimeText</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%B0%83%E5%BA%A6/">调度</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%A1%AC%E7%9B%98/">硬盘</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%AE%A1%E7%AE%97%E6%9C%BA/">计算机</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/terminator/">Terminator</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cpu/">CPU</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">系统调用</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86/">时间管理</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/vnc/">VNC</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/rfb/">RFB</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/container-of/">container_of</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/offsetof/">offsetof</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cs/">CS</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%9F%BA%E7%A1%80/">基础</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E9%98%85%E8%AF%BB/">阅读</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E4%B9%A6%E5%8D%95/">书单</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%B0%8F%E8%AF%B4/">小说</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%8A%80%E6%9C%AF/">技术</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ndk/">NDK</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/debug/">Debug</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/tombstone/">Tombstone</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/eof/">EOF</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/git/">Git</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ppa/">PPA</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/apt/">APT</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%90%8C%E6%AD%A5/">同步</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85/">生产者消费者</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA/">环形缓冲区</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ringbuffer/">RingBuffer</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/aosp/">AOSP</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/hal/">HAL</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ramfs/">ramfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/tmpfs/">tmpfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/rootfs/">rootfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/initramfs/">initramfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/unix/">Unix</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/i-o/">I/O</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/graphic/">Graphic</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/opengles/">OpenGLES</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/egl/">EGL</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/qemu/">QEMU</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kvm/">KVM</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/mac/">Mac</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/jekyll/">Jekyll</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/iterm2/">iTerm2</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/zsh/">zsh</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kubernetes/">kubernetes</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/k8s/">k8s</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cloudnative/">cloudnative</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%88%B7%E5%A4%96/">户外</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E9%9C%B2%E8%90%A5/">露营</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/camp/">camp</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%AC%94%E8%AE%B0/">笔记</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/rust/">Rust</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230320145945.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">100个Rust问题</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">March 19, 2023</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/编程语言">编程语言</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="说明">说明</h2>
+
+<p>这是一个我自己在学习Rust语言中记录的一闪而过不明白想深入探究或者在写代码中经常会去搜索才能获取到答案的一些问题。</p>
+
+<p>这篇文章希望可以给大家当做是一个FAQ来使用，遇到Rust相关的困惑时，直接<code class="language-plaintext highlighter-rouge">Ctrl + F</code>。</p>
+
+<p><strong>希望它比ChatGPT给出的答案更接近你想要得到的标准答案！</strong></p>
+
+<h2 id="1-rust-examples样例程序如何在cargotoml文件中添加依赖">1. Rust examples样例程序如何在Cargo.toml文件中添加依赖？</h2>
+
+<p>由<a href="http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/cargo/reference/specifying-dependencies.html#development-dependencies">Cargo Book - Development dependencies</a>可知，对于<code class="language-plaintext highlighter-rouge">tests, examples, benchmarks</code>程序的依赖都统一填写在<code class="language-plaintext highlighter-rouge">Cargo.toml</code>文件中的<code class="language-plaintext highlighter-rouge">[dev-dependencies]</code>小节中。</p>
+
+<h2 id="2-如何将文件中内容读取到内存的buffer中其中文件内容长度不确定">2. 如何将文件中内容读取到内存的Buffer中，其中文件内容长度不确定？</h2>
+
+<p>Rust的<code class="language-plaintext highlighter-rouge">std::io::Read</code>trait提供了对于IO数据流读取的抽象，其中提供了<code class="language-plaintext highlighter-rouge">read_to_end()</code>函数支持将IO数据流读取到一个<code class="language-plaintext highlighter-rouge">Vec&lt;u8&gt;</code>的向量。</p>
+
+<p><a href="https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_end">read_to_end</a>函数定义如下所示：</p>
+<pre><code class="language-Rust">fn read_to_end(&amp;mut self, buf: &amp;mut Vec&lt;u8&gt;) -&gt; Result&lt;usize&gt;
+</code></pre>
+
+<h2 id="3-rust-相关学习资料">3. Rust 相关学习资料</h2>
+
+<ul>
+  <li><a href="https://doc.rust-lang.org/rust-by-example/std/result/question_mark.html">Rust By Example</a>：通过一个个简单的例子来学习Rust，非常适合熟悉Rust的语法</li>
+  <li><a href="https://doc.rust-lang.org/std/">Rust Std标准库文档</a>：Rust std标准库的文档，不知道怎么使用库就可以来这里查查</li>
+  <li><a href="https://cheats.rs/#basic-types">Rust Language Cheat Sheet</a>：Rust语法和用法相关的快速检索表</li>
+  <li><a href="https://doc.rust-lang.org/stable/reference/">The Rust Reference</a>：介绍Rust语言的内存模型，并发模型，语法设计这些语言层面的Book</li>
+  <li><a href="https://kaisery.github.io/trpl-zh-cn/">Rust 程序设计语言 简体中文版</a>：The Rust Programming Language官方书籍的中译版</li>
+  <li><a href="https://github.com/rust-lang-cn/rustlings-cn">rustlings</a>：项目包括一些让你熟悉阅读和编写 Rust 代码的小练习。这包括阅读和响应编译器信息！</li>
+  <li><a href="https://tourofrust.com/00_zh-cn.html">Rust 语言之旅</a>：通过一个一系列的在线交互方式来一步步地引导新手熟悉Rust语言</li>
+  <li><a href="https://github.com/rcore-os/rCore/wiki/os-tutorial-summer-of-code-2020#step-0-%E8%87%AA%E5%AD%A6rust%E7%BC%96%E7%A8%8B%E5%A4%A7%E7%BA%A67%E5%A4%A9">OS Tutorial Summer of Code 2020：Rust系统编程入门指导</a>：清华大学rCore团队在os tutorial summer of code 2020项目中给出的Rust快速入门指导</li>
+  <li><a href="https://github.com/google/comprehensive-rust">comprehensive-rust</a>：Google Android团队推出的Rust入门教程</li>
+  <li><a href="https://course.rs/about-book.html">Rust语言圣经(Rust Course)</a>：国内Rust开源爱好者共同编写的一本书，关于书中不理解的部分，也有Comment讨论，个人觉得这一点很有帮助，可以帮助大家解答书中遇到的类似的问题</li>
+</ul>
+
+<h2 id="4-rust中文件名函数名文件目录等命名的代码规范">4. Rust中文件名、函数名、文件目录等命名的代码规范？</h2>
+
+<p><a href="https://rust-coding-guidelines.github.io/rust-coding-guidelines-zh/overview.html">张汉东老师总结的Rust编码规范</a></p>
+
+<h2 id="5-rust如何实现数据结构序列化成json格式及其反序列化">5. Rust如何实现数据结构序列化成json格式及其反序列化？</h2>
+
+<h2 id="6-全局的常量如何定义">6. 全局的常量如何定义？</h2>
+
+<h2 id="7-lazy_static宏和static静态变量有什么区别">7. lazy_static！宏和static静态变量有什么区别？</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">lazy_static!</code>是在程序第一次调用时（运行时）才进行初始化</li>
+  <li><code class="language-plaintext highlighter-rouge">static</code>静态变量/<code class="language-plaintext highlighter-rouge">const</code>静态常量，则是在程序编译阶段由编译器进行初始化，所以static变量只能通过<strong>常量表达式</strong>或<strong>数学表达式</strong></li>
+</ul>
+
+<p><strong><code class="language-plaintext highlighter-rouge">lazy_static!</code>宏可以用在什么场景？</strong></p>
+
+<ul>
+  <li>初始化一个全局唯一的对象，并且该对象需要通过调用初始化函数进行构造时</li>
+  <li>创建一个全具的Mutex锁，供程序中不同线程之间实现互斥访问</li>
+</ul>
+
+<p><a href="https://course.rs/advance/global-variable.html">全局变量</a>
+<a href="https://www.minazuki.cn/post/blog_os/blog_os-1bt8t9lfea0hv/blog_os-1bu1aakjmdra0/">rust crate: lazy_static</a></p>
+
+<h2 id="8-实现一个结构体相关方法">8. 实现一个结构体相关方法？</h2>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">impl</span> <span class="o">&lt;</span><span class="k">type</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="k">fn</span> <span class="o">&lt;</span><span class="n">func</span><span class="o">-</span><span class="n">signature</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+		<span class="o">...</span><span class="err">.</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">impl</span> <span class="o">&lt;</span><span class="k">trait</span><span class="o">&gt;</span> <span class="k">for</span> <span class="o">&lt;</span><span class="k">type</span><span class="o">-</span><span class="n">name</span><span class="o">&gt;</span> <span class="p">{</span>
+	<span class="k">fn</span> <span class="o">&lt;</span><span class="n">func</span><span class="o">-</span><span class="n">define</span><span class="o">-</span><span class="k">in</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="k">trait</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">{</span>
+		<span class="o">.....</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="9-anyhow库的作用">9. anyhow库的作用？</h2>
+<p>如果有多个错误类型在同一个函数中需要处理时，返回的错误类型必须支持通过<code class="language-plaintext highlighter-rouge">From</code>trait实现将函数中多种错误类型转换成返回的错误类型，例如：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">foo</span><span class="p">()</span> <span class="k">-&gt;</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">FooError</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">one</span><span class="p">:</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">OneError</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nf">fn_one</span><span class="p">();</span>
+    <span class="n">one</span><span class="o">?</span><span class="p">;</span>
+
+    <span class="k">let</span> <span class="n">two</span><span class="p">:</span> <span class="nb">Result</span><span class="o">&lt;</span><span class="p">(),</span> <span class="n">TwoError</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nf">fn_two</span><span class="p">();</span>
+    <span class="n">two</span><span class="o">?</span><span class="p">;</span>
+
+    <span class="nf">Ok</span><span class="p">(())</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>其中，返回值的<code class="language-plaintext highlighter-rouge">FooError</code>错误类型，必须要实现<code class="language-plaintext highlighter-rouge">From&lt;OneError&gt;</code>和<code class="language-plaintext highlighter-rouge">From&lt;TwoError&gt;</code>，这样才能实现不同错误类型的归一。通常的做法就是将可能出现的错误类型通过<code class="language-plaintext highlighter-rouge">enum</code>枚举类型定义出来，然后实现<code class="language-plaintext highlighter-rouge">Display</code>，<code class="language-plaintext highlighter-rouge">Debug</code>，<code class="language-plaintext highlighter-rouge">Error</code>，<code class="language-plaintext highlighter-rouge">From&lt;T&gt;</code>这几个trait，但是手动写这些代码显得非常枯燥和无聊。</p>
+
+<p>所以，社区有人写了<code class="language-plaintext highlighter-rouge">anyhow</code>crate库，它本质就是定义了一个<code class="language-plaintext highlighter-rouge">anyhow::Error</code>的类型，然后默认实现了<code class="language-plaintext highlighter-rouge">From&lt;E&gt; where E: Error</code>，这样所有实现了<code class="language-plaintext highlighter-rouge">Error</code>trait的所有错误类型都可以转换成<code class="language-plaintext highlighter-rouge">anyhow::Error</code>类型。</p>
+
+<p>另外，如果要构建一个错误类型值返回时，可以通过<code class="language-plaintext highlighter-rouge">anyhow!</code>宏记性构造，如下所示：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="nf">Err</span><span class="p">(</span><span class="nd">anyhow!</span><span class="p">(</span><span class="s">"Missing attribute: {}"</span><span class="p">,</span> <span class="n">missing</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p><a href="https://www.jmjoy.top/posts/rust%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E4%BD%BF%E7%94%A8thiserror+anyhow%E6%9D%A5%E4%BC%98%E9%9B%85%E4%BE%BF%E6%8D%B7%E5%9C%B0%E5%A4%84%E7%90%86%E9%94%99%E8%AF%AF/">【Rust错误处理】使用<code class="language-plaintext highlighter-rouge">thiserror</code>+<code class="language-plaintext highlighter-rouge">anyhow</code>来优雅便捷地处理错误</a>
+<a href="https://docs.rs/anyhow/latest/anyhow/">Crate anyhow</a></p>
+
+<h2 id="10-warp-web异步处理框架中mapthenand_then中对应的handler闭包函数的参数是如何捕获的">10. warp Web异步处理框架中map,then,and_then中对应的handler闭包函数的参数是如何捕获的？</h2>
+
+<p><a href="https://docs.rs/warp/latest/warp/trait.Filter.html#extracting-tuples">Extracting Tuples</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>You may notice that several of these filters extract some tuple, often times a tuple of just 1 item! Why?
+
+If a filter extracts a `(String,)`, that simply means that it extracts a `String`. If you were to `map` the filter, the argument type would be exactly that, just a `String`.
+
+What is it? It’s just some type magic that allows for automatic combining and flattening of tuples. Without it, combining two filters together with `and`, where one extracted `()`, and another `String`, would mean the `map` would be given a single argument of `((), String,)`, which is just no fun.
+</code></pre></div></div>
+
+<p>从<code class="language-plaintext highlighter-rouge">Trait warp::Filter</code>中上面关于Extract类型数据的描述可知，有的<code class="language-plaintext highlighter-rouge">filter</code>在过滤请求的时候，会将请求中的一些数据extract解析出来，然后解析出来的数据作为输入参数，传递给请求处理的handler闭包函数。</p>
+
+<p>例如，<code class="language-plaintext highlighter-rouge">warp::filters::body::json</code>filter函数的定义中，就Extract出http body中的json参数信息：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">pub</span> <span class="k">fn</span> <span class="n">json</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span> <span class="n">DeserializeOwned</span> <span class="o">+</span> <span class="nb">Send</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="p">)</span> <span class="k">-&gt;</span> <span class="k">impl</span> <span class="n">Filter</span><span class="o">&lt;</span><span class="n">Extract</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">,),</span> <span class="n">Error</span> <span class="o">=</span> <span class="n">Rejection</span><span class="o">&gt;</span> <span class="o">+</span> <span class="nb">Copy</span>
+</code></pre></div></div>
+
+<p>而<code class="language-plaintext highlighter-rouge">warp::filters::body::content_length_limit</code>filter函数的定义中，Extract的数据类型为空元组<code class="language-plaintext highlighter-rouge">()</code>，空元组数据类型在后面的请求处理函数的捕获变量中会被忽略掉。</p>
+
+<h2 id="11-异步编程框架tokio中如何支持rwlock锁">11. 异步编程框架tokio中如何支持RWLock锁？</h2>
+
+<p>在WasmEngine源码中，FunctionStore结构体中定义了一个<code class="language-plaintext highlighter-rouge">Arc&lt;RwLock&lt;HashMap&lt;String, FunctionEntry&gt;&gt;&gt;</code>类型的成员，其中的<code class="language-plaintext highlighter-rouge">RwLock</code>是std标准库中的一个<code class="language-plaintext highlighter-rouge">std::sync::RwLock</code>读写锁，但是基于tokio的异步编程框架中，编译代码时rustc编译器却提示如下的错误信息：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>future cannot be sent between threads safely  
+within <span class="sb">`</span>impl Future&lt;Output <span class="o">=</span> Result&lt;Opaque<span class="o">(</span>DefId<span class="o">(</span>0:578 ~ wasm_engine[2ad7]::handlers::deploy_function::<span class="o">{</span>opaque#0<span class="o">}</span>::<span class="o">{</span>opaque#0<span class="o">})</span>, <span class="o">[])</span>, Rejection&gt;&gt;<span class="sb">`</span>, the trait <span class="sb">`</span>Send<span class="sb">`</span> is not implemented <span class="k">for</span> <span class="sb">`</span>std::sync::RwLockWriteGuard&lt;<span class="s1">'_, HashMap&lt;std::string::String, FunctionEntry&gt;&gt;`
+</span></code></pre></div></div>
+
+<p>上面的错误提示信息中说到<code class="language-plaintext highlighter-rouge">std::sync::RwLockWriteGuard</code>没有实现<code class="language-plaintext highlighter-rouge">Send</code> trait，导致无法实现读写锁的所有权跨线程安全传递。</p>
+
+<p>补充：<code class="language-plaintext highlighter-rouge">Send</code>trait是Rust中定义标记型trait（mark trait），它没有定义任何函数行为，它的作用就是如果一个数据类型实现了<code class="language-plaintext highlighter-rouge">Send</code> trait，那么该类型值的所有权可以安全到从一个线程move到另外一个线程中。</p>
+
+<p><code class="language-plaintext highlighter-rouge">std::sync::RwLockWriteGuard</code>类型的定义如下所示，可以看到它的确没有实现<code class="language-plaintext highlighter-rouge">Send</code> trait，所以就无法实现跨线程的所有权安全移动。</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">#[stable(feature</span> <span class="nd">=</span> <span class="s">"rust1"</span><span class="nd">,</span> <span class="nd">since</span> <span class="nd">=</span> <span class="s">"1.0.0"</span><span class="nd">)]</span>
+
+<span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span> <span class="o">?</span><span class="nb">Sized</span><span class="o">&gt;</span> <span class="o">!</span><span class="nb">Send</span> <span class="k">for</span> <span class="n">RwLockWriteGuard</span><span class="o">&lt;</span><span class="nv">'_</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;</span> <span class="p">{}</span>
+
+  
+
+<span class="nd">#[stable(feature</span> <span class="nd">=</span> <span class="s">"rwlock_guard_sync"</span><span class="nd">,</span> <span class="nd">since</span> <span class="nd">=</span> <span class="s">"1.23.0"</span><span class="nd">)]</span>
+
+<span class="k">unsafe</span> <span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span> <span class="o">?</span><span class="nb">Sized</span> <span class="o">+</span> <span class="nb">Sync</span><span class="o">&gt;</span> <span class="nb">Sync</span> <span class="k">for</span> <span class="n">RwLockWriteGuard</span><span class="o">&lt;</span><span class="nv">'_</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<p>但是tokio crate中提供了可以在异步编程框架中使用的<a href="https://docs.rs/tokio/1.12.0/tokio/sync/struct.RwLock.html">tokio::sync::RwLock</a>读写锁，它的功能和接口与std中的<code class="language-plaintext highlighter-rouge">std::sync::RwLock</code>保持一致。</p>
+
+<h2 id="12-tracing_subscriber如何控制不收集底层依赖库输出的trace-data信息">12. tracing_subscriber如何控制不收集底层依赖库输出的trace data信息？</h2>
+
+<p>在调试WasmEngine代码的时候，发现如果通过<code class="language-plaintext highlighter-rouge">RUST_LOG</code>环境变量设置日志级别为<code class="language-plaintext highlighter-rouge">info</code>的时候，会将依赖库中的info级别的日志也一起输出到控制台，一直在刷屏，导致WasmEngine中自己添加的日志信息无法看到。</p>
+
+<p>问题的根因：如果是全局的global subscriber，它会将程序及其依赖库所输出的所有event和span事件都捕获并输出出来。</p>
+
+<p><strong>解决方案</strong>：解决的方法也非常简单，就是在<code class="language-plaintext highlighter-rouge">subscriber</code>上添加filter过滤器，这里使用了系统默认的<code class="language-plaintext highlighter-rouge">EnvFilter::from_default_env()</code> filter，它会从系统环境变量<code class="language-plaintext highlighter-rouge">RUST_LOG</code>中读取过滤器的配置信息，然后应用到subscriber上。</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">tracing_subscriber</span><span class="p">::</span><span class="nf">fmt</span><span class="p">()</span>
+	<span class="nf">.with_env_filter</span><span class="p">(</span><span class="nn">EnvFilter</span><span class="p">::</span><span class="nf">from_default_env</span><span class="p">())</span>
+	<span class="nf">.try_init</span><span class="p">()</span><span class="o">?</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>所以，在运行程序的时候，需要首先进行<code class="language-plaintext highlighter-rouge">RUST_LOG</code>环境变量的赋值，如下所示：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">RUST_LOG</span><span class="o">=</span><span class="nv">wasm_engine</span><span class="o">=</span>info
+</code></pre></div></div>
+
+<blockquote>
+  <p>📢注意：这里wasm_engine值的表示的含义是需要输出那个crate的日志信息，info表示输出日志的最小级别。
+这里有一个坑就是我的代码库的名称是<code class="language-plaintext highlighter-rouge">wasm-engine</code>，里面包含了一个<code class="language-plaintext highlighter-rouge">-</code>中划线，但是在tracing系统收集数据时，它默认会将<code class="language-plaintext highlighter-rouge">wasm-engine</code>代码库名称中的<strong>中划线转换成下划线形式</strong> <code class="language-plaintext highlighter-rouge">wasm_engine</code>。</p>
+</blockquote>
+
+<h2 id="13-rust中如何在运行时输出变量的类型">13. Rust中如何在运行时输出变量的类型？</h2>
+
+<p>Rust中没有类似C语言中<code class="language-plaintext highlighter-rouge">typeof</code>函数获取变量数据类型的函数，需要通过泛型的方式获取到变量的类型，然后调用<code class="language-plaintext highlighter-rouge">std::any::type_name</code> 获取到类型的名称，例子如下：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="n">print_type_of</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="nn">std</span><span class="p">::</span><span class="nn">any</span><span class="p">::</span><span class="nn">type_name</span><span class="p">::</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">())</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">;</span>
+    <span class="k">let</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+
+    <span class="nf">print_type_of</span><span class="p">(</span><span class="n">s</span><span class="p">);</span> <span class="c1">// &amp;str</span>
+    <span class="nf">print_type_of</span><span class="p">(</span><span class="n">i</span><span class="p">);</span> <span class="c1">// i32</span>
+    <span class="nf">print_type_of</span><span class="p">(</span><span class="n">main</span><span class="p">);</span> <span class="c1">// playground::main</span>
+    <span class="nf">print_type_of</span><span class="p">(</span><span class="nn">print_type_of</span><span class="p">::</span><span class="o">&lt;</span><span class="nb">i32</span><span class="o">&gt;</span><span class="p">);</span> <span class="c1">// playground::print_type_of&lt;i32&gt;</span>
+    <span class="nf">print_type_of</span><span class="p">(||</span> <span class="s">"Hi!"</span> <span class="p">);</span> <span class="c1">// playground::main::</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="14-如何在函数之间传递字符串">14. 如何在函数之间传递字符串？</h2>
+
+<p>了解<code class="language-plaintext highlighter-rouge">str</code>, <code class="language-plaintext highlighter-rouge">&amp;str</code>, <code class="language-plaintext highlighter-rouge">String</code>三种不同字符串相关类型在内存中的存储结构之间差异，就可以知道在不同函数之间，<strong>传递字符串内容最好的方式就是通过<code class="language-plaintext highlighter-rouge">&amp;str</code>类型（字符串切片引用），这种方式的好处就是字符串的所有权不会被转移。</strong></p>
+
+<p>例子：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">say_it_loud</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span><span class="o">&amp;</span><span class="nb">str</span><span class="p">){</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}！！！"</span><span class="p">,</span><span class="n">msg</span><span class="nf">.to_string</span><span class="p">()</span><span class="nf">.to_uppercase</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// say_it_loud can borrow &amp;'static str as a &amp;str</span>
+    <span class="nf">say_it_loud</span><span class="p">(</span><span class="s">"你好"</span><span class="p">);</span>
+    <span class="c1">// say_it_loud can also borrow String as a &amp;str</span>
+    <span class="nf">say_it_loud</span><span class="p">(</span><span class="o">&amp;</span><span class="nn">String</span><span class="p">::</span><span class="nf">from</span><span class="p">(</span><span class="s">"再见"</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="15-引用reference和指针raw-pointer的区别是什么">15. 引用（Reference）和指针（Raw Pointer）的区别是什么？</h2>
+
+<p>引用的定义：</p>
+<blockquote>
+  <p>引用本质上只是<strong>表示内存中某些字节起始位置的数字</strong>，它唯一的目的就是标识特定类型的数据存储在何处。</p>
+</blockquote>
+
+<p>指针的定义：</p>
+<blockquote>
+  <p><strong>指针（Raw Pointer）</strong>像数字一样，标识特定类型数据在内存中起始位置，它可以不受限制地复制和传递，但是<strong>Rust 不保证它指向的内存位置的有效性</strong>。</p>
+</blockquote>
+
+<p>Rust中有两种指针类型：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">*const T</code>：常量指针，该指针所指向的是类型永远是T<strong>并不会改变的数据</strong></li>
+  <li><code class="language-plaintext highlighter-rouge">*mut T</code>：可变指针，该指针所指向的是数据类型是T，<strong>但是可以修改这个数据的值</strong></li>
+</ul>
+
+<blockquote>
+  <p>注意：Rust中裸指针的操作需要在unsafe代码块中执行</p>
+</blockquote>
+
+<p>在Rust中指针类型是用<code class="language-plaintext highlighter-rouge">usize</code>来表示，大小为是4字节。</p>
+
+<p>引用与简单的指针（这里可以理解为就是一个64bit的数字）最重要的区别在于：<strong>Rust 的编译器将验证引用自身的生命周期不会超过它指向的内容，否则我们在使用它时会出错！（这解决了C/C++中经常遇到的悬垂指针问题）</strong>。</p>
+
+<h2 id="16-为什么引用变量通过运算符访问所引用类型中的字段和方法时需要加上解引用符号">16. 为什么引用变量通过<code class="language-plaintext highlighter-rouge">.</code>运算符访问所引用类型中的字段和方法时需要加上<code class="language-plaintext highlighter-rouge">*</code>解引用符号？</h2>
+
+<p>下面是一个常见的通过<code class="language-plaintext highlighter-rouge">.</code>运算符访问引用的字段和方法的例子：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">let</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Foo</span> <span class="p">{</span> <span class="n">value</span><span class="p">:</span> <span class="mi">42</span> <span class="p">};</span>
+<span class="k">let</span> <span class="n">ref_ref_ref_f</span> <span class="o">=</span> <span class="o">&amp;&amp;&amp;</span><span class="n">f</span><span class="p">;</span>
+<span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">ref_ref_ref_f</span><span class="py">.value</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>为什么上面是通过<code class="language-plaintext highlighter-rouge">ref_ref_ref_f.value</code>方式访问value字段，而不是<code class="language-plaintext highlighter-rouge">(***ref_ref_ref_f).value</code>的方式呢，因为<code class="language-plaintext highlighter-rouge">.</code>运算符会自动做一些解引用的操作，最后一行由编译器自动转换为以下内容：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="p">(</span><span class="o">***</span><span class="n">ref_ref_ref_f</span><span class="p">)</span><span class="py">.value</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="17-智能指针常用的一些组合使用方式区别是什么">17. 智能指针常用的一些组合使用方式区别是什么？</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Rc&lt;Vec&lt;Foo&gt;&gt;</code>：允许克隆多个可以<strong>借用堆上不可变数据结构</strong>的<strong>相同vector对象</strong>的智能指针</li>
+  <li><code class="language-plaintext highlighter-rouge">Rc&lt;RefCell&lt;Foo&gt;&gt;</code>：允许多个智能指针通过<strong>可变或不可变（需要通过<code class="language-plaintext highlighter-rouge">borrow_mut()和borrow()方法实现</code>）的方式借用堆上的相同Foo类型对象</strong></li>
+  <li><code class="language-plaintext highlighter-rouge">Arc&lt;Mutex&lt;Foo&gt;&gt;</code>：允许多个智能指针<strong>以CPU线程独占方式锁定临时可变/不可变借用的能力</strong></li>
+</ul>
+
+<p>这里需要补充一些关于<strong>内部可变性 vs 外部可变性</strong>的差异：</p>
+<ul>
+  <li><strong>外部可变性</strong>：当我们使用<code class="language-plaintext highlighter-rouge">let mut</code>显示地声明一个可变的值，或者用<code class="language-plaintext highlighter-rouge">&amp;mut</code>声明一个可变引用时，编译器可以在编译器阶段执行严格的检查，保证只有可变值或者可变的引用，才能修改值的内部数据，这种可变性被称为<strong>外部可变性</strong>，通过<code class="language-plaintext highlighter-rouge">mut</code>关键字声明。</li>
+  <li><strong>内部可变性</strong>：在编译器的角度，值是只读的，但是在运行时，这个值可以得到可变的借用，从而修改内部的数据，这个就是<code class="language-plaintext highlighter-rouge">RefCell</code>和<code class="language-plaintext highlighter-rouge">Mutex</code>的用武之地。</li>
+</ul>
+
+<h2 id="18--导入crate内常用的prelude关键字工作原理是什么">18.  导入crate内常用的<code class="language-plaintext highlighter-rouge">prelude</code>关键字工作原理是什么？</h2>
+
+<p>Rust在其标准库中附带了许多东西。但是，如果每次使用到一个模块就需要手动导入一个，那代码就会显得非常冗长；如果导入库中所有的模块，但是其中一些模块是程序中从未使用到的，这就回导致代码编译时带入许多冗余代码；所以，最好是能够提供一种机制，自动根据程序中使用到的模块信息，自动导入依赖的模块。</p>
+
+<p><code class="language-plaintext highlighter-rouge">prelude</code>就是Rust提供的根据程序中使用到的模块信息，自动导入所使用模块的列表。</p>
+
+<h2 id="19-rust项目中如何引用其他项目中非发布到cratesio的crate包">19. Rust项目中如何引用其他项目中非发布到crates.io的crate包？</h2>
+
+<p><strong>问题描述</strong>：例如，我想在自己的Rust项目中引用到<a href="https://github.com/cloud-hypervisor/cloud-hypervisor.git">cloud-hypervisor</a>项目中的<code class="language-plaintext highlighter-rouge">api_client</code>这个lib类型的crate，那么在我的项目的<code class="language-plaintext highlighter-rouge">Cargo.toml</code>中应该怎么引用到这个dep依赖包呢？</p>
+
+<p><strong>解决方法</strong>：如果crate所在的项目是通过<code class="language-plaintext highlighter-rouge">git</code>工具进行管理的，那么就可以在<code class="language-plaintext highlighter-rouge">Cargo.toml</code>文件中，通过<code class="language-plaintext highlighter-rouge">git</code>作为关键字来来指定crate依赖，例如：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>dependencies] api_client <span class="o">=</span> <span class="o">{</span> git <span class="o">=</span> <span class="s2">"https://github.com/cloud-hypervisor/cloud-hypervisor"</span> branch <span class="o">=</span> <span class="s2">"main"</span><span class="o">}</span>
+</code></pre></div></div>
+
+<p>当Cargo工具检测到<code class="language-plaintext highlighter-rouge">Cargo.toml</code>文件中存在通过<code class="language-plaintext highlighter-rouge">git</code>关键字指定依赖crate包时，就会调用<code class="language-plaintext highlighter-rouge">git</code>命令行工具将指定URL的git repo仓库下载到本地。</p>
+
+<pre><code class="language-ad-hint">注意一种特殊情况：**项目依赖的crate是一个大型Rust项目[workspace]中的一个member**，
+，而我们只想引用这一个crate，那么这个依赖该怎么写呢？
+
+上面的`api_client`就是这样一个例子，只需要两步：
+1. 保持依赖的crate名称和依赖的Rust项目中的**名称一致**
+2. `git`关键字后面的链接**只需要填写整个Rust项目的git地址，不必填写到crate所在Cargo.toml的路径**
+</code></pre>
+
+<p>开发者还可以指定使用crate包所依赖的git repo仓库的分支或特定的commitid，指定分支使用<code class="language-plaintext highlighter-rouge">branch</code>关键字描述，指定commitid使用<code class="language-plaintext highlighter-rouge">rev</code>关键字来描述，例如：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>dependencies] regex <span class="o">=</span> <span class="o">{</span> git <span class="o">=</span> <span class="s2">"https://github.com/rust-lang/regex"</span>, branch <span class="o">=</span> <span class="s2">"next"</span> <span class="o">}</span>
+</code></pre></div></div>
+
+<p>参考资料：<a href="https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-dependencies-from-git-repositories">Cargo Book - Specifying dependencies from git repositories</a></p>
+
+<h2 id="20-在linux系统中如何管理不同的rust版本">20. 在Linux系统中如何管理不同的Rust版本？</h2>
+
+<p><strong>查看当前Rust各个版本信息</strong>
+可以从<a href="https://releases.rs/">Rust Versions #</a> 网站获取到当前Rust stable/beta/nightly 版本的情况，以及历史版本信息。</p>
+
+<p>关于stable/beata/nightly版本策略和演进介绍可以参考：<a href="https://rustwiki.org/zh-CN/book/appendix-07-nightly-rust.html">Rust 是如何开发的与 “Nightly Rust”</a></p>
+
+<p>对于开发者我们主要抓住<strong>稳定性差异</strong>这一点，三者之间的稳定性：stable &gt; beta &gt; nightly</p>
+
+<p><strong>查看当前环境安装了那几个Rust版和工具链</strong>：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>rustup show
+Default host: x86_64-unknown-linux-gnu
+rustup home:  /home/flyflypeng/.rustup
+
+installed toolchains
+<span class="nt">--------------------</span>
+
+stable-x86_64-unknown-linux-gnu <span class="o">(</span>default<span class="o">)</span>
+nightly-x86_64-unknown-linux-gnu
+
+installed targets <span class="k">for </span>active toolchain
+<span class="nt">--------------------------------------</span>
+
+wasm32-unknown-unknown
+wasm32-wasi
+x86_64-unknown-linux-gnu
+
+active toolchain
+<span class="nt">----------------</span>
+
+stable-x86_64-unknown-linux-gnu <span class="o">(</span>default<span class="o">)</span>
+rustc 1.68.0 <span class="o">(</span>2c8cc3432 2023-03-06<span class="o">)</span>
+</code></pre></div></div>
+
+<p><strong>安装stable/beta/nightly版本：</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>rustup <span class="nb">install </span>stable
+
+<span class="nv">$ </span>rustup <span class="nb">install </span>beta
+
+<span class="nv">$ </span>rustup <span class="nb">install </span>nightly
+</code></pre></div></div>
+
+<p><strong>安装特定版本号的Rust版本：</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>rustup <span class="nb">install </span>1.58.0
+
+<span class="c"># 通过rust show 查看当前环境上已经安装的toolchain</span>
+<span class="nv">$ </span>rustup show
+Default host: x86_64-unknown-linux-gnu
+rustup home:  /home/flyflypeng/.rustup
+
+installed toolchains
+<span class="nt">--------------------</span>
+
+stable-x86_64-unknown-linux-gnu <span class="o">(</span>default<span class="o">)</span>
+beta-x86_64-unknown-linux-gnu
+nightly-x86_64-unknown-linux-gnu
+1.58.0-x86_64-unknown-linux-gnu // 确实安装成功了
+</code></pre></div></div>
+
+<p><strong>在不同Rust版本之间切换：</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 切换到nightly版本</span>
+<span class="nv">$ </span>rustup default nightly
+
+<span class="c"># 切换到stable版本</span>
+<span class="nv">$ </span>rustup default stable
+
+<span class="c"># 切换到指定版本号的Rust</span>
+<span class="nv">$ </span>rustup default 1.58.0
+info: using existing <span class="nb">install </span><span class="k">for</span> <span class="s1">'1.58.0-x86_64-unknown-linux-gnu'</span>
+info: default toolchain <span class="nb">set </span>to <span class="s1">'1.58.0-x86_64-unknown-linux-gnu'</span>
+
+  1.58.0-x86_64-unknown-linux-gnu unchanged - rustc 1.58.0 <span class="o">(</span>02072b482 2022-01-11<span class="o">)</span>r
+
+<span class="c"># 验证stable或nightly版本是否切换成功，可以通过rustc --verison进行查看</span>
+<span class="nv">$ </span>rustc <span class="nt">--version</span>
+rustc 1.58.0 <span class="o">(</span>02072b482 2022-01-11<span class="o">)</span>
+</code></pre></div></div>
+
+<h2 id="21-rust项目源码目录下rust-toolchaintoml文件的作用是什么">21. Rust项目源码目录下rust-toolchain.toml文件的作用是什么?</h2>
+
+<p><code class="language-plaintext highlighter-rouge">rust-toolchain.toml</code>文件的作用是用来设置Rust项目编译的编译工具链，这个配置文件通常用在一些需要使用到<code class="language-plaintext highlighter-rouge">nightly</code>版本中新功能的项目，这样可以指定Rust项目使用特定的Rust编译工具链进行编译<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>。</p>
+
+<h2 id="22-rust代码中如何实现条件编译">22. Rust代码中如何实现条件编译？</h2>
+
+<p>Cargo中通过<code class="language-plaintext highlighter-rouge">features</code>提供了一种表达==条件编译和可选依赖关系的机制==。
+开发者可以在<code class="language-plaintext highlighter-rouge">Cargo.toml</code>文件中的<code class="language-plaintext highlighter-rouge">[features]</code>项中定义一组命名的特性，每个特性都可以被启用或禁用</p>
+
+<p>默认情况下，所有<code class="language-plaintext highlighter-rouge">[features]</code> section中定义的feature功能都是默认关闭的，只有将需要启用的feature加入到<code class="language-plaintext highlighter-rouge">default feature</code>中，这样才能再编译时include这些feature所覆盖的代码。</p>
+
+<p>有时一个Crate中提供了很多独立的功能，并且通过<code class="language-plaintext highlighter-rouge">#[cfg(feature = "xxx")]</code>方式在代码中实现条件编译，那么我们可以在引入依赖时同时指定需要使用的特定features，这样可以实现==快速编译和减少最终二进制文件的大小。==</p>
+
+<p>开启一个Crate中所有feature功能可以使用下面<code class="language-plaintext highlighter-rouge">full</code>关键词，例如：</p>
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">tokio</span> <span class="o">=</span> <span class="p">{</span> <span class="py">version</span> <span class="p">=</span> <span class="s">"1"</span><span class="p">,</span> <span class="py">features</span> <span class="p">=</span> <span class="p">[</span><span class="s">"full"</span><span class="p">]</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>详细的Cargo.toml种的<code class="language-plaintext highlighter-rouge">features</code>特性介绍可以参考：<a href="https://rustwiki.org/zh-CN/cargo/reference/features.html">Cargo Book中Features介绍</a></p>
+
+<h2 id="23-ridentifier这种名称的变量名或结构体成员名如何理解">23. <code class="language-plaintext highlighter-rouge">r#&lt;identifier&gt;</code>这种名称的变量名或结构体成员名如何理解？</h2>
+
+<p><code class="language-plaintext highlighter-rouge">r#&lt;identifier&gt;</code>（Rust Book中称这种命令方式为<a href="https://doc.rust-lang.org/book/appendix-01-keywords.html#raw-identifiers">Raw Identifier</a>）这种方式命令的标识符作为变量名称或结构体成员名称时，主要解决的是<strong>identifier标识符名称与Rust系统中的关键字同名的问题</strong>，让已经被作为Rust关键字的名称也可以作为源码中的标识符使用。</p>
+
+<p>例如，<code class="language-plaintext highlighter-rouge">match</code>是Rust中模式匹配语法的关键字，如果你将<code class="language-plaintext highlighter-rouge">match</code>作为函数名：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="k">match</span><span class="p">(</span><span class="n">needle</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">,</span> <span class="n">haystack</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">bool</span> <span class="p">{</span> 
+	<span class="n">haystack</span><span class="nf">.contains</span><span class="p">(</span><span class="n">needle</span><span class="p">)</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<p>直接编译你会遇到下面的错误提示：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>error: expected identifier, found keyword <span class="sb">`</span>match<span class="sb">`</span>
+ <span class="nt">--</span><span class="o">&gt;</span> src/main.rs:4:4
+  |
+4 | fn match<span class="o">(</span>needle: &amp;str, haystack: &amp;str<span class="o">)</span> -&gt; bool <span class="o">{</span>
+  |    ^^^^^ expected identifier, found keyword
+</code></pre></div></div>
+<p>上面的错误提示说你讲一个Rust中的关键字作为标识符，这是不符合预期的使用方式。</p>
+
+<p>但是如果你非要将<code class="language-plaintext highlighter-rouge">match</code>作为函数名，那么你就需要用上<code class="language-plaintext highlighter-rouge">r#&lt;identifier&gt;</code>语法糖，告诉Rust<code class="language-plaintext highlighter-rouge">r#</code>后面identifier不做任何关键字重名检查，制作identifier命令方式的检查，下面就是正确的用法：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="n">r</span><span class="err">#</span><span class="k">match</span><span class="p">(</span><span class="n">needle</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">,</span> <span class="n">haystack</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">bool</span> <span class="p">{</span>
+    <span class="n">haystack</span><span class="nf">.contains</span><span class="p">(</span><span class="n">needle</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nd">assert!</span><span class="p">(</span><span class="n">r</span>#<span class="k">match</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"foobar"</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>类似的情况，Rust中还有<code class="language-plaintext highlighter-rouge">raw string</code>的概念，例如你想在Rust中保存一个用字符串常量表示的JSON格式字符串，为了让Rust不对字符串中的的引号做转义处理，你可以用下面的方式来使用：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 注释掉下面的语句会报下面的错误：</span>
+    <span class="c1">// error: expected one of `.`, `;`, `?`, `else`, or an operator, found `": 2023}"`</span>
+    <span class="c1">// --&gt; src/main.rs:3:27</span>
+    <span class="c1">// |</span>
+    <span class="c1">// |     let json_str = "{"year": 2023}";</span>
+    <span class="c1">// |                           ^^^^^^^^^ expected one of `.`, `;`, `?`, `else`, or an operator</span>
+    
+    <span class="c1">// 正确让字符串中包含双引号的方法</span>
+    <span class="k">let</span> <span class="n">json_str</span> <span class="o">=</span> <span class="s">"{</span><span class="se">\"</span><span class="s">year</span><span class="se">\"</span><span class="s">: 2023}"</span><span class="p">;</span>
+    
+    <span class="c1">// 或者使用r#: raw string的方式</span>
+    <span class="k">let</span> <span class="n">new_json_str</span> <span class="o">=</span> <span class="s">r#"{"name": "Peter"}"#</span><span class="p">;</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"Hello {}!"</span><span class="p">,</span> <span class="n">json_str</span><span class="p">);</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"Happy {}!"</span><span class="p">,</span> <span class="n">new_json_str</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="23-引用reference与借用borrow的区别">23. 引用(Reference)与借用(Borrow)的区别？</h2>
+
+<p>从语言中词语的分类来看，<strong>引用是一个名词</strong>，表示一个对象的别名，可以通过这个别名找到背后实际的对象；而<strong>借用则是一个动词</strong>，表示向一个对象借用了一些资源（比如对象的所有权，访问全兴等）。</p>
+
+<p>这两者之间的联系是<strong>创建一个引用的行为</strong>就可以称为是<strong>借用</strong>，例如下面的代码，我们创建了一个 String类型的对象s，然后创建一个指向该String类型对象s的引用<code class="language-plaintext highlighter-rouge">&amp;s</code>（<strong>可以理解为从对象s那里借用了该对象的不可变所有权</strong>），最后将这个引用传递给<code class="language-plaintext highlighter-rouge">change</code>函数使用，当使用完毕后，还是需要将借用的不可变所有权还给String类型对象s。</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="nn">String</span><span class="p">::</span><span class="nf">from</span><span class="p">(</span><span class="s">"hello"</span><span class="p">);</span>
+
+    <span class="nf">change</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">change</span><span class="p">(</span><span class="n">some_string</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">String</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">some_string</span><span class="nf">.push_str</span><span class="p">(</span><span class="s">", world"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="24-map函数闭包中传入参数x和x的区别是什么">24. map函数闭包中传入参数<code class="language-plaintext highlighter-rouge">x</code>和<code class="language-plaintext highlighter-rouge">&amp;x</code>的区别是什么？</h2>
+
+<p>函数闭包中的参数</p>
+
+<h2 id="25-supertrait概念">25. supertrait概念</h2>
+
+<p>Rust中<strong>没有继承的概念</strong>，但是开发者可以通过为<strong>subtrait定义上层更抽象的supertrait</strong>来实现类似面向对象编程中的继承机制。</p>
+
+<p>例子：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">trait</span> <span class="n">Person</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">name</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Person是Student的supertrait</span>
+<span class="c1">// 如果某个类型需要实现Student trait, 那么它同时也要实现Person trait</span>
+<span class="k">trait</span> <span class="n">Student</span><span class="p">:</span> <span class="n">Person</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">university</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">trait</span> <span class="n">Programmer</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">fav_language</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Student和Programmer是ComputerScienceStudent的直接supertrait</span>
+<span class="c1">// 而Person则是ComputerScienceStudent的上上层supertrait</span>
+<span class="k">trait</span> <span class="n">ComputerScienceStudent</span><span class="p">:</span> <span class="n">Student</span> <span class="o">+</span> <span class="n">Programmer</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">study_lessons</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">comp_sci_student_greeting</span><span class="p">(</span><span class="n">student</span><span class="p">:</span> <span class="o">&amp;</span><span class="k">dyn</span> <span class="n">ComputerScienceStudent</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+    <span class="nd">format!</span><span class="p">(</span>
+        <span class="s">"My name is {}, and I attend {}. My favorite language is {}. My study lessons is {}"</span><span class="p">,</span>
+        <span class="n">student</span><span class="nf">.name</span><span class="p">(),</span>
+        <span class="n">student</span><span class="nf">.university</span><span class="p">(),</span>
+        <span class="n">student</span><span class="nf">.fav_language</span><span class="p">(),</span>
+        <span class="n">student</span><span class="nf">.study_lessons</span><span class="p">(),</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">Nothing</span> <span class="p">{}</span>
+
+<span class="k">impl</span> <span class="n">Person</span> <span class="k">for</span> <span class="n">Nothing</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">name</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="s">"Tom"</span><span class="nf">.to_string</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">impl</span> <span class="n">Student</span> <span class="k">for</span> <span class="n">Nothing</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">university</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="s">"MIT"</span><span class="nf">.to_string</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">impl</span> <span class="n">Programmer</span> <span class="k">for</span> <span class="n">Nothing</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">fav_language</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="s">"Rust"</span><span class="nf">.to_string</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">impl</span> <span class="n">ComputerScienceStudent</span> <span class="k">for</span> <span class="n">Nothing</span> <span class="p">{</span>
+    <span class="k">fn</span> <span class="nf">study_lessons</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="s">"Operating System"</span><span class="nf">.to_string</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">t</span> <span class="o">=</span> <span class="n">Nothing</span> <span class="p">{};</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="nf">comp_sci_student_greeting</span><span class="p">(</span><span class="o">&amp;</span><span class="n">t</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="26-rust中如何实现类似c语言中sizeof函数查看变量占用存储空间大小的功能">26. Rust中如何实现类似C语言中sizeof函数查看变量占用存储空间大小的功能？</h2>
+
+<p>在<code class="language-plaintext highlighter-rouge">std::mem</code> crate中有两个sizeof相关的函数：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">std::mem::size_of</code>：返回指定类型所占用的内存空间大小（以byte字节为单位）</li>
+  <li><code class="language-plaintext highlighter-rouge">std::mem::size_of_val</code>：返回变量所实际指向的值所占用的内存空间大小（以byte字节为单位）。<strong>注意下面例子中关于size_of_val(&amp;String)类型和String::len()两个函数返回大小的差异。</strong></li>
+</ul>
+
+<p>例子：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">use</span> <span class="nn">std</span><span class="p">::</span><span class="n">mem</span><span class="p">;</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="nn">String</span><span class="p">::</span><span class="nf">from</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">);</span>
+    <span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s1</span><span class="p">;</span>
+    <span class="k">let</span> <span class="n">len</span> <span class="o">=</span> <span class="nf">cal_string_len</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"The length of {} is {}"</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+
+    <span class="c1">// 通过String::len()返回的是heap上实际存储字符串的内存空间大小</span>
+    <span class="c1">// std::mem::size_of_val返回的是String类型变量在栈上存储的大小等于24，就是&lt;ptr, cap, size&gt;三个usize变量大小之和</span>
+    <span class="nd">assert_eq!</span><span class="p">(</span><span class="n">s</span><span class="nf">.len</span><span class="p">(),</span> <span class="mi">5</span><span class="p">);</span>
+    <span class="nd">assert_eq!</span><span class="p">(</span><span class="nn">mem</span><span class="p">::</span><span class="nf">size_of_val</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">),</span> <span class="mi">24</span><span class="p">);</span>
+
+    <span class="c1">// 查看String类型和&amp;String引用类型的大小</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"size_of::&lt;String&gt;(): {}"</span><span class="p">,</span> <span class="nn">mem</span><span class="p">::</span><span class="nn">size_of</span><span class="p">::</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">());</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"size_of::&lt;&amp;String&gt;(): {}"</span><span class="p">,</span> <span class="nn">mem</span><span class="p">::</span><span class="nn">size_of</span><span class="p">::</span><span class="o">&lt;&amp;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">());</span>
+
+    <span class="c1">// 查看系统中usize类型的大小</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"size_of::&lt;usize&gt;(): {}"</span><span class="p">,</span> <span class="nn">mem</span><span class="p">::</span><span class="nn">size_of</span><span class="p">::</span><span class="o">&lt;</span><span class="nb">usize</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">cal_string_len</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">String</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">usize</span> <span class="p">{</span>
+    <span class="n">s</span><span class="nf">.len</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>对于Rust常见的指针、引用、<code class="language-plaintext highlighter-rouge">Box&lt;T&gt;</code>等这些类型的值的大小都是<strong>usize</strong>。</p>
+
+<blockquote>
+  <p>The types <code class="language-plaintext highlighter-rouge">*const T</code>, <code class="language-plaintext highlighter-rouge">&amp;T</code>, <code class="language-plaintext highlighter-rouge">Box&lt;T&gt;</code>, <code class="language-plaintext highlighter-rouge">Option&lt;&amp;T&gt;</code>, and <code class="language-plaintext highlighter-rouge">Option&lt;Box&lt;T&gt;&gt;</code> all have the same size. If <code class="language-plaintext highlighter-rouge">T</code> is Sized, all of those types have the same size as <code class="language-plaintext highlighter-rouge">usize</code>. – <a href="https://doc.rust-lang.org/std/mem/fn.size_of.html">std::mem::size_of</a></p>
+</blockquote>
+
+<p>下面放一个<code class="language-plaintext highlighter-rouge">&amp;String</code>, <code class="language-plaintext highlighter-rouge">String</code>以及String类型字符串实际在堆内存上存储结构的关系，就更加容易理解上面的例子，以及引用与指针的区别。</p>
+
+<p><img src="https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230318230649.png" alt="" /></p>
+
+<h2 id="27-如何理解rust中的自动解引用">27. 如何理解Rust中的自动解引用？</h2>
+
+<p>自己主要看了了这篇文文章受启发较大：<a href="https://course.rs/advance/smart-pointer/deref.html">Rust语言圣经 - Deref 解引用</a></p>
+
+<p>Rust中编译器可以实现下面两种关于Deref的重要能力：</p>
+<ul>
+  <li><strong>隐式地自动</strong> Deref 解引用转换</li>
+  <li><strong>连续地自动地隐式</strong> Deref 解引用转换</li>
+</ul>
+
+<p>下面的例子中就介绍了这两种隐式的Deref解引用使用场景：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">fn</span> <span class="nf">display</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// case 1: 自动Deref解引用</span>
+    <span class="k">let</span> <span class="n">s</span> <span class="o">=</span> <span class="nn">String</span><span class="p">::</span><span class="nf">from</span><span class="p">(</span><span class="s">"Hello"</span><span class="p">);</span>
+    <span class="c1">// 注意：这里传入的&amp;s的数据类型是&amp;String, 而display函数定义的参数类型是&amp;str</span>
+    <span class="c1">// 实现从&amp;String -&gt; &amp;str类型之间的转换的背后，就是Rust编译通过Deref自动解引用帮我们做的</span>
+    <span class="c1">// 也就是在标准库中实现String: Deref&lt;&amp;str&gt;的Deref trait，标准库中的代码如下：</span>
+    <span class="c1">// #[stable(feature = "rust1", since = "1.0.0")]</span>
+    <span class="c1">// impl ops::Deref for String {</span>
+    <span class="c1">// type Target = str;</span>
+    <span class="c1">// #[inline]</span>
+    <span class="c1">// fn deref(&amp;self) -&gt; &amp;str {</span>
+    <span class="c1">//     unsafe { str::from_utf8_unchecked(&amp;self.vec) }</span>
+    <span class="c1">// }</span>
+    <span class="c1">// }</span>
+    <span class="nf">display</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+
+    <span class="c1">// case 2: 连续自动Deref解引用</span>
+    <span class="k">let</span> <span class="n">b</span> <span class="o">=</span> <span class="nn">Box</span><span class="p">::</span><span class="nf">new</span><span class="p">(</span><span class="nn">String</span><span class="p">::</span><span class="nf">from</span><span class="p">(</span><span class="s">"World"</span><span class="p">));</span>
+    <span class="c1">// 注意：1. 首先&amp;b是&amp;Box&lt;String&gt;类型，通过它的Deref解引用，可以获取到&amp;String类型引用</span>
+    <span class="c1">//      2. 然后在连续自动的调用&amp;String -&gt; &amp;str的Deref解引用</span>
+    <span class="c1">//     #[stable(feature = "rust1", since = "1.0.0")]</span>
+    <span class="c1">//     impl&lt;T: ?Sized, A: Allocator&gt; Deref for Box&lt;T, A&gt; {</span>
+    <span class="c1">//     type Target = T;</span>
+    <span class="c1">//     fn deref(&amp;self) -&gt; &amp;T {</span>
+    <span class="c1">//         &amp;**self // 这里为什么要用两个*？因为第一个*是解&amp;Box&lt;String&gt;, 第2个是解Box&lt;String&gt;得到String类型</span>
+    <span class="c1">//     }</span>
+    <span class="c1">// }</span>
+    <span class="nf">display</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>关于<code class="language-plaintext highlighter-rouge">Deref</code>的自动解引用规则总结：</p>
+<ul>
+  <li>一个类型为<code class="language-plaintext highlighter-rouge">T</code>的对象<code class="language-plaintext highlighter-rouge">foo</code>，如果<code class="language-plaintext highlighter-rouge">T: Deref&lt;Target=U&gt;</code>，那么有关<code class="language-plaintext highlighter-rouge">foo</code>的引用<code class="language-plaintext highlighter-rouge">&amp;foo</code>在使用时可以<strong>自动地转换</strong>为<code class="language-plaintext highlighter-rouge">&amp;U</code>类型。</li>
+  <li>触发Deref自动解引用的条件就是<strong>存在<code class="language-plaintext highlighter-rouge">&amp;T</code> -&gt; <code class="language-plaintext highlighter-rouge">&amp;U</code>引用类型转换</strong>，一般函数调用传递引用的场景存在较多的自动解引用转换</li>
+</ul>
+
+<p><strong>引用归一化</strong>
+在Rust标准库中有一个非常有意思的一段代码：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span> <span class="o">?</span><span class="nb">Sized</span><span class="o">&gt;</span> <span class="n">Deref</span> <span class="k">for</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span>
+    <span class="k">type</span> <span class="n">Target</span> <span class="o">=</span> <span class="n">T</span><span class="p">;</span>
+
+    <span class="k">fn</span> <span class="nf">deref</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span>
+        <span class="o">*</span><span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>不过这段代码写成下面的方式，更容易理解：</p>
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="p">:</span> <span class="o">?</span><span class="nb">Sized</span><span class="o">&gt;</span> <span class="n">Deref</span> <span class="k">for</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span>
+    <span class="k">type</span> <span class="n">Target</span> <span class="o">=</span> <span class="n">T</span><span class="p">;</span>
+
+    <span class="k">fn</span> <span class="nf">deref</span><span class="p">(</span><span class="k">self</span><span class="p">:</span> <span class="o">&amp;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="p">))</span> <span class="k">-&gt;</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span>
+        <span class="o">*</span><span class="k">self</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这段代码所能够实现的内容就是可以实现从<code class="language-plaintext highlighter-rouge">&amp;&amp;&amp;&amp;&amp;T -&gt; &amp;T</code>类型的转换，不断地脱去外面冗长的<code class="language-plaintext highlighter-rouge">&amp;</code>引用符，直到返回最终实际指向的<code class="language-plaintext highlighter-rouge">&amp;T</code>类型的引用。</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://rust-lang.github.io/rustup/overrides.html?highlight=rust-toolchain.toml#the-toolchain-file">The toolchain file</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/Rust">Rust</a>,&nbsp;<a href="/tag/编程语言">编程语言</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=100%E4%B8%AARust%E9%97%AE%E9%A2%98&url=http%3A%2F%2Flocalhost%3A4000%2F%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2F2023%2F03%2F19%2F100%25E4%25B8%25AARust%25E9%2597%25AE%25E9%25A2%2598.html&via=flyflypeng_bear"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E8%AE%BA%E6%96%87/2023/01/29/%E8%AE%BA%E6%96%87%E5%88%86%E4%BA%AB-VirtualFlow-MLSys-2022.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">论文分享 - VirtualFlow: Decoupling Deep Learning Models from the underlying Hardware</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng-tech';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/keyboard/">keyboard</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/virtual/">virtual</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/android/">Android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/opencv/">opencv</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/markdown/">Markdown</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%8B%B1%E8%AF%AD/">英语</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%AD%A6%E4%B9%A0/">学习</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/hexo/">Hexo</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%8D%9A%E5%AE%A2/">博客</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ubuntu/">Ubuntu</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/firefox/">Firefox</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/python/">Python</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/make/">make</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/makefile/">Makefile</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sublimetext/">SublimeText</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%B0%83%E5%BA%A6/">调度</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%A1%AC%E7%9B%98/">硬盘</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%AE%A1%E7%AE%97%E6%9C%BA/">计算机</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/terminator/">Terminator</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cpu/">CPU</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">系统调用</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86/">时间管理</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vnc/">VNC</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/rfb/">RFB</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/container-of/">container_of</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/offsetof/">offsetof</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cs/">CS</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%9F%BA%E7%A1%80/">基础</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E9%98%85%E8%AF%BB/">阅读</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E4%B9%A6%E5%8D%95/">书单</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%B0%8F%E8%AF%B4/">小说</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%8A%80%E6%9C%AF/">技术</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ndk/">NDK</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/debug/">Debug</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/tombstone/">Tombstone</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/eof/">EOF</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/git/">Git</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ppa/">PPA</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/apt/">APT</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%90%8C%E6%AD%A5/">同步</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85/">生产者消费者</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA/">环形缓冲区</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ringbuffer/">RingBuffer</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/aosp/">AOSP</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/hal/">HAL</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ramfs/">ramfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/tmpfs/">tmpfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/rootfs/">rootfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/initramfs/">initramfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/unix/">Unix</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/i-o/">I/O</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/graphic/">Graphic</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/opengles/">OpenGLES</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/egl/">EGL</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/qemu/">QEMU</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kvm/">KVM</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/mac/">Mac</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/jekyll/">Jekyll</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/iterm2/">iTerm2</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/zsh/">zsh</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kubernetes/">kubernetes</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/k8s/">k8s</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cloudnative/">cloudnative</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E9%9C%B2%E8%90%A5/">露营</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/camp/">camp</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%AC%94%E8%AE%B0/">笔记</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/rust/">Rust</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:flyflyflypeng@gmail.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">flyflyflypeng@gmail.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/flyflypeng_bear" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">flyflypeng_bear</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/flyflypeng" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">flyflypeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+
+
+  </body>
+
+</html>

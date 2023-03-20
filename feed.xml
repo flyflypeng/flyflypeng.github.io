@@ -6,9 +6,672 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 30 Jan 2023 19:59:06 +0800</pubDate>
-    <lastBuildDate>Mon, 30 Jan 2023 19:59:06 +0800</lastBuildDate>
+    <pubDate>Mon, 20 Mar 2023 15:03:47 +0800</pubDate>
+    <lastBuildDate>Mon, 20 Mar 2023 15:03:47 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>100个Rust问题</title>
+        <description>&lt;h2 id=&quot;说明&quot;&gt;说明&lt;/h2&gt;
+
+&lt;p&gt;这是一个我自己在学习Rust语言中记录的一闪而过不明白想深入探究或者在写代码中经常会去搜索才能获取到答案的一些问题。&lt;/p&gt;
+
+&lt;p&gt;这篇文章希望可以给大家当做是一个FAQ来使用，遇到Rust相关的困惑时，直接&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Ctrl + F&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;希望它比ChatGPT给出的答案更接近你想要得到的标准答案！&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;1-rust-examples样例程序如何在cargotoml文件中添加依赖&quot;&gt;1. Rust examples样例程序如何在Cargo.toml文件中添加依赖？&lt;/h2&gt;
+
+&lt;p&gt;由&lt;a href=&quot;http://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/cargo/reference/specifying-dependencies.html#development-dependencies&quot;&gt;Cargo Book - Development dependencies&lt;/a&gt;可知，对于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tests, examples, benchmarks&lt;/code&gt;程序的依赖都统一填写在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cargo.toml&lt;/code&gt;文件中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[dev-dependencies]&lt;/code&gt;小节中。&lt;/p&gt;
+
+&lt;h2 id=&quot;2-如何将文件中内容读取到内存的buffer中其中文件内容长度不确定&quot;&gt;2. 如何将文件中内容读取到内存的Buffer中，其中文件内容长度不确定？&lt;/h2&gt;
+
+&lt;p&gt;Rust的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::io::Read&lt;/code&gt;trait提供了对于IO数据流读取的抽象，其中提供了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;read_to_end()&lt;/code&gt;函数支持将IO数据流读取到一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vec&amp;lt;u8&amp;gt;&lt;/code&gt;的向量。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_end&quot;&gt;read_to_end&lt;/a&gt;函数定义如下所示：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Rust&quot;&gt;fn read_to_end(&amp;amp;mut self, buf: &amp;amp;mut Vec&amp;lt;u8&amp;gt;) -&amp;gt; Result&amp;lt;usize&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;3-rust-相关学习资料&quot;&gt;3. Rust 相关学习资料&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://doc.rust-lang.org/rust-by-example/std/result/question_mark.html&quot;&gt;Rust By Example&lt;/a&gt;：通过一个个简单的例子来学习Rust，非常适合熟悉Rust的语法&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://doc.rust-lang.org/std/&quot;&gt;Rust Std标准库文档&lt;/a&gt;：Rust std标准库的文档，不知道怎么使用库就可以来这里查查&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://cheats.rs/#basic-types&quot;&gt;Rust Language Cheat Sheet&lt;/a&gt;：Rust语法和用法相关的快速检索表&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://doc.rust-lang.org/stable/reference/&quot;&gt;The Rust Reference&lt;/a&gt;：介绍Rust语言的内存模型，并发模型，语法设计这些语言层面的Book&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://kaisery.github.io/trpl-zh-cn/&quot;&gt;Rust 程序设计语言 简体中文版&lt;/a&gt;：The Rust Programming Language官方书籍的中译版&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/rust-lang-cn/rustlings-cn&quot;&gt;rustlings&lt;/a&gt;：项目包括一些让你熟悉阅读和编写 Rust 代码的小练习。这包括阅读和响应编译器信息！&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://tourofrust.com/00_zh-cn.html&quot;&gt;Rust 语言之旅&lt;/a&gt;：通过一个一系列的在线交互方式来一步步地引导新手熟悉Rust语言&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/rcore-os/rCore/wiki/os-tutorial-summer-of-code-2020#step-0-%E8%87%AA%E5%AD%A6rust%E7%BC%96%E7%A8%8B%E5%A4%A7%E7%BA%A67%E5%A4%A9&quot;&gt;OS Tutorial Summer of Code 2020：Rust系统编程入门指导&lt;/a&gt;：清华大学rCore团队在os tutorial summer of code 2020项目中给出的Rust快速入门指导&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/google/comprehensive-rust&quot;&gt;comprehensive-rust&lt;/a&gt;：Google Android团队推出的Rust入门教程&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://course.rs/about-book.html&quot;&gt;Rust语言圣经(Rust Course)&lt;/a&gt;：国内Rust开源爱好者共同编写的一本书，关于书中不理解的部分，也有Comment讨论，个人觉得这一点很有帮助，可以帮助大家解答书中遇到的类似的问题&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;4-rust中文件名函数名文件目录等命名的代码规范&quot;&gt;4. Rust中文件名、函数名、文件目录等命名的代码规范？&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://rust-coding-guidelines.github.io/rust-coding-guidelines-zh/overview.html&quot;&gt;张汉东老师总结的Rust编码规范&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;5-rust如何实现数据结构序列化成json格式及其反序列化&quot;&gt;5. Rust如何实现数据结构序列化成json格式及其反序列化？&lt;/h2&gt;
+
+&lt;h2 id=&quot;6-全局的常量如何定义&quot;&gt;6. 全局的常量如何定义？&lt;/h2&gt;
+
+&lt;h2 id=&quot;7-lazy_static宏和static静态变量有什么区别&quot;&gt;7. lazy_static！宏和static静态变量有什么区别？&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lazy_static!&lt;/code&gt;是在程序第一次调用时（运行时）才进行初始化&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;static&lt;/code&gt;静态变量/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;const&lt;/code&gt;静态常量，则是在程序编译阶段由编译器进行初始化，所以static变量只能通过&lt;strong&gt;常量表达式&lt;/strong&gt;或&lt;strong&gt;数学表达式&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lazy_static!&lt;/code&gt;宏可以用在什么场景？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;初始化一个全局唯一的对象，并且该对象需要通过调用初始化函数进行构造时&lt;/li&gt;
+  &lt;li&gt;创建一个全具的Mutex锁，供程序中不同线程之间实现互斥访问&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://course.rs/advance/global-variable.html&quot;&gt;全局变量&lt;/a&gt;
+&lt;a href=&quot;https://www.minazuki.cn/post/blog_os/blog_os-1bt8t9lfea0hv/blog_os-1bu1aakjmdra0/&quot;&gt;rust crate: lazy_static&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;8-实现一个结构体相关方法&quot;&gt;8. 实现一个结构体相关方法？&lt;/h2&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;signature&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;.&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;define&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;o&quot;&gt;.....&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;9-anyhow库的作用&quot;&gt;9. anyhow库的作用？&lt;/h2&gt;
+&lt;p&gt;如果有多个错误类型在同一个函数中需要处理时，返回的错误类型必须支持通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;From&lt;/code&gt;trait实现将函数中多种错误类型转换成返回的错误类型，例如：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FooError&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;one&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OneError&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fn_one&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;one&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;two&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TwoError&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fn_two&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;two&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;nf&quot;&gt;Ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(())&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;其中，返回值的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FooError&lt;/code&gt;错误类型，必须要实现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;From&amp;lt;OneError&amp;gt;&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;From&amp;lt;TwoError&amp;gt;&lt;/code&gt;，这样才能实现不同错误类型的归一。通常的做法就是将可能出现的错误类型通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;enum&lt;/code&gt;枚举类型定义出来，然后实现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Display&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Debug&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Error&lt;/code&gt;，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;From&amp;lt;T&amp;gt;&lt;/code&gt;这几个trait，但是手动写这些代码显得非常枯燥和无聊。&lt;/p&gt;
+
+&lt;p&gt;所以，社区有人写了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anyhow&lt;/code&gt;crate库，它本质就是定义了一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anyhow::Error&lt;/code&gt;的类型，然后默认实现了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;From&amp;lt;E&amp;gt; where E: Error&lt;/code&gt;，这样所有实现了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Error&lt;/code&gt;trait的所有错误类型都可以转换成&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anyhow::Error&lt;/code&gt;类型。&lt;/p&gt;
+
+&lt;p&gt;另外，如果要构建一个错误类型值返回时，可以通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anyhow!&lt;/code&gt;宏记性构造，如下所示：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;anyhow!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Missing attribute: {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;missing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.jmjoy.top/posts/rust%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E4%BD%BF%E7%94%A8thiserror+anyhow%E6%9D%A5%E4%BC%98%E9%9B%85%E4%BE%BF%E6%8D%B7%E5%9C%B0%E5%A4%84%E7%90%86%E9%94%99%E8%AF%AF/&quot;&gt;【Rust错误处理】使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;thiserror&lt;/code&gt;+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;anyhow&lt;/code&gt;来优雅便捷地处理错误&lt;/a&gt;
+&lt;a href=&quot;https://docs.rs/anyhow/latest/anyhow/&quot;&gt;Crate anyhow&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;10-warp-web异步处理框架中mapthenand_then中对应的handler闭包函数的参数是如何捕获的&quot;&gt;10. warp Web异步处理框架中map,then,and_then中对应的handler闭包函数的参数是如何捕获的？&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.rs/warp/latest/warp/trait.Filter.html#extracting-tuples&quot;&gt;Extracting Tuples&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;You may notice that several of these filters extract some tuple, often times a tuple of just 1 item! Why?
+
+If a filter extracts a `(String,)`, that simply means that it extracts a `String`. If you were to `map` the filter, the argument type would be exactly that, just a `String`.
+
+What is it? It’s just some type magic that allows for automatic combining and flattening of tuples. Without it, combining two filters together with `and`, where one extracted `()`, and another `String`, would mean the `map` would be given a single argument of `((), String,)`, which is just no fun.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;从&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Trait warp::Filter&lt;/code&gt;中上面关于Extract类型数据的描述可知，有的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;filter&lt;/code&gt;在过滤请求的时候，会将请求中的一些数据extract解析出来，然后解析出来的数据作为输入参数，传递给请求处理的handler闭包函数。&lt;/p&gt;
+
+&lt;p&gt;例如，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;warp::filters::body::json&lt;/code&gt;filter函数的定义中，就Extract出http body中的json参数信息：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;pub&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DeserializeOwned&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Extract&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Rejection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Copy&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;而&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;warp::filters::body::content_length_limit&lt;/code&gt;filter函数的定义中，Extract的数据类型为空元组&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;()&lt;/code&gt;，空元组数据类型在后面的请求处理函数的捕获变量中会被忽略掉。&lt;/p&gt;
+
+&lt;h2 id=&quot;11-异步编程框架tokio中如何支持rwlock锁&quot;&gt;11. 异步编程框架tokio中如何支持RWLock锁？&lt;/h2&gt;
+
+&lt;p&gt;在WasmEngine源码中，FunctionStore结构体中定义了一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Arc&amp;lt;RwLock&amp;lt;HashMap&amp;lt;String, FunctionEntry&amp;gt;&amp;gt;&amp;gt;&lt;/code&gt;类型的成员，其中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RwLock&lt;/code&gt;是std标准库中的一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::sync::RwLock&lt;/code&gt;读写锁，但是基于tokio的异步编程框架中，编译代码时rustc编译器却提示如下的错误信息：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;future cannot be sent between threads safely  
+within &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;impl Future&amp;lt;Output &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; Result&amp;lt;Opaque&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;DefId&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0:578 ~ wasm_engine[2ad7]::handlers::deploy_function::&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;opaque#0&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;::&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;opaque#0&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;, &lt;span class=&quot;o&quot;&gt;[])&lt;/span&gt;, Rejection&amp;gt;&amp;gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;, the trait &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;Send&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; is not implemented &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;std::sync::RwLockWriteGuard&amp;lt;&lt;span class=&quot;s1&quot;&gt;&apos;_, HashMap&amp;lt;std::string::String, FunctionEntry&amp;gt;&amp;gt;`
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;上面的错误提示信息中说到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::sync::RwLockWriteGuard&lt;/code&gt;没有实现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Send&lt;/code&gt; trait，导致无法实现读写锁的所有权跨线程安全传递。&lt;/p&gt;
+
+&lt;p&gt;补充：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Send&lt;/code&gt;trait是Rust中定义标记型trait（mark trait），它没有定义任何函数行为，它的作用就是如果一个数据类型实现了&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Send&lt;/code&gt; trait，那么该类型值的所有权可以安全到从一个线程move到另外一个线程中。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::sync::RwLockWriteGuard&lt;/code&gt;类型的定义如下所示，可以看到它的确没有实现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Send&lt;/code&gt; trait，所以就无法实现跨线程的所有权安全移动。&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;#[stable(feature&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;rust1&quot;&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;since&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;)]&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Sized&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RwLockWriteGuard&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&apos;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+
+  
+
+&lt;span class=&quot;nd&quot;&gt;#[stable(feature&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;rwlock_guard_sync&quot;&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;since&lt;/span&gt; &lt;span class=&quot;nd&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;1.23.0&quot;&lt;/span&gt;&lt;span class=&quot;nd&quot;&gt;)]&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;unsafe&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Sized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Sync&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Sync&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RwLockWriteGuard&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;&apos;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;但是tokio crate中提供了可以在异步编程框架中使用的&lt;a href=&quot;https://docs.rs/tokio/1.12.0/tokio/sync/struct.RwLock.html&quot;&gt;tokio::sync::RwLock&lt;/a&gt;读写锁，它的功能和接口与std中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::sync::RwLock&lt;/code&gt;保持一致。&lt;/p&gt;
+
+&lt;h2 id=&quot;12-tracing_subscriber如何控制不收集底层依赖库输出的trace-data信息&quot;&gt;12. tracing_subscriber如何控制不收集底层依赖库输出的trace data信息？&lt;/h2&gt;
+
+&lt;p&gt;在调试WasmEngine代码的时候，发现如果通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RUST_LOG&lt;/code&gt;环境变量设置日志级别为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;info&lt;/code&gt;的时候，会将依赖库中的info级别的日志也一起输出到控制台，一直在刷屏，导致WasmEngine中自己添加的日志信息无法看到。&lt;/p&gt;
+
+&lt;p&gt;问题的根因：如果是全局的global subscriber，它会将程序及其依赖库所输出的所有event和span事件都捕获并输出出来。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：解决的方法也非常简单，就是在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;subscriber&lt;/code&gt;上添加filter过滤器，这里使用了系统默认的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;EnvFilter::from_default_env()&lt;/code&gt; filter，它会从系统环境变量&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RUST_LOG&lt;/code&gt;中读取过滤器的配置信息，然后应用到subscriber上。&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nn&quot;&gt;tracing_subscriber&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+	&lt;span class=&quot;nf&quot;&gt;.with_env_filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;EnvFilter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from_default_env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+	&lt;span class=&quot;nf&quot;&gt;.try_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;所以，在运行程序的时候，需要首先进行&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RUST_LOG&lt;/code&gt;环境变量的赋值，如下所示：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;RUST_LOG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;wasm_engine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;info
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;📢注意：这里wasm_engine值的表示的含义是需要输出那个crate的日志信息，info表示输出日志的最小级别。
+这里有一个坑就是我的代码库的名称是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wasm-engine&lt;/code&gt;，里面包含了一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-&lt;/code&gt;中划线，但是在tracing系统收集数据时，它默认会将&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wasm-engine&lt;/code&gt;代码库名称中的&lt;strong&gt;中划线转换成下划线形式&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wasm_engine&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;13-rust中如何在运行时输出变量的类型&quot;&gt;13. Rust中如何在运行时输出变量的类型？&lt;/h2&gt;
+
+&lt;p&gt;Rust中没有类似C语言中&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;typeof&lt;/code&gt;函数获取变量数据类型的函数，需要通过泛型的方式获取到变量的类型，然后调用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::any::type_name&lt;/code&gt; 获取到类型的名称，例子如下：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;any&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;type_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;nf&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;amp;str&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// i32&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// playground::main&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// playground::print_type_of&amp;lt;i32&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;print_type_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(||&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Hi!&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// playground::main::&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;14-如何在函数之间传递字符串&quot;&gt;14. 如何在函数之间传递字符串？&lt;/h2&gt;
+
+&lt;p&gt;了解&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;str&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;str&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;String&lt;/code&gt;三种不同字符串相关类型在内存中的存储结构之间差异，就可以知道在不同函数之间，&lt;strong&gt;传递字符串内容最好的方式就是通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;str&lt;/code&gt;类型（字符串切片引用），这种方式的好处就是字符串的所有权不会被转移。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;say_it_loud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}！！！&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_uppercase&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// say_it_loud can borrow &amp;amp;&apos;static str as a &amp;amp;str&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;say_it_loud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;你好&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// say_it_loud can also borrow String as a &amp;amp;str&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;say_it_loud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;再见&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;15-引用reference和指针raw-pointer的区别是什么&quot;&gt;15. 引用（Reference）和指针（Raw Pointer）的区别是什么？&lt;/h2&gt;
+
+&lt;p&gt;引用的定义：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;引用本质上只是&lt;strong&gt;表示内存中某些字节起始位置的数字&lt;/strong&gt;，它唯一的目的就是标识特定类型的数据存储在何处。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;指针的定义：&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;指针（Raw Pointer）&lt;/strong&gt;像数字一样，标识特定类型数据在内存中起始位置，它可以不受限制地复制和传递，但是&lt;strong&gt;Rust 不保证它指向的内存位置的有效性&lt;/strong&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Rust中有两种指针类型：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*const T&lt;/code&gt;：常量指针，该指针所指向的是类型永远是T&lt;strong&gt;并不会改变的数据&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*mut T&lt;/code&gt;：可变指针，该指针所指向的是数据类型是T，&lt;strong&gt;但是可以修改这个数据的值&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;注意：Rust中裸指针的操作需要在unsafe代码块中执行&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在Rust中指针类型是用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usize&lt;/code&gt;来表示，大小为是4字节。&lt;/p&gt;
+
+&lt;p&gt;引用与简单的指针（这里可以理解为就是一个64bit的数字）最重要的区别在于：&lt;strong&gt;Rust 的编译器将验证引用自身的生命周期不会超过它指向的内容，否则我们在使用它时会出错！（这解决了C/C++中经常遇到的悬垂指针问题）&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;16-为什么引用变量通过运算符访问所引用类型中的字段和方法时需要加上解引用符号&quot;&gt;16. 为什么引用变量通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.&lt;/code&gt;运算符访问所引用类型中的字段和方法时需要加上&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt;解引用符号？&lt;/h2&gt;
+
+&lt;p&gt;下面是一个常见的通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.&lt;/code&gt;运算符访问引用的字段和方法的例子：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Foo&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ref_ref_ref_f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ref_ref_ref_f&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;.value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;为什么上面是通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ref_ref_ref_f.value&lt;/code&gt;方式访问value字段，而不是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(***ref_ref_ref_f).value&lt;/code&gt;的方式呢，因为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.&lt;/code&gt;运算符会自动做一些解引用的操作，最后一行由编译器自动转换为以下内容：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;***&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ref_ref_ref_f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;py&quot;&gt;.value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;17-智能指针常用的一些组合使用方式区别是什么&quot;&gt;17. 智能指针常用的一些组合使用方式区别是什么？&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Rc&amp;lt;Vec&amp;lt;Foo&amp;gt;&amp;gt;&lt;/code&gt;：允许克隆多个可以&lt;strong&gt;借用堆上不可变数据结构&lt;/strong&gt;的&lt;strong&gt;相同vector对象&lt;/strong&gt;的智能指针&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Rc&amp;lt;RefCell&amp;lt;Foo&amp;gt;&amp;gt;&lt;/code&gt;：允许多个智能指针通过&lt;strong&gt;可变或不可变（需要通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;borrow_mut()和borrow()方法实现&lt;/code&gt;）的方式借用堆上的相同Foo类型对象&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Arc&amp;lt;Mutex&amp;lt;Foo&amp;gt;&amp;gt;&lt;/code&gt;：允许多个智能指针&lt;strong&gt;以CPU线程独占方式锁定临时可变/不可变借用的能力&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这里需要补充一些关于&lt;strong&gt;内部可变性 vs 外部可变性&lt;/strong&gt;的差异：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;外部可变性&lt;/strong&gt;：当我们使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;let mut&lt;/code&gt;显示地声明一个可变的值，或者用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;mut&lt;/code&gt;声明一个可变引用时，编译器可以在编译器阶段执行严格的检查，保证只有可变值或者可变的引用，才能修改值的内部数据，这种可变性被称为&lt;strong&gt;外部可变性&lt;/strong&gt;，通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mut&lt;/code&gt;关键字声明。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;内部可变性&lt;/strong&gt;：在编译器的角度，值是只读的，但是在运行时，这个值可以得到可变的借用，从而修改内部的数据，这个就是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;RefCell&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Mutex&lt;/code&gt;的用武之地。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;18--导入crate内常用的prelude关键字工作原理是什么&quot;&gt;18.  导入crate内常用的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;prelude&lt;/code&gt;关键字工作原理是什么？&lt;/h2&gt;
+
+&lt;p&gt;Rust在其标准库中附带了许多东西。但是，如果每次使用到一个模块就需要手动导入一个，那代码就会显得非常冗长；如果导入库中所有的模块，但是其中一些模块是程序中从未使用到的，这就回导致代码编译时带入许多冗余代码；所以，最好是能够提供一种机制，自动根据程序中使用到的模块信息，自动导入依赖的模块。&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;prelude&lt;/code&gt;就是Rust提供的根据程序中使用到的模块信息，自动导入所使用模块的列表。&lt;/p&gt;
+
+&lt;h2 id=&quot;19-rust项目中如何引用其他项目中非发布到cratesio的crate包&quot;&gt;19. Rust项目中如何引用其他项目中非发布到crates.io的crate包？&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;问题描述&lt;/strong&gt;：例如，我想在自己的Rust项目中引用到&lt;a href=&quot;https://github.com/cloud-hypervisor/cloud-hypervisor.git&quot;&gt;cloud-hypervisor&lt;/a&gt;项目中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;api_client&lt;/code&gt;这个lib类型的crate，那么在我的项目的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cargo.toml&lt;/code&gt;中应该怎么引用到这个dep依赖包呢？&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：如果crate所在的项目是通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git&lt;/code&gt;工具进行管理的，那么就可以在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cargo.toml&lt;/code&gt;文件中，通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git&lt;/code&gt;作为关键字来来指定crate依赖，例如：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;dependencies] api_client &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; git &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;https://github.com/cloud-hypervisor/cloud-hypervisor&quot;&lt;/span&gt; branch &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;当Cargo工具检测到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cargo.toml&lt;/code&gt;文件中存在通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git&lt;/code&gt;关键字指定依赖crate包时，就会调用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git&lt;/code&gt;命令行工具将指定URL的git repo仓库下载到本地。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ad-hint&quot;&gt;注意一种特殊情况：**项目依赖的crate是一个大型Rust项目[workspace]中的一个member**，
+，而我们只想引用这一个crate，那么这个依赖该怎么写呢？
+
+上面的`api_client`就是这样一个例子，只需要两步：
+1. 保持依赖的crate名称和依赖的Rust项目中的**名称一致**
+2. `git`关键字后面的链接**只需要填写整个Rust项目的git地址，不必填写到crate所在Cargo.toml的路径**
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;开发者还可以指定使用crate包所依赖的git repo仓库的分支或特定的commitid，指定分支使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;branch&lt;/code&gt;关键字描述，指定commitid使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rev&lt;/code&gt;关键字来描述，例如：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;dependencies] regex &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; git &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;https://github.com/rust-lang/regex&quot;&lt;/span&gt;, branch &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;next&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;参考资料：&lt;a href=&quot;https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-dependencies-from-git-repositories&quot;&gt;Cargo Book - Specifying dependencies from git repositories&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;20-在linux系统中如何管理不同的rust版本&quot;&gt;20. 在Linux系统中如何管理不同的Rust版本？&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;查看当前Rust各个版本信息&lt;/strong&gt;
+可以从&lt;a href=&quot;https://releases.rs/&quot;&gt;Rust Versions #&lt;/a&gt; 网站获取到当前Rust stable/beta/nightly 版本的情况，以及历史版本信息。&lt;/p&gt;
+
+&lt;p&gt;关于stable/beata/nightly版本策略和演进介绍可以参考：&lt;a href=&quot;https://rustwiki.org/zh-CN/book/appendix-07-nightly-rust.html&quot;&gt;Rust 是如何开发的与 “Nightly Rust”&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;对于开发者我们主要抓住&lt;strong&gt;稳定性差异&lt;/strong&gt;这一点，三者之间的稳定性：stable &amp;gt; beta &amp;gt; nightly&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;查看当前环境安装了那几个Rust版和工具链&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup show
+Default host: x86_64-unknown-linux-gnu
+rustup home:  /home/flyflypeng/.rustup
+
+installed toolchains
+&lt;span class=&quot;nt&quot;&gt;--------------------&lt;/span&gt;
+
+stable-x86_64-unknown-linux-gnu &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+nightly-x86_64-unknown-linux-gnu
+
+installed targets &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;active toolchain
+&lt;span class=&quot;nt&quot;&gt;--------------------------------------&lt;/span&gt;
+
+wasm32-unknown-unknown
+wasm32-wasi
+x86_64-unknown-linux-gnu
+
+active toolchain
+&lt;span class=&quot;nt&quot;&gt;----------------&lt;/span&gt;
+
+stable-x86_64-unknown-linux-gnu &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+rustc 1.68.0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;2c8cc3432 2023-03-06&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;安装stable/beta/nightly版本：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;stable
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;beta
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nightly
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;安装特定版本号的Rust版本：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;1.58.0
+
+&lt;span class=&quot;c&quot;&gt;# 通过rust show 查看当前环境上已经安装的toolchain&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup show
+Default host: x86_64-unknown-linux-gnu
+rustup home:  /home/flyflypeng/.rustup
+
+installed toolchains
+&lt;span class=&quot;nt&quot;&gt;--------------------&lt;/span&gt;
+
+stable-x86_64-unknown-linux-gnu &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;default&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+beta-x86_64-unknown-linux-gnu
+nightly-x86_64-unknown-linux-gnu
+1.58.0-x86_64-unknown-linux-gnu // 确实安装成功了
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;在不同Rust版本之间切换：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 切换到nightly版本&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup default nightly
+
+&lt;span class=&quot;c&quot;&gt;# 切换到stable版本&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup default stable
+
+&lt;span class=&quot;c&quot;&gt;# 切换到指定版本号的Rust&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustup default 1.58.0
+info: using existing &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;1.58.0-x86_64-unknown-linux-gnu&apos;&lt;/span&gt;
+info: default toolchain &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;to &lt;span class=&quot;s1&quot;&gt;&apos;1.58.0-x86_64-unknown-linux-gnu&apos;&lt;/span&gt;
+
+  1.58.0-x86_64-unknown-linux-gnu unchanged - rustc 1.58.0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;02072b482 2022-01-11&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;r
+
+&lt;span class=&quot;c&quot;&gt;# 验证stable或nightly版本是否切换成功，可以通过rustc --verison进行查看&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;rustc &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;
+rustc 1.58.0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;02072b482 2022-01-11&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;21-rust项目源码目录下rust-toolchaintoml文件的作用是什么&quot;&gt;21. Rust项目源码目录下rust-toolchain.toml文件的作用是什么?&lt;/h2&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rust-toolchain.toml&lt;/code&gt;文件的作用是用来设置Rust项目编译的编译工具链，这个配置文件通常用在一些需要使用到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nightly&lt;/code&gt;版本中新功能的项目，这样可以指定Rust项目使用特定的Rust编译工具链进行编译&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;22-rust代码中如何实现条件编译&quot;&gt;22. Rust代码中如何实现条件编译？&lt;/h2&gt;
+
+&lt;p&gt;Cargo中通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;features&lt;/code&gt;提供了一种表达==条件编译和可选依赖关系的机制==。
+开发者可以在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Cargo.toml&lt;/code&gt;文件中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[features]&lt;/code&gt;项中定义一组命名的特性，每个特性都可以被启用或禁用&lt;/p&gt;
+
+&lt;p&gt;默认情况下，所有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;[features]&lt;/code&gt; section中定义的feature功能都是默认关闭的，只有将需要启用的feature加入到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;default feature&lt;/code&gt;中，这样才能再编译时include这些feature所覆盖的代码。&lt;/p&gt;
+
+&lt;p&gt;有时一个Crate中提供了很多独立的功能，并且通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;#[cfg(feature = &quot;xxx&quot;)]&lt;/code&gt;方式在代码中实现条件编译，那么我们可以在引入依赖时同时指定需要使用的特定features，这样可以实现==快速编译和减少最终二进制文件的大小。==&lt;/p&gt;
+
+&lt;p&gt;开启一个Crate中所有feature功能可以使用下面&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;full&lt;/code&gt;关键词，例如：&lt;/p&gt;
+&lt;div class=&quot;language-toml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nn&quot;&gt;tokio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;py&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;py&quot;&gt;features&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;full&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;详细的Cargo.toml种的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;features&lt;/code&gt;特性介绍可以参考：&lt;a href=&quot;https://rustwiki.org/zh-CN/cargo/reference/features.html&quot;&gt;Cargo Book中Features介绍&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;23-ridentifier这种名称的变量名或结构体成员名如何理解&quot;&gt;23. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r#&amp;lt;identifier&amp;gt;&lt;/code&gt;这种名称的变量名或结构体成员名如何理解？&lt;/h2&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r#&amp;lt;identifier&amp;gt;&lt;/code&gt;（Rust Book中称这种命令方式为&lt;a href=&quot;https://doc.rust-lang.org/book/appendix-01-keywords.html#raw-identifiers&quot;&gt;Raw Identifier&lt;/a&gt;）这种方式命令的标识符作为变量名称或结构体成员名称时，主要解决的是&lt;strong&gt;identifier标识符名称与Rust系统中的关键字同名的问题&lt;/strong&gt;，让已经被作为Rust关键字的名称也可以作为源码中的标识符使用。&lt;/p&gt;
+
+&lt;p&gt;例如，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match&lt;/code&gt;是Rust中模式匹配语法的关键字，如果你将&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match&lt;/code&gt;作为函数名：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+	&lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.contains&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;直接编译你会遇到下面的错误提示：&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;error: expected identifier, found keyword &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;match&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+ &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; src/main.rs:4:4
+  |
+4 | fn match&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;needle: &amp;amp;str, haystack: &amp;amp;str&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; -&amp;gt; bool &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  |    ^^^^^ expected identifier, found keyword
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;上面的错误提示说你讲一个Rust中的关键字作为标识符，这是不符合预期的使用方式。&lt;/p&gt;
+
+&lt;p&gt;但是如果你非要将&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;match&lt;/code&gt;作为函数名，那么你就需要用上&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r#&amp;lt;identifier&amp;gt;&lt;/code&gt;语法糖，告诉Rust&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r#&lt;/code&gt;后面identifier不做任何关键字重名检查，制作identifier命令方式的检查，下面就是正确的用法：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;#&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;haystack&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.contains&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;needle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;assert!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;#&lt;span class=&quot;k&quot;&gt;match&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;foobar&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;类似的情况，Rust中还有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;raw string&lt;/code&gt;的概念，例如你想在Rust中保存一个用字符串常量表示的JSON格式字符串，为了让Rust不对字符串中的的引号做转义处理，你可以用下面的方式来使用：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 注释掉下面的语句会报下面的错误：&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// error: expected one of `.`, `;`, `?`, `else`, or an operator, found `&quot;: 2023}&quot;`&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// --&amp;gt; src/main.rs:3:27&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// |&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// |     let json_str = &quot;{&quot;year&quot;: 2023}&quot;;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// |                           ^^^^^^^^^ expected one of `.`, `;`, `?`, `else`, or an operator&lt;/span&gt;
+    
+    &lt;span class=&quot;c1&quot;&gt;// 正确让字符串中包含双引号的方法&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json_str&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;{&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;: 2023}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;c1&quot;&gt;// 或者使用r#: raw string的方式&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_json_str&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;r#&quot;{&quot;name&quot;: &quot;Peter&quot;}&quot;#&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello {}!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json_str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Happy {}!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_json_str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;23-引用reference与借用borrow的区别&quot;&gt;23. 引用(Reference)与借用(Borrow)的区别？&lt;/h2&gt;
+
+&lt;p&gt;从语言中词语的分类来看，&lt;strong&gt;引用是一个名词&lt;/strong&gt;，表示一个对象的别名，可以通过这个别名找到背后实际的对象；而&lt;strong&gt;借用则是一个动词&lt;/strong&gt;，表示向一个对象借用了一些资源（比如对象的所有权，访问全兴等）。&lt;/p&gt;
+
+&lt;p&gt;这两者之间的联系是&lt;strong&gt;创建一个引用的行为&lt;/strong&gt;就可以称为是&lt;strong&gt;借用&lt;/strong&gt;，例如下面的代码，我们创建了一个 String类型的对象s，然后创建一个指向该String类型对象s的引用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;s&lt;/code&gt;（&lt;strong&gt;可以理解为从对象s那里借用了该对象的不可变所有权&lt;/strong&gt;），最后将这个引用传递给&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;change&lt;/code&gt;函数使用，当使用完毕后，还是需要将借用的不可变所有权还给String类型对象s。&lt;/p&gt;
+
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;nf&quot;&gt;change&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;change&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;some_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;some_string&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.push_str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;, world&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;24-map函数闭包中传入参数x和x的区别是什么&quot;&gt;24. map函数闭包中传入参数&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;x&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;x&lt;/code&gt;的区别是什么？&lt;/h2&gt;
+
+&lt;p&gt;函数闭包中的参数&lt;/p&gt;
+
+&lt;h2 id=&quot;25-supertrait概念&quot;&gt;25. supertrait概念&lt;/h2&gt;
+
+&lt;p&gt;Rust中&lt;strong&gt;没有继承的概念&lt;/strong&gt;，但是开发者可以通过为&lt;strong&gt;subtrait定义上层更抽象的supertrait&lt;/strong&gt;来实现类似面向对象编程中的继承机制。&lt;/p&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Person是Student的supertrait&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 如果某个类型需要实现Student trait, 那么它同时也要实现Person trait&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;university&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Programmer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fav_language&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Student和Programmer是ComputerScienceStudent的直接supertrait&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 而Person则是ComputerScienceStudent的上上层supertrait&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;trait&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ComputerScienceStudent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Programmer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;study_lessons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;comp_sci_student_greeting&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;student&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dyn&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ComputerScienceStudent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;format!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;My name is {}, and I attend {}. My favorite language is {}. My study lessons is {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;student&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;student&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.university&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;student&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.fav_language&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;student&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.study_lessons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Person&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;Tom&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;university&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;MIT&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Programmer&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fav_language&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;Rust&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ComputerScienceStudent&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;study_lessons&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&quot;Operating System&quot;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.to_string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Nothing&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;comp_sci_student_greeting&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;26-rust中如何实现类似c语言中sizeof函数查看变量占用存储空间大小的功能&quot;&gt;26. Rust中如何实现类似C语言中sizeof函数查看变量占用存储空间大小的功能？&lt;/h2&gt;
+
+&lt;p&gt;在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mem&lt;/code&gt; crate中有两个sizeof相关的函数：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mem::size_of&lt;/code&gt;：返回指定类型所占用的内存空间大小（以byte字节为单位）&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mem::size_of_val&lt;/code&gt;：返回变量所实际指向的值所占用的内存空间大小（以byte字节为单位）。&lt;strong&gt;注意下面例子中关于size_of_val(&amp;amp;String)类型和String::len()两个函数返回大小的差异。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;len&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cal_string_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;The length of {} is {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 通过String::len()返回的是heap上实际存储字符串的内存空间大小&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// std::mem::size_of_val返回的是String类型变量在栈上存储的大小等于24，就是&amp;lt;ptr, cap, size&amp;gt;三个usize变量大小之和&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;assert_eq!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;assert_eq!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;mem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;size_of_val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 查看String类型和&amp;amp;String引用类型的大小&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;size_of::&amp;lt;String&amp;gt;(): {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;mem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;size_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;size_of::&amp;lt;&amp;amp;String&amp;gt;(): {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;mem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;size_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// 查看系统中usize类型的大小&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;size_of::&amp;lt;usize&amp;gt;(): {}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;mem&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;size_of&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;usize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cal_string_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;usize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;.len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;对于Rust常见的指针、引用、&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Box&amp;lt;T&amp;gt;&lt;/code&gt;等这些类型的值的大小都是&lt;strong&gt;usize&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The types &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*const T&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;T&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Box&amp;lt;T&amp;gt;&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&amp;lt;&amp;amp;T&amp;gt;&lt;/code&gt;, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Option&amp;lt;Box&amp;lt;T&amp;gt;&amp;gt;&lt;/code&gt; all have the same size. If &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;T&lt;/code&gt; is Sized, all of those types have the same size as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;usize&lt;/code&gt;. – &lt;a href=&quot;https://doc.rust-lang.org/std/mem/fn.size_of.html&quot;&gt;std::mem::size_of&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;下面放一个&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;String&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;String&lt;/code&gt;以及String类型字符串实际在堆内存上存储结构的关系，就更加容易理解上面的例子，以及引用与指针的区别。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/20230318230649.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;27-如何理解rust中的自动解引用&quot;&gt;27. 如何理解Rust中的自动解引用？&lt;/h2&gt;
+
+&lt;p&gt;自己主要看了了这篇文文章受启发较大：&lt;a href=&quot;https://course.rs/advance/smart-pointer/deref.html&quot;&gt;Rust语言圣经 - Deref 解引用&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Rust中编译器可以实现下面两种关于Deref的重要能力：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;隐式地自动&lt;/strong&gt; Deref 解引用转换&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;连续地自动地隐式&lt;/strong&gt; Deref 解引用转换&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;下面的例子中就介绍了这两种隐式的Deref解引用使用场景：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;str&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;println!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// case 1: 自动Deref解引用&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Hello&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 注意：这里传入的&amp;amp;s的数据类型是&amp;amp;String, 而display函数定义的参数类型是&amp;amp;str&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 实现从&amp;amp;String -&amp;gt; &amp;amp;str类型之间的转换的背后，就是Rust编译通过Deref自动解引用帮我们做的&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 也就是在标准库中实现String: Deref&amp;lt;&amp;amp;str&amp;gt;的Deref trait，标准库中的代码如下：&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// #[stable(feature = &quot;rust1&quot;, since = &quot;1.0.0&quot;)]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// impl ops::Deref for String {&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// type Target = str;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// #[inline]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// fn deref(&amp;amp;self) -&amp;gt; &amp;amp;str {&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//     unsafe { str::from_utf8_unchecked(&amp;amp;self.vec) }&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// }&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// }&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// case 2: 连续自动Deref解引用&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Box&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nn&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;World&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// 注意：1. 首先&amp;amp;b是&amp;amp;Box&amp;lt;String&amp;gt;类型，通过它的Deref解引用，可以获取到&amp;amp;String类型引用&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//      2. 然后在连续自动的调用&amp;amp;String -&amp;gt; &amp;amp;str的Deref解引用&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//     #[stable(feature = &quot;rust1&quot;, since = &quot;1.0.0&quot;)]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//     impl&amp;lt;T: ?Sized, A: Allocator&amp;gt; Deref for Box&amp;lt;T, A&amp;gt; {&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//     type Target = T;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//     fn deref(&amp;amp;self) -&amp;gt; &amp;amp;T {&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//         &amp;amp;**self // 这里为什么要用两个*？因为第一个*是解&amp;amp;Box&amp;lt;String&amp;gt;, 第2个是解Box&amp;lt;String&amp;gt;得到String类型&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;//     }&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// }&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;关于&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Deref&lt;/code&gt;的自动解引用规则总结：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;一个类型为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;T&lt;/code&gt;的对象&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo&lt;/code&gt;，如果&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;T: Deref&amp;lt;Target=U&amp;gt;&lt;/code&gt;，那么有关&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo&lt;/code&gt;的引用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;foo&lt;/code&gt;在使用时可以&lt;strong&gt;自动地转换&lt;/strong&gt;为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;U&lt;/code&gt;类型。&lt;/li&gt;
+  &lt;li&gt;触发Deref自动解引用的条件就是&lt;strong&gt;存在&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;T&lt;/code&gt; -&amp;gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;U&lt;/code&gt;引用类型转换&lt;/strong&gt;，一般函数调用传递引用的场景存在较多的自动解引用转换&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;引用归一化&lt;/strong&gt;
+在Rust标准库中有一个非常有意思的一段代码：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Sized&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Deref&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Target&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;不过这段代码写成下面的方式，更容易理解：&lt;/p&gt;
+&lt;div class=&quot;language-rust highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;impl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;Sized&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Deref&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Target&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;fn&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;deref&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;self&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这段代码所能够实现的内容就是可以实现从&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;&amp;amp;&amp;amp;&amp;amp;&amp;amp;T -&amp;gt; &amp;amp;T&lt;/code&gt;类型的转换，不断地脱去外面冗长的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;&lt;/code&gt;引用符，直到返回最终实际指向的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;amp;T&lt;/code&gt;类型的引用。&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://rust-lang.github.io/rustup/overrides.html?highlight=rust-toolchain.toml#the-toolchain-file&quot;&gt;The toolchain file&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sun, 19 Mar 2023 16:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2023/03/19/100%E4%B8%AARust%E9%97%AE%E9%A2%98.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2023/03/19/100%E4%B8%AARust%E9%97%AE%E9%A2%98.html</guid>
+        
+        <category>Rust</category>
+        
+        <category>编程语言</category>
+        
+        
+        <category>编程语言</category>
+        
+      </item>
     
       <item>
         <title>论文分享 - VirtualFlow: Decoupling Deep Learning Models from the underlying Hardware</title>
@@ -2351,582 +3014,6 @@ make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflype
         
         
         <category>虚拟化</category>
-        
-      </item>
-    
-      <item>
-        <title>Android 系统图形栈（二）：OpenGL ES 库和 EGL 库加载过程</title>
-        <description>&lt;h2 id=&quot;1-opengl-es-和-opengl-es-库的区别&quot;&gt;1. OpenGL ES 和 OpenGL ES 库的区别&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;OpenGL ES&lt;/strong&gt; ： 它本身只是一个协议规范，定义了一套可以供上层应用程序进行调用的 API，它抽象了 GPU 的功能，使应用开发者不必关心底层的 GPU 类型和具体实现。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;OpenGL ES 库&lt;/strong&gt;：OpenGL ES 库就是上面 OpenGL ES 中定义的 API 的具体实现。由于每个显卡制造厂商的 GPU 硬件结构不同，从而导致各个厂商的OpenGL ES 库也各不相同，所以 Android 系统中的 OpenGL ES 库通常是由硬件厂商提供的，通常存放在 Android 系统中的 &lt;em&gt;/system/lib64/egl&lt;/em&gt; 下面或者 &lt;em&gt;/vendor/lib64/egl&lt;/em&gt; 目录下。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;OpenGL ES Wrapper 库&lt;/strong&gt;：OpenGL ES Wrapper 库是一个对 OpenGL ES API 进行封装的一个包裹库，它向上为应用程序提供了标准的 OpenGL ES API，向下可以和不同厂商实现的 OpenGL ES 库进行绑定，将 OpenGL ES API 和对应的实现函数一一绑定在一起。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;并且，OpenGL ES 库的实现分为：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;软件模拟实现&lt;/strong&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;硬件加速实现&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;现在，因为我们 Android 手机中的 Soc 片上芯片中都集成了 GPU 模块，所以这里使用的就是硬件加速实现的 OpenGL ES 库。但是，像 Android Emulator 中的 Android 系统，如果不支持将 OpenGL ES API 指令重定向到主机系统的 GPU 加速执行的话，它所采用的 OpenGL ES 库就是软件模拟实现的。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;补充：&lt;/strong&gt;
-同理，如前面一篇文章&lt;a href=&quot;http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html&quot;&gt;Android 系统图形栈: OpenGL ES 和 EGL 介绍&lt;/a&gt;中介绍的，EGL 也是一套 API，它的实现也需要系统厂商来提供。系统厂商通常会将这两套 API 的实现封装在一个共享链接库中，但是根据最新的标准，OpenGL ES API 实现的共享链接库和 EGL API 实现的共享链接库是独立分开的，例如 2.2 小节中列举的 Nexus 9 平板设备中 OpenGL ES 和 EGL API 实现库就是独立分开的。&lt;/p&gt;
-
-&lt;h2 id=&quot;2-android-中-opengl-es-软件层次栈&quot;&gt;2. Android 中 OpenGL ES 软件层次栈&lt;/h2&gt;
-&lt;p&gt;按照分层理念的设计，Android 中的 OpenGL ES 实现也是层次设计的，形成一个软件层次栈。最上面的是 Java 层，接着下面是 JNI 层，再调用下面的 wrapper 层，wrapper 层下面则是 OpenGL ES API 的具体软件实或者硬件实现了。整个 OpenGL 软件层次栈的调用关系如下所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/OpenGL_ES_call_graph.png&quot; alt=&quot;OpenGL 软件层次栈&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;21-opengl-esegl-wrapper-库&quot;&gt;2.1 OpenGL ES/EGL Wrapper 库&lt;/h3&gt;
-&lt;p&gt;前面我们已经介绍过 OpenGL ES/EGL Wrapper 库是一个将 OpenGL ES API 和 OpenGL ES API 具体实现绑定在一起的库，它对应的源码路径是：&lt;em&gt;/frameworks/native/opengl/libs/&lt;/em&gt;，其中:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv1_CM.so&lt;/code&gt;：OpenGL ES 1.x API 的 Wrapper 库&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt;：OpenGL ES 2.0 的 Wrapper 库&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt;：OpenGL ES 3.0 的 Wrapper 库&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;其中因为 OpenGL ES 3.0 API 是兼容 OpenGL ES 2.0 API 的，所以 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv2.so&lt;/code&gt; 库本质上和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLESv3.so&lt;/code&gt; 库是一样的。&lt;/p&gt;
-
-&lt;h3 id=&quot;22-opengl-esegl-实现库&quot;&gt;2.2 OpenGL ES/EGL 实现库&lt;/h3&gt;
-&lt;p&gt;如果Android系统平台支持 OpenGL ES 硬件加速渲染，那么 OpenGL ES/EGL 实现库由系统厂商以&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.so&lt;/code&gt;的共享链接库的形式提供，例如，Nexus 9 平板中的厂商提供的 OpenGL ES/EGL 实现库为：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;flounder:/vendor/lib64/egl &lt;span class=&quot;c&quot;&gt;# ls&lt;/span&gt;
-libEGL_tegra.so libGLESv1_CM_tegra.so libGLESv2_tegra.so
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;如果Android系统平台不支持 OpenGL ES 硬件加速渲染，那么它就会默认启用软件模拟渲染，这时 OpenGL ES/EGL 实现库就是由 AOSP 提供，链接库的存在的路径为： &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/system/lib64/egl/libGLES_android.so&lt;/code&gt;。而 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt; 库在 Android 7.1 系统对应的实现源码路径为：&lt;em&gt;/frameworks/native/opengl/libagl/&lt;/em&gt; 。&lt;/p&gt;
-
-&lt;h2 id=&quot;3-android-71-中加载-opengl-es-库的过程&quot;&gt;3. Android 7.1 中加载 OpenGL ES 库的过程&lt;/h2&gt;
-&lt;p&gt;Android 中图形渲染所采用的方式（硬件 or 软件）是在系统启动之后动态确定的，而确定渲染方式的这个源码文件就是 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 。&lt;/p&gt;
-
-&lt;h3 id=&quot;31-android-71-opengl-es-库和-egl-库加载说明&quot;&gt;3.1 Android 7.1 OpenGL ES 库和 EGL 库加载说明&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.2net.co.uk/tutorial/android-egl-cgf-is-dead&quot;&gt;How Android finds OpenGL libraries, and the death of egl.cfg&lt;/a&gt; 这篇文章中提到了非常关键的一点，就是从 Android Kitkat 4.4 之后，Android 中加载 OpenGL ES/EGL 库的方法发生了变化了（&lt;strong&gt;但是整个加载过程都是由 /frameworks/native/opengl/libs/EGL/Loader.cpp 程序所决定的，也就是说 Loader.cpp 文件发生了变化&lt;/strong&gt;）。&lt;/p&gt;
-
-&lt;p&gt;在 &lt;strong&gt;Android 4.4 之前&lt;/strong&gt;，加载 OpenGL ES 库是由 &lt;em&gt;/system/lib/egl/egl.cfg&lt;/em&gt; 文件所决定的，通过读取这个配置文件来确定是加载 OpenGL ES 软件模拟实现的库，还是OpenGL ES 硬件加速实现的库。&lt;/p&gt;
-
-&lt;p&gt;但是，在Android 4.4 之后，Android 不再通过读取 egl.cfg 配置文件的方式来加载 OpenGL ES 库，新的加载 OpenGL ES 库的规则，如下所示：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;从 &lt;em&gt;/system/lib/egl&lt;/em&gt; 或者 &lt;em&gt;/vendor/lib/egl/&lt;/em&gt; 目录下加载 libGLES.so 库文件或者 libEGL_vendor.so，libGLESv1_CM_vendor.so，libGLESv2_vendor.so 库文件。&lt;/li&gt;
-  &lt;li&gt;为了向下兼容旧的库的命名方式，同样也会加载 &lt;em&gt;/system/lib/egl&lt;/em&gt; 或者 &lt;em&gt;/vendor/lib/egl/&lt;/em&gt; 目录下的 libGLES_*.so 或者 libEGL_*.so，libGLESv1&lt;em&gt;CM&lt;/em&gt;*.so，libGLESv2_*.so 库文件。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;32硬件加速渲染-or-软件模拟渲染&quot;&gt;3.2　硬件加速渲染 or 软件模拟渲染？&lt;/h3&gt;
-
-&lt;p&gt;前面我们提到 OpenGL ES 库的实现方式有两种，一种是硬件加速实现，一种是软件模拟实现，那么系统是怎么确定加载那一种 OpenGL ES 库的呢？&lt;/p&gt;
-
-&lt;p&gt;Android 7.1 源码中负责加载 OpenGL ES/EGL 库部分的代码位于：&lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 文件中，这个文件中代码的主要入口函数是 &lt;strong&gt;Loader::open()&lt;/strong&gt; 函数，而决定加载&lt;strong&gt;硬件加速渲染库&lt;/strong&gt;还是&lt;strong&gt;软件模拟渲染库&lt;/strong&gt;主要涉及到下面两个函数：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;setEmulatorGlesValue()&lt;/li&gt;
-  &lt;li&gt;checkGlesEmulationStatus()&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;下面就来简要的分析一下 Android 系统是如何选择加载&lt;strong&gt;硬件加速渲染库&lt;/strong&gt;还是&lt;strong&gt;软件模拟渲染库&lt;/strong&gt;：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;首先，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Loader::open()&lt;/code&gt; 入口函数会调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setEmulatorGlesValue()&lt;/code&gt; 从 property 属性系统中获取一些属性值来判断当前 Android 系统是否在 Emulator 环境中运行，并根据读取出来的信息来重新设置新的属性键值对，setEmulatorGlesValue() 函数的代码如下所示：&lt;/p&gt;
-
-    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void setEmulatorGlesValue(void) {
-     char prop[PROPERTY_VALUE_MAX];
-     property_get(&quot;ro.kernel.qemu&quot;, prop, &quot;0&quot;); //读取 ro.kernel.qemu 属性值，判断Android系统是否运行在 qemu 中
-     if (atoi(prop) != 1) return;
-    
-     property_get(&quot;ro.kernel.qemu.gles&quot;, prop, &quot;0&quot;); //读取 ro.kernel.qemu.gles 属性值，判断 qemu 中 OpenGL ES 库的实现方式
-     if (atoi(prop) == 1) {
-         ALOGD(&quot;Emulator has host GPU support, qemu.gles is set to 1.&quot;);
-         property_set(&quot;qemu.gles&quot;, &quot;1&quot;);
-         return;
-     }
-    
-     // for now, checking the following
-     // directory is good enough for emulator system images
-     const char* vendor_lib_path =
- #if defined(__LP64__)
-         &quot;/vendor/lib64/egl&quot;;
- #else
-         &quot;/vendor/lib/egl&quot;;
- #endif
-    
-     const bool has_vendor_lib = (access(vendor_lib_path, R_OK) == 0);
-     //如果存在 vendor_lib_path 这个路径，那么就说明厂商提供了 OpenGL ES库自己的软件模拟渲染库，而不是 Android 系统自己编译得到的软件模拟渲染库
-     if (has_vendor_lib) {
-         ALOGD(&quot;Emulator has vendor provided software renderer, qemu.gles is set to 2.&quot;);
-         property_set(&quot;qemu.gles&quot;, &quot;2&quot;);
-     } else {
-         ALOGD(&quot;Emulator without GPU support detected. &quot;
-               &quot;Fallback to legacy software renderer, qemu.gles is set to 0.&quot;);
-         property_set(&quot;qemu.gles&quot;, &quot;0&quot;); //最后，默认采取的是方案就是调用传统的Android系统自己编译得到软件模拟渲染库
-     }
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数中，内部类 MatchFile 类中会调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;checkGlesEmulationStatus()&lt;/code&gt; 函数来检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能，然后根据 checkGlesEmulationStatus() 函数的返回状态值来确定要加载共享链接库的文件绝对路径。load_system_driver() 和 checkGlesEmulationStatus() 函数代码如下所示：&lt;/p&gt;
-
-    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static void* load_system_driver(const char* kind) {
-     ATRACE_CALL();
-     class MatchFile {
-     public:
-         //这个函数作用是返回需要加载打开的 OpenGL ES 和 EGL API 实现库文件的绝对路径
-         static String8 find(const char* kind) {
-             String8 result;
-             int emulationStatus = checkGlesEmulationStatus(); //检查 Android 系统是否运行在模拟器中，以及在模拟器中是否启用了主机硬件加速的功能
-             switch (emulationStatus) {
-             case 0: //Android 运行在模拟器中，使用系统软件模拟实现的 OpenGL ES API 库 libGLES_android.so
- #if defined(__LP64__)
-                 result.setTo(&quot;/system/lib64/egl/libGLES_android.so&quot;);
- #else
-                 result.setTo(&quot;/system/lib/egl/libGLES_android.so&quot;);
- #endif
-                 return result;
-             case 1: // Android 运行在模拟器中，通过主机系统中实现 OpenGL ES 加速渲染，通过 libGLES_emulation.so 库将  OpenGL ES API 指令重定向到 host 中执行
-                 // Use host-side OpenGL through the &quot;emulation&quot; library
- #if defined(__LP64__)
-                 result.appendFormat(&quot;/system/lib64/egl/lib%s_emulation.so&quot;, kind);
- #else
-                 result.appendFormat(&quot;/system/lib/egl/lib%s_emulation.so&quot;, kind);
- #endif
-                 return result;
-             default:
-                 // Not in emulator, or use other guest-side implementation
-                 break;
-             }
-    
-             // 如果不是上面两种情况，就根据库的命名规则去找到厂商实现库文件的绝对路径
-             String8 pattern;
-             pattern.appendFormat(&quot;lib%s&quot;, kind);
-             const char* const searchPaths[] = {
- #if defined(__LP64__)
-                 &quot;/vendor/lib64/egl&quot;,
-                 &quot;/system/lib64/egl&quot;
- #else
-                 &quot;/vendor/lib/egl&quot;,
-                 &quot;/system/lib/egl&quot;
- #endif
-             };
-                
-             ......
-     }
-        
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-
-    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; static int
- checkGlesEmulationStatus(void)
- {
-     /* We&apos;re going to check for the following kernel parameters:
-      *
-      *    qemu=1                      -&amp;gt; tells us that we run inside the emulator
-      *    android.qemu.gles=&amp;lt;number&amp;gt;  -&amp;gt; tells us the GLES GPU emulation status
-      *
-      * Note that we will return &amp;lt;number&amp;gt; if we find it. This let us support
-      * more additionnal emulation modes in the future.
-      */
-     char  prop[PROPERTY_VALUE_MAX];
-     int   result = -1;
-    
-     /* Check if hardware acceleration disabled explicitly */
-     property_get(&quot;debug.egl.hw&quot;, prop, &quot;1&quot;); //读取 debu.egl.hw 属性值，判断3D硬件加速功能是否被关闭了
-     if (!atoi(prop)) {
-         ALOGD(&quot;3D hardware acceleration is disabled&quot;);
-         return 0;
-     }
-    
-     /* First, check for qemu=1 */
-     property_get(&quot;ro.kernel.qemu&quot;, prop, &quot;0&quot;); //读取ro.kernel.qemu，判断是否运行在 qemu 中
-     if (atoi(prop) != 1)
-         return -1;
-    
-     /* We are in the emulator, get GPU status value */
-     property_get(&quot;qemu.gles&quot;, prop, &quot;0&quot;); // 如果 Android 系统运行在 qemu 中，就返回 qemu.gles 的值，根据这个值就可以确定加载的是那种 OpenGL ES 库了
-     return atoi(prop);
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;总结一下上面代码的功能就是，首先判断 Android 是否在 qemu 虚拟机中运行，如果不是，那么就直接去加载厂商存放库的路径中去加载 OpenGL ES 实现库（不管是硬件加速实现的，还是软件模拟实现的）；如果是在 qemu 中运行，那么就要根据返回的 &lt;strong&gt;emulationStatus&lt;/strong&gt; 值 来确定是加软件模拟实现的 OpenGL ES API 库 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLES_android.so&lt;/code&gt;，还是加载 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libGLES_emulation.so&lt;/code&gt;库将 OpenGL ES 指令重定向到 Host 系统中去执行。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;33-opengl-esegl-库加载和解析过程&quot;&gt;3.3 OpenGL ES/EGL 库加载和解析过程&lt;/h3&gt;
-&lt;p&gt;正如&lt;a href=&quot;http://woshijpf.github.io/android/2017/09/04/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88-OpenGLES%E5%92%8CEGL%E4%BB%8B%E7%BB%8D.html&quot;&gt;Android 系统图形栈: OpenGL ES 和 EGL 介绍&lt;/a&gt;这篇文章中分析的那样，在进行 OpenGL 编程时，最先开始需要获取 Display，这将调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eglgGetDisplay()&lt;/code&gt; 函数被调用。在 eglGetDisplay() 里则会调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 初始化驱动：装载各个库进行解析，将 OpenGL ES/EGL API 函数接口和具体的实现绑定在一起，并将结果保存在 &lt;strong&gt;egl_connection_t&lt;/strong&gt; 类型的全局变量 &lt;strong&gt;gEGLImpl&lt;/strong&gt; 的结构体的成员变量中。&lt;/p&gt;
-
-&lt;p&gt;下面以 SurfaceFlinger 进程为例进行分析，整个 OpenGL ES/EGL 库的加载和解析流程如下所示：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-flow&quot;&gt;st=&amp;gt;start: Start
-op1=&amp;gt;operation: SurfaceFlinger::init()
-sub=&amp;gt;subroutine: Your Subroutine
-op2=&amp;gt;operation: eglGetDisplay(EGL_DEFAULT_DISPLAY)
-op3=&amp;gt;operation: egl_init_drivers()
-op4=&amp;gt;operation: egl_init_drivers_locked();
-op5=&amp;gt;operation: loader.open()
-op6=&amp;gt;operation: load_driver()
-op7=&amp;gt;operation: load_system_driver()
-op8=&amp;gt;operation: Loader::init_api()
-e=&amp;gt;end
-
-st-&amp;gt;op1-&amp;gt;op2-&amp;gt;op3-&amp;gt;op4-&amp;gt;op5-&amp;gt;op6-&amp;gt;op7-&amp;gt;op8-&amp;gt;e
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&quot;331-geglimpl-全局变量&quot;&gt;3.3.1 gEGLImpl 全局变量&lt;/h4&gt;
-
-&lt;p&gt;struct egl_connection_t 类型的 gEGLImpl 全局变量是一个非常重要变量，它里面的成员指向了打开的 OpenGL ES/EGL Wrapper 库和 OpenGL ES/EGL 实现库：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gEGLImpl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooksNoContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;其中 egl_connection_t 的定义：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/egldefs.h&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-    &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;              &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//指向打开的共享链接库的句柄&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//指向打开的 OpenGL ES API 对象&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;              &lt;span class=&quot;n&quot;&gt;major&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 主版本好&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;              &lt;span class=&quot;n&quot;&gt;minor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//dui x&lt;/span&gt;
-
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;               &lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;下面就对其中的主要成员进行一个说明：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;hooks：这是一个 gl_hook_t* 类型的指针数组，它最终将 OpenGL ES API 和实现库钩在一起。&lt;/li&gt;
-  &lt;li&gt;egl：这是一个 egl_t 类型的成员变量，它最终将 EGL API 和 EGL 实现库了钩在一起。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;那么 gl_hook_t 和 egl_t 是什么呢？&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;gl_hook_t&lt;/strong&gt; 和 &lt;strong&gt;egl_t&lt;/strong&gt; 的定义如下所示：
-&lt;em&gt;/frameworks/native/opengl/libs/hooks.h&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define GL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
-#define EGL_ENTRY(_r, _api, ...) _r (*_api)(__VA_ARGS__);
-&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;egl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&quot;EGL/egl_entries.in&quot;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;gl_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&quot;entries.in&quot;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;
-&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;gl_ext_t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// __eglMustCastToProperFunctionPointerType 是一个 typedef 的函数指针类型，它的返回值是void，参数也是void&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;extensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MAX_NUMBER_OF_GL_EXTENSIONS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;从上面的定义中我们发现，egl_t 和 gl_hooks_t 这两个结构体中主要就是一个 include 语句，那么它们包含的是什么呢？&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;#include “EGL/egl_entries.in&lt;/strong&gt;
-包含的文件路径如下所示：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl_entries.in&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NativeDisplayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglInitialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglTerminate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetConfigs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLConfig&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglChooseConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLConfig&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLint&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在这个文件中，我们可以看到所有的内容都是 EGL_ENTRY 宏定义的，根据 EGL_ENTRY 宏定义：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/hooks.h&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//下面的两个宏定义分别是 OpenGL 和 EGL API 函数的函数指针变量
-//这些函数变量最后会和具体的 OpenGL 和 EGL API 的实现绑定在一起
-#define GL_ENTRY(_r,_api,...) _r (*_api)(__VA_ARGS__);
-#define EGL_ENTRY(_r,_api,...) _r(*_api)(__VA_ARGS__);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;我们可以将下面的这个宏定义展开成如下的形式:&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;NativeDisplayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//展开后的形式如下所示，它实际上就是 EGL API 函数声明&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NativeDisplayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;#include “entries.in”&lt;/strong&gt;
-包含的文件路径为：
-&lt;em&gt;/frameworks/native/opengl/libs/entries.in&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;GL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glReadPixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;和上面的 EGL_ENTRY 一样，GL_ENTRY 都是通过宏定义的形式来将 OpenGL ES 的 API 函数接口进行声明，例如，上面的宏定义声明可以展开成下面的形式：&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;GL_ENTRY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glReadPixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;// 展开后的形式如下所示，它实际上就是 OpenGL ES API 函数声明&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glReadPixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLint&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLsizei&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLenum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pixels&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;最后，通过 entries.in 和 egl_entries.in 这两个文件，我们就可以得到 OpenGL ES 和 EGL 中的所有 API 函数接口的说明。&lt;/p&gt;
-
-&lt;h4 id=&quot;332-surfaceflinger-初始化成员变量-megldisplay&quot;&gt;3.3.2 SurfaceFlinger 初始化成员变量 mEGLDisplay&lt;/h4&gt;
-&lt;p&gt;在 SurfaceFlinger 类中有一个 EGLDisplay 类型的成员变量 mEGLDisplay，它是 EGL 中用来构建 OpenGL ES 渲染环境所需的参数。&lt;/p&gt;
-
-&lt;p&gt;SurfaceFlinger 中调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 初始化 mEGLDisplay 的代码如下：
-&lt;em&gt;/frameworks/native/services/surfaceflinger/SurfaceFlinger.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SurfaceFlinger&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ALOGI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;&quot;SurfaceFlinger&apos;s main thread ready to run. &quot;&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;Initializing graphics H/W...&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;status_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Mutex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Autolock&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mStateLock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// initialize EGL for the default display&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// 调用 eglGetDisplay 函数获取默认的显示设备&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;mEGLDisplay&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_DEFAULT_DISPLAY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; 
-    &lt;span class=&quot;n&quot;&gt;eglInitialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mEGLDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;紧接着在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;eglGetDisplay()&lt;/code&gt; 中调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt;
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/eglApi.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;eglGetDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGLNativeDisplayType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// 调用egl_init_drivers() 加载 OpenGL ES 库和 EGL 库&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_init_drivers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_BAD_PARAMETER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_NO_DISPLAY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;EGLDisplay&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dpy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_display_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getFromNativeDisplay&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;最后，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers()&lt;/code&gt; 函数中使用了 pthread_mutex_lock 上锁保护，继续调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;egl_init_drivers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;pthread_mutex_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sInitDriverMutex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// 使用了 pthread_mutex_lock 上锁保护，继续调用 egl_init_drivers_locked&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_init_drivers_locked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;pthread_mutex_unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sInitDriverMutex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;下面就是对 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;egl_init_drivers_locked()&lt;/code&gt; 函数进行一个分析：&lt;/p&gt;
-
-&lt;p&gt;egl_init_drivers_locked() 函数代码如下所示：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/egl.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//在该文件起始位置定义的全局变量&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gEGLImpl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 描述EGL实现内容的结构体对象&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// gl_hooks_t 是包含 OpenGL ES API 函数声明对应的函数指针结构体&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;gl_hooks_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gHooksNoContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;pthread_key_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gGLWrapperKey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGLBoolean&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;egl_init_drivers_locked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sEarlyInitState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// initialized by static ctor. should be set here.&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// 得到 Loader 对象单例&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// get our driver loader&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;//  gEGLImple 是一个全局变量，数据类型为 egl_connection_t 结构体类型&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// dynamically load our EGL implementation&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gEGLImpl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// cnx-&amp;gt;dso 本质上是一个 (void *)类型的指针，它指向的对象是 EGL 共享库打开之后的句柄&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
-        &lt;span class=&quot;c1&quot;&gt;// &amp;gt;= 将cnx中的 hooks 数组中指向OpenGL ES API 函数指针结构体指的数组成员，用 gHooks 中的成员的地址去初始化&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;//也就是说 gEGLImpl 中 hook 数组指向 gHooks 数组，最终指向同一个 OpenGL ES API 函数指针的实现&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gHooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// &amp;gt;= 最后通过loader对象的open函数开始加载 OpenGL ES 和 EGL wrapper 库&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_TRUE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL_FALSE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;在这个函数中，有一个非常关键的 egl_connection_t 指针指向一个全局变量 gEGLImpl，当第一次初始化加载 OpenGL ES 实现库和 EGL 实现库时，还需要将 gEGLImpl 中的 hooks 数组中的两个指针指向一个全局的 gl_hooks_t 数组 gHooks（这就是两个指针钩子，最终初始化完成后将分别勾住 OpenGL ES 1.0 和 OpenGL ES 2.0 的实现库），接着调用 Loader 类的实例的 open() 函数完成从 OpenGL ES 实现库中完成符号解析工作。&lt;/p&gt;
-
-&lt;h4 id=&quot;333-通过-loader-类加载和解析-opengl-es-库和-egl-库&quot;&gt;3.3.3 通过 Loader 类加载和解析 OpenGL ES 库和 EGL 库&lt;/h4&gt;
-
-&lt;p&gt;Loader::open() 函数的代码如下所示：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// &amp;gt;= Loader 类对象构造完成后，就在 /EGL/egl.cpp 文件中的 egl_init_drivers_locked() 中被调用&lt;/span&gt;
-&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ATRACE_CALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;driver_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;setEmulatorGlesValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GLES&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;driver_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Always load EGL first&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;EGL&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;driver_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GLESv1_CM&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GLESv2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;couldn&apos;t find an OpenGL ES implementation&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libEGL.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libGLESv2.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_wrapper&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EGL_WRAPPER_DIR&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/libGLESv1_CM.so&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libEgl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;couldn&apos;t load system EGL wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;LOG_ALWAYS_FATAL_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;libGles1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;s&quot;&gt;&quot;couldn&apos;t load system OpenGL ES wrapper libraries&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hnd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;open()&lt;/code&gt; 函数主要负责 OpenGL ES 库加载前的准备工作，具体的加载细节，则是通过调用 load_driver() 去完成的。&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 函数代码如下所示：
-&lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                          &lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;uint32_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ATRACE_CALL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;nullptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mGetDriverNamespace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;android_namespace_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mGetDriverNamespace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_updated_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//加载 OpenGL ES 实现库，放回打开的共享链接库的句柄&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_system_driver&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// 解析 EGL 库，并将wrapper 库 libEGL.so 中的函数 API 指针和具体的实现绑定在一起&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;EGL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProcAddressType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;eglGetProcAddress&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;n&quot;&gt;ALOGE_IF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                 &lt;span class=&quot;s&quot;&gt;&quot;can&apos;t find eglGetProcAddress() in EGL driver library&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;n&quot;&gt;egl_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//将 egl 指针指向描述当前系统支持 OpenGL ES和 EGL 全局变量的 gEGLImpl&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;egl_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//egl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 EGL API 函数指针&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
-                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;c1&quot;&gt;// couldn&apos;t find the entry-point, use eglGetProcAddress()&lt;/span&gt;
-                &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//这一步就是最关键的将共享链接库中的 EGL API 的实现和上层调用的 API 函数指针绑定在一起&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//指向下一个需要绑定的 api 函数&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// 解析 OpenGL ES 库中的 OpenGL ES 1.x API 符号&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv1_CM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// 调用 init_api 实现 OpenGL API 和对应实现函数的绑定&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;init_api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// gl_names 是定义在 egl.cpp 文件中的一个数组，数组中的元素是 OpenGL ES API 函数指针&lt;/span&gt;
-                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                 &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv1_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//gl成员变量是一个结构体变量，结构体中的是 OpenGL ES API 函数指针&lt;/span&gt;
-                 &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// 解析 OpenGL ES 库中的 OpenGL ES 2.0 API 符号&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GLESv2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;init_api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__eglMustCastToProperFunctionPointerType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                 &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cnx&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hooks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;egl_connection_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GLESv2_INDEX&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                 &lt;span class=&quot;n&quot;&gt;getProcAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dso&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Loader::load_driver()&lt;/code&gt; 它主要实现了两个功能：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;load_system_driver() &lt;/code&gt; 函数查找 OpenGL ES/EGL 实现库，并在指定的存放路径中找到共享链接库文件并打开它。&lt;/li&gt;
-  &lt;li&gt;调用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init_api()&lt;/code&gt;解析打开的 OpenGL ES/EGL 共享链接库，将 OpenGL ES/EGL API 函数指针和共享链接库中实现的对应的函数符号绑定在一起，这样调用 OpenGL ES/EGL API 就会调用到具体实现的OpenGL ES/EGL 共享链接库中对应函数。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;具体 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;load_system_driver()&lt;/code&gt; 函数和 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init_api()&lt;/code&gt; 函数的实现就不一一展开了，大家可以到 &lt;em&gt;/frameworks/native/opengl/libs/EGL/Loader.cpp&lt;/em&gt; 文件中查看，应该写得非常直接清楚了。&lt;/p&gt;
-
-&lt;h3 id=&quot;34-小结&quot;&gt;3.4 &lt;strong&gt;小结&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;至此，有关 OpenGL ES/EGL 库的加载和解析过程就分析完了，&lt;strong&gt;整个加载和解析的目的就是将 OpenGL ES/EGL API 和具体实现函数绑定在一起&lt;/strong&gt;，这样当程序调用 OpenGL ES/EGL API 时，就会调用到实际的实现函数了。然后，在硬件平台上的 Android 系统加载的是硬件厂商提供的 OpenGL ES/EGL 实现库，而在 qemu 模拟器中运行的 Android 系统中加载的则是软件模拟实现的 
-OpenGL ES/EGL 库或者是将 OpenGL ES 重定向到主机系统中进行硬件加速的库。&lt;/p&gt;
-
-&lt;h3 id=&quot;35-参考文章&quot;&gt;3.5 参考文章&lt;/h3&gt;
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;http://www.2net.co.uk/tutorial/android-egl-cgf-is-dead&quot;&gt;How Android finds OpenGL libraries, and the death of egl.cfg&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Tue, 05 Sep 2017 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</link>
-        <guid isPermaLink="true">http://localhost:4000/android/2017/09/05/Android%E7%B3%BB%E7%BB%9F%E5%9B%BE%E5%BD%A2%E6%A0%88OpenGLES%E5%92%8CEGL%E5%BA%93%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.html</guid>
-        
-        <category>Android</category>
-        
-        <category>OpenGLES</category>
-        
-        <category>EGL</category>
-        
-        <category>Graphic</category>
-        
-        
-        <category>android</category>
         
       </item>
     
