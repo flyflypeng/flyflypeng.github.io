@@ -464,6 +464,14 @@
           
         
           
+          <li class="nav-link"><a href="/tag/overlayfs/">OverlayFs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F/">容器镜像</a>
+          
+        
+          
           <li class="nav-link"><a href="/category/android/">android</a>
           
         
@@ -554,6 +562,28 @@
   
   <li>
     <h2>
+      <a class="post-link" href="/%E4%BA%91%E5%8E%9F%E7%94%9F/2023/03/29/Overlay-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F.html">OverlayFs 文件系统介绍</a>
+    </h2>
+    <section class="post-excerpt" itemprop="description">
+      <p>Overlay 文件系统介绍 Overlayfs是一种堆叠文件系统，它依赖并建立在其它的文件系统之上（例如ext4fs和xfs等等），并不直接参与磁盘空间结构的划分，仅仅将原来底层文件系统中不同的目录进行“合并”，然后向用户呈现。因此对于用户来说，它所见到的overlay文件系统根目录下的内容就来自挂载时所指定的不同目录的“合集”。如下图所示 其挂载文件的基本命令如下： mount -t overlay overlay -o lowerdir=lower1:lower2:lower3,upperdir=upper,workdir=work merged 其中lower1:lower2:lower3表示不同的lower层目录，不同的目录使用:分隔，层次关系依次为lower1 &gt; lower2 &gt; lower3 多lower层功能支持在Linux-4.0合入，Linux-3.18版本只能指定一个lower dir upper层是目录和文件系统挂载后用于存放临时和间接文件的工作基目录（work base...</p>
+    </section>
+    <section class="post-meta">
+      <div class="post-date">March 29, 2023</div>
+      <div class="post-categories">
+      in 
+        
+        <a href="/category/云原生">云原生</a>
+        
+      
+      </div>
+    </section>
+  </li>
+  
+  <hr>
+  
+  
+  <li>
+    <h2>
       <a class="post-link" href="/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/2023/03/19/100%E4%B8%AARust%E9%97%AE%E9%A2%98.html">100个Rust问题</a>
     </h2>
     <section class="post-excerpt" itemprop="description">
@@ -631,28 +661,6 @@
       in 
         
         <a href="/category/云原生">云原生</a>
-        
-      
-      </div>
-    </section>
-  </li>
-  
-  <hr>
-  
-  
-  <li>
-    <h2>
-      <a class="post-link" href="/linux/2022/03/28/ptrace-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E6%8B%A6%E6%88%AA%E5%92%8C%E6%A8%A1%E6%8B%9F.html">ptrace 系统调用拦截和模拟</a>
-    </h2>
-    <section class="post-excerpt" itemprop="description">
-      <p>背景 在gVisor沙箱项目中，Google采用了两种不同的系统调用拦截方式： KVM模式 ptrace模式 另外，在Safe and Secure Subprocess Virtualization in Userspace中也提到了采用ptrace实现系统调用拦截。 以前对于ptrace的概念还停留在它是实现strace命令的基础，具体底层的实现原理就一无所知了，因此这篇笔记主要事项记录一下ptrace是如何实现系统调用拦截。 ptrace 定义 ptrace(2) (“process trace”)是Linux系统中的一个系统调用（syscall），它通常用于实现进程debugging功能。 通过ptrace系统调用，tracer（跟踪者）可以暂停tracee（被跟踪者）的执行流程，查看和设置tracee的内存和寄存器中的内容、监控系统调用的执行过程，甚至可以用来拦截模拟系统调用。 ptrace系统调用函数的定义： long...</p>
-    </section>
-    <section class="post-meta">
-      <div class="post-date">March 28, 2022</div>
-      <div class="post-categories">
-      in 
-        
-        <a href="/category/linux">Linux</a>
         
       
       </div>
@@ -1053,6 +1061,14 @@
         
         
           <li class="nav-link"><a href="/tag/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/overlayfs/">OverlayFs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F/">容器镜像</a>
         
         
         
