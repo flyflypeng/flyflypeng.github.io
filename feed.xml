@@ -6,9 +6,217 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 29 Mar 2023 15:57:52 +0800</pubDate>
-    <lastBuildDate>Wed, 29 Mar 2023 15:57:52 +0800</lastBuildDate>
+    <pubDate>Wed, 11 Mar 2026 00:02:33 +0800</pubDate>
+    <lastBuildDate>Wed, 11 Mar 2026 00:02:33 +0800</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>通过 SakuraFrp 服务穿透访问NAS设备上的Web服务</title>
+        <description>&lt;h2 id=&quot;sakurafrp-服务简介&quot;&gt;SakuraFrp 服务简介&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;SakuraFrp 服务官网地址&lt;/strong&gt;：https://www.natfrp.com/&lt;/p&gt;
+
+&lt;p&gt;一句话简单概括一下 SakuraFrp 服务的目标定位：&lt;/p&gt;
+
+&lt;div class=&quot;markdown-alert markdown-alert-tip&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg class=&quot;octicon octicon-light-bulb&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt; Tip&lt;/p&gt;&lt;p&gt;&lt;strong&gt;SakuraFrp 是一个基于 frp 的内网穿透服务&lt;/strong&gt;，它主要解决&lt;strong&gt;没有公网 IP 的用户无法从外部网络访问内网服务&lt;/strong&gt;的问题，让你可以通过互联网远程访问家庭或局域网中的设备和服务。&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;如果你是个好奇宝宝，想深入了解网穿透概念和frp的工作原理，请参考下面这两篇高质量的文档，我觉得肯定比我描述地清楚：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://doc.natfrp.com/basics.html#what-is-lan&quot;&gt;内网穿透基础知识&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://gofrp.org/zh-cn/docs/concepts/&quot;&gt;frp 概念&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/fatedier/frp/blob/dev/README_zh.md&quot;&gt;frp github 项目&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;内网设备和web服务简介&quot;&gt;内网设备和Web服务简介&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;内网设备&lt;/strong&gt;：极空间 Z4 Pro NAS 设备（Intel 芯片）&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;待穿透服务简介&lt;/strong&gt;：&lt;a href=&quot;https://github.com/usememos/memos/&quot;&gt;Memos&lt;/a&gt; 灵感捕捉速记服务（对标flomo笔记的开源版本）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;frp-内网穿透工作示意图&quot;&gt;Frp 内网穿透工作示意图&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173921.png&quot; alt=&quot;Gemini_Generated_Image_4262r24262r24262&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;安装配置流程&quot;&gt;安装配置流程&lt;/h2&gt;
+
+&lt;h3 id=&quot;1-安装-frpc-客户端应用&quot;&gt;1. 安装 frpc 客户端应用&lt;/h3&gt;
+
+&lt;p&gt;在需要穿透内网机器上（支持在Linux/Windows/macOS/Docker容器中）安装frpc客户端应用程序，这里推荐使用Docker方式安装部署，方便快捷，升级更新方便。具体的安装部署方式直接查看文章：&lt;a href=&quot;https://doc.natfrp.com/frpc/usage.html#frpc-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97&quot;&gt;frpc 基本使用指南&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;例如在我的NAS设备上用容器部署完成之后，我们可以通过容器日志查看到 frpc 客户的Web UI访问地址和密码，如下所示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260309194550.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;frpc 客户端配置界面如下：&lt;br /&gt;
+​&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310170956.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;2-子域名绑定和ssl-证书配置&quot;&gt;2. 子域名绑定和&lt;strong&gt;SSL 证书配置&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;div class=&quot;markdown-alert markdown-alert-important&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg class=&quot;octicon octicon-report&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt; Important&lt;/p&gt;&lt;ul&gt;
+  &lt;li&gt;我们费劲巴拉地配置SSL证书和添加HTTPS访问，核心就是为了安全，毕竟你也不想你家的NAS设备成为别人的”肉鸡”&lt;/li&gt;
+  &lt;li&gt;大家可以阅读一下SakuraFrp官方关于安全的最佳实践：https://doc.natfrp.com/bestpractice/security.html&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;markdown-alert markdown-alert-tip&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg class=&quot;octicon octicon-light-bulb&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt; Tip&lt;/p&gt;&lt;p&gt;虽然Sakura官方也提供了HTTP服务直接穿透的方法，那就是使用国外的节点，但是这样一来你在国内访问国外节点的时延就大大增加了，整体Web访问体验就会严重降低。
+传统通过国内节点的访问Web服务是需要有域名和ICP备案，但是SakuraFrp还给我们留了一个可行路径，就是下面这段话，仔细读！多读几遍！我看了文档两三遍才体会到这句话的精髓！然后才有了这篇教程。
+&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173904.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;SakuraFrp 还提供了子域名绑定服务，这样用户就可以通过一个专属于你的统一的域名来访问你所有穿透的服务，&lt;strong&gt;避免要记住不同隧道绑定到不同节点时生成访问的域名各不相同的问题&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;详细的配置流程参考： &lt;a href=&quot;https://doc.natfrp.com/frpc/ssl.html&quot;&gt;配置 SSL 证书&lt;/a&gt;&lt;/p&gt;
+
+&lt;div class=&quot;markdown-alert markdown-alert-tip&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg class=&quot;octicon octicon-light-bulb&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt; Tip&lt;/p&gt;&lt;p&gt;您需要拥有一个属于自己的域名才能申请、部署 SSL 证书。
+如果您还没有域名，推荐直接使用 &lt;a href=&quot;https://doc.natfrp.com/bestpractice/domain-bind.html&quot;&gt;子域绑定&lt;/a&gt; 功能&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我自己没有在国内备案过的域名，所以直接使用了SakuraFrp提供的子域名绑定功能。&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;子域名绑定&lt;/strong&gt;：通过链接进入子域名绑定流程，然后会自动生成一个SSL证书，等生成完成之后，点击”下载证书”按钮就可以将证书和密钥文件下载到本地&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310175114.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;替换frpc客户端侧的SSL证书&lt;/strong&gt;：我这里frpc是通过docker容器方式部署在NAS设备上，所以只需要将frpc挂载工作目录下的证书和key文件替换掉即可&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260309201132.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;3-在nas设备上部署运行caddy反向代理服务&quot;&gt;3. 在NAS设备上部署运行Caddy反向代理服务&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;容器镜像下载&lt;/strong&gt;：下载最新版本的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;caddy:2.11.2-alphine&lt;/code&gt;​ 即可，如果存在镜像网络下载问题，可以使用加了镜像加速器地址前缀的容器名称&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker.1ms.run/caddy:2.11.2-alphine&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;创建Caddy服务的&lt;/strong&gt;​&lt;strong&gt;​&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docker-compose.yaml&lt;/code&gt;​&lt;/strong&gt;​&lt;strong&gt;文件&lt;/strong&gt;，内容如下：&lt;/p&gt;
+
+    &lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;1.0&apos;&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;services&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;caddy&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;docker.1ms.run/caddy:2.11.2-alpine&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;container_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;caddy-https-proxy&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;restart&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;unless-stopped&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;ports&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;8443:8443&quot;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# 检查一下是否端口冲突&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;# 1. Caddyfile 配置文件&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;# 格式：宿主机路径:容器内路径&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;# 建议直接使用当前目录下的文件，也可以改为绝对路径如 /home/user/caddy/Caddyfile&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/tmp/zfsv3/sata11/xxxx/data/docker-share-data/Caddy/Caddyfile:/etc/caddy/Caddyfile&lt;/span&gt;
+
+      &lt;span class=&quot;c1&quot;&gt;# 2. 数据目录 (存放自动生成的证书等重要数据)&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;# 请将 /path/to/your/data 替换为你宿主机上的实际绝对路径&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;caddy_data:/data&lt;/span&gt;
+
+      &lt;span class=&quot;c1&quot;&gt;# 3. 配置目录 (存放 Caddy 的自动配置)&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;# 请将 /path/to/your/config 替换为你宿主机上的实际绝对路径&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;caddy_config:/config&lt;/span&gt;
+
+&lt;span class=&quot;err&quot;&gt;	&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# 4. 从 SakuraFrp 子域名配置服务界面中下载下来的SSL证书和密钥配置&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/tmp/zfsv3/sata11/xxxx/data/docker-share-data/Caddy/natfrp-cert:/etc/caddy/certs&lt;/span&gt;
+
+    &lt;span class=&quot;na&quot;&gt;extra_hosts&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;host.docker.internal:host-gateway&quot;&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;volumes&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;caddy_data&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;caddy_config&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;配置&lt;/strong&gt;​&lt;strong&gt;​&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Caddyfile&lt;/code&gt;​&lt;/strong&gt;​&lt;strong&gt;配置文件&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;Caddyfile 中主要配置内容就是子域名对应的本地后端服务端口信息。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;markdown-alert markdown-alert-important&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg class=&quot;octicon octicon-report&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt; Important&lt;/p&gt;&lt;ul&gt;
+  &lt;li&gt;域名需要配置为natfrp服务中绑定的子域名&lt;/li&gt;
+  &lt;li&gt;如果需要有多个不同前缀子域名服务需要绑定，可以创建多个block块，将流量转发到后端不同的Web服务
+下面就是我NAS配置的Caddyfile内容&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;通过NAS设备自带的Docker Compose服务启动上面配置的Caddy反向代理服务即可，等待容器成功运行起来即可。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;4-在-sakurafrp-网站上创建穿透隧道&quot;&gt;4. 在 SakuraFrp 网站上创建穿透隧道&lt;/h3&gt;
+
+&lt;div class=&quot;markdown-alert markdown-alert-tip&quot;&gt;&lt;p class=&quot;markdown-alert-title&quot;&gt;&lt;svg class=&quot;octicon octicon-light-bulb&quot; viewBox=&quot;0 0 16 16&quot; version=&quot;1.1&quot; width=&quot;16&quot; height=&quot;16&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z&quot;&gt;&lt;/path&gt;&lt;/svg&gt; Tip&lt;/p&gt;&lt;ul&gt;
+  &lt;li&gt;建议买个会员，价格也很实惠，可以优选好一点的VIP节点线路&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;p&gt;参考下面的图片配置即可，注意点：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;隧道类型选择为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TCP 隧道&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;本地端口选择前面在Caddyfile中配置的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;8443&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;自动HTTPS选项&lt;strong&gt;==一定要选“禁用”==&lt;/strong&gt; （因为我们通过Caddy已经配置了HTTPS访问能力）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310151531.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;5-将创建的隧道绑定到自己sakurafrp分配子域名下&quot;&gt;5. 将创建的隧道绑定到自己SakuraFrp分配子域名下&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;下拉前缀域名选择自己想要的前缀域名&lt;/li&gt;
+  &lt;li&gt;“绑定隧道”下拉选择刚刚创建的隧道&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310151514.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;6-在nas设备上frpc客户端启用隧道服务&quot;&gt;6. 在NAS设备上frpc客户端启用隧道服务&lt;/h3&gt;
+
+&lt;p&gt;在SakuraFrp服务端创建好的隧道信息会立即同步到frpc客户端侧（如果没有看到，就点击一下左上角的刷新圆圈按钮，刷新一下即可看到）。&lt;/p&gt;
+
+&lt;p&gt;然后直接在frpc客户端界面将刚才创建的隧道模块拖到分隔线上方，等待模块变为浅绿色，并且右上角弹出提示消息成功之后，就成功启用了frp穿透隧道。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310151809.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;‍&lt;/p&gt;
+
+&lt;h3 id=&quot;7-通过-sakurafrp-服务分配的子域名访问内网web服务&quot;&gt;7. 通过 SakuraFrp 服务分配的子域名访问内网Web服务&lt;/h3&gt;
+
+&lt;p&gt;通过浏览器使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://&amp;lt;xxx.nyat.app&amp;gt;:&amp;lt;端口号&amp;gt;&lt;/code&gt;的方式访问内网中的NAS服务了。&lt;/p&gt;
+
+&lt;p&gt;​&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;https://&amp;lt;xxx.nyat.app&amp;gt;:&amp;lt;端口号&amp;gt;&lt;/code&gt;​ 可以通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;natfrp&lt;/code&gt;“服务” -&amp;gt; “子域名绑定” 界面中找到对应隧道获取。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310172934.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在浏览器中通过https协议访问，你看到你的链接有个小锁说明就成功啦！&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310162751.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;‍&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 10 Mar 2026 18:00:00 +0800</pubDate>
+        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2026/03/10/%E9%80%9A%E8%BF%87SakuraFrp%E6%9C%8D%E5%8A%A1%E7%A9%BF%E9%80%8F%E8%AE%BF%E9%97%AENAS%E8%AE%BE%E5%A4%87%E4%B8%8A%E7%9A%84Web%E6%9C%8D%E5%8A%A1.html</link>
+        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2026/03/10/%E9%80%9A%E8%BF%87SakuraFrp%E6%9C%8D%E5%8A%A1%E7%A9%BF%E9%80%8F%E8%AE%BF%E9%97%AENAS%E8%AE%BE%E5%A4%87%E4%B8%8A%E7%9A%84Web%E6%9C%8D%E5%8A%A1.html</guid>
+        
+        <category>SakuraFrp</category>
+        
+        <category>内网穿透</category>
+        
+        <category>NAS</category>
+        
+        <category>Docker</category>
+        
+        <category>Caddy</category>
+        
+        
+        <category>利器</category>
+        
+      </item>
     
       <item>
         <title>OverlayFs 文件系统介绍</title>
@@ -2571,497 +2779,6 @@ web          NodePort    10.101.158.14   &amp;lt;none&amp;gt;        3000:32678/
         
         
         <category>云原生</category>
-        
-      </item>
-    
-      <item>
-        <title>Mac 开发环境配置</title>
-        <description>&lt;h2 id=&quot;typora&quot;&gt;Typora&lt;/h2&gt;
-
-&lt;p&gt;我先放张我在Mac中我用Typora写这篇文章时的界面吧，你们说香不香吧：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/image-20200411000439442.png&quot; alt=&quot;image-20200411000439442&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Typora绝对是我这几年中遇到的最好用，最好看，最喜欢的一款软件，没有之一。&lt;/p&gt;
-
-&lt;p&gt;虽然Typora还没有发布正式的release版本，但是现在它一直在不断迭代更新，修复一些问题和补齐功能。&lt;/p&gt;
-
-&lt;p&gt;自从6年前入了Markdown的坑，我的笔记文档，博客文章基本都是用Markdown写的，期间也是尝试过各种Markdown软件，玩过在线网页版的Cmd Markdown，也使用过套了一层Electron的蚂蚁笔记，印象笔记中最新内置的Markdown编辑器我也体验过，但就是觉得他们要么在线写笔记不方便，要么就是渲染出来的样式很丑，要么就是笔记同步功能要收费。直到遇到了Typora，我终于找到了最钟意的Markdown软件，满足了我挑剔的要求，我也是各种安利推荐给我身边的朋友和同事。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;简洁美观&lt;/li&gt;
-  &lt;li&gt;所见即所得模式&lt;/li&gt;
-  &lt;li&gt;支持自定义主题，也可从主题商店下载喜欢的主题&lt;/li&gt;
-  &lt;li&gt;富文本自动转换成Markdown格式功能&lt;/li&gt;
-  &lt;li&gt;搜索高亮功能&lt;/li&gt;
-  &lt;li&gt;目录层级管理功能&lt;/li&gt;
-  &lt;li&gt;大纲显示功能&lt;/li&gt;
-  &lt;li&gt;图床功能，支持常用图床和自定义图床配置&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;mac-修改设置环境变量&quot;&gt;Mac 修改设置环境变量&lt;/h2&gt;
-&lt;p&gt;Mac 中修改环境变量的方法和 Linux 中修改环境变量的方法类似，可以修改的文件主要分为两类：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.bash_profile&lt;/code&gt;：一般在这个文件中设置用户级的环境变量&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/bashrc&lt;/code&gt;：一般在这个文件中添加系统级环境变量&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.zshrc&lt;/code&gt;：如果你的shell环境使用的是zsh的话，你可以在这个文件中设置环境变量。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;添加环境变量的方式就是通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;export&lt;/code&gt; 关键字来进行添加。&lt;/p&gt;
-
-&lt;h2 id=&quot;iterm2-配置&quot;&gt;iTerm2 配置&lt;/h2&gt;
-
-&lt;h3 id=&quot;主题配色&quot;&gt;主题配色&lt;/h3&gt;
-&lt;p&gt;你可以根据你的喜好来选择终端主题颜色的配色方案。&lt;/p&gt;
-
-&lt;p&gt;可以从&lt;a href=&quot;https://github.com/mbadolato/iTerm2-Color-Schemes&quot;&gt;mbadolato/iTerm2-Color-Schemes&lt;/a&gt;仓库下载iTerm2的主题配色。&lt;/p&gt;
-
-&lt;p&gt;我选择的是==Cobalt Neon==主题，个人觉得非常不错。&lt;/p&gt;
-
-&lt;p&gt;配置方法：
-&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/import_color_schemes.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;添加背景图片&quot;&gt;添加背景图片&lt;/h3&gt;
-
-&lt;p&gt;更换背景图片方式：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;iTerm2 -&amp;gt; Preferences -&amp;gt; Profiles -&amp;gt; Window -&amp;gt; BackGround Image&lt;/code&gt;勾选图片即可。&lt;/p&gt;
-
-&lt;p&gt;非常好看的一张背景图，背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;：&lt;/p&gt;
-
-&lt;p&gt;链接: https://pan.baidu.com/s/17zGm…
-提取码: hg67&lt;/p&gt;
-
-&lt;h3 id=&quot;快捷键&quot;&gt;快捷键&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Preferences -&amp;gt; Keys -&amp;gt; Hotkey -&amp;gt; Show/hide iTerm2 with a system wide hotkey&lt;/code&gt;设置快捷键 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;command + option + i&lt;/code&gt; 快速显示和隐藏 iTerm。&lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;常用快捷键列表&lt;/p&gt;
-
-    &lt;table&gt;
-      &lt;thead&gt;
-        &lt;tr&gt;
-          &lt;th&gt;shortcut key&lt;/th&gt;
-          &lt;th&gt;description&lt;/th&gt;
-        &lt;/tr&gt;
-      &lt;/thead&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⌘ + t&lt;/td&gt;
-          &lt;td&gt;新建标签页&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⌘ + n&lt;/td&gt;
-          &lt;td&gt;新建窗口&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⌘ + 数字&lt;/td&gt;
-          &lt;td&gt;切换标签页&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⌘ + enter&lt;/td&gt;
-          &lt;td&gt;切换全屏&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⌘ + d&lt;/td&gt;
-          &lt;td&gt;左右分屏&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⇧⌘ + d&lt;/td&gt;
-          &lt;td&gt;上下分屏&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;⌘ + ;&lt;/td&gt;
-          &lt;td&gt;自动补全历史记录&lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;记录命令行操作日志&quot;&gt;记录命令行操作日志&lt;/h3&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Session &amp;gt; Log &amp;gt; Log to File&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;zsh&quot;&gt;zsh&lt;/h2&gt;
-&lt;p&gt;官网：&lt;a href=&quot;http://ohmyz.sh/ß&quot;&gt;zsh&lt;/a&gt;
-使用教程链接：&lt;a href=&quot;http://yijiebuyi.com/blog/b9b5e1ebb719f22475c38c4819ab8151.html&quot;&gt;oh-my-zsh配置你的zsh提高shell逼格终极选择&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;zsh的主题文件存储在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/.oh-my-zsh/thees&lt;/code&gt; 目录下，你可以自己从github上淘到一些非常酷炫的的主题配置，然后下载存放到该目录下。&lt;/p&gt;
-
-&lt;p&gt;推荐一个带PowerBar的非常骚的一个主题配置：&lt;a href=&quot;https://github.com/Powerlevel9k/powerlevel9k&quot;&gt;powerlevel9k&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;字体下载&amp;amp;配置：&lt;a href=&quot;https://github.com/bhilburn/powerlevel9k/wiki/Install-Instructions#step-2-install-a-powerline-font&quot;&gt;Install Powerline Fonts&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;zsh插件推荐&quot;&gt;zsh插件推荐&lt;/h3&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zsh-users/zsh-autosuggestions&quot;&gt;zsh-users/zsh-autosuggestions&lt;/a&gt;：基于输入的历史命令，在输入命令时进行补全提示
-&lt;a href=&quot;https://github.com/zsh-users/zsh-syntax-highlighting&quot;&gt;zsh-users/zsh-syntax-highlighting&lt;/a&gt;：高亮你的 zsh 可用命令&lt;/p&gt;
-
-&lt;h2 id=&quot;xcode-command-line-tools&quot;&gt;Xcode command line tools&lt;/h2&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Xcode command line tools&lt;/code&gt; 是 Mac 下面一系列重要程序开发工具命令的集合，例如：ake, gcc, g++, clang, perl, svn, git等等。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;安装方法&lt;/strong&gt;
-直接打开命令行终端，通过下面的命令安装即可：&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ xcode-select --install
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;卸载方法&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo rm -rf /Library/Developer/CommandLineTools
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;查看 Xcode command line tools 中安装的命令集合的方法&lt;/strong&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ls /Library/Developer/CommandLineTools/usr/bin
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;vim-编辑器使用技巧&quot;&gt;vim 编辑器使用技巧&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://picturebed.obs.cn-east-2.myhuaweicloud.com/blogPictures/vim-key.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://harttle.land/2015/11/07/vim-cursor.html&quot;&gt;Vim中如何快速进行光标移动&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;sublime-text-3&quot;&gt;Sublime Text 3&lt;/h2&gt;
-
-&lt;h3 id=&quot;在命令行终端启动-sublime-text-3-的方法&quot;&gt;在命令行终端启动 sublime text 3 的方法&lt;/h3&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo ln&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl&quot;&lt;/span&gt; /usr/local/bin/subl 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;配置-cc-代码编译环境&quot;&gt;配置 C/C++ 代码编译环境&lt;/h3&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System -&amp;gt; New Buld System&lt;/code&gt; 新建编译系统，在新打开的窗口中替换下面的代码：&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;{
-	&quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ &apos;${file}&apos; -o &apos;${file_path}/${file_base_name}&apos; &amp;amp;&amp;amp; osascript -e &apos;tell application \&quot;Terminal\&quot; to activate do script \&quot;clear&amp;amp;&amp;amp;${file_path}/${file_base_name} &amp;amp;&amp;amp; read -p \\\&quot;Press Enter to exit.\\\&quot;&amp;amp;&amp;amp;exit\&quot;&apos;&quot;],
-    &quot;file_regex&quot;: &quot;^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$&quot;,
-    &quot;working_dir&quot;: &quot;${file_path}&quot;,
-    &quot;selector&quot;: &quot;source.c, source.c++&quot;,
-
-    &quot;variants&quot;:
-    [
-        {
-            &quot;name&quot;: &quot;Run&quot;,
-            &quot;cmd&quot;: [&quot;bash&quot;, &quot;-c&quot;, &quot;g++ &apos;${file}&apos; -o &apos;${file_path}/${file_base_name}&apos; &amp;amp;&amp;amp; &apos;${file_path}/${file_base_name}&apos;&quot;]
-        }
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Command + s&lt;/code&gt; 保存，命名为 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyC++&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;然后我们在 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Tools -&amp;gt; Build System&lt;/code&gt; 选中 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MyC++&lt;/code&gt; 作为默认的编译脚本。&lt;/p&gt;
-
-&lt;p&gt;最后，每当我们编写完 C/C++ 代码时，就可以使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Command + Shift + B&lt;/code&gt; 快捷键编译并运行程序了（&lt;strong&gt;注意选择不带 Run 那个选项&lt;/strong&gt;），它默认会打开并跳转到一个终端界面去执行程序。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;如果不需要从标准输入中读取输入数据，那么我们可以在调用快捷键 Command + Shift + B 之后弹出的选择框中选择加 Run 的选项来直接在 Sublime Text 中运行程序并看到最终程序运行输出的结果。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;让-sublime-记住上一次关闭前打开的文件&quot;&gt;让 Sublime 记住上一次关闭前打开的文件&lt;/h3&gt;
-&lt;p&gt;只需要在 Sublime Text 3 退出时，按 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;command + q&lt;/code&gt; 键退出即可。&lt;/p&gt;
-
-&lt;h2 id=&quot;brew-包管理工具&quot;&gt;brew 包管理工具&lt;/h2&gt;
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 是 Mac 下的第三方包管理工具，它类似于 Ubuntu 系统中自带的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apt&lt;/code&gt; 包管理工具。&lt;/p&gt;
-
-&lt;p&gt;具体的安装方法详见官网：&lt;a href=&quot;http://brew.sh/index_zh-cn.html&quot;&gt;Homebrew&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;在终端中运行以下命令，确保 brew 运行正常：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew doctor
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装命令行工具的方法：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;安装完成之后，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 默认将命令行工具安装到 &lt;em&gt;/usr/local/bin&lt;/em&gt;
- 目录下面。&lt;/p&gt;
-
-&lt;h3 id=&quot;brew-常用命令&quot;&gt;brew 常用命令&lt;/h3&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew search &amp;lt;pkg_name&amp;gt;  &lt;span class=&quot;c&quot;&gt;#查找软件包&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &amp;lt;pkg_name&amp;gt;  &lt;span class=&quot;c&quot;&gt;#安装软件包&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew list &lt;span class=&quot;c&quot;&gt;#列出软件包&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew uninstall &amp;lt;pkg_name&amp;gt; &lt;span class=&quot;c&quot;&gt;#卸载软件包&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew update &lt;span class=&quot;c&quot;&gt;#更新&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew info &amp;lt;pkg_name&amp;gt; &lt;span class=&quot;c&quot;&gt;#查看软件包的基本资料&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;nodejs-安装&quot;&gt;Node.js 安装&lt;/h2&gt;
-
-&lt;h3 id=&quot;安装-nvm-node-version-manager&quot;&gt;安装 NVM （Node Version Manager）&lt;/h3&gt;
-
-&lt;p&gt;使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;brew&lt;/code&gt; 安装 nvm&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;brew &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;nvm
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;配置 nvm 相关环境变量&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# You should create NVM&apos;s working directory if it doesn&apos;t exist:&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; ~/.nvm
-
-&lt;span class=&quot;c&quot;&gt;# Add the following to ~/.zshrc or your desired shell&lt;/span&gt;
-&lt;span class=&quot;c&quot;&gt;#configuration file:&lt;/span&gt;
-
-  &lt;span class=&quot;nb&quot;&gt;export &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;NVM_DIR&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$HOME&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/.nvm&quot;&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;/usr/local/opt/nvm/nvm.sh&quot;&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;测试 nvm 是否安装成功&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;➜  ~ nvm
-
-Node Version Manager
-
-Note: &amp;lt;version&amp;gt; refers to any version-like string nvm understands. This includes:
-  - full or partial version numbers, starting with an optional &lt;span class=&quot;s2&quot;&gt;&quot;v&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0.10, v0.1.2, v1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-  - default &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;built-in&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; aliases: node, stable, unstable, iojs, system
-  - custom aliases you define with &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;nvm &lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;foo&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
-
- Any options that produce colorized output should respect the &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--no-colors&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt; option.
-
-Usage:
-  nvm &lt;span class=&quot;nt&quot;&gt;--help&lt;/span&gt;                                Show this message
-  nvm &lt;span class=&quot;nt&quot;&gt;--version&lt;/span&gt;                             Print out the latest released version of nvm
-  nvm &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;version&amp;gt;                Download and &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;a &amp;lt;version&amp;gt;, &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; from source. Uses .nvmrc &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available
-    &lt;span class=&quot;nt&quot;&gt;--reinstall-packages-from&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;version&amp;gt;     When installing, reinstall packages installed &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &amp;lt;node|iojs|node version number&amp;gt;
-    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;                                   When installing, only &lt;span class=&quot;k&quot;&gt;select &lt;/span&gt;from LTS &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long-term support&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; versions
-    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;LTS name&amp;gt;                        When installing, only &lt;span class=&quot;k&quot;&gt;select &lt;/span&gt;from versions &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;a specific LTS line
-  nvm uninstall &amp;lt;version&amp;gt;                   Uninstall a version
-  nvm uninstall &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;                       Uninstall using automatic LTS &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long-term support&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;alias&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;lts/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
-  nvm uninstall &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;LTS name&amp;gt;            Uninstall using automatic &lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;provided LTS line, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
-  nvm use &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;--silent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &amp;lt;version&amp;gt;              Modify PATH to use &amp;lt;version&amp;gt;. Uses .nvmrc &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available
-    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;                                   Uses automatic LTS &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;long-term support&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;alias&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;lts/&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
-    &lt;span class=&quot;nt&quot;&gt;--lts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;lt;LTS name&amp;gt;                        Uses automatic &lt;span class=&quot;nb&quot;&gt;alias &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;provided LTS line, &lt;span class=&quot;k&quot;&gt;if &lt;/span&gt;available.
-    ......
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;使用-nvm-安裝-nodejs&quot;&gt;使用 NVM 安裝 Node.js&lt;/h3&gt;
-&lt;p&gt;找出目前所有可安裝的 Node.js 版本&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvm ls-remote
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;安装当前最新的稳定版本的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Node.js&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nvm &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;stable
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;测试安装的 Node.js&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;➜  ~ node &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
-v7.2.1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;测试 npm&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;➜  ~ npm &lt;span class=&quot;nt&quot;&gt;-v&lt;/span&gt;
-3.10.1
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;修改-npm-包管理器下载的镜像源&quot;&gt;修改 npm 包管理器下载的镜像源&lt;/h3&gt;
-&lt;p&gt;使用 taobo 定制的 cnpm (gzip 压缩支持) 命令行工具代替默认的 npm：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;\n#alias for cnpm\nalias cnpm=&quot;npm --registry=https://registry.npm.taobao.org \
-  --cache=$HOME/.npm/.cache/cnpm \
-  --disturl=https://npm.taobao.org/dist \
-  --userconfig=$HOME/.cnpmrc&quot;&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ~/.zshrc &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.zshrc
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;安装模块&lt;/strong&gt;
-从 registry.npm.taobao.org 安装所有模块. 当安装的时候发现安装的模块还没有同步过来, 淘宝 NPM 会自动在后台进行同步, 并且会让你从官方 NPM registry.npmjs.org 进行安装. 下次你再安装这个模块的时候, 就会直接从 淘宝 NPM 安装了.&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;//使用这种方法安装 node 模块时，在终端一定要取消掉 http_proxy 和 https_proxy 代理·
-
-&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; Blockquote
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cnpm &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;name]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;&lt;strong&gt;同步模块&lt;/strong&gt;
-直接通过 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sync&lt;/code&gt; 命令马上同步一个模块, 只有 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cnpm&lt;/code&gt; 命令行才有此功能:&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;cnpm &lt;span class=&quot;nb&quot;&gt;sync &lt;/span&gt;connect
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;剪贴板管理命令pbcopy-和-pbpaste&quot;&gt;剪贴板管理命令：pbcopy 和 pbpaste&lt;/h2&gt;
-&lt;p&gt;这两个工具可以打通命令行和剪贴板。当然用鼠标操作复制粘贴也可以——但这两个工具的真正威力，发挥在将其用作Unix工具的时候。意思就是说：可以将这两个工具用作管道、IO重定向以及和其他命令的整合。例如：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; ~ | pbcopy
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;可以将主目录的文件列表复制到剪贴板。&lt;/p&gt;
-
-&lt;p&gt;也可以把任意文件的内容复制到剪贴板中：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pbcopy &amp;lt; blogpost.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;将剪贴板中的内容输出保存到一个文件中：&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;pbpaset &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; test.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;omnigraffle&quot;&gt;OmniGraffle&lt;/h2&gt;
-&lt;p&gt;OmniGraffle 是 Mac 上非常强大的绘图软件，它可以绘制流程图，思维导图，产品原型图等等，而且还有非常丰富的 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;stencils&lt;/code&gt; 模板，直接导入然后进行修改，得到自己想要的图形。&lt;/p&gt;
-
-&lt;h2 id=&quot;jekyll博客环境搭建&quot;&gt;Jekyll博客环境搭建&lt;/h2&gt;
-
-&lt;h3 id=&quot;安装-rvm&quot;&gt;安装 RVM&lt;/h3&gt;
-&lt;p&gt;RVM是Ruby的版本管理工具，我们可以使用它来帮助我们安装Ruby。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; get.rvm.io | bash &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; stable
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;然后，我们需要再入RVM环境。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ~/.rvm/scripts/rvm
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;使用 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rvm -v&lt;/code&gt; 就可以检查RVM是否安装成功了。&lt;/p&gt;
-
-&lt;h3 id=&quot;使用rvm安装ruby&quot;&gt;使用RVM安装Ruby&lt;/h3&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ rvm install ruby
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;等一段时间，Ruby，Ruby Gems就安装好了。&lt;/p&gt;
-
-&lt;p&gt;可以使用&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gem -v&lt;/code&gt;和&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ruby -v&lt;/code&gt;来检查是否安装成功。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 配置好shell环境上的代理&lt;/span&gt;
-gem update &lt;span class=&quot;nt&quot;&gt;--system&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;用-rubygems-安装-jekyll&quot;&gt;用 RubyGems 安装 Jekyll&lt;/h3&gt;
-
-&lt;p&gt;安装 Jekyll 的最好方式就是使用 RubyGems. 你只需要打开终端输入以下命令就可以安装了：&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-archives
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-sitemap
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;jekyll-paginate
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;所有的 Jekyll 的 gem 依赖包都会被自动安装，所以你完全不用去担心。&lt;/p&gt;
-
-&lt;h2 id=&quot;ssh-常用技巧&quot;&gt;ssh 常用技巧&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;免密登录远程主机&lt;/p&gt;
-
-    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 如果本机公钥还没有生成，那么可以使用命令：ssh-keygen 生成
- $ ssh-copy-id arclab@10.214.9.170
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;快速登录远程主机&lt;/p&gt;
-
-    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; # 为了避免每次 ssh 连接远程主机时输入一长串的 username@host-ip，可以将远程主机用一个简单的字符串来标识，修改方法如下
- $ vim ~/.ssh/config
- HOST droidocker
- User arclab
- Port 22
- HostName 10.214.9.170
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h2 id=&quot;端口转发工具&quot;&gt;端口转发工具&lt;/h2&gt;
-
-&lt;p&gt;一个C语言开发的开源TCP端口转发工具， 将TCP连接从一个IP地址和端口重定向到另一个IP地址和端口。&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# 下载&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;git clone https://github.com/samhocevar/rinetd.git
-
-&lt;span class=&quot;c&quot;&gt;# 编译&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;rinetd
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./bootstrap
-+ &lt;span class=&quot;nb&quot;&gt;test &lt;/span&gt;no &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
-+ aclocal &lt;span class=&quot;nt&quot;&gt;-I&lt;/span&gt; .auto &lt;span class=&quot;nt&quot;&gt;-I&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
-+ autoconf
-+ &lt;span class=&quot;nb&quot;&gt;test yes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
-+ autoheader
-+ &lt;span class=&quot;nb&quot;&gt;test yes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;yes&lt;/span&gt;
-+ automake &lt;span class=&quot;nt&quot;&gt;--foreign&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--add-missing&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--copy&lt;/span&gt;
-configure.ac:10: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/compile&apos;&lt;/span&gt;
-configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/install-sh&apos;&lt;/span&gt;
-configure.ac:7: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/missing&apos;&lt;/span&gt;
-src/Makefile.am: installing &lt;span class=&quot;s1&quot;&gt;&apos;.auto/depcomp&apos;&lt;/span&gt;
-+ &lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Rf&lt;/span&gt; autom4te.cache
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./configure
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;make
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;make &lt;span class=&quot;nb&quot;&gt;install
-&lt;/span&gt;Making &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;src
-make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
-make  install-am
-make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
-make[3]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
- /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/sbin&apos;&lt;/span&gt;
-  /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; ../rinetd &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/sbin&apos;&lt;/span&gt;
-make[3]: Nothing to be &lt;span class=&quot;k&quot;&gt;done for&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;install-data-am&apos;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
-make[3]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
-make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
-make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd/src&apos;&lt;/span&gt;
-make[1]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
-make[2]: Entering directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
- /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/etc&apos;&lt;/span&gt;
- /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.conf &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/etc&apos;&lt;/span&gt;
- /bin/mkdir &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/share/man/man8&apos;&lt;/span&gt;
- /usr/bin/install &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; 644 rinetd.8 &lt;span class=&quot;s1&quot;&gt;&apos;/usr/local/share/man/man8&apos;&lt;/span&gt;
-make[2]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
-make[1]: Leaving directory &lt;span class=&quot;s1&quot;&gt;&apos;/home/flyflypeng/OpenSourceProject/rinetd&apos;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;配置文件路径：&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/local/etc/rinetd.conf&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;vim /usr/local/etc/rinetd.conf
-
-&lt;span class=&quot;c&quot;&gt;# 将本机上9000端口转到本机回环地址上的12333端口&lt;/span&gt;
-0.0.0.0 9000 127.0.0.1 12333
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;启动rinetd服务：&lt;/p&gt;
-&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;vi /etc/systemd/system/rinetd.service
-
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Unit]
-&lt;span class=&quot;nv&quot;&gt;Description&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;rinetd
-
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Service]
-&lt;span class=&quot;nv&quot;&gt;ExecStart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/local/sbin/rinetd &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; /usr/local/etc/rinetd.conf
-&lt;span class=&quot;nv&quot;&gt;Restart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;always
-  
-&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Install]
-&lt;span class=&quot;nv&quot;&gt;WantedBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;multi-user.target
-
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;systemctl &lt;span class=&quot;nb&quot;&gt;enable &lt;/span&gt;rinetd.service &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; systemctl start rinetd.service
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
-      &lt;p&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000014992947&quot;&gt;iTerm2 + Oh My Zsh 打造舒适终端体验&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;
-</description>
-        <pubDate>Mon, 23 Mar 2020 04:00:31 +0800</pubDate>
-        <link>http://localhost:4000/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</link>
-        <guid isPermaLink="true">http://localhost:4000/%E5%88%A9%E5%99%A8/2020/03/23/Mac%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html</guid>
-        
-        <category>Mac</category>
-        
-        <category>Jekyll</category>
-        
-        <category>iTerm2</category>
-        
-        <category>zsh</category>
-        
-        
-        <category>利器</category>
         
       </item>
     

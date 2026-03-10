@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>通过 SakuraFrp 服务穿透访问NAS设备上的Web服务</title>
+  <meta name="description"
+    content="SakuraFrp 服务简介SakuraFrp 服务官网地址：https://www.natfrp.com/一句话简单概括一下 SakuraFrp 服务的目标定位：  [!TIP]SakuraFrp 是一个基于 frp 的内网穿透服务，它主要解决没有公网 IP 的用户无法从外部网络访问内网服务的问题，让你可以通过...">
+  
+  <meta name="author" content="Pengfei Jiang">
+  <meta name="copyright" content="&copy; Pengfei Jiang 2026">
+  
+
+  <!-- External libraries -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet"
+    href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/css/lightbox.css">
+
+  <!-- Favicon and other icons (made with http://www.favicon-generator.org/) -->
+  <link rel="shortcut icon" href=" /assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="icon" href=" /assets/icons/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="57x57" href=" /assets/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href=" /assets/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href=" /assets/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href=" /assets/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href=" /assets/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href=" /assets/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href=" /assets/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href=" /assets/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href=" /assets/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href=" /assets/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href=" /assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href=" /assets/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href=" /assets/icons/favicon-16x16.png">
+  <link rel="manifest" href=" /assets/icons/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content=" /assets/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  
+  <!-- Facebook OGP cards -->
+  <meta property="og:description"
+    content="SakuraFrp 服务简介SakuraFrp 服务官网地址：https://www.natfrp.com/一句话简单概括一下 SakuraFrp 服务的目标定位：  [!TIP]SakuraFrp 是一个基于 frp 的内网穿透服务，它主要解决没有公网 IP 的用户无法从外部网络访问内网服务的问题，让你可以通过..." />
+  <meta property="og:url" content="http://localhost:4000" />
+  <meta property="og:site_name" content="Fly Higher's Blog" />
+  <meta property="og:title" content="通过 SakuraFrp 服务穿透访问NAS设备上的Web服务" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image"
+    content="http://localhost:4000https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173921.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="612" />
+  <meta property="og:image:height" content="605" />
+  
+
+  
+  <!-- Twitter: card tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="通过 SakuraFrp 服务穿透访问NAS设备上的Web服务">
+  <meta name="twitter:description"
+    content="SakuraFrp 服务简介SakuraFrp 服务官网地址：https://www.natfrp.com/一句话简单概括一下 SakuraFrp 服务的目标定位：  [!TIP]SakuraFrp 是一个基于 frp 的内网穿透服务，它主要解决没有公网 IP 的用户无法从外部网络访问内网服务的问题，让你可以通过...">
+  <meta name="twitter:image"
+    content="http://localhost:4000https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173921.png">
+  <meta name="twitter:url" content="http://localhost:4000">
+  
+
+  
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href=" /css/main.css">
+  <link rel="canonical" href="http://localhost:4000/%E5%88%A9%E5%99%A8/2026/03/10/%E9%80%9A%E8%BF%87SakuraFrp%E6%9C%8D%E5%8A%A1%E7%A9%BF%E9%80%8F%E8%AE%BF%E9%97%AENAS%E8%AE%BE%E5%A4%87%E4%B8%8A%E7%9A%84Web%E6%9C%8D%E5%8A%A1.html">
+  <link rel="alternate" type="application/rss+xml" title="Fly Higher's Blog" href="http://localhost:4000 /feed.xml" />
+
+  <!-- Google analytics -->
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQJMFGY2LD"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-WQJMFGY2LD');
+</script>
+  
+<style>.markdown-alert{padding:.5rem 1rem;margin-bottom:1rem;color:inherit;border-left:.25em solid #30363d}.markdown-alert>:first-child{margin-top:0}.markdown-alert>:last-child{margin-bottom:0}.markdown-alert .markdown-alert-title{display:flex;font-weight:500;align-items:center;line-height:1}.markdown-alert svg{margin-right:.5rem!important}.markdown-alert svg path{fill:currentColor}.markdown-alert.markdown-alert-note{border-left-color:#4493f8}.markdown-alert.markdown-alert-note .markdown-alert-title{color:#4493f8}.markdown-alert.markdown-alert-important{border-left-color:#ab7df8}.markdown-alert.markdown-alert-important .markdown-alert-title{color:#ab7df8}.markdown-alert.markdown-alert-warning{border-left-color:#9e6a03}.markdown-alert.markdown-alert-warning .markdown-alert-title{color:#d29922}.markdown-alert.markdown-alert-tip{border-left-color:#238636}.markdown-alert.markdown-alert-tip .markdown-alert-title{color:#3fb950}.markdown-alert.markdown-alert-caution{border-left-color:#da3633}.markdown-alert.markdown-alert-caution .markdown-alert-title{color:#f85149}</style></head>
+
+  <body>
+
+    <header class="navigation" role="banner">
+  <div class="navigation-wrapper">
+    <a href="/" class="logo">
+      
+      <img src="/assets/smile_icon.png" alt="Fly Higher's Blog">
+      
+    </a>
+    <a href="javascript:void(0)" class="navigation-menu-button" id="js-mobile-menu">
+      <i class="fa fa-bars"></i>
+    </a>
+    <nav role="navigation">
+      <ul id="js-navigation-menu" class="navigation-menu show">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+        <!-- 
+          
+          <li class="nav-link"><a href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <li class="nav-link"><a href="/posts/">Posts</a>
+          
+        
+          
+          <li class="nav-link"><a href="/project/">Projects</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/keyboard/">keyboard</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/virtual/">virtual</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/android/">Android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/opencv/">opencv</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/markdown/">Markdown</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%8B%B1%E8%AF%AD/">英语</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%AD%A6%E4%B9%A0/">学习</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/hexo/">Hexo</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%8D%9A%E5%AE%A2/">博客</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ubuntu/">Ubuntu</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/firefox/">Firefox</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/python/">Python</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/make/">make</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/makefile/">Makefile</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/linux/">Linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sublimetext/">SublimeText</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%B0%83%E5%BA%A6/">调度</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%A1%AC%E7%9B%98/">硬盘</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%AE%A1%E7%AE%97%E6%9C%BA/">计算机</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/terminator/">Terminator</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cpu/">CPU</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">系统调用</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86/">时间管理</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/vnc/">VNC</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/rfb/">RFB</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/container-of/">container_of</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/offsetof/">offsetof</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cs/">CS</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%9F%BA%E7%A1%80/">基础</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E9%98%85%E8%AF%BB/">阅读</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E4%B9%A6%E5%8D%95/">书单</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%B0%8F%E8%AF%B4/">小说</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%8A%80%E6%9C%AF/">技术</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ndk/">NDK</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/debug/">Debug</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/tombstone/">Tombstone</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/eof/">EOF</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/git/">Git</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ppa/">PPA</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/apt/">APT</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%90%8C%E6%AD%A5/">同步</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85/">生产者消费者</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA/">环形缓冲区</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ringbuffer/">RingBuffer</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/aosp/">AOSP</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/hal/">HAL</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ramfs/">ramfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/tmpfs/">tmpfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/rootfs/">rootfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/initramfs/">initramfs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/unix/">Unix</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/i-o/">I/O</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/graphic/">Graphic</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/opengles/">OpenGLES</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/egl/">EGL</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/qemu/">QEMU</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kvm/">KVM</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/mac/">Mac</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/jekyll/">Jekyll</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/iterm2/">iTerm2</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/zsh/">zsh</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kubernetes/">kubernetes</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/k8s/">k8s</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/cloudnative/">cloudnative</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E6%88%B7%E5%A4%96/">户外</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E9%9C%B2%E8%90%A5/">露营</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/camp/">camp</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%AC%94%E8%AE%B0/">笔记</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/rust/">Rust</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/overlayfs/">OverlayFs</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F/">容器镜像</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/sakurafrp/">SakuraFrp</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">内网穿透</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/nas/">NAS</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/docker/">Docker</a>
+          
+        
+          
+          <li class="nav-link"><a href="/tag/caddy/">Caddy</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/android/">android</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+          
+        
+          
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+         -->
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <div class="page-content">
+        <div class="post">
+
+<div class="post-header-container has-cover" style="background-image: url(https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173921.png);">
+  <div class="scrim has-cover">
+    <header class="post-header">
+      <h1 class="title">通过 SakuraFrp 服务穿透访问NAS设备上的Web服务</h1>
+      <p class="info">by <strong>FlyFlyPeng</strong></p>
+    </header>
+  </div>
+</div>
+
+<div class="wrapper">
+
+
+
+<section class="post-meta">
+  <div class="post-date">March 10, 2026</div>
+  <div class="post-categories">
+  in 
+    
+    <a href="/category/利器">利器</a>
+    
+  
+  </div>
+</section>
+
+<article class="post-content">
+  <h2 id="sakurafrp-服务简介">SakuraFrp 服务简介</h2>
+
+<p><strong>SakuraFrp 服务官网地址</strong>：https://www.natfrp.com/</p>
+
+<p>一句话简单概括一下 SakuraFrp 服务的目标定位：</p>
+
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg> Tip</p><p><strong>SakuraFrp 是一个基于 frp 的内网穿透服务</strong>，它主要解决<strong>没有公网 IP 的用户无法从外部网络访问内网服务</strong>的问题，让你可以通过互联网远程访问家庭或局域网中的设备和服务。</p>
+</div>
+
+<p>如果你是个好奇宝宝，想深入了解网穿透概念和frp的工作原理，请参考下面这两篇高质量的文档，我觉得肯定比我描述地清楚：</p>
+
+<ul>
+  <li><a href="https://doc.natfrp.com/basics.html#what-is-lan">内网穿透基础知识</a></li>
+  <li><a href="https://gofrp.org/zh-cn/docs/concepts/">frp 概念</a></li>
+  <li><a href="https://github.com/fatedier/frp/blob/dev/README_zh.md">frp github 项目</a></li>
+</ul>
+
+<h2 id="内网设备和web服务简介">内网设备和Web服务简介</h2>
+
+<ul>
+  <li><strong>内网设备</strong>：极空间 Z4 Pro NAS 设备（Intel 芯片）</li>
+  <li><strong>待穿透服务简介</strong>：<a href="https://github.com/usememos/memos/">Memos</a> 灵感捕捉速记服务（对标flomo笔记的开源版本）</li>
+</ul>
+
+<h2 id="frp-内网穿透工作示意图">Frp 内网穿透工作示意图</h2>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173921.png" alt="Gemini_Generated_Image_4262r24262r24262" /></p>
+
+<h2 id="安装配置流程">安装配置流程</h2>
+
+<h3 id="1-安装-frpc-客户端应用">1. 安装 frpc 客户端应用</h3>
+
+<p>在需要穿透内网机器上（支持在Linux/Windows/macOS/Docker容器中）安装frpc客户端应用程序，这里推荐使用Docker方式安装部署，方便快捷，升级更新方便。具体的安装部署方式直接查看文章：<a href="https://doc.natfrp.com/frpc/usage.html#frpc-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97">frpc 基本使用指南</a></p>
+
+<p>例如在我的NAS设备上用容器部署完成之后，我们可以通过容器日志查看到 frpc 客户的Web UI访问地址和密码，如下所示：</p>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260309194550.png" alt="image" /></p>
+
+<p>frpc 客户端配置界面如下：<br />
+​<img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310170956.png" alt="image" /></p>
+
+<h3 id="2-子域名绑定和ssl-证书配置">2. 子域名绑定和<strong>SSL 证书配置</strong></h3>
+
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg> Important</p><ul>
+  <li>我们费劲巴拉地配置SSL证书和添加HTTPS访问，核心就是为了安全，毕竟你也不想你家的NAS设备成为别人的”肉鸡”</li>
+  <li>大家可以阅读一下SakuraFrp官方关于安全的最佳实践：https://doc.natfrp.com/bestpractice/security.html</li>
+</ul>
+</div>
+
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg> Tip</p><p>虽然Sakura官方也提供了HTTP服务直接穿透的方法，那就是使用国外的节点，但是这样一来你在国内访问国外节点的时延就大大增加了，整体Web访问体验就会严重降低。
+传统通过国内节点的访问Web服务是需要有域名和ICP备案，但是SakuraFrp还给我们留了一个可行路径，就是下面这段话，仔细读！多读几遍！我看了文档两三遍才体会到这句话的精髓！然后才有了这篇教程。
+<img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310173904.png" alt="image" /></p>
+</div>
+
+<p>SakuraFrp 还提供了子域名绑定服务，这样用户就可以通过一个专属于你的统一的域名来访问你所有穿透的服务，<strong>避免要记住不同隧道绑定到不同节点时生成访问的域名各不相同的问题</strong>。</p>
+
+<p>详细的配置流程参考： <a href="https://doc.natfrp.com/frpc/ssl.html">配置 SSL 证书</a></p>
+
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg> Tip</p><p>您需要拥有一个属于自己的域名才能申请、部署 SSL 证书。
+如果您还没有域名，推荐直接使用 <a href="https://doc.natfrp.com/bestpractice/domain-bind.html">子域绑定</a> 功能</p>
+</div>
+
+<p>我自己没有在国内备案过的域名，所以直接使用了SakuraFrp提供的子域名绑定功能。</p>
+
+<ol>
+  <li>
+    <p><strong>子域名绑定</strong>：通过链接进入子域名绑定流程，然后会自动生成一个SSL证书，等生成完成之后，点击”下载证书”按钮就可以将证书和密钥文件下载到本地</p>
+
+    <p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310175114.png" alt="image" /></p>
+  </li>
+  <li>
+    <p><strong>替换frpc客户端侧的SSL证书</strong>：我这里frpc是通过docker容器方式部署在NAS设备上，所以只需要将frpc挂载工作目录下的证书和key文件替换掉即可</p>
+  </li>
+</ol>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260309201132.png" alt="image" /></p>
+
+<h3 id="3-在nas设备上部署运行caddy反向代理服务">3. 在NAS设备上部署运行Caddy反向代理服务</h3>
+
+<ol>
+  <li><strong>容器镜像下载</strong>：下载最新版本的 <code class="language-plaintext highlighter-rouge">caddy:2.11.2-alphine</code>​ 即可，如果存在镜像网络下载问题，可以使用加了镜像加速器地址前缀的容器名称<code class="language-plaintext highlighter-rouge">docker.1ms.run/caddy:2.11.2-alphine</code></li>
+  <li>
+    <p><strong>创建Caddy服务的</strong>​<strong>​<code class="language-plaintext highlighter-rouge">docker-compose.yaml</code>​</strong>​<strong>文件</strong>，内容如下：</p>
+
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">1.0'</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">caddy</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">docker.1ms.run/caddy:2.11.2-alpine</span>
+    <span class="na">container_name</span><span class="pi">:</span> <span class="s">caddy-https-proxy</span>
+    <span class="na">restart</span><span class="pi">:</span> <span class="s">unless-stopped</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">8443:8443"</span> <span class="c1"># 检查一下是否端口冲突</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="c1"># 1. Caddyfile 配置文件</span>
+      <span class="c1"># 格式：宿主机路径:容器内路径</span>
+      <span class="c1"># 建议直接使用当前目录下的文件，也可以改为绝对路径如 /home/user/caddy/Caddyfile</span>
+      <span class="pi">-</span> <span class="s">/tmp/zfsv3/sata11/xxxx/data/docker-share-data/Caddy/Caddyfile:/etc/caddy/Caddyfile</span>
+
+      <span class="c1"># 2. 数据目录 (存放自动生成的证书等重要数据)</span>
+      <span class="c1"># 请将 /path/to/your/data 替换为你宿主机上的实际绝对路径</span>
+      <span class="pi">-</span> <span class="s">caddy_data:/data</span>
+
+      <span class="c1"># 3. 配置目录 (存放 Caddy 的自动配置)</span>
+      <span class="c1"># 请将 /path/to/your/config 替换为你宿主机上的实际绝对路径</span>
+      <span class="pi">-</span> <span class="s">caddy_config:/config</span>
+
+<span class="err">	</span>  <span class="c1"># 4. 从 SakuraFrp 子域名配置服务界面中下载下来的SSL证书和密钥配置</span>
+      <span class="pi">-</span> <span class="s">/tmp/zfsv3/sata11/xxxx/data/docker-share-data/Caddy/natfrp-cert:/etc/caddy/certs</span>
+
+    <span class="na">extra_hosts</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">host.docker.internal:host-gateway"</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">caddy_data</span><span class="pi">:</span>
+  <span class="na">caddy_config</span><span class="pi">:</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>配置</strong>​<strong>​<code class="language-plaintext highlighter-rouge">Caddyfile</code>​</strong>​<strong>配置文件</strong></p>
+
+    <p>Caddyfile 中主要配置内容就是子域名对应的本地后端服务端口信息。</p>
+  </li>
+</ol>
+
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg> Important</p><ul>
+  <li>域名需要配置为natfrp服务中绑定的子域名</li>
+  <li>如果需要有多个不同前缀子域名服务需要绑定，可以创建多个block块，将流量转发到后端不同的Web服务
+下面就是我NAS配置的Caddyfile内容<code class="language-plaintext highlighter-rouge"></code></li>
+</ul>
+</div>
+
+<ol>
+  <li>通过NAS设备自带的Docker Compose服务启动上面配置的Caddy反向代理服务即可，等待容器成功运行起来即可。</li>
+</ol>
+
+<h3 id="4-在-sakurafrp-网站上创建穿透隧道">4. 在 SakuraFrp 网站上创建穿透隧道</h3>
+
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg> Tip</p><ul>
+  <li>建议买个会员，价格也很实惠，可以优选好一点的VIP节点线路</li>
+</ul>
+</div>
+
+<p>参考下面的图片配置即可，注意点：</p>
+
+<ul>
+  <li>隧道类型选择为<code class="language-plaintext highlighter-rouge">TCP 隧道</code></li>
+  <li>本地端口选择前面在Caddyfile中配置的<code class="language-plaintext highlighter-rouge">8443</code></li>
+  <li>自动HTTPS选项<strong>==一定要选“禁用”==</strong> （因为我们通过Caddy已经配置了HTTPS访问能力）</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310151531.png" alt="image" /></p>
+
+<h3 id="5-将创建的隧道绑定到自己sakurafrp分配子域名下">5. 将创建的隧道绑定到自己SakuraFrp分配子域名下</h3>
+
+<ol>
+  <li>下拉前缀域名选择自己想要的前缀域名</li>
+  <li>“绑定隧道”下拉选择刚刚创建的隧道</li>
+</ol>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310151514.png" alt="image" /></p>
+
+<h3 id="6-在nas设备上frpc客户端启用隧道服务">6. 在NAS设备上frpc客户端启用隧道服务</h3>
+
+<p>在SakuraFrp服务端创建好的隧道信息会立即同步到frpc客户端侧（如果没有看到，就点击一下左上角的刷新圆圈按钮，刷新一下即可看到）。</p>
+
+<p>然后直接在frpc客户端界面将刚才创建的隧道模块拖到分隔线上方，等待模块变为浅绿色，并且右上角弹出提示消息成功之后，就成功启用了frp穿透隧道。</p>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310151809.png" alt="image" /></p>
+
+<p>‍</p>
+
+<h3 id="7-通过-sakurafrp-服务分配的子域名访问内网web服务">7. 通过 SakuraFrp 服务分配的子域名访问内网Web服务</h3>
+
+<p>通过浏览器使用<code class="language-plaintext highlighter-rouge">https://&lt;xxx.nyat.app&gt;:&lt;端口号&gt;</code>的方式访问内网中的NAS服务了。</p>
+
+<p>​<code class="language-plaintext highlighter-rouge">https://&lt;xxx.nyat.app&gt;:&lt;端口号&gt;</code>​ 可以通过<code class="language-plaintext highlighter-rouge">natfrp</code>“服务” -&gt; “子域名绑定” 界面中找到对应隧道获取。</p>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310172934.png" alt="image" /></p>
+
+<p>在浏览器中通过https协议访问，你看到你的链接有个小锁说明就成功啦！</p>
+
+<p><img src="https://raw.githubusercontent.com/flyflypeng/picture-bed/main/20260310162751.png" alt="image" /></p>
+
+<p>‍</p>
+
+
+</article>
+
+
+
+<section class="tags">
+  <strong>Tags:</strong> <a href="/tag/SakuraFrp">SakuraFrp</a>,&nbsp;<a href="/tag/内网穿透">内网穿透</a>,&nbsp;<a href="/tag/NAS">NAS</a>,&nbsp;<a href="/tag/Docker">Docker</a>,&nbsp;<a href="/tag/Caddy">Caddy</a>
+</section>
+
+
+
+<section class="rss">
+  <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+</section>
+
+<section class="share">
+  <span>Share: </span>
+  
+    
+    
+      <a href="//twitter.com/share?text=%E9%80%9A%E8%BF%87+SakuraFrp+%E6%9C%8D%E5%8A%A1%E7%A9%BF%E9%80%8F%E8%AE%BF%E9%97%AENAS%E8%AE%BE%E5%A4%87%E4%B8%8A%E7%9A%84Web%E6%9C%8D%E5%8A%A1&url=http%3A%2F%2Flocalhost%3A4000%2F%25E5%2588%25A9%25E5%2599%25A8%2F2026%2F03%2F10%2F%25E9%2580%259A%25E8%25BF%2587SakuraFrp%25E6%259C%258D%25E5%258A%25A1%25E7%25A9%25BF%25E9%2580%258F%25E8%25AE%25BF%25E9%2597%25AENAS%25E8%25AE%25BE%25E5%25A4%2587%25E4%25B8%258A%25E7%259A%2584Web%25E6%259C%258D%25E5%258A%25A1.html&via=flyflypeng_bear"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=255');return false;">
+        <i class="fa fa-twitter-square fa-lg"></i>
+      </a>
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    
+    
+    
+    
+    
+    
+    
+    
+  
+</section>
+
+	<section class="post-navigation">
+		<span class="prev-post">
+			
+				<a href="/%E4%BA%91%E5%8E%9F%E7%94%9F/2023/03/29/Overlay-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F.html">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square fa-stack-2x"></i>
+						<i class="fa fa-angle-double-left fa-stack-1x fa-inverse"></i>
+					</span>
+					<span class="page-number">OverlayFs 文件系统介绍</span>
+				</a>
+			
+		</span>
+		<span class="next-post">
+			
+		</span>
+	</section>
+
+
+
+
+<section class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname = 'flyflypeng-tech';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+
+
+</div>
+</div>
+
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h3 class="footer-heading">Fly Higher's Blog</h3>
+
+    <div class="site-navigation">
+
+      <p><strong>Site Map</strong></p>
+      <ul class="pages">
+        <li class="nav-link"><a href="/about/">About</a>
+        <li class="nav-link"><a href="/posts/">Posts</a>
+        <li class="nav-link"><a href="/project/">Projects</a>
+       <!--  
+        
+          <li class="nav-link"><a href="/about/">About</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          <li class="nav-link"><a href="/posts/">Posts</a>
+        
+        
+        
+          <li class="nav-link"><a href="/project/">Projects</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/keyboard/">keyboard</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/virtual/">virtual</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/android/">Android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/opencv/">opencv</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/markdown/">Markdown</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%8B%B1%E8%AF%AD/">英语</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%AD%A6%E4%B9%A0/">学习</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/hexo/">Hexo</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%8D%9A%E5%AE%A2/">博客</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ubuntu/">Ubuntu</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/firefox/">Firefox</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/python/">Python</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/make/">make</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/makefile/">Makefile</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/linux/">Linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sublimetext/">SublimeText</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%B0%83%E5%BA%A6/">调度</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%A1%AC%E7%9B%98/">硬盘</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%AE%A1%E7%AE%97%E6%9C%BA/">计算机</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/terminator/">Terminator</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cpu/">CPU</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">系统调用</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%97%B6%E9%97%B4%E7%AE%A1%E7%90%86/">时间管理</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vnc/">VNC</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/rfb/">RFB</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/container-of/">container_of</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/offsetof/">offsetof</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cs/">CS</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%9F%BA%E7%A1%80/">基础</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E9%98%85%E8%AF%BB/">阅读</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E4%B9%A6%E5%8D%95/">书单</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%B0%8F%E8%AF%B4/">小说</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%8A%80%E6%9C%AF/">技术</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ndk/">NDK</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/debug/">Debug</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/tombstone/">Tombstone</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/eof/">EOF</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/git/">Git</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ppa/">PPA</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/apt/">APT</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%90%8C%E6%AD%A5/">同步</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85/">生产者消费者</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%8E%AF%E5%BD%A2%E7%BC%93%E5%86%B2%E5%8C%BA/">环形缓冲区</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ringbuffer/">RingBuffer</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/aosp/">AOSP</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/hal/">HAL</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ramfs/">ramfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/tmpfs/">tmpfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/rootfs/">rootfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/initramfs/">initramfs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/unix/">Unix</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/i-o/">I/O</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/graphic/">Graphic</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/opengles/">OpenGLES</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/egl/">EGL</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/qemu/">QEMU</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kvm/">KVM</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/mac/">Mac</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/jekyll/">Jekyll</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/iterm2/">iTerm2</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/zsh/">zsh</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kubernetes/">kubernetes</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/k8s/">k8s</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/cloudnative/">cloudnative</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E9%9C%B2%E8%90%A5/">露营</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/camp/">camp</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%AC%94%E8%AE%B0/">笔记</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ptrace/">ptrace</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sandbox/">sandbox</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kata-containers/">kata-containers</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/vscode/">vscode</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/kernel/">kernel</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/mlsys/">MLSys</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/ai/">AI</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/rust/">Rust</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/overlayfs/">OverlayFs</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F/">容器镜像</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/sakurafrp/">SakuraFrp</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/">内网穿透</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/nas/">NAS</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/docker/">Docker</a>
+        
+        
+        
+          <li class="nav-link"><a href="/tag/caddy/">Caddy</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/android/">android</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%88%A9%E5%99%A8/">利器</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%AD%A6%E4%B9%A0-%E6%95%88%E7%8E%87/">学习&效率</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/linux/">linux</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E5%86%85%E6%A0%B8/">内核</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">体系结构</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E7%94%9F%E6%B4%BB/">生活</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%99%9A%E6%8B%9F%E5%8C%96/">虚拟化</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E4%BA%91%E5%8E%9F%E7%94%9F/">云原生</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E6%88%B7%E5%A4%96/">户外</a>
+        
+        
+        
+          <li class="nav-link"><a href="/category/%E8%AE%BA%E6%96%87/">论文</a>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+         -->
+      </ul>
+    </div>
+
+    <div class="site-contact">
+
+      <p><strong>Contact</strong></p>
+      <ul class="social-media-list">
+        <li>
+          <a href="mailto:flyflyflypeng@gmail.com">
+            <i class="fa fa-envelope-o"></i>
+            <span class="username">flyflyflypeng@gmail.com</span>
+          </a>
+        </li>
+
+        
+          
+          <li>
+            <a href="https://twitter.com/flyflypeng_bear" title="Follow me on Twitter">
+              <i class="fa fa-twitter"></i>
+              <span class="username">flyflypeng_bear</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://github.com/flyflypeng" title="Fork me on GitHub">
+              <i class="fa fa-github"></i>
+              <span class="username">flyflypeng</span>
+            </a>
+          </li>
+          
+        
+          
+          <li>
+            <a href="https://www.instagram.com/FlyFlyPeng/" title="Follow me on Instagram">
+              <i class="fa fa-instagram"></i>
+              <span class="username">FlyFlyPeng</span>
+            </a>
+          </li>
+          
+        
+
+      </ul>
+    </div>
+
+    <div class="site-signature">
+      <p class="rss-subscribe text"><strong>Subscribe <a href="/feed.xml">via RSS</a></strong></p>
+      <p class="text">Do one thing and do it well.
+</p>
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- Scripts -->
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightbox2/2.7.1/js/lightbox.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Default syntax highlighting
+  hljs.initHighlightingOnLoad();
+
+  // Header
+  var menuToggle = $('#js-mobile-menu').unbind();
+  $('#js-navigation-menu').removeClass("show");
+  menuToggle.on('click', function(e) {
+    e.preventDefault();
+    $('#js-navigation-menu').slideToggle(function(){
+      if($('#js-navigation-menu').is(':hidden')) {
+        $('#js-navigation-menu').removeAttr('style');
+      }
+    });
+  });
+});
+
+</script>
+
+
+
+
+
+
+  </body>
+
+</html>
